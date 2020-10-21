@@ -43,7 +43,14 @@ export class DropzonePane extends Component<{}, IDropzonePaneState> {
         >
             {
                 state.list.map(e => (<Moveable><button class="btn btn-default">{e.name}</button></Moveable>))
+
+                
             }
+            <Moveable><button class="btn btn-negative" onClick={() => {
+                this.setState({
+                    list: []
+                });
+            }}>DELETE</button></Moveable>
         </div>
     }
 

@@ -7,22 +7,25 @@ interface IMoveableState {
     }
 }
 
-export class Moveable extends Component {
+interface IMoveableProps {
+    x: number, y: number, children?: any
+}
+export class Moveable extends Component<IMoveableProps, IMoveableState> {
 
     state: IMoveableState;
 
-    constructor() {
-        super();
+    constructor(props: IMoveableProps) {
+        super(props);
 
         this.state = {
             coordinates: {
-                x: 0,
-                y: 0
+                x: props.x || 0,
+                y: props.y || 0
             }
         }
     }
 
-    render (props: any , state: IMoveableState) { 
+    render (props: IMoveableProps , state: IMoveableState) { 
             return <div
                 style={
                     "position: absolute;" +
@@ -71,7 +74,7 @@ export class Moveable extends Component {
                 }>{...props.children}</div>
     }
 
-    shouldComponentUpdate(nextState: IMoveableState) {
+    shouldComponentUpdate(nextProps: IMoveableProps, nextState: IMoveableState) {
         return this.state !== nextState
     }
 }

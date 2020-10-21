@@ -2,8 +2,13 @@ import { Component, h } from "preact";
 import { Moveable } from './Moveable';
 import { IListItem } from './Toolbar';
 
+interface IMoveableListItem extends IListItem {
+   x: number,
+   y: number 
+}
+
 interface IDropzonePaneState {
-    list: IListItem[]
+    list: IMoveableListItem[]
 }
 
 export class DropzonePane extends Component<{}, IDropzonePaneState> {
@@ -29,7 +34,7 @@ export class DropzonePane extends Component<{}, IDropzonePaneState> {
                 if (data !== {}) {
                     const last_state = this.state;
                     last_state.list.push(
-                        data
+                        {...data, x: e.clientX, y: e.clientY}
                     );
                     this.setState(last_state);
                 }
@@ -42,11 +47,9 @@ export class DropzonePane extends Component<{}, IDropzonePaneState> {
             }}
         >
             {
-                state.list.map(e => (<Moveable><button class="btn btn-default">{e.name}</button></Moveable>))
-
-                
+                state.list.map(e => (<Moveable x={e.x} y={e.y}><button class="btn btn-default">{e.name}</button></Moveable>))
             }
-            <Moveable><button class="btn btn-negative" onClick={() => {
+            <Moveable x={2} y={4}><button class="btn btn-negative" onClick={() => {
                 this.setState({
                     list: []
                 });

@@ -14,8 +14,12 @@ export class Toolbar extends Component {
     private list: IListItem[];
     public state: IToolbarState;
 
-    constructor() {
-        super();
+    constructor(props?: any) {
+        if (props) {
+            super(props);
+        } else {
+            super();
+        }
 
         this.list = [
             { name: "Philipp", type: "Lead" },

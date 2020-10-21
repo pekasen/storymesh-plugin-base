@@ -72,7 +72,6 @@ export class Moveable extends Component {
     }
 
     shouldComponentUpdate(nextState: IMoveableState) {
-        console.log("Should I update?", this.state !== nextState);
         return this.state !== nextState
     }
 }

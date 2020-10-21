@@ -1,7 +1,6 @@
 import { Component, h } from "preact";
-import { Moveable } from './Moveable';
-import { Toolbar } from "./Toolbar";
 import { DropzonePane } from "./DropzonePane";
+import { Toolbar } from "./Toolbar";
 
 export class App extends Component {
 

@@ -1,5 +1,4 @@
 import { Component, h } from "preact";
-import { IListItem } from "./Toolbar";
 
 interface IMoveableState {
     coordinates: {
@@ -23,7 +22,7 @@ export class Moveable extends Component {
         }
     }
 
-    render (props: any , state: IMoveableState, children: any) { 
+    render (props: any , state: IMoveableState) { 
             return <div
                 style={
                     "position: absolute;" +

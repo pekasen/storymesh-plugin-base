@@ -49,11 +49,14 @@ export class DropzonePane extends Component<{}, IDropzonePaneState> {
             {
                 state.list.map(e => (<Moveable x={e.x} y={e.y}><button class="btn btn-default">{e.name}</button></Moveable>))
             }
-            <Moveable x={2} y={4}><button class="btn btn-negative" onClick={() => {
-                this.setState({
-                    list: []
-                });
-            }}>DELETE</button></Moveable>
+            <Moveable x={2} y={4}><div style="width: 120px; height: 120px; background-color: red;">
+                <button class="btn btn-negative" onClick={() => {
+                    this.setState({
+                        list: []
+                    });
+                }}>DELETE</button>
+            </div>
+            </Moveable>
         </div>
     }
 

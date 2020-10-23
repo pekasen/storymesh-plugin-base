@@ -28,19 +28,19 @@ export class DropzonePane extends Component<{}, IDropzonePaneState> {
             onDrop={(e) => {
                 e.preventDefault();
                 const data = JSON.parse(e.dataTransfer?.getData("text") || "");
-                
-                console.log(data);
-                var boundingRect = e.target.getBoundingClientRect();
 
-                if (data !== {}) {
-                    const last_state = this.state;
-                    last_state.list.push(
-                        {...data, x: e.clientX - boundingRect.left, y: e.clientY - boundingRect.top}
-                    );
-                    this.setState(last_state);
+                if (e.target) {
+                    const elem = e.target as Element;
+                    const boundingRect = elem.getBoundingClientRect();
+
+                    if (data !== {}) {
+                        const last_state = this.state;
+                        last_state.list.push(
+                            {...data, x: e.clientX - boundingRect.left, y: e.clientY - boundingRect.top}
+                        );
+                        this.setState(last_state);
+                    }
                 }
-
-                console.log(this.state);
 
             }}
             onDragOver={(e) => {

@@ -1,5 +1,7 @@
+import { autorun } from 'mobx';
 import { Component, h } from "preact";
-import { Moveable } from './Moveable';
+import { UIStore } from '..';
+import { Moveable, MoveableItem } from './Moveable';
 import { IListItem } from './Toolbar';
 
 interface IMoveableListItem extends IListItem {
@@ -11,18 +13,29 @@ interface IDropzonePaneState {
     list: IMoveableListItem[]
 }
 
-export class DropzonePane extends Component<{}, IDropzonePaneState> {
+interface IDropzonePaneProps {
+    uistate: UIStore
+}
 
-    public state: IDropzonePaneState
+export class DropzonePane extends Component<IDropzonePaneProps, IDropzonePaneState> {
 
-    constructor() {
-        super();
-        this.state = {
-            list: []
-        };
+    constructor(props: IDropzonePaneProps) {
+        super(props);
+        // this.state = {
+        //     list: []
+        // };
+
+        autorun(() => {
+            console.log("Updating Pane", props.uistate.moveableItems);
+            props.uistate.moveableItems.map(e => {
+                console.log(e.name + " updated", e.x, e.y);
+                this.forceUpdate();
+            })
+            this.forceUpdate();
+        })
     }
 
-    render(props: any, state: IDropzonePaneState) {
+    render({ uistate }: IDropzonePaneProps, state: IDropzonePaneState) {
         return <div
             class="pane"
             onDrop={(e) => {
@@ -34,34 +47,29 @@ export class DropzonePane extends Component<{}, IDropzonePaneState> {
                     const boundingRect = elem.getBoundingClientRect();
 
                     if (data !== {}) {
-                        const last_state = this.state;
-                        last_state.list.push(
-                            {...data, x: e.clientX - boundingRect.left, y: e.clientY - boundingRect.top}
-                        );
-                        this.setState(last_state);
+                        uistate.appendMoveableItem(new MoveableItem(data.name, e.clientX - boundingRect.left, e.clientY - boundingRect.top));
                     }
                 }
-
             }}
             onDragOver={(e) => {
                 e.preventDefault();
             }}
         >
             {
-                state.list.map(e => (<Moveable x={e.x} y={e.y}><button class="btn btn-default">{e.name}</button></Moveable>))
+                uistate.moveableItems.map(e => (<Moveable item={e}><button class="btn btn-default">{e.name}</button></Moveable>))
             }
-            <Moveable x={2} y={4}><div style="width: 120px; height: 120px; background-color: red;">
+            {/* <Moveable x={2} y={4}><div style="width: 120px; height: 120px; background-color: red;">
                 <button class="btn btn-negative" onClick={() => {
                     this.setState({
                         list: []
                     });
                 }}>DELETE</button>
             </div>
-            </Moveable>
+            </Moveable> */}
         </div>
     }
 
-    shouldComponentUpdate(nxtProps: any, nxtState: IDropzonePaneState, nxtContext: any) {
-        return this.state !== nxtState
-    }
+    // shouldComponentUpdate(nxtProps: any, nxtState: IDropzonePaneState, nxtContext: any) {
+    //     return this.state !== nxtState
+    // }
 }

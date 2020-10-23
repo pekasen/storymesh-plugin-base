@@ -1,34 +1,7 @@
 import { render, h } from "preact";
 import { App } from "./components/App";
 import { action, autorun, makeAutoObservable, makeObservable, observable } from "mobx";
-
-class MoveableItem {
-
-    public name: string
-    public x: number
-    public y: number
-
-    constructor (name: string, x: number, y: number) {
-        makeObservable(this, {
-            name: observable,
-            x: observable,
-            y: observable
-        });
-        
-        this.name = name;
-        this.x = x;
-        this.y = y;
-    }
-
-    updatePosition (x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    updateName (name: string) {
-        this.name = name;
-    }
-}
+import { Moveable, MoveableItem } from './components/Moveable';
 
 export class ListItem {
     public name: string
@@ -70,14 +43,20 @@ export class List {
 
 export class UIStore {
     searchResults: ListItem[]
+    moveableItems: MoveableItem[]
 
     constructor () {
-        makeAutoObservable(this);
         this.searchResults = [];
+        this.moveableItems = [];
+        makeAutoObservable(this);
     }
 
     setSearchResults(items: ListItem[]) {
         this.searchResults = items;
+    }
+
+    appendMoveableItem(item: MoveableItem) {
+        this.moveableItems = [...this.moveableItems, item];
     }
 }
 

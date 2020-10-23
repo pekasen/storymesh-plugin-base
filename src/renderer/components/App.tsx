@@ -40,7 +40,7 @@ export class App extends Component<IAppProps,{}> {
                     <div class="pane-sm sidebar">
                         <Toolbar list={list} uistate={uistate} />
                     </div>
-                    <DropzonePane></DropzonePane> 
+                    <DropzonePane uistate={uistate}></DropzonePane> 
                 </div>
 
             </div>

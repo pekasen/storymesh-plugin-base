@@ -25,6 +25,8 @@
   },
   "homepage": "https://github.com/pekasen/ngwebs-editor#readme",
   "dependencies": {
+    "mobx": "^6.0.1",
+    "mobx-preact-lite": "^0.1.0",
     "preact": "^10.5.4",
     "tslib": "^2.0.1"
   },

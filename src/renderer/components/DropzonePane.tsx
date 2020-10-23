@@ -30,11 +30,12 @@ export class DropzonePane extends Component<{}, IDropzonePaneState> {
                 const data = JSON.parse(e.dataTransfer?.getData("text") || "");
                 
                 console.log(data);
+                var boundingRect = e.target.getBoundingClientRect();
 
                 if (data !== {}) {
                     const last_state = this.state;
                     last_state.list.push(
-                        {...data, x: e.clientX, y: e.clientY}
+                        {...data, x: e.clientX - boundingRect.left, y: e.clientY - boundingRect.top}
                     );
                     this.setState(last_state);
                 }

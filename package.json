@@ -26,13 +26,13 @@
   "homepage": "https://github.com/pekasen/ngwebs-editor#readme",
   "dependencies": {
     "mobx": "^6.0.1",
-    "mobx-preact-lite": "^0.1.0",
     "preact": "^10.5.4",
     "tslib": "^2.0.1"
   },
   "devDependencies": {
     "@types/electron": "^1.6.10",
     "electron": "^10.1.3",
+    "mobx-devtools": "^0.9.23",
     "typescript": "^4.0.3"
   }
 }

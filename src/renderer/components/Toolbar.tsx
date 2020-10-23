@@ -1,4 +1,6 @@
+import { autorun } from 'mobx';
 import { Component, h } from 'preact';
+import { List, ListItem } from '..';
 
 export interface IListItem {
     name: string
@@ -9,7 +11,11 @@ interface IToolbarState {
     list: IListItem[]
 }
 
-export class Toolbar extends Component {
+interface IToolbarProps {
+    list: List
+}
+
+export class Toolbar extends Component<IToolbarProps, IToolbarState> {
 
     private list: IListItem[];
     public state: IToolbarState;
@@ -28,11 +34,22 @@ export class Toolbar extends Component {
             { name: "Christian" } 
         ];
         this.state = {
-            list: this.list
+            list: this.props.list.members
         };
+ 
+        autorun(() => {
+            console.log("update ", props.list.members);
+            this.props.list.members.map(e => {
+                autorun(() => {
+                    console.log("update " + e.name, e)
+                    this.forceUpdate();
+                });
+            })
+            this.forceUpdate();
+        });
     }
 
-    render({}, state: IToolbarState) {
+    render({ list }: IToolbarProps, state: IToolbarState) {
         return <ul class="list-group">
                 <li class="list-group-header">
                 <input
@@ -67,25 +84,38 @@ export class Toolbar extends Component {
                         // }    
                     ></input>
                 </li>
-                {state.list.map(x => (
-                    <li class="list-group-item" onClick={() => console.log("Hello!")} draggable={true} onDragStart={e => {
-                        // dataTransfer.setData('text', ev.target.id);
-                        if (e.target) {
-                            e.dataTransfer?.setData("text", JSON.stringify(x));
-                        }
-                    }}>
-                        <span class="icon icon-user img-circle media-object pull-left"></span>
-                        <div class="media-body">
-                            <strong>{`${x.name}`}</strong><br></br>
-                            {`${x.type ? x.type : "NA"}`}
-                        </div>
-                    </li>
+                {list.members.map(x => (
+                   <ListItemView item={x} onClick={() => {x.changeName("Hello")}}></ListItemView>
                 ))}
+                <button onClick={() => {list.addMember("Christian", "Prof"); console.log(list)}}>Add</button>
         </ul>
     }
-
-    shouldComponentUpdate(nextProps: {}, nextState: IToolbarState) {
-        console.log(nextState);
-        return !(this.state === nextState);
-    }
+    
+    // shouldComponentUpdate({ list }: IToolbarProps, nextState: IToolbarState) {
+    //     console.log(list);
+    //     return !(this.state === nextState) || ;
+    // }
 }
+
+interface IListItemViewProps {
+    item: ListItem
+    onClick: () => void
+}
+
+const ListItemView = ({ item, onClick }: IListItemViewProps) => (
+    <li 
+    class="list-group-item" 
+    onClick={onClick} 
+    draggable={true} 
+    onDragStart={e => {
+        if (e.target) {
+            e.dataTransfer?.setData("text", JSON.stringify(item));
+        }
+    }}>
+        <span class="icon icon-user img-circle media-object pull-left"></span>
+        <div class="media-body">
+            <strong>{`${item.name}`}</strong><br></br>
+            {`${item.type ? item.type : ""}`}
+        </div>
+    </li>
+);

@@ -1,6 +1,6 @@
 import { render, h } from "preact";
 import { App } from "./components/App";
-import { action, autorun, makeObservable, observable } from "mobx";
+import { action, autorun, makeAutoObservable, makeObservable, observable } from "mobx";
 
 class MoveableItem {
 
@@ -68,6 +68,19 @@ export class List {
     }
 }
 
+export class UIStore {
+    searchResults: ListItem[]
+
+    constructor () {
+        makeAutoObservable(this);
+        this.searchResults = [];
+    }
+
+    setSearchResults(items: ListItem[]) {
+        this.searchResults = items;
+    }
+}
+
 var model = new List([
     new ListItem("Philipp", "Lead"),
     new ListItem("Jannik", "Frontend"),
@@ -82,7 +95,7 @@ const root = document.getElementById("preact-root") as Element;
 render(
     // <App list={new List()} />,
     <div>
-        <App list={model}></App>
+        <App list={model} uistate={new UIStore()}></App>
     </div>,
     root
 );

@@ -1,6 +1,6 @@
 import { autorun } from 'mobx';
 import { Component, h } from 'preact';
-import { List, ListItem } from '..';
+import { List, ListItem, UIStore } from '..';
 
 export interface IListItem {
     name: string
@@ -13,32 +13,18 @@ interface IToolbarState {
 
 interface IToolbarProps {
     list: List
+    uistate: UIStore
 }
 
 export class Toolbar extends Component<IToolbarProps, IToolbarState> {
 
-    private list: IListItem[];
-    public state: IToolbarState;
+    constructor(props: IToolbarProps) {
 
-    constructor(props?: any) {
-        if (props) {
-            super(props);
-        } else {
-            super();
-        }
+        super(props);
 
-        this.list = [
-            { name: "Philipp", type: "Lead" },
-            { name: "Anca", type: "Backend" },
-            { name: "Jannik", type: "Frontend" },
-            { name: "Christian" } 
-        ];
-        this.state = {
-            list: this.props.list.members
-        };
- 
         autorun(() => {
             console.log("update ", props.list.members);
+            props.uistate;
             this.props.list.members.map(e => {
                 autorun(() => {
                     console.log("update " + e.name, e)
@@ -49,42 +35,10 @@ export class Toolbar extends Component<IToolbarProps, IToolbarState> {
         });
     }
 
-    render({ list }: IToolbarProps, state: IToolbarState) {
+    render({ list, uistate }: IToolbarProps, state: IToolbarState) {
         return <ul class="list-group">
-                <li class="list-group-header">
-                <input
-                        class="form-control"
-                        type="text"
-                        placeholder="Search for someone"
-                        onChange={e =>{
-                            this.setState({
-                                list: (this.list.filter(i => {
-                                    let term = e.currentTarget.value;
-                                    if (term !== "") {
-                                        return i.name.match(term) ||
-                                        i.type?.match(term)
-
-                                    } else {
-                                        return this.list
-                                    }
-                                }))
-                            })
-                        }}
-                        // onDrop={
-                        //     function (e) {
-                        //         e.preventDefault();
-    
-                        //         const data = JSON.parse(e.dataTransfer?.getData("text") || "");
-                        //         this.value = data.name;
-                        //         this.click()
-                        //         // this.setAttribute("value", data.name);
-                        //     }
-                        // } onDragOver={
-                        //     e => {e.preventDefault()}
-                        // }    
-                    ></input>
-                </li>
-                {list.members.map(x => (
+                <ListSearchView list={list.members} uistate={uistate}></ListSearchView>
+                {uistate.searchResults.map(x => (
                    <ListItemView item={x} onClick={() => {x.changeName("Hello")}}></ListItemView>
                 ))}
                 <button onClick={() => {list.addMember("Christian", "Prof"); console.log(list)}}>Add</button>
@@ -96,6 +50,45 @@ export class Toolbar extends Component<IToolbarProps, IToolbarState> {
     //     return !(this.state === nextState) || ;
     // }
 }
+
+interface  IListSearchViewProps{
+    uistate: UIStore
+    list: ListItem[]
+}
+
+const ListSearchView = ({ uistate, list }: IListSearchViewProps) => (
+    <li class="list-group-header">
+        <input
+            class="form-control"
+            type="text"
+            placeholder="Search for someone"
+            onChange={e =>{
+                uistate.setSearchResults(list.filter(i => {
+                    let term = e.currentTarget.value;
+                    if (term !== "") {
+                        return i.name.match(term) ||
+                        i.type?.match(term)
+
+                    } else {
+                        return list
+                    }
+                }))
+            }}
+            // onDrop={
+            //     function (e) {
+            //         e.preventDefault();
+
+            //         const data = JSON.parse(e.dataTransfer?.getData("text") || "");
+            //         this.value = data.name;
+            //         this.click()
+            //         // this.setAttribute("value", data.name);
+            //     }
+            // } onDragOver={
+            //     e => {e.preventDefault()}
+            // }    
+        ></input>
+    </li>
+);
 
 interface IListItemViewProps {
     item: ListItem

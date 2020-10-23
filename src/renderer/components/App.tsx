@@ -2,10 +2,11 @@ import { Component, h } from "preact";
 import { DropzonePane } from "./DropzonePane";
 import { Toolbar } from "./Toolbar";
 import { autorun } from "mobx";
-import { List } from '..';
+import { List, UIStore } from '..';
 
 interface IAppProps {
     list: List
+    uistate: UIStore
 }
 
 // export const App = ({ list }: IAppProps) => (
@@ -32,12 +33,12 @@ export class App extends Component<IAppProps,{}> {
         });
     }
 
-    public render( { list }: IAppProps, {}) {
+    public render( { list, uistate }: IAppProps, {}) {
         return <div class="window">
             <div class="window-content">
                 <div class="pane-group">
                     <div class="pane-sm sidebar">
-                        <Toolbar list={list} />
+                        <Toolbar list={list} uistate={uistate} />
                     </div>
                     <DropzonePane></DropzonePane> 
                 </div>

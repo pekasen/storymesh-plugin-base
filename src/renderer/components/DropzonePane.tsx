@@ -1,4 +1,4 @@
-import { autorun } from 'mobx';
+import { autorun, reaction } from 'mobx';
 import { Component, h } from "preact";
 
 import { UIStore } from "../store/UIStore";
@@ -19,10 +19,17 @@ export class DropzonePane extends Component<IDropzonePaneProps, {}> {
 
         props.uistate.appendMoveableItem(this.deleter);
 
-        autorun(() => {
-            console.log("Updating Pane", props.uistate.moveableItems);
-            this.setState({});
-        })
+        // autorun(() => {
+        //     console.log("Updating Pane", props.uistate.moveableItems);
+        //     this.setState({});
+        // })
+
+        reaction(
+            () => (props.uistate.moveableItems),
+            () => {
+                this.setState({});
+            }
+        );
     }
 
     render({ uistate }: IDropzonePaneProps) {

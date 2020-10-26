@@ -15,7 +15,7 @@ export class Moveable extends Component<IMoveableProps, {}> {
         super(props);
 
         this.reactionDisposer = reaction(
-            () => props.item,
+            () => ({...props.item}),
             () => {
                 this.setState({});
             }

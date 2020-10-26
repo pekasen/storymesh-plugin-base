@@ -1,17 +1,10 @@
 import { autorun } from 'mobx';
 import { Component, h } from "preact";
-import { UIStore } from '..';
-import { Moveable, MoveableItem } from './Moveable';
-import { IListItem } from './Toolbar';
 
-interface IMoveableListItem extends IListItem {
-   x: number,
-   y: number 
-}
+import { UIStore } from "../store/UIStore";
 
-interface IDropzonePaneState {
-    list: IMoveableListItem[]
-}
+import { Moveable } from './Moveable';
+import { MoveableItem } from "../store/MoveableItem";
 
 interface IDropzonePaneProps {
     uistate: UIStore
@@ -62,9 +55,5 @@ export class DropzonePane extends Component<IDropzonePaneProps, {}> {
             </div>
             </Moveable>
         </div>
-    }
-
-    shouldComponentUpdate(nextProps: any, nxtState: IDropzonePaneState, nxtContext: any) {
-        return true;
     }
 }

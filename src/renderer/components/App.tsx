@@ -26,14 +26,11 @@ export class App extends Component<IAppProps,{}> {
 
     constructor (props: IAppProps) {
         super(props);
-        
-        autorun(() => {
-            props.list;
-            this.forceUpdate();
-        });
     }
 
     public render( { list, uistate }: IAppProps, {}) {
+        console.log("rerender", this);
+
         return <div class="window">
             <div class="window-content">
                 <div class="pane-group">

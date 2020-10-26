@@ -1,5 +1,6 @@
 import { Component, h } from "preact";
 import { observable, makeObservable, action, autorun, observe } from "mobx";
+import { useCallback, useState } from "preact/hooks";
 import { UIStore } from '..';
 
 export class MoveableItem {
@@ -43,116 +44,118 @@ interface IMoveableProps {
     children: preact.JSX.Element
 }
 
-export const Moveable = ({ item, children }: IMoveableProps) => (
-    <div
-        style={
-            "position: absolute;" +
-            (item.x === 0 ? "" : `left: ${item.x};`) +
-            (item.y === 0 ? "" : `top: ${item.y};`)
-        }
-        onMouseDown={
-            (e: any) => {
-                e = e || window.event;
-                e.preventDefault();
+// export const Moveable = ({ item, children }: IMoveableProps) => {
+//     const [values, setValues] = useState(item);
+//     const update = useCallback(() => {
+//         observe(item, () => {
+//             setValues(item);
+//         })
+//     }, [values]);
 
-                const x = e.clientX;
-                const y = e.clientY;
-                const x_0 = item.x;
-                const y_0 = item.y;
+//     update();
 
-                function updater (move: any) {
-                    move.preventDefault();
+//     return <div
+//         style={
+//             "position: absolute;" +
+//             (item.x === 0 ? "" : `left: ${item.x};`) +
+//             (item.y === 0 ? "" : `top: ${item.y};`)
+//         }
+//         onMouseDown={
+//             (e: any) => {
+//                 e = e || window.event;
+//                 e.preventDefault();
 
-                    const _x = move.clientX;
-                    const _y = move.clientY;
-                    const d_x = (_x - x);
-                    const d_y = (_y - y);
+//                 const x = e.clientX;
+//                 const y = e.clientY;
+//                 const x_0 = item.x;
+//                 const y_0 = item.y;
+
+//                 function updater (move: any) {
+//                     move.preventDefault();
+
+//                     const _x = move.clientX;
+//                     const _y = move.clientY;
+//                     const d_x = (_x - x);
+//                     const d_y = (_y - y);
                     
-                    // console.log({x: e.target.style.left, dx: d_x, y: e.target.style.top, dy: d_y});
+//                     // console.log({x: e.target.style.left, dx: d_x, y: e.target.style.top, dy: d_y});
 
-                    item.updatePosition(
-                        d_x + x_0,
-                        d_y + y_0
-                    );
-                };
+//                     item.updatePosition(
+//                         d_x + x_0,
+//                         d_y + y_0
+//                     );
+//                 };
 
-                function remover () {
-                    document.removeEventListener("mousemove", updater)
-                    console.log("drag finished")
-                    document.removeEventListener("mouseup", remover);
-                };
+//                 function remover () {
+//                     document.removeEventListener("mousemove", updater)
+//                     console.log("drag finished")
+//                     document.removeEventListener("mouseup", remover);
+//                 };
                 
-                document.addEventListener("mousemove", updater);
-                document.addEventListener("mouseup", remover);
-            }
-        }>{children}</div>
-);
+//                 document.addEventListener("mousemove", updater);
+//                 document.addEventListener("mouseup", remover);
+//             }
+//         }>{children}</div>
+// };
 
-// export class Moveable extends Component<IMoveableProps, IMoveableState> {
+export class Moveable extends Component<IMoveableProps, {}> {
 
-//     state: IMoveableState;
+    constructor(props: IMoveableProps) {
+        super(props);
 
-//     constructor(props: IMoveableProps) {
-//         super(props);
+        autorun(() => {
+            var x = {...props.item};
+            console.log("Updated", props.item);
+            this.setState({});
+        },{
+            delay: 25
+        });
+    }
 
-//         autorun(() => {
-//             props.uistate.moveableItems;
-//             this.forceUpdate();
-//         });
-//     }
+    render ({ item, children }: IMoveableProps) { 
+            return <div
+                style={
+                    "position: absolute;" +
+                    (item.x === 0 ? "" : `left: ${item.x};`) +
+                    (item.y === 0 ? "" : `top: ${item.y};`)
+                }
+                onMouseDown={
+                    (e: any) => {
+                        var that = this;
 
-//     render ({ uistate, children }: IMoveableProps , state: IMoveableState) { 
-            // return <div
-            //     style={
-            //         "position: absolute;" +
-            //         (state.coordinates.x === 0 ? "" : `left: ${state.coordinates.x};`) +
-            //         (state.coordinates.y === 0 ? "" : `top: ${state.coordinates.y};`)
-            //     }
-            //     onMouseDown={
-            //         (e: any) => {
-            //             var that = this;
+                        e = e || window.event;
+                        e.preventDefault();
 
-            //             e = e || window.event;
-            //             e.preventDefault();
+                        const x = e.clientX;
+                        const y = e.clientY;
+                        const x_0 = item.x;
+                        const y_0 = item.y;
 
-            //             const x = e.clientX;
-            //             const y = e.clientY;
-            //             const x_0 = state.coordinates.x;
-            //             const y_0 = state.coordinates.y;
+                        function updater (move: any) {
+                            move.preventDefault();
 
-            //             function updater (move: any) {
-            //                 move.preventDefault();
-
-            //                 const _x = move.clientX;
-            //                 const _y = move.clientY;
-            //                 const d_x = (_x - x);
-            //                 const d_y = (_y - y);
+                            const _x = move.clientX;
+                            const _y = move.clientY;
+                            const d_x = (_x - x);
+                            const d_y = (_y - y);
                             
-            //                 console.log({x: e.target.style.left, dx: d_x, y: e.target.style.top, dy: d_y});
+                            // console.log({x: e.target.style.left, dx: d_x, y: e.target.style.top, dy: d_y});
 
-            //                 that.setState({
-            //                     coordinates: {
-            //                         x: d_x + x_0,
-            //                         y: d_y + y_0
-            //                     }
-            //                 })
+                            item.updatePosition(
+                                d_x + x_0,
+                                d_y + y_0
+                            );
+                        };
 
-            //                 uistate.moveableItems
-            //             };
-
-            //             function remover () {
-            //                 document.removeEventListener("mousemove", updater)
-            //                 console.log("drag finished")
-            //                 document.removeEventListener("mouseup", remover);
-            //             };
+                        function remover () {
+                            document.removeEventListener("mousemove", updater)
+                            // console.log("drag finished")
+                            document.removeEventListener("mouseup", remover);
+                        };
                         
-            //             document.addEventListener("mousemove", updater);
-            //             document.addEventListener("mouseup", remover);
-            //         }
-            //     }>{...children}</div>
-//     }
-
-//     shouldComponentUpdate(nextProps: IMoveableProps, nextState: IMoveableState) {
-//         return this.state !== nextState
-//     }
-// }
+                        document.addEventListener("mousemove", updater);
+                        document.addEventListener("mouseup", remover);
+                    }
+                }>{children}</div>
+    }
+}

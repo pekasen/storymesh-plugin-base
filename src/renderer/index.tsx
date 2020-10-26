@@ -1,6 +1,6 @@
 import { render, h } from "preact";
 import { App } from "./components/App";
-import { action, autorun, makeAutoObservable, makeObservable, observable } from "mobx";
+import { action, makeAutoObservable, makeObservable, observable } from "mobx";
 import { Moveable, MoveableItem } from './components/Moveable';
 
 export class ListItem {
@@ -30,10 +30,7 @@ export class List {
 
     constructor (members?: ListItem[]) {
         this.members = members || [];
-        makeObservable(this, {
-            members: observable,
-            addMember: action
-        })
+        makeAutoObservable(this);
     }
 
     addMember (name: string, type: string) {
@@ -41,22 +38,45 @@ export class List {
     }
 }
 
+
 export class UIStore {
     searchResults: ListItem[]
     moveableItems: MoveableItem[]
+    term: string
+
 
     constructor () {
         this.searchResults = [];
         this.moveableItems = [];
+        this.term  = "";
         makeAutoObservable(this);
     }
 
     setSearchResults(items: ListItem[]) {
+        console.log(items);
         this.searchResults = items;
+    }
+
+    clearSearchResults() {
+        console.log("Do you crap yourself?");
+        this.searchResults = [];
     }
 
     appendMoveableItem(item: MoveableItem) {
         this.moveableItems = [...this.moveableItems, item];
+    }
+
+    clearMoveableItems(butKeep?: MoveableItem) {
+        if (butKeep) {
+            const keep = this.moveableItems.filter((item) => (item === butKeep))
+            this.moveableItems = keep;
+        } else {
+            this.moveableItems = [];
+        }
+    }
+
+    setSearchTerm(term: string) {
+        this.term = term;
     }
 }
 
@@ -66,15 +86,8 @@ var model = new List([
     new ListItem("Anca", "Backend")
 ]);
 
-autorun((r) => {
-    console.log("Update!", model.members);
-})
-
 const root = document.getElementById("preact-root") as Element;
 render(
-    // <App list={new List()} />,
-    <div>
-        <App list={model} uistate={new UIStore()}></App>
-    </div>,
+    <App list={model} uistate={new UIStore()}></App>,
     root
 );

@@ -17,25 +17,22 @@ interface IDropzonePaneProps {
     uistate: UIStore
 }
 
-export class DropzonePane extends Component<IDropzonePaneProps, IDropzonePaneState> {
+export class DropzonePane extends Component<IDropzonePaneProps, {}> {
 
+    deleter = new MoveableItem("Delete", 0, 0);
+    
     constructor(props: IDropzonePaneProps) {
         super(props);
-        // this.state = {
-        //     list: []
-        // };
+
+        props.uistate.appendMoveableItem(this.deleter);
 
         autorun(() => {
             console.log("Updating Pane", props.uistate.moveableItems);
-            props.uistate.moveableItems.map(e => {
-                console.log(e.name + " updated", e.x, e.y);
-                this.forceUpdate();
-            })
-            this.forceUpdate();
+            this.setState({});
         })
     }
 
-    render({ uistate }: IDropzonePaneProps, state: IDropzonePaneState) {
+    render({ uistate }: IDropzonePaneProps) {
         return <div
             class="pane"
             onDrop={(e) => {
@@ -56,20 +53,18 @@ export class DropzonePane extends Component<IDropzonePaneProps, IDropzonePaneSta
             }}
         >
             {
-                uistate.moveableItems.map(e => (<Moveable item={e}><button class="btn btn-default">{e.name}</button></Moveable>))
+                uistate.moveableItems.filter(e => (e.name !== "Delete")).map(e => (<Moveable item={e}><button class="btn btn-default">{e.name}</button></Moveable>))
             }
-            {/* <Moveable x={2} y={4}><div style="width: 120px; height: 120px; background-color: red;">
+            <Moveable item={this.deleter}><div style="width: 120px; height: 120px; background-color: red;">
                 <button class="btn btn-negative" onClick={() => {
-                    this.setState({
-                        list: []
-                    });
+                    uistate.clearMoveableItems(this.deleter);
                 }}>DELETE</button>
             </div>
-            </Moveable> */}
+            </Moveable>
         </div>
     }
 
-    // shouldComponentUpdate(nxtProps: any, nxtState: IDropzonePaneState, nxtContext: any) {
-    //     return this.state !== nxtState
-    // }
+    shouldComponentUpdate(nextProps: any, nxtState: IDropzonePaneState, nxtContext: any) {
+        return true;
+    }
 }

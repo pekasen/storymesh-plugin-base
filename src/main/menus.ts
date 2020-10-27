@@ -1,6 +1,6 @@
 import { app, Menu, MenuItem } from "electron";
 import { MenuItemConstructorOptions } from 'electron/main';
-import { handleSaveEvent, handleLoadEvent } from './event-handlers/save-handler';
+import { handleSaveEvent, handleLoadEvent, handleNewDocumentEvent } from './event-handlers/save-handler';
 
 export function patchMenu(window: Electron.BrowserWindow) {
     const isMac = process.platform === 'darwin'
@@ -22,7 +22,11 @@ export function patchMenu(window: Electron.BrowserWindow) {
     const fileMenu: MenuItemConstructorOptions = {
         label: 'File',
         submenu: [
-            isMac ? { role: 'close' } : { role: 'quit' },
+            {
+                label: 'New Document',
+                accelerator: 'CommandOrControl+N',
+                click: handleNewDocumentEvent
+            },
             {
                 label: 'Save',
                 accelerator: 'CommandOrControl+S',
@@ -32,7 +36,8 @@ export function patchMenu(window: Electron.BrowserWindow) {
                 label: 'Load',
                 accelerator: 'CommandOrControl+O',
                 click: handleLoadEvent
-            }
+            },
+            isMac ? { role: 'close' } : { role: 'quit' },
         ]
     }
     const devMenu: MenuItemConstructorOptions =  {

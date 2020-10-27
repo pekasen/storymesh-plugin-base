@@ -20,4 +20,8 @@ export class List {
             throw("That's no good.")
         }
     }
+
+    clear() {
+        this.members = [];
+    }
 }

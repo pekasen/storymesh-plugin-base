@@ -6,18 +6,23 @@ export class UIStore {
     searchResults: ListItem[];
     moveableItems: MoveableItem[];
     term: string;
-
+    file: string;
 
     constructor() {
         this.searchResults = [];
         this.moveableItems = [];
         this.term = "";
+        this.file = "";
         makeAutoObservable(this);
     }
 
     setSearchResults(items: ListItem[]) {
         console.log(items);
         this.searchResults = items;
+    }
+
+    setFile(file: string) {
+        this.file = file;
     }
 
     clearSearchResults() {
@@ -40,5 +45,9 @@ export class UIStore {
 
     setSearchTerm(term: string) {
         this.term = term;
+    }
+
+    get untitledDocument () {
+        return this.file === "";
     }
 }

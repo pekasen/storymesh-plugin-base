@@ -1,10 +1,38 @@
-import { MenuItem, webContents } from 'electron';
+import { MenuItem, BrowserWindow, KeyboardEvent, dialog, ipcMain } from 'electron';
+import { values } from 'mobx';
 
-export const handleSaveEvent = (menuItem: MenuItem, window: Electron.BrowserWindow | undefined, event: Electron.KeyboardEvent) => {
-    console.log(event);
-    window?.webContents.send('save', {hello: 'Hello from mainland'})
+export const handleSaveEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent) => {
+    window?.webContents.send('request', { uistate: 'file'});
+    
+    ipcMain.once('request-reply', (e, args) => {
+        const isUntitled = args.file === "";
+        console.log(args);
+        if(window && isUntitled) {
+            dialog.showSaveDialog(window, {
+                title: "Save",
+                filters: [{name: "NGWebS Project", extensions: ["json"]}]
+            }).then((v) => {
+                window?.webContents.send('save', {file: v.filePath})
+            })
+        } else {
+            window?.webContents.send('save', {})
+        }
+    });    
 };
 
-export const handleLoadEvent = (menuItem: MenuItem, window: Electron.BrowserWindow | undefined, event: Electron.KeyboardEvent) => {
-    window?.webContents.send('load', {file: "/Users/philipp/Desktop/test.json"})
+export const handleLoadEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent) => {
+    if (window)  dialog.showOpenDialog(window, {
+        title: "Open a file",
+        properties: [
+            "openFile"
+        ]
+    }).then((v) => {
+        window?.webContents.send('load', {file: v.filePaths[0]})
+    })
 }
+
+export const handleNewDocumentEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent) => {
+    if (window) {
+        window.webContents.send('new');
+    }
+};

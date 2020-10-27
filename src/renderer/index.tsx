@@ -3,7 +3,7 @@ import { render, h } from "preact";
 import { UIStore } from './store/UIStore';
 import { List } from './store/List';
 import { ListItem } from './store/ListItem';
-import { registerHandlers } from './registerHandlers';
+import { registerHandlers } from './utils/registerHandlers';
 
 export var model = new List([
     new ListItem("Philipp", "Lead"),

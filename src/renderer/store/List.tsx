@@ -9,7 +9,15 @@ export class List {
         makeAutoObservable(this);
     }
 
-    addMember(name: string, type: string) {
+    addMember(name: string, type?: string) {
         this.members = [...this.members, new ListItem(name, type)];
+    }
+
+    loadMembers(data: any) {
+        if (Array.isArray(data)) {
+            this.members = data;
+        } else {
+            throw("That's no good.")
+        }
     }
 }

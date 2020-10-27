@@ -1,5 +1,5 @@
 import { reaction } from 'mobx';
-import { Component, h } from 'preact';
+import { Component, h, JSX } from 'preact';
 
 import { List } from "../store/List";
 import { UIStore } from "../store/UIStore";
@@ -46,7 +46,8 @@ export class Toolbar extends Component<IToolbarProps, {}> {
     }
 
     render({ list, uistate }: IToolbarProps) {
-        return <ul class="list-group">
+        return <div>
+            <ul class="list-group scroll">
                 <ListSearchView list={list.members} uistate={uistate}></ListSearchView>
                 {
                     (uistate.searchResults.length !== 0) ?
@@ -57,10 +58,38 @@ export class Toolbar extends Component<IToolbarProps, {}> {
                             onDblClick={() => console.log("Open")}>
                         </ListItemView>
                     )):
-                        <li>Nothing</li>
+                        <li class="list-group-item">
+                            <strong>Nothing's found here, yo.</strong>
+                        </li>
 
                 }
-                <button onClick={() => {list.addMember("Christian", "Prof")}}>Add</button>
+                <li class="list-group-item">
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        
+                        const name = document.getElementById("name") as HTMLInputElement;
+                        const type = document.getElementById("type") as HTMLInputElement;
+
+                        if (name && name.value) {
+                            list.addMember(name.value, type.value || "");
+                            console.log(name.value, type.value);
+                        }
+                    }}>
+                    <div class="form-group">
+                        <label>Name</label><br></br>
+                        <input id="name" type="text" class="form-control" placeholder="Name"></input>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label><br></br>
+                        <input id="type" type="text" class="form-control" placeholder="Type"></input>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-form btn-primary">Add</button>
+                    </div>
+                </form> 
+            </li>   
         </ul>
+        
+        </div>
     }
 }

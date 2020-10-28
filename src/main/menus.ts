@@ -97,13 +97,14 @@ export function patchMenu(window: Electron.BrowserWindow) {
             //   )
             ]
           }
-    const template = [
-        appMenu,
+    const template = []
+    if (isMac) template.push(appMenu);
+    template.push([
         fileMenu,
         editMenu,
         windowMenu,
         devMenu
-    ];
+    ]);
         // { role: "appMenu" }
         // ,
         // { role: "fileMenu" }

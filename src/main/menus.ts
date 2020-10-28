@@ -1,124 +1,129 @@
 import { app, Menu, MenuItem } from "electron";
-import { MenuItemConstructorOptions } from 'electron/main';
-import { handleSaveEvent, handleLoadEvent, handleNewDocumentEvent } from './event-handlers/save-handler';
+import { MenuItemConstructorOptions } from "electron/main";
+import { handleSaveEvent, handleLoadEvent, handleNewDocumentEvent } from "./event-handlers/save-handler";
 
 export function patchMenu(window: Electron.BrowserWindow) {
-    const isMac = process.platform === 'darwin'
+    const isMac = process.platform === "darwin"
     const appMenu: MenuItemConstructorOptions =  {
         label: app.name,
         submenu: [
 
-            { role: 'about' },
-            { type: 'separator' },
-            { role: 'services' },
-            { type: 'separator' },
-            { role: 'hide' },
-            { role: 'hideOthers' },
-            { role: 'unhide' },
-            { type: 'separator' },
-            { role: 'quit' }
+            { role: "about" },
+            { type: "separator" },
+            { role: "services" },
+            { type: "separator" },
+            { role: "hide" },
+            { role: "hideOthers" },
+            { role: "unhide" },
+            { type: "separator" },
+            { role: "quit" }
         ]
     };
     const fileMenu: MenuItemConstructorOptions = {
-        label: 'File',
+        label: "File",
         submenu: [
             {
-                label: 'New Document',
-                accelerator: 'CommandOrControl+N',
+                label: "New Document",
+                accelerator: "CommandOrControl+N",
                 click: handleNewDocumentEvent
             },
             {
-                label: 'Save',
-                accelerator: 'CommandOrControl+S',
+                label: "Save",
+                accelerator: "CommandOrControl+S",
                 click: handleSaveEvent
             },
             {
-                label: 'Load',
-                accelerator: 'CommandOrControl+O',
+                label: "Load",
+                accelerator: "CommandOrControl+O",
                 click: handleLoadEvent
             },
-            isMac ? { role: 'close' } : { role: 'quit' },
+            isMac ? { role: "close" } : { role: "quit" },
         ]
     }
     const devMenu: MenuItemConstructorOptions =  {
-        label: 'Developer',
+        label: "Developer",
         submenu: [
-            { role: 'reload' },
-            { role: 'forceReload' },
-            { role: 'toggleDevTools' },
-            { type: 'separator' },
-            { role: 'resetZoom' },
-            { role: 'zoomIn' },
-            { role: 'zoomOut' },
-            { type: 'separator' },
-            { role: 'togglefullscreen' }
+            { role: "reload" },
+            { role: "forceReload" },
+            { role: "toggleDevTools" },
+            { type: "separator" },
+            { role: "resetZoom" },
+            { role: "zoomIn" },
+            { role: "zoomOut" },
+            { type: "separator" },
+            { role: "togglefullscreen" }
         ]
     };
+    const editMenu: MenuItemConstructorOptions = {
+        label: "Edit",
+        submenu: [
+          { role: "undo" },
+          { role: "redo" },
+          { type: "separator" },
+          { role: "cut" },
+          { role: "copy" },
+          { role: "paste" },
+        //   ...(isMac ? [
+            { role: "pasteAndMatchStyle" },
+            { role: "delete" },
+            { role: "selectAll" },
+            { type: "separator" },
+            {
+              label: "Speech",
+              submenu: [
+                { role: "startSpeaking" },
+                { role: "stopSpeaking" }
+              ]
+            }
+        //   ] : [
+        //     { role: "delete" },
+        //     { type: "separator" },
+        //     { role: "selectAll" }
+        //   ])
+        ]
+    };
+    const windowMenu: MenuItemConstructorOptions = {
+            label: "Window",
+            submenu: [
+              { role: "minimize" },
+              { role: "zoom" },
+            //   ...(isMac ? [
+                { type: "separator" },
+                { role: "front" },
+                { type: "separator" },
+                { role: "window" }
+            //    : 
+            //     [{ role: "close" }]
+            //   )
+            ]
+          }
     const template = [
         appMenu,
         fileMenu,
+        editMenu,
+        windowMenu,
         devMenu
     ];
-        // { role: 'appMenu' }
+        // { role: "appMenu" }
         // ,
-        // { role: 'fileMenu' }
+        // { role: "fileMenu" }
         
         //   ,
-        //   // { role: 'editMenu' }
-        //   {
-        //     label: 'Edit',
-        //     submenu: [
-        //       { role: 'undo' },
-        //       { role: 'redo' },
-        //       { type: 'separator' },
-        //       { role: 'cut' },
-        //       { role: 'copy' },
-        //       { role: 'paste' },
-        //       ...(isMac ? [
-        //         { role: 'pasteAndMatchStyle' },
-        //         { role: 'delete' },
-        //         { role: 'selectAll' },
-        //         { type: 'separator' },
-        //         {
-        //           label: 'Speech',
-        //           submenu: [
-        //             { role: 'startspeaking' },
-        //             { role: 'stopspeaking' }
-        //           ]
-        //         }
-        //       ] : [
-        //         { role: 'delete' },
-        //         { type: 'separator' },
-        //         { role: 'selectAll' }
-        //       ])
-        //     ]
-        //   },
-        //   // { role: 'viewMenu' }
+        //   // { role: "editMenu" }
+     
+    
+        //   // { role: "viewMenu" }
         //   ,
-        //   // { role: 'windowMenu' }
+        //   // { role: "windowMenu" }
+        // ,
         //   {
-        //     label: 'Window',
-        //     submenu: [
-        //       { role: 'minimize' },
-        //       { role: 'zoom' },
-        //       ...(isMac ? [
-        //         { type: 'separator' },
-        //         { role: 'front' },
-        //         { type: 'separator' },
-        //         { role: 'window' }
-        //       ] : [
-        //         { role: 'close' }
-        //       ])
-        //     ]
-        //   },
-        //   {
-        //     role: 'help',
+        //     role: "help",
         //     submenu: [
         //       {
-        //         label: 'Learn More',
+        //         label: "Learn More",
         //         click: async () => {
-        //           const { shell } = require('electron')
-        //           await shell.openExternal('https://electronjs.org')
+        //           const { shell } = require("electron")
+        //           await shell.openExternal("https://electronjs.org")
         //         }
         //       }
         //     ]

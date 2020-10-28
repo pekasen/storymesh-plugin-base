@@ -6,16 +6,19 @@ import { UIStore } from "../store/UIStore";
 
 import { Moveable } from './Moveable';
 import { MoveableItem } from "../store/MoveableItem";
+import { List } from '../store/List';
+import { ListItem } from '../store/ListItem';
 
 interface IDropzonePaneProps {
-    uistate: UIStore    
+    uistate: UIStore
+    model: List
 }
 
 export class DropzonePane extends Component<IDropzonePaneProps, {}> {
 
-    deleter = new MoveableItem("Delete", 0, 0);
     two: Two;
     ref = createRef();
+    deleter = new MoveableItem(new ListItem("Delete", "DELETER"), 0, 0);
     
     constructor(props: IDropzonePaneProps) {
         super(props);
@@ -55,19 +58,23 @@ export class DropzonePane extends Component<IDropzonePaneProps, {}> {
         two.appendTo(this.ref.current).update();
     }
 
-    render({ uistate }: IDropzonePaneProps) {
+    render({ uistate, model }: IDropzonePaneProps) {
+        console.log(uistate.moveableItems);
         return <div ref={this.ref}
             class="pane"
             onDrop={(e) => {
                 e.preventDefault();
-                const data = JSON.parse(e.dataTransfer?.getData("text") || "");
+                const id = e.dataTransfer?.getData("text") || undefined;
+                console.log(id);
 
                 if (e.target) {
                     const elem = e.target as Element;
                     const boundingRect = elem.getBoundingClientRect();
 
-                    if (data !== {}) {
-                        uistate.appendMoveableItem(new MoveableItem(data.name, e.clientX - boundingRect.left, e.clientY - boundingRect.top));
+                    if (id !== undefined) {
+                        const data = model.itemByID(id);
+                        console.log(data);
+                        if (data) uistate.appendMoveableItem(new MoveableItem(data, e.clientX - boundingRect.left, e.clientY - boundingRect.top));
                     }
                 }
             }}
@@ -76,7 +83,7 @@ export class DropzonePane extends Component<IDropzonePaneProps, {}> {
             }}
         >
             {
-                uistate.moveableItems.filter(e => (e.name !== "Delete")).map(e => (<Moveable item={e}><button class="btn btn-default">{e.name}</button></Moveable>))
+                uistate.moveableItems.filter(e => (e.data.name !== "Delete")).map(e => (<Moveable item={e}><button class="btn btn-default">{e.data.name}</button></Moveable>))
             }
             <Moveable item={this.deleter}><div style="width: 120px; height: 120px; background-color: red;">
                 <button class="btn btn-negative" onClick={() => {

@@ -10,6 +10,7 @@ import { ListItemView } from './ListItemView';
 interface IToolbarProps {
     list: List
     uistate: UIStore
+    hidden: boolean
 }
 
 export class Toolbar extends Component<IToolbarProps, {}> {
@@ -39,15 +40,20 @@ export class Toolbar extends Component<IToolbarProps, {}> {
             this.setState({});
         };
 
+        const toggleSidebar = () => {
+            this.setState({})
+        };
+ 
         super(props);
 
         reaction(() => (props.uistate.term), updateSearch);
-        reaction(() => props.list.members, updateSearch);
+        reaction(() => (props.list.members), updateSearch);
+        reaction(() => (props.hidden), toggleSidebar);
     }
 
-    render({ list, uistate }: IToolbarProps) {
-        return <div>
-            <ul class="list-group scroll">
+    render({ list, uistate, hidden }: IToolbarProps) {
+        return <div class={"pane pane-sm sidebar" + ((hidden) ? " hide" : " unhide")} style="transition: all 2s;">
+            <ul class={"list-group scroll"}>
                 <ListSearchView list={list.members} uistate={uistate}></ListSearchView>
                 {
                     (uistate.searchResults.length !== 0) ?
@@ -63,6 +69,7 @@ export class Toolbar extends Component<IToolbarProps, {}> {
                         </li>
 
                 }
+                <li class="list-group-footer">Hello</li>
                 <li class="list-group-item">
                     <form onSubmit={(e) => {
                         e.preventDefault();

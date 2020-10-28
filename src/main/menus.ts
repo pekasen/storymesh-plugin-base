@@ -99,7 +99,7 @@ export function patchMenu(window: Electron.BrowserWindow) {
           }
     const template = []
     if (isMac) template.push(appMenu);
-    template.push([
+    template.push(...[
         fileMenu,
         editMenu,
         windowMenu,

@@ -21,11 +21,11 @@ function createWindow() {
 }
 
 app
-.whenReady()
-.then(() => {
-    windows.push(createWindow());
-})
-.then(() => patchMenu(windows[0]));
+    .whenReady()
+    .then(() => {
+        windows.push(createWindow());
+    })
+    .then(() => patchMenu(windows[0]));
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {

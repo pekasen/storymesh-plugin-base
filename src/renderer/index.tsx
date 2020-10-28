@@ -1,9 +1,9 @@
 import { App } from "./components/App";
 import { render, h } from "preact";
-import { UIStore } from './store/UIStore';
 import { List } from './store/List';
 import { ListItem } from './store/ListItem';
 import { registerHandlers } from './utils/registerHandlers';
+import { RootStore } from './store/rootStore';
 
 export var model = new List([
     new ListItem("Philipp", "Lead"),
@@ -11,15 +11,13 @@ export var model = new List([
     new ListItem("Anca", "Backend")
 ]);
 
-export var rootStore = {
-    model: model,
-    uistate: new UIStore()
-}
+export var rootStore = new RootStore(model);
+// export const UUIDNameSpace = "e5e3a5f7-5153-4859-87e3-4ecb36f2678b";
 
 registerHandlers();
 
 const root = document.getElementById("preact-root") as Element;
 render(
-    <App list={model} uistate={rootStore.uistate}></App>,
+    <App list={rootStore.model} uistate={rootStore.uistate}></App>,
     root
 );

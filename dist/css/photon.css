@@ -2331,3 +2331,15 @@ td:last-child {
   flex: none;
   padding: 3px 10px;
 }
+
+.hide {
+  right: 100%;
+  opacity: 0;
+  width: 0%;
+}
+
+.unhide {
+  left: 0%;
+  opacity: 1;
+  width: 100%;
+}

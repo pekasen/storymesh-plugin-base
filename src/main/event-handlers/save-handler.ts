@@ -6,7 +6,7 @@ export const handleSaveEvent = (menuItem: MenuItem, window: BrowserWindow | unde
     
     ipcMain.once('request-reply', (e, args) => {
         const isUntitled = args.file === "";
-        console.log(args);
+
         if(window && isUntitled) {
             dialog.showSaveDialog(window, {
                 title: "Save",

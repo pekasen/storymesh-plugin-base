@@ -1,18 +1,19 @@
 import { observable, makeObservable, action } from "mobx";
+import { ListItem } from './ListItem';
 
 export class MoveableItem {
 
-    public name: string;
+    public data: ListItem;
     public x: number;
     public y: number;
 
-    constructor(name: string, x: number, y: number) {
-        this.name = name;
+    constructor(data: ListItem, x: number, y: number) {
+        this.data = data;
         this.x = x;
         this.y = y;
 
         makeObservable(this, {
-            name: observable,
+            data: observable,
             x: observable,
             y: observable,
             updatePosition: action
@@ -24,7 +25,7 @@ export class MoveableItem {
         this.y = y;
     }
 
-    updateName(name: string) {
-        this.name = name;
-    }
+    // updateName(name: string) {
+    //     this.data. = name;
+    // }
 }

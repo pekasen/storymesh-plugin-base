@@ -15,14 +15,14 @@ export class Moveable extends Component<IMoveableProps, {}> {
         super(props);
 
         this.reactionDisposer = reaction(
-            () => ({...props.item}),
+            () => ({x: props.item.x, y: props.item.y, name: props.item.data.name }),
             () => {
                 this.setState({});
             }
         )
     }
 
-    render ({ item, children }: IMoveableProps) { 
+    render ({ item, children}: IMoveableProps) { 
             return <div
                 style={
                     "position: absolute;" +

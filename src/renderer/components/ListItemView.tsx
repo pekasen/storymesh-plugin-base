@@ -24,19 +24,25 @@ export class ListItemView extends Component<IListItemViewProps, {}> {
     }
     
     render({ item, onClick }: IListItemViewProps) {
+        var activeClass = "list-group-item";
+
         return <li
-            class="list-group-item"
-            onClick={onClick}
+            class={activeClass}
+            onClick={() => {
+                if (onClick) onClick();
+                activeClass = activeClass + " active";
+            }}
             // onDblClick={onDblClick}
             draggable={true}
             onDragStart={e => {
                 if (e.target) {
-                    e.dataTransfer?.setData("text", JSON.stringify(item));
+                    e.dataTransfer?.setData("text", item.id);
                 }
             }}>
             <span class="icon icon-user img-circle media-object pull-left"></span>
             <div class="media-body">
                 <strong>{`${item.name}`}</strong><br></br>
+                {item.id}<br></br>
                 {`${item.type ? item.type : ""}`}
             </div>
         </li>;

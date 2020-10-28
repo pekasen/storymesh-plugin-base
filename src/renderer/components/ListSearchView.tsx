@@ -23,9 +23,9 @@ export const ListSearchView = ({ uistate }: IListSearchViewProps) => {
             onInput={e => {
                 update(e);
             }}
-            onChange={e => {
-                update(e);
-            }}
+            // onChange={e => {
+            //     update(e);
+            // }}
         ></input>
     </li>;
 };

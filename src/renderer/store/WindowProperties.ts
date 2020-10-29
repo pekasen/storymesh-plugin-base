@@ -20,19 +20,19 @@ export class WindowProperties implements IStoreableObject<IWindowProperties> {
         this.title = "Untitled Document";
     }
 
-    setHeight(height: number) {
+    setHeight(height: number): void {
         this.height = height;
     }
 
-    setWidth(width: number) {
+    setWidth(width: number): void {
         this.width = width;
     }
 
-    setTitle(title?: string) {
+    setTitle(title?: string): void {
         this.title = title || "Untitled Document";
     }
 
-    loadFromPersistance({ height, width, title }: IWindowProperties) {
+    loadFromPersistance({ height, width, title }: IWindowProperties): void {
         this.height = height;
         this.width = width;
         this.title = title;

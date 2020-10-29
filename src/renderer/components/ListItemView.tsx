@@ -8,7 +8,7 @@ interface IListItemViewProps {
     onDblClick?: () => void;
 }
 
-export class ListItemView extends Component<IListItemViewProps, {}> {
+export class ListItemView extends Component<IListItemViewProps> {
 
     reactionDisposer: IReactionDisposer;
 
@@ -23,8 +23,8 @@ export class ListItemView extends Component<IListItemViewProps, {}> {
         );
     }
     
-    render({ item, onClick }: IListItemViewProps) {
-        var activeClass = "list-group-item";
+    render({ item, onClick }: IListItemViewProps): h.JSX.Element {
+        let activeClass = "list-group-item";
 
         return <li
             class={activeClass}
@@ -48,7 +48,7 @@ export class ListItemView extends Component<IListItemViewProps, {}> {
         </li>;
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.reactionDisposer();
     }
 }

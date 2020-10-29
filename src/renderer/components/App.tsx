@@ -15,7 +15,7 @@ interface IAppProps {
     uistate: UIStore
 }
 
-export class App extends Component<IAppProps,{}> {
+export class App extends Component<IAppProps> {
 
     constructor (props: IAppProps) {
         super(props);
@@ -31,7 +31,7 @@ export class App extends Component<IAppProps,{}> {
         });
     }
 
-    public render({ list, uistate }: IAppProps, {}) {
+    public render({ list, uistate }: IAppProps): h.JSX.Element {
         return <Window>
                 <Header
                     title={uistate.windowProperties.title}

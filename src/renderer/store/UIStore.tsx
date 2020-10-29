@@ -31,25 +31,25 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         makeAutoObservable(this);
     }
 
-    setSearchResults(items: ListItem[]) {
+    setSearchResults(items: ListItem[]): void {
         console.log(items);
         this.searchResults = items;
     }
 
-    setFile(file: string) {
+    setFile(file: string): void {
         this.file = file;
     }
 
-    clearSearchResults() {
+    clearSearchResults(): void {
         console.log("Do you crap yourself?");
         this.searchResults = [];
     }
 
-    appendMoveableItem(item: MoveableItem) {
+    appendMoveableItem(item: MoveableItem): void {
         this.moveableItems = [...this.moveableItems, item];
     }
 
-    clearMoveableItems(butKeep?: MoveableItem) {
+    clearMoveableItems(butKeep?: MoveableItem): void {
         if (butKeep) {
             const keep = this.moveableItems.filter((item) => (item === butKeep));
             this.moveableItems = keep;
@@ -58,11 +58,11 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         }
     }
 
-    setSearchTerm(term: string) {
+    setSearchTerm(term: string): void {
         this.term = term;
     }
 
-    loadFromPersistance(from: IUIStoreProperties) {
+    loadFromPersistance(from: IUIStoreProperties): void {
         this.file = from.file;
         this.term = from.term;
         this.windowProperties.loadFromPersistance(from.windowProperties);
@@ -75,11 +75,11 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.searchResults = from.searchResults.map(e => new ListItem(e.name, e.type));
     }
 
-    toggleSidebar() {
+    toggleSidebar(): void {
         this.leftSidebar = !this.leftSidebar;
     }
 
-    get untitledDocument () {
+    get untitledDocument (): boolean {
         return this.file === "";
     }
 }

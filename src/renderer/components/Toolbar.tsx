@@ -1,5 +1,5 @@
 import { reaction } from 'mobx';
-import { Component, h, JSX } from 'preact';
+import { Component, h } from 'preact';
 
 import { List } from "../store/List";
 import { UIStore } from "../store/UIStore";
@@ -13,7 +13,7 @@ interface IToolbarProps {
     hidden: boolean
 }
 
-export class Toolbar extends Component<IToolbarProps, {}> {
+export class Toolbar extends Component<IToolbarProps> {
 
     constructor(props: IToolbarProps) {
 
@@ -51,7 +51,7 @@ export class Toolbar extends Component<IToolbarProps, {}> {
         reaction(() => (props.hidden), toggleSidebar);
     }
 
-    render({ list, uistate, hidden }: IToolbarProps) {
+    render({ list, uistate, hidden }: IToolbarProps): h.JSX.Element {
         return <div class={"pane pane-sm sidebar" + ((hidden) ? " hide" : " unhide")} style="transition: all 2s;">
             <ul class={"list-group scroll"}>
                 <ListSearchView list={list.members} uistate={uistate}></ListSearchView>

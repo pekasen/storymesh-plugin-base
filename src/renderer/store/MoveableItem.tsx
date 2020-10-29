@@ -20,12 +20,8 @@ export class MoveableItem {
         });
     }
 
-    updatePosition(x: number, y: number) {
+    updatePosition(x: number, y: number): void {
         this.x = x;
         this.y = y;
     }
-
-    // updateName(name: string) {
-    //     this.data. = name;
-    // }
 }

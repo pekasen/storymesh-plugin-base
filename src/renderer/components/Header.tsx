@@ -5,7 +5,7 @@ interface IHeaderProps {
     leftToolbar: preact.JSX.Element[]
     children?: preact.JSX.Element[] | undefined
 }
-export const Header = ({ title, leftToolbar }: IHeaderProps) => (
+export const Header = ({ title, leftToolbar }: IHeaderProps): h.JSX.Element => (
     <header class="toolbar toolbar-header">
         <h1 class="title">{title}</h1>
 

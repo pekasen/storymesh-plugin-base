@@ -8,7 +8,7 @@ interface IMoveableProps {
     children: preact.JSX.Element
 }
 
-export class Moveable extends Component<IMoveableProps, {}> {
+export class Moveable extends Component<IMoveableProps> {
     reactionDisposer: IReactionDisposer
 
     constructor(props: IMoveableProps) {
@@ -22,7 +22,7 @@ export class Moveable extends Component<IMoveableProps, {}> {
         )
     }
 
-    render ({ item, children}: IMoveableProps) { 
+    render ({ item, children}: IMoveableProps): h.JSX.Element { 
             return <div
                 style={
                     "position: absolute;" +
@@ -30,9 +30,7 @@ export class Moveable extends Component<IMoveableProps, {}> {
                     (item.y === 0 ? "" : `top: ${item.y};`)
                 }
                 onMouseDown={
-                    (e: any) => {
-                        var that = this;
-
+                    (e: h.JSX.TargetedMouseEvent<HTMLDivElement>) => {
                         e = e || window.event;
                         e.preventDefault();
 
@@ -41,7 +39,7 @@ export class Moveable extends Component<IMoveableProps, {}> {
                         const x_0 = item.x;
                         const y_0 = item.y;
 
-                        function updater (move: any) {
+                        function updater (move) {
                             move.preventDefault();
 
                             const _x = move.clientX;
@@ -52,12 +50,12 @@ export class Moveable extends Component<IMoveableProps, {}> {
                                 d_x + x_0,
                                 d_y + y_0
                             );
-                        };
+                        }
 
                         function remover () {
                             document.removeEventListener("mousemove", updater)
                             document.removeEventListener("mouseup", remover);
-                        };
+                        }
                         
                         document.addEventListener("mousemove", updater);
                         document.addEventListener("mouseup", remover);
@@ -65,7 +63,7 @@ export class Moveable extends Component<IMoveableProps, {}> {
                 }>{children}</div>
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.reactionDisposer();
     }
 }

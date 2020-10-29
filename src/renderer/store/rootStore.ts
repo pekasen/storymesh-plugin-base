@@ -13,15 +13,15 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
 
     constructor(list?: List, uistate?: UIStore) {
         this.model = list || new List();
-        this.uistate = uistate || new UIStore();
+        this.uistate = uistate || new UIStore();
     }
 
-    loadFromPersistance(from: IRootStoreProperties) {
+    loadFromPersistance(from: IRootStoreProperties): void {
         this.model.loadFromPersistance(from.model);
         this.uistate.loadFromPersistance(from.uistate);
     }
 
-    reset() {
+    reset(): void {
         this.model = new List();
         this.uistate = new UIStore();
     }

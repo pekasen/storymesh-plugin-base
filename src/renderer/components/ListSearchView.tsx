@@ -7,10 +7,11 @@ interface IListSearchViewProps {
     list: ListItem[];
 }
 
-export const ListSearchView = ({ uistate }: IListSearchViewProps) => {
-    const update = (e?: any) => {
+export const ListSearchView = ({ uistate }: IListSearchViewProps): h.JSX.Element => {
+    const update = (e?: h.JSX.TargetedEvent<HTMLInputElement>) => {
         if (e) {
-            let term = (e.currentTarget.value);
+            const element = e.currentTarget as HTMLInputElement;
+            const term = element.value;
             uistate.setSearchTerm(term || "");
         }
     };
@@ -23,9 +24,6 @@ export const ListSearchView = ({ uistate }: IListSearchViewProps) => {
             onInput={e => {
                 update(e);
             }}
-            // onChange={e => {
-            //     update(e);
-            // }}
         ></input>
     </li>;
 };

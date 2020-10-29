@@ -5,14 +5,12 @@ import { ListItem } from './store/ListItem';
 import { registerHandlers } from './utils/registerHandlers';
 import { RootStore } from './store/rootStore';
 
-export var model = new List([
+export const model = new List([
     new ListItem("Philipp", "Lead"),
     new ListItem("Jannik", "Frontend"),
     new ListItem("Anca", "Backend")
 ]);
-
-export var rootStore = new RootStore(model);
-// export const UUIDNameSpace = "e5e3a5f7-5153-4859-87e3-4ecb36f2678b";
+export const rootStore = new RootStore(model);
 
 registerHandlers();
 

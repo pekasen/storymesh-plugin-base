@@ -27,7 +27,7 @@ export class ListItem implements IListItemProperties {
         });
     }
 
-    changeName(name: string) {
+    changeName(name: string): void {
         this.name = name;
     }
 }

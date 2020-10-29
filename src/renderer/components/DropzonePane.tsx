@@ -1,7 +1,7 @@
-import { autorun, reaction } from 'mobx';
+import { reaction } from 'mobx';
 import { Component, createRef, h } from "preact";
 
-import Two = require('twojs-ts');
+import Two from 'twojs-ts';
 import { UIStore } from "../store/UIStore";
 
 import { Moveable } from './Moveable';
@@ -14,7 +14,7 @@ interface IDropzonePaneProps {
     model: List
 }
 
-export class DropzonePane extends Component<IDropzonePaneProps, {}> {
+export class DropzonePane extends Component<IDropzonePaneProps> {
 
     two: Two;
     ref = createRef();
@@ -28,11 +28,6 @@ export class DropzonePane extends Component<IDropzonePaneProps, {}> {
           });
         props.uistate.appendMoveableItem(this.deleter);
 
-        // autorun(() => {
-        //     console.log("Updating Pane", props.uistate.moveableItems);
-        //     this.setState({});
-        // })
-
         reaction(
             () => (props.uistate.moveableItems),
             () => {
@@ -41,11 +36,11 @@ export class DropzonePane extends Component<IDropzonePaneProps, {}> {
         );
     }
     
-    componentDidMount() {
-        var two = this.two;
+    componentDidMount(): void {
+        const two = this.two;
         
-        var circle = two.makeCircle(72, 100, 50);
-        var rect = two.makeRectangle(413, 100, 100, 100);      
+        const circle = two.makeCircle(72, 100, 50);
+        const rect = two.makeRectangle(413, 100, 100, 100);      
         
         circle.fill = '#FF8000';
         circle.stroke = 'orangered'; 
@@ -58,13 +53,13 @@ export class DropzonePane extends Component<IDropzonePaneProps, {}> {
         two.appendTo(this.ref.current).update();
     }
 
-    render({ uistate, model }: IDropzonePaneProps) {
+    render({ uistate, model }: IDropzonePaneProps): h.JSX.Element {
         console.log(uistate.moveableItems);
         return <div ref={this.ref}
             class="pane"
             onDrop={(e) => {
                 e.preventDefault();
-                const id = e.dataTransfer?.getData("text") || undefined;
+                const id = e.dataTransfer?.getData("text") || undefined;
                 console.log(id);
 
                 if (e.target) {

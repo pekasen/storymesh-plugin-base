@@ -29,7 +29,7 @@ export class Moveable extends Component<IMoveableProps> {
                     (item.x === 0 ? "" : `left: ${item.x};`) +
                     (item.y === 0 ? "" : `top: ${item.y};`)
                 }
-                onMouseDown={
+                onMouseDown={ 
                     (e: h.JSX.TargetedMouseEvent<HTMLDivElement>) => {
                         e = e || window.event;
                         e.preventDefault();
@@ -39,11 +39,12 @@ export class Moveable extends Component<IMoveableProps> {
                         const x_0 = item.x;
                         const y_0 = item.y;
 
-                        function updater (move) {
-                            move.preventDefault();
+                        function updater (this: Document, event: MouseEvent) {
+                            const _event = event as h.JSX.TargetedMouseEvent<HTMLDocument>
+                            // _event.prevententDefault();
 
-                            const _x = move.clientX;
-                            const _y = move.clientY;
+                            const _x = _event.clientX;
+                            const _y = _event.clientY;
                             const d_x = (_x - x);
                             const d_y = (_y - y);
                             item.updatePosition(

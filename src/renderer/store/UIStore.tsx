@@ -1,4 +1,4 @@
-import { makeAutoObservable, values } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { MoveableItem } from "./MoveableItem";
 import { ListItem } from "./ListItem";
 import { IStoreableObject } from './StoreableObject';

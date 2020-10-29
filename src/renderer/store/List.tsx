@@ -14,15 +14,15 @@ export class List implements IStoreableObject<IListProperties> {
         makeAutoObservable(this);
     }
 
-    addMember(name: string, type?: string) {
+    addMember(name: string, type?: string): void {
         this.members = [...this.members, new ListItem(name, type)];
     }
 
-    clear() {
+    clear(): void {
         this.members = [];
     }
 
-    loadFromPersistance(from: IListProperties) {
+    loadFromPersistance(from: IListProperties): void {
         this.members = from.members.map(e => new ListItem(e.name, e.type, e.id))
     }
     

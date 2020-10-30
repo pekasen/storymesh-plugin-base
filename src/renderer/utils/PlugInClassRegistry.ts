@@ -1,16 +1,16 @@
 import { h } from 'preact';
-import { ClassRegistry, IRegistryEntry } from './registry';
+import { Class, ClassRegistry, IRegistryEntry } from './registry';
 
 /**
  * Creates a PlugIn-Registry
  */
 export class PlugInClassRegistry<T extends IPlugIn> extends ClassRegistry<T> {
     
-    public registry: IPlugInRegistryEntry<T>[];
+    public registry: Map<string, IPlugInRegistryEntry<T>>;
 
     constructor() {
         super();
-        this.registry = [];
+        this.registry = new Map();
     }
 }
 
@@ -20,7 +20,7 @@ interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
     version: string;
     website?: string;
     description?: string;
-    constructor: T;
+    class: Class<T>;
 }
 
 interface IPlugIn {

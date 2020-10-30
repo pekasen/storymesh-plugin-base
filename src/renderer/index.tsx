@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import { App } from "./components/App";
 import { render, h } from "preact";
 import { List } from './store/List';
@@ -14,7 +16,7 @@ export const rootStore = new RootStore(model);
 
 registerHandlers();
 
-const root = document.getElementById("preact-root") as Element;
+const root = document.getElementById("preact-root") as HTMLElement;
 render(
     <App list={rootStore.model} uistate={rootStore.uistate}></App>,
     root

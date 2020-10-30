@@ -11,13 +11,13 @@
 
 
 // Crazy stuff, sauce here: https://2ality.com/2020/04/classes-as-values-typescript.html
-interface Class<T> {
+export interface Class<T> {
     new(...args: unknown[]): T
 }
 
 export interface IRegistryEntry<T> {
     // Index signature to limit possible keys as string and property values to either string, template type or undefined.
-    // [key: string]: string | T | Class<T> | undefined
+    [key: string]: string | T | Class<T> | undefined
     name: string
     class: Class<T>
 }
@@ -29,10 +29,10 @@ export interface IRegistryEntry<T> {
  */
 export class Registry<T> {
 
-    public registry: Map<string, Class<T>>
+    public registry: Map<string, IRegistryEntry<T>>
 
     public constructor () {
-        this.registry = new Map<string, Class<T>>()
+        this.registry = new Map<string, IRegistryEntry<T>>()
     }
 
     /**
@@ -44,7 +44,7 @@ export class Registry<T> {
     public register(entries: IRegistryEntry<T>[]): void {
         entries.forEach(entry => {
             if (!this.registry.has(entry.name)) {
-                this.registry.set(entry.name, entry.class)
+                this.registry.set(entry.name, entry);
             } else throw("cannot assign double entries");
         });
     }
@@ -64,10 +64,10 @@ export class ClassRegistry<T> extends Registry<T> {
      */
     public getNewInstance(of: string): T | undefined {
         if (this.registry.has(of)) {
-            const _class = this.registry.get(of);
+            const entry = this.registry.get(of);
 
-            if (_class !== undefined) {
-                return new _class();
+            if (entry !== undefined) {
+                return new entry.class();
             }
         } else {
             throw("cannot create instance of " + of)

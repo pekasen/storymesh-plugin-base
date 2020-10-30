@@ -1,7 +1,6 @@
 import { MenuItem, BrowserWindow, KeyboardEvent, dialog, ipcMain } from 'electron';
-import { values } from 'mobx';
 
-export const handleSaveEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent) => {
+export const handleSaveEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent): void => {
     window?.webContents.send('request', { uistate: 'file'});
     
     ipcMain.once('request-reply', (e, args) => {
@@ -20,7 +19,7 @@ export const handleSaveEvent = (menuItem: MenuItem, window: BrowserWindow | unde
     });    
 };
 
-export const handleLoadEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent) => {
+export const handleLoadEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent): void => {
     if (window)  dialog.showOpenDialog(window, {
         title: "Open a file",
         properties: [
@@ -31,7 +30,7 @@ export const handleLoadEvent = (menuItem: MenuItem, window: BrowserWindow | unde
     })
 }
 
-export const handleNewDocumentEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent) => {
+export const handleNewDocumentEvent = (menuItem: MenuItem, window: BrowserWindow | undefined, event: KeyboardEvent): void => {
     if (window) {
         window.webContents.send('new');
     }

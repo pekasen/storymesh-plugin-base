@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, MenuItem } from "electron";
+import { app, BrowserWindow } from "electron";
 import { patchMenu } from './menus';
 
 const windows: Electron.BrowserWindow[] = [];
@@ -25,7 +25,7 @@ app
     .then(() => {
         windows.push(createWindow());
     })
-    .then(() => patchMenu(windows[0]));
+    .then(() => patchMenu());
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {

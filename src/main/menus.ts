@@ -1,8 +1,8 @@
-import { app, Menu, MenuItem } from "electron";
+import { app, Menu } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
 import { handleSaveEvent, handleLoadEvent, handleNewDocumentEvent } from "./event-handlers/save-handler";
 
-export function patchMenu(window: Electron.BrowserWindow) {
+export function patchMenu(): void {
     const isMac = process.platform === "darwin"
     const appMenu: MenuItemConstructorOptions =  {
         label: app.name,

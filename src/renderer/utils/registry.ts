@@ -28,12 +28,11 @@ export interface IRegistryEntry<T> {
  * @template T
  */
 export class Registry<T> {
-    // extends Singleton<Registry<T>>
 
-    public registry: IRegistryEntry<T>[]
+    public registry: Map<string, Class<T>>
 
     public constructor () {
-        this.registry = [];
+        this.registry = new Map<string, Class<T>>()
     }
 
     /**
@@ -43,7 +42,11 @@ export class Registry<T> {
      * @param {IRegistryEntry<T>[]} entries entries to register
      */
     public register(entries: IRegistryEntry<T>[]): void {
-        this.registry.push(...entries);
+        entries.forEach(entry => {
+            if (!this.registry.has(entry.name)) {
+                this.registry.set(entry.name, entry.class)
+            } else throw("cannot assign double entries");
+        });
     }
 }
 
@@ -59,61 +62,65 @@ export class ClassRegistry<T> extends Registry<T> {
      * @param {string} of name of the class to get a new instance of
      * @returns {T} returns a new instance of type T
      */
-    public getNewInstance(of: string): T {
-        return new (this.registry.filter(it => it.name === of)[0].class)();
+    public getNewInstance(of: string): T | undefined {
+        if (this.registry.has(of)) {
+            const _class = this.registry.get(of);
+
+            if (_class !== undefined) {
+                return new _class();
+            }
+        } else {
+            throw("cannot create instance of " + of)
+        }
     }
 }
 
-export interface IValue<T> {
-    value: T
-    id: string
-}
 
+/**
+ * Creates a registery for a specific type which
+ * can be retrieved by a string key
+ * 
+ * @tutorial 
+ * ```
+ const reg = new ValueRegistry<number>()
+ reg.registerValue({
+        id: "Bert",
+        value: 42
+ });
+ reg.getRegisteredValue("Bert")
+ * ```
+ */
 export class ValueRegistry<T> {
     
-    public registry: IValue<T>[]
-
+    private registry: Map<string, T>
     
     constructor () {
-        this.registry = [];
+        this.registry = new Map<string, T>();
     }
 
     public registerValue(value: IValue<T>): boolean {
-        if (this.findValuesByID(value.id).length === 0) {
-            this.registry.push(value)
+        if (this.registry.get(value.id) === undefined) {
+            this.registry.set(value.id, value.value);
 
             return true
         }
         else return false
     }
 
-    public deregisterValue(id: string): void {
-        const value = this.findValuesByID(id)[0];
-        const index = this.valuesIndices(value);
-
-        this.registry.splice(index, 1)
-    
+    public deregisterValue(id: string): boolean {
+        return this.registry.delete(id)
     }
 
-    public getRegisteredValue(id: string): T  | undefined{
-        const values = this.registry.filter((value) => value.id === id);
-        if (values.length !== 0) return values[0].value 
-        else return undefined
+    public getRegisteredValue(id: string): T | undefined{
+        return this.registry.get(id)
     }
 
     public overwriteValue(value: IValue<T>): void {
-        this.registry.splice(
-            this.valuesIndices(value),
-            1,
-            value
-        );
+        this.registry.set(value.id, value.value);
     }
+}
 
-    private findValuesByID(id: string) {
-        return this.registry.filter(v => (v.id === id));
-    }
-
-    private valuesIndices(value: IValue<T>): number {
-        return this.registry.indexOf(value);
-    }
+interface IValue<T> {
+    value: T
+    id: string
 }

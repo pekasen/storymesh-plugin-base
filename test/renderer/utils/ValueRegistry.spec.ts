@@ -1,6 +1,5 @@
+import { ValueRegistry } from "../../../src/renderer/utils/registry"
 import { assert } from "chai";
-import { Test } from "mocha";
-import { Registry, ValueRegistry } from "../../../src/renderer/utils/registry"
 
 describe('ValueRegistry', () => {
 

@@ -2,6 +2,9 @@ import { ipcRenderer } from 'electron/renderer';
 import { readFile, writeFile } from "fs";
 import { rootStore, model } from '../index';
 
+/**
+ * registers file-event handlers
+ */
 export function registerHandlers(): void {
     ipcRenderer.on('save', (e, { file }) => {
 

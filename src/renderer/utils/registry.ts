@@ -47,7 +47,7 @@ export class Registry<T> {
     }
 }
 
-    /**
+/**
  * registers class constructors inheriting from a common superclass and exposes their contructors
  */
 export class ClassRegistry<T> extends Registry<T> {

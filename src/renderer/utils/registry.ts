@@ -33,7 +33,6 @@ export class Registry<T> {
     public registry: IRegistryEntry<T>[]
 
     public constructor () {
-        // super();
         this.registry = [];
     }
 
@@ -62,5 +61,59 @@ export class ClassRegistry<T> extends Registry<T> {
      */
     public getNewInstance(of: string): T {
         return new (this.registry.filter(it => it.name === of)[0].class)();
+    }
+}
+
+export interface IValue<T> {
+    value: T
+    id: string
+}
+
+export class ValueRegistry<T> {
+    
+    public registry: IValue<T>[]
+
+    
+    constructor () {
+        this.registry = [];
+    }
+
+    public registerValue(value: IValue<T>): boolean {
+        if (this.findValuesByID(value.id).length === 0) {
+            this.registry.push(value)
+
+            return true
+        }
+        else return false
+    }
+
+    public deregisterValue(id: string): void {
+        const value = this.findValuesByID(id)[0];
+        const index = this.valuesIndices(value);
+
+        this.registry.splice(index, 1)
+    
+    }
+
+    public getRegisteredValue(id: string): T  | undefined{
+        const values = this.registry.filter((value) => value.id === id);
+        if (values.length !== 0) return values[0].value 
+        else return undefined
+    }
+
+    public overwriteValue(value: IValue<T>): void {
+        this.registry.splice(
+            this.valuesIndices(value),
+            1,
+            value
+        );
+    }
+
+    private findValuesByID(id: string) {
+        return this.registry.filter(v => (v.id === id));
+    }
+
+    private valuesIndices(value: IValue<T>): number {
+        return this.registry.indexOf(value);
     }
 }

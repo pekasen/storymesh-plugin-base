@@ -2,22 +2,15 @@
 
 import { App } from "./components/App";
 import { render, h } from "preact";
-import { List } from './store/List';
-import { ListItem } from './store/ListItem';
 import { registerHandlers } from './utils/registerHandlers';
-import { RootStore } from './store/rootStore';
+import { RootStore } from './store/RootStore';
 
-export const model = new List([
-    new ListItem("Philipp", "Lead"),
-    new ListItem("Jannik", "Frontend"),
-    new ListItem("Anca", "Backend")
-]);
-export const rootStore = new RootStore(model);
+export const rootStore = new RootStore();
 
 registerHandlers();
 
 const root = document.getElementById("preact-root") as HTMLElement;
 render(
-    <App list={rootStore.model} uistate={rootStore.uistate}></App>,
+    <App uistate={rootStore.uistate}></App>,
     root
 );

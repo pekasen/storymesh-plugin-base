@@ -5,7 +5,7 @@ import { List } from "../store/List";
 import { UIStore } from "../store/UIStore";
 
 import { ListSearchView } from './ListSearchView';
-import { ListItemView } from './ListItemView';
+import { } from './GalleryItemView';
 
 interface IToolbarProps {
     list: List
@@ -56,14 +56,14 @@ export class Toolbar extends Component<IToolbarProps> {
             <ul class={"list-group scroll"}>
                 <ListSearchView list={list.members} uistate={uistate}></ListSearchView>
                 {
-                    (uistate.searchResults.length !== 0) ?
-                        uistate.searchResults.map(x => (
-                        <ListItemView
-                            item={x}
-                            onClick={() => {x.changeName("Hello")}}
-                            onDblClick={() => console.log("Open")}>
-                        </ListItemView>
-                    )):
+                    // (uistate.searchResults.length !== 0) ?
+                    //     uistate.searchResults.map(x => (
+                    //     <ListItemView
+                    //         item={x}
+                    //         onClick={() => {x.changeName("Hello")}}
+                    //         onDblClick={() => console.log("Open")}>
+                    //     </ListItemView>
+                    // )):
                         <li class="list-group-item">
                             <strong>Nothing's found here, yo.</strong>
                         </li>

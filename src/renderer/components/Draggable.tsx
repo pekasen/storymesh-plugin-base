@@ -7,14 +7,14 @@ import { IItem } from './IItem';
  * @param {IItem} props Properties, must extend IItem interface
  * @returns {Element} Preact Element
  */
-export const Draggable: FunctionComponent<IItem> = ({ children, id }) => (
-    <div
-        draggable={true}
-        onDragStart={e => {
-            if (e.target) {
-                e.dataTransfer?.setData("text", id);
-            }
-        }}>
-        {children}
-    </div>
-);
+export const Draggable: FunctionComponent<IItem> = ({ children, id }) => {
+    const _children = children as h.JSX.Element;
+    _children.props['draggable'] = true;
+    _children.props['onDragStart'] = (e: DragEvent) => {
+        if (e.target) {
+            e.dataTransfer?.setData("text", id);
+        }
+    }
+
+    return _children
+}

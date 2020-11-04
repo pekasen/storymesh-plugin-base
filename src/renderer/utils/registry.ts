@@ -85,9 +85,9 @@ export class ClassRegistry<T> extends Registry<T> {
  const reg = new ValueRegistry<number>()
  reg.registerValue({
         id: "Bert",
-        value: 42
+        value: 42 
  });
- reg.getRegisteredValue("Bert")
+ reg.getRegisteredValue("Bert") // 42
  * ```
  */
 export class ValueRegistry<T> {

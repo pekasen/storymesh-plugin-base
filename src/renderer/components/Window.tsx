@@ -1,9 +1,10 @@
-import { h } from "preact";
+import { FunctionalComponent, h } from "preact";
 
-interface IWindowProps {
-    children: h.JSX.Element[]
-}
 
-export const Window = ({ children }: IWindowProps): h.JSX.Element => (
-    <div class="window">{...children}</div>
+export const Window: FunctionalComponent = ({ children }) => (
+    <div class="window">{children}</div>
+)
+
+export const WindowContent: FunctionalComponent = ({ children })=> (
+    <div class="window-content">{children}</div>
 )

@@ -37,4 +37,9 @@ export class WindowProperties implements IStoreableObject<IWindowProperties> {
         this.width = width;
         this.title = title;
     }
+
+    // TODO: implement
+    writeToPersistance(): void {
+        null
+    }
 }

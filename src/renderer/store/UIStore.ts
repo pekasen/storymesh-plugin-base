@@ -66,13 +66,18 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.file = from.file;
         this.term = from.term;
         this.windowProperties.loadFromPersistance(from.windowProperties);
-        this.moveableItems = from.moveableItems
-        .map(e => {
-            const data = rootStore.model.itemByID(e.data.id);
-            if (data !== undefined) return new MoveableItem(data, e.x, e.y)
-        })
-        .filter(e => e !== undefined) as MoveableItem[];
+        // this.moveableItems = from.moveableItems
+        // .map(e => {
+        //     const data = rootStore.model.itemByID(e.data.id);
+        //     if (data !== undefined) return new MoveableItem(data, e.x, e.y)
+        // })
+        // .filter(e => e !== undefined) as MoveableItem[];
         this.searchResults = from.searchResults.map(e => new ListItem(e.name, e.type));
+    }
+
+    // TODO: implement
+    writeToPersistance(): void {
+        null
     }
 
     toggleSidebar(): void {

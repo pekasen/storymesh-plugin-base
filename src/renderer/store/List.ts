@@ -25,6 +25,10 @@ export class List implements IStoreableObject<IListProperties> {
     loadFromPersistance(from: IListProperties): void {
         this.members = from.members.map(e => new ListItem(e.name, e.type, e.id))
     }
+
+    writeToPersistance(): void {
+        null
+    }
     
     itemByID (id: string): ListItem | undefined {
         console.log(this.members.filter((item) => (item.id === id)), this.members);

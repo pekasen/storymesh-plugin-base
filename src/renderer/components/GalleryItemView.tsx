@@ -1,9 +1,6 @@
 import { IReactionDisposer, reaction } from 'mobx';
-import { Component, FunctionComponent, h } from 'preact';
-
-interface IItem {
-    id: string
-}
+import { Component, h } from 'preact';
+import { IItem } from './IItem';
 
 interface IGalleryItemViewProps<T extends IItem> {
     item: T
@@ -52,21 +49,3 @@ export class GalleryItemView extends Component<IGalleryItemViewProps<IItem>> {
         this.reactionDisposer();
     }
 }
-
-/**
- * Create a draggable div!!21
- * 
- * @param {IItem} props Properties, must extend IItem interface
- * @returns {Element} Preact Element
- */
-export const Draggable: FunctionComponent<IItem> = ({ children, id }) => (
-    <div
-        draggable={true}
-        onDragStart={e => {
-            if (e.target) {
-                e.dataTransfer?.setData("text", id);
-            }
-        }}>
-        {children}
-    </div>
-);

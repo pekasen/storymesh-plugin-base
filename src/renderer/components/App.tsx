@@ -1,18 +1,17 @@
 import { reaction } from 'mobx';
 import { Component, h } from "preact";
-import { model } from '..';
-import { List } from "../store/List";
-
 import { UIStore } from "../store/UIStore";
-
-import { DropzonePane } from "./DropzonePane";
+import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
-import { StoryComponentGallery } from './StoryComponentGallery';
-import { Toolbar } from "./Toolbar";
-import { Window } from "./Window";
+import { Pane, PaneGroup, SideBar } from './Pane';
+import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
+import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
+import { Window, WindowContent } from "./Window";
+// import { List } from "../store/List";
+// import { DropzonePane } from "./DropzonePane";
+// import { Toolbar } from "./Toolbar";
 
 interface IAppProps {
-    list: List
     uistate: UIStore
 }
 
@@ -32,7 +31,7 @@ export class App extends Component<IAppProps> {
         });
     }
 
-    public render({ list, uistate }: IAppProps): h.JSX.Element {
+    public render({ uistate }: IAppProps): h.JSX.Element {
         return <Window>
                 <Header
                     title={uistate.windowProperties.title}
@@ -44,14 +43,32 @@ export class App extends Component<IAppProps> {
                         <span class="icon icon-left-dir"></span>
                     </button>]}
                 ></Header>
-                <div class="window-content">
-                    <div class="pane-group">
-                        <Toolbar list={list} uistate={uistate} hidden={uistate.leftSidebar}/>
-                        <DropzonePane uistate={uistate} model={model}></DropzonePane>
-                    </div>
-                </div>
-                <footer class="toolbar toolbar-footer"></footer>
+                <WindowContent>
+                    <PaneGroup>
+                        <SideBar></SideBar>
+                        <Pane>
+                            <VerticalPaneGroup>
+                                <VerticalPane>
+                                    <canvas height={400} width={400}></canvas>
+                                </VerticalPane>
+                                {
+                                    // TODO: this Component should be resized to full height minus of the component below.
+                                }
+                                <VerticalSmallPane>
+                                    <StoryComponentGallery>
+                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Text</p></GalleryItemView>
+                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Image</p></GalleryItemView>
+                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Video</p></GalleryItemView>
+                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Audio</p></GalleryItemView>
+                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Image Gallery</p></GalleryItemView>
+                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Cats</p></GalleryItemView>
+                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Dogs</p></GalleryItemView>
+                                    </StoryComponentGallery>
+                                </VerticalSmallPane>
+                            </VerticalPaneGroup>
+                        </Pane>
+                    </PaneGroup>
+                </WindowContent>             
         </Window>
     }
 }
-

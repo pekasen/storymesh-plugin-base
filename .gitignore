@@ -84,6 +84,7 @@ typings/
 .nuxt
 dist/main
 dist/renderer
+dist/css/ngwebs.css
 
 # Gatsby files
 .cache/

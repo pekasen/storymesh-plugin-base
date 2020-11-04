@@ -1,8 +1,14 @@
-import { Component, h } from 'preact';
+import { FunctionComponent, h } from 'preact';
 // import "./StoryComponentGallery.css";
 
-export class StoryComponentGallery extends Component {
-    render(): h.JSX.Element {
-        return <div class="verticalPaneGroup">Gallery View</div>
-    }
-}
+export const Gallery: FunctionComponent = ({ children }) => (
+    <ul class="gallery-container list-group">{children}</ul>
+);
+
+export const StoryComponentGallery: FunctionComponent = ({ children }) => (
+    <div class="verticalPaneGroup">
+        <Gallery>
+            {children}
+        </Gallery>
+    </div>
+)

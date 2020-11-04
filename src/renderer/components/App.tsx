@@ -7,6 +7,7 @@ import { UIStore } from "../store/UIStore";
 
 import { DropzonePane } from "./DropzonePane";
 import { Header } from './Header';
+import { StoryComponentGallery } from './StoryComponentGallery';
 import { Toolbar } from "./Toolbar";
 import { Window } from "./Window";
 
@@ -46,7 +47,7 @@ export class App extends Component<IAppProps> {
                 <div class="window-content">
                     <div class="pane-group">
                         <Toolbar list={list} uistate={uistate} hidden={uistate.leftSidebar}/>
-                        <DropzonePane uistate={uistate} model={model}></DropzonePane> 
+                        <DropzonePane uistate={uistate} model={model}></DropzonePane>
                     </div>
                 </div>
                 <footer class="toolbar toolbar-footer"></footer>

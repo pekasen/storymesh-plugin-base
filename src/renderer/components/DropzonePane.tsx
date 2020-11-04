@@ -8,7 +8,7 @@ import { Moveable } from './Moveable';
 import { MoveableItem } from "../store/MoveableItem";
 import { List } from '../store/List';
 import { ListItem } from '../store/ListItem';
-import { StoryComponentGallery } from './StoryComponentGallery';
+import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 
 interface IDropzonePaneProps {
     uistate: UIStore

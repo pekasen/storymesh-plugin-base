@@ -85,6 +85,7 @@ typings/
 dist/main
 dist/renderer
 dist/css/ngwebs.css
+dist/plugins
 
 # Gatsby files
 .cache/

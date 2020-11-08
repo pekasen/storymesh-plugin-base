@@ -89,13 +89,13 @@ class _TextObject implements IPlugIn, IStoryObject{
                 label: "Name",
                 type: "text",
                 valueReference: (name: string) => {this.updateName(name)},
-                valueTemplate: () => (this.name)
+                value: () => (this.name)
             },
             // {
             //     label: "Text",
             //     type: "textarea",
             //     valueReference: this.updateName(),
-            //     valueTemplate: this.getName()
+            //     value: this.getName()
             // }
         ]
     }

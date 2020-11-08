@@ -112,6 +112,7 @@ export class App extends Component<IAppProps> {
                                         <div id="hello-world" style="width: 100%; min-height: 300px;">
                                             {
                                                 Array.from(store.storyContentObjectRegistry.registry)
+                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                                 .map(([_, object]) => (
                                                 <div onDblClick={() => store.uistate.setActiveItem(object.id)}>{object.name}</div>
                                                 ))

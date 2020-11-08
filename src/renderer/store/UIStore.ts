@@ -3,6 +3,7 @@ import { MoveableItem } from "./MoveableItem";
 import { ListItem } from "./ListItem";
 import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
+import { rootStore } from '..';
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -88,6 +89,13 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     setActiveItem(id: string): void {
         this.activeitem = id;
     }
+
+    // updateItem(id: string, field: string, value: unknown): void {
+    //     const item = rootStore.storyContentObjectRegistry.getRegisteredValue(id);
+    //     if (item) {
+
+    //     }
+    // }
 
     get untitledDocument (): boolean {
         return this.file === "";

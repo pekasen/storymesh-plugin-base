@@ -9,10 +9,9 @@ import { IReactiveOutput } from 'storygraph/dist/StoryGraph/IReactiveOutput';
 import { IRenderingProperties } from 'storygraph/dist/StoryGraph/IRenderingProperties';
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import { rootStore } from '../renderer';
 import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 import { v4 } from "uuid";
-import { computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import { ContentType } from 'storygraph/dist/StoryGraph/ContentType';
 /**
  * Our first little dummy PlugIn
@@ -22,6 +21,7 @@ import { ContentType } from 'storygraph/dist/StoryGraph/ContentType';
 // @observable
 class _TextObject implements IPlugIn, IStoryObject{
     id = v4();
+    name: string;
     userDefinedProperties: any;
     content?: IContent | undefined;
     metaData: IMetaData;
@@ -36,6 +36,7 @@ class _TextObject implements IPlugIn, IStoryObject{
     isContentNode = true;
 
     constructor() {
+        this.name = "textobject_" + this.id;
         this.renderingProperties = {
             width: 100,
             order: 1,
@@ -58,35 +59,55 @@ class _TextObject implements IPlugIn, IStoryObject{
 
         makeObservable(this, {
             id: false,
+            name: observable,
             userDefinedProperties: observable,
             content:    observable,
             metaData:   observable,
             outgoing:   observable,
             incoming:   observable,
             modifiers:  observable,
-            anotherGetter: computed
+            menuTemplate: computed,
+            getName: false,
+            updateName: action
             // menuTemplate: computed
             // inputs:     observable,
             // outputs:    observable,
             // parent:     observable,
             // network:    observable
-        })
+        });
+
+        reaction(
+            () => (this.name),
+            () => console.log("Update", this)
+        );
     }
 
     // @computed
     get menuTemplate(): IMenuTemplate[]  {
         return [
             {
-                label: "Text",
+                label: "Name",
                 type: "text",
-                valueReference: null,
-                valueTemplate: ""
-            }
+                valueReference: (name: string) => {this.updateName(name)},
+                valueTemplate: () => (this.getName())
+            },
+            // {
+            //     label: "Text",
+            //     type: "textarea",
+            //     valueReference: this.updateName(),
+            //     valueTemplate: this.getName()
+            // }
         ]
     }
 
-    get anotherGetter(): string {
-        return "Hello"
+    updateName(newValue: string): void {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        this.name = newValue;
+    }
+
+    getName(): string {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        return this.name
     }
 
     public render(): h.JSX.Element {

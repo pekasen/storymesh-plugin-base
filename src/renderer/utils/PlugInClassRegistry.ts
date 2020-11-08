@@ -12,10 +12,10 @@ export class PlugInClassRegistry<T extends IPlugIn> extends ClassRegistry<T> {
     constructor() {
         super();
         this.registry = new Map();
-        makeObservable(this, {
-            register: action,
-            registry: observable
-        })
+        // makeObservable(this, {
+        //     register: action,
+        //     registry: observable
+        // })
     }
 }
 
@@ -34,11 +34,11 @@ export interface IPlugIn {
     render(): h.JSX.Element;
 }
 
-export type MenuItemSpecification = "radio" | "text" | "hslider" | "vslider" | "dropdown" | "check" | "url" | "color";
+export type MenuItemSpecification = "radio" | "textarea" | "text" | "hslider" | "vslider" | "dropdown" | "check" | "url" | "color";
 
 export interface IMenuTemplate {
     label: string;
     type: MenuItemSpecification;
-    valueReference: unknown;
-    valueTemplate: unknown;
+    valueReference: (newValue: any) => void;
+    valueTemplate: (() => string);
 }

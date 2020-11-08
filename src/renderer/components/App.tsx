@@ -1,17 +1,13 @@
 import { reaction } from 'mobx';
 import { Component, h } from "preact";
-import { UIStore } from "../store/UIStore";
 import { DragReceiver } from './DragReceiver';
-import { GalleryItemLiner, GalleryItemView } from './GalleryItemView';
+import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
 import { Pane, PaneGroup, SideBar } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
-import { Canvas } from "./Canvas";
 import { RootStore } from '../store/RootStore';
-import { DropzonePane } from './DropzonePane';
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 // import { List } from "../store/List";
 // import { DropzonePane } from "./DropzonePane";
@@ -27,15 +23,17 @@ export class App extends Component<IAppProps> {
         super(props);
 
         reaction(
-            () => ({
-                activeItem: props.store.storyContentObjectRegistry.registry.size 
-            }),
+            () => (props.store.storyContentObjectRegistry.registry.size),
             () => {
                 const id = Array.from(this.props.store.storyContentObjectRegistry.registry).pop()?.[1].id || "";
                 console.log("App Reaction", id);
                 props.store.uistate.setActiveItem(id);
                 this.setState({});
         });
+        reaction(
+            () => ([props.store.uistate.activeitem, ...Array.from(props.store.storyContentObjectRegistry.registry).map(e => e[1].name)]),
+            () => {this.forceUpdate()}
+        );
     }
 
     public render({ store }: IAppProps): h.JSX.Element {
@@ -115,7 +113,7 @@ export class App extends Component<IAppProps> {
                                             {
                                                 Array.from(store.storyContentObjectRegistry.registry)
                                                 .map(([_, object]) => (
-                                                <div onClick={() => store.uistate.setActiveItem(object.id)}>{object.id + " " + object.metaData}</div>
+                                                <div onDblClick={() => store.uistate.setActiveItem(object.id)}>{object.name}</div>
                                                 ))
                                             }
                                         </div>
@@ -125,18 +123,10 @@ export class App extends Component<IAppProps> {
                                     <StoryComponentGallery>
                                         {
                                             // TODO: compute gallery items from plugin registry
-                                            Array.from(store.storyContentTemplatesRegistry.registry).map(([key, item]) => (
+                                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
                                                 <GalleryItemView item={{id: item.id}}><p>{item.name}</p></GalleryItemView>
                                             ))
                                         }
-                                        {/* <GalleryItemView item={{id: "asdoasmdas"}}><p>Text</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Image</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Video</p></GalleryItemView>
-                                        <GalleryItemLiner></GalleryItemLiner>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Audio</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Image Gallery</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Cats</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Dogs</p></GalleryItemView> */}
                                     </StoryComponentGallery>
                                 </VerticalSmallPane>
                             </VerticalPaneGroup>

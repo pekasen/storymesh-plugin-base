@@ -40,5 +40,5 @@ export interface IMenuTemplate {
     label: string;
     type: MenuItemSpecification;
     valueReference: (newValue: any) => void;
-    valueTemplate: (() => string);
+    value: (() => string);
 }

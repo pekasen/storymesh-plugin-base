@@ -21,12 +21,12 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                                     class="form-control"
                                     type="text"
                                     placeholder="Insert text here…"
-                                    value={item.valueTemplate()}
+                                    value={item.value()}
                                     onInput={(e: Event) => {
                                         const target = e.target as HTMLInputElement
                                         
-                                        if (item.valueReference && target.value && target.value !== item.valueTemplate()) {
-                                            console.log(item.valueReference, item.valueTemplate())
+                                        if (item.valueReference && target.value && target.value !== item.value()) {
+                                            console.log(item.valueReference, item.value())
                                             item.valueReference(target.value);
                                         }
                                     }}
@@ -50,6 +50,6 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
 }
 // TypeError: 'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them
 //     at Function.invokeGetter (<anonymous>:1:142)
-//     at Object._TextObject.getName [as valueTemplate] (/Users/philipp/repos/ngwebs-editor/dist/plugins/TextObject.js:85:26)
+//     at Object._TextObject.getName [as value] (/Users/philipp/repos/ngwebs-editor/dist/plugins/TextObject.js:85:26)
 //     at Object.onChange [as changefalse] (/Users/philipp/repos/ngwebs-editor/dist/renderer/components/ItemPropertiesView/ItemPropertiesView.js:23:79)
 //     at HTMLInputElement.P (/Users/philipp/repos/ngwebs-editor/node_modules/preact/dist/preact.js:1:4283)

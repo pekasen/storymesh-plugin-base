@@ -9,6 +9,8 @@
 //     }
 // }
 
+import { action, makeObservable, observable } from 'mobx';
+
 
 // Crazy stuff, sauce here: https://2ality.com/2020/04/classes-as-values-typescript.html
 export interface Class<T> {
@@ -19,6 +21,7 @@ export interface IRegistryEntry<T> {
     // Index signature to limit possible keys as string and property values to either string, template type or undefined.
     [key: string]: string | T | Class<T> | undefined
     name: string
+    id: string
     class: Class<T>
 }
 
@@ -43,8 +46,8 @@ export class Registry<T> {
      */
     public register(entries: IRegistryEntry<T>[]): void {
         entries.forEach(entry => {
-            if (!this.registry.has(entry.name)) {
-                this.registry.set(entry.name, entry);
+            if (!this.registry.has(entry.id)) {
+                this.registry.set(entry.id, entry);
             } else throw("cannot assign double entries");
         });
     }
@@ -92,15 +95,22 @@ export class ClassRegistry<T> extends Registry<T> {
  */
 export class ValueRegistry<T> {
     
-    private registry: Map<string, T>
+    public registry: Map<string, T>
     
     constructor () {
         this.registry = new Map<string, T>();
+        makeObservable(this, {
+            registry: observable,
+            registerValue: action,
+            deregisterValue: action,
+            overwriteValue: action,
+            getRegisteredValue: false
+        });
     }
 
-    public registerValue(value: IValue<T>): boolean {
-        if (this.registry.get(value.id) === undefined) {
-            this.registry.set(value.id, value.value);
+    public registerValue({id, value}: IValue<T>): boolean {
+        if (this.registry.get(id) === undefined) {
+            this.registry.set(id, value);
 
             return true
         }

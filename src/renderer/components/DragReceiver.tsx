@@ -10,6 +10,7 @@ export const DragReceiver: FunctionalComponent<IDragReceiver> = ({ children, onD
         e.preventDefault();
     }
     _children.props['onDrop'] = onDrop;
+    _children.props['style'] = "background: red; min-height:400px"
 
     return _children
 };

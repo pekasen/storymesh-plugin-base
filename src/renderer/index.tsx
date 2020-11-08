@@ -11,6 +11,6 @@ registerHandlers();
 
 const root = document.getElementById("preact-root") as HTMLElement;
 render(
-    <App uistate={rootStore.uistate}></App>,
+    <App store={rootStore}></App>,
     root
 );

@@ -32,12 +32,20 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
     constructor(props: IDropzonePaneProps) {
         super(props);
         this.two = new Two({
-            type: Two.Types.canvas,
+            // type: Two.Types.canvas,
             fullscreen: false
         });
-        this.myCircles = this.props.uistate.moveableItems.map(e =>
+        this.myCircles = [1,2,2,1,2,2,42,1,1]
+        .map(() => ({
+            x: Math.random() * 640,
+            y: Math.random() * 480
+        })).map(e =>
             this.two.makeCircle(e.x, e.y, 50)
         );
+
+        // console.log(this.myCircles);
+        
+        
         this.myNoodles = [];
         
 
@@ -74,6 +82,12 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
         // rect.noStroke();
 
         this.two.appendTo(this.ref.current).update();
+
+        this.myCircles.forEach((e: Two.Circle) => {
+            const elem = document.getElementById(e.id);
+            console.log(elem, e.id);
+            elem?.addEventListener('click', () => console.log("Say Hello from " + e.id))
+        })
     }
 
     updateMyCircles(): void {
@@ -91,6 +105,8 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
             this.myCircles = this.props.uistate.moveableItems.map(e => this.two.makeCircle(e.x, e.y, 50))
         }
         this.two.update();
+
+        
     }
 
     updateMyNoodles(): void {

@@ -3,7 +3,6 @@ import { MoveableItem } from "./MoveableItem";
 import { ListItem } from "./ListItem";
 import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
-import { rootStore } from '..';
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -20,6 +19,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     term: string
     file: string
     leftSidebar: boolean
+    activeitem: string;
 
     constructor() {
         this.searchResults = [];
@@ -28,6 +28,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.file = "";
         this.leftSidebar = false;
         this.windowProperties = new WindowProperties();
+        this.activeitem = "";
         makeAutoObservable(this);
     }
 
@@ -82,6 +83,10 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
 
     toggleSidebar(): void {
         this.leftSidebar = !this.leftSidebar;
+    }
+
+    setActiveItem(id: string): void {
+        this.activeitem = id;
     }
 
     get untitledDocument (): boolean {

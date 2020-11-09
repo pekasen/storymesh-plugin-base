@@ -9,6 +9,8 @@ import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPa
 import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/RootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
+import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
+import { rootStore } from '..';
 // import { List } from "../store/List";
 // import { DropzonePane } from "./DropzonePane";
 // import { Toolbar } from "./Toolbar";
@@ -23,16 +25,8 @@ export class App extends Component<IAppProps> {
         super(props);
 
         reaction(
-            () => (props.store.storyContentObjectRegistry.registry.size),
-            () => {
-                const id = Array.from(this.props.store.storyContentObjectRegistry.registry).pop()?.[1].id || "";
-                console.log("App Reaction", id);
-                props.store.uistate.setActiveItem(id);
-                this.setState({});
-        });
-        reaction(
-            () => ([props.store.uistate.activeitem, ...Array.from(props.store.storyContentObjectRegistry.registry).map(e => e[1].name)]),
-            () => {this.forceUpdate()}
+            () => props.store.uistate.activeitem,
+            () => this.setState({})
         );
     }
 
@@ -69,56 +63,9 @@ export class App extends Component<IAppProps> {
                         {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}
                         <Pane>
                             <VerticalPaneGroup>
-                                {
-                                    // TODO: this Component should be resized to full height minus of the component below.
-                                }
                                 <VerticalPane>
-                                    <DragReceiver 
-                                    onDrop={(e) => {
-                                        const input = e.dataTransfer?.getData('text');
-
-                                        if (input) {
-                                            const [loc, type, id] = input.split(".");
-                                        
-                                            console.log("Hello");
-                                            if (id) {
-                                                switch(loc) {
-                                                    case "internal": {
-                                                        switch(type) {
-                                                            case "content": {
-                                                                const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-                                                                console.log(instance);
-                                                                if (instance) store.storyContentObjectRegistry.registerValue(
-                                                                {
-                                                                    id: instance.id,
-                                                                    value: instance
-                                                                })
-                                                                if (instance?.id) store.uistate.setActiveItem(instance?.id);
-                                                                break;
-                                                            }
-                                                            default: break;
-                                                        }
-                                                        break;
-                                                    }
-                                                    case "external": {
-                                                        break;
-                                                    }
-                                                    default: break;
-                                                }
-                                            }
-                                        }
-                                        console.log(store.storyContentObjectRegistry)
-                                    }}>
-                                        <div id="hello-world" style="width: 100%; min-height: 300px;">
-                                            {
-                                                Array.from(store.storyContentObjectRegistry.registry)
-                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                                .map(([_, object]) => (
-                                                <div onDblClick={() => store.uistate.setActiveItem(object.id)}>{object.name}</div>
-                                                ))
-                                            }
-                                        </div>
-                                    </DragReceiver>
+                                        <DummyObjectRenderer store={rootStore}>
+                                        </DummyObjectRenderer>
                                 </VerticalPane>
                                 <VerticalSmallPane>
                                     <StoryComponentGallery>

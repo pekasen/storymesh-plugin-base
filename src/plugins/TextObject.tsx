@@ -119,7 +119,7 @@ class _TextObject implements IPlugIn, IStoryObject{
  * Define the metadata
  */
 export const TextObject: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
-    name: "TextObject",
+    name: "Text",
     id: "internal.content.text",
     shortId: "text",
     author: "NGWebS-Core",

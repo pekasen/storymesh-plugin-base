@@ -1,6 +1,6 @@
 import { reaction } from 'mobx';
 import { Component, h } from "preact";
-import { DragReceiver } from './DragReceiver';
+
 import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
 import { Pane, PaneGroup, SideBar } from './Pane';
@@ -10,10 +10,8 @@ import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
+
 import { rootStore } from '..';
-// import { List } from "../store/List";
-// import { DropzonePane } from "./DropzonePane";
-// import { Toolbar } from "./Toolbar";
 
 interface IAppProps {
     store: RootStore
@@ -51,8 +49,6 @@ export class App extends Component<IAppProps> {
                                         const res = store.
                                         storyContentObjectRegistry.
                                         getValue(store.uistate.activeitem);
-
-                                        console.log("Template CallBack", res, store.uistate.activeitem);
                                         return res?.
                                         menuTemplate;
                                     })()

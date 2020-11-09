@@ -1,9 +1,16 @@
-import { render, h } from "preact";
-import { App } from "./components/App";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-console.log("Hello Console!");
-const root = document.getElementById("preact-root") as Element;
+import { App } from "./components/App";
+import { render, h } from "preact";
+import { registerHandlers } from './utils/registerHandlers';
+import { RootStore } from './store/RootStore';
+
+export const rootStore = new RootStore();
+
+registerHandlers();
+
+const root = document.getElementById("preact-root") as HTMLElement;
 render(
-    <App />,
+    <App store={rootStore}></App>,
     root
 );

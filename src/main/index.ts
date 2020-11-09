@@ -1,20 +1,31 @@
 import { app, BrowserWindow } from "electron";
+import { patchMenu } from './menus';
+
+const windows: Electron.BrowserWindow[] = [];
 
 function createWindow() {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
+        // frame: false,
+        titleBarStyle: "hidden",
         webPreferences: {
             nodeIntegration: true,
             worldSafeExecuteJavaScript: true
         }
     });
 
-    win.loadFile("../index.html");
-    win.webContents.openDevTools();
+    win.loadFile("./dist/index.html");
+    // win.webContents.openDevTools();
+    return win
 }
 
-app.whenReady().then(createWindow);
+app
+    .whenReady()
+    .then(() => {
+        windows.push(createWindow());
+    })
+    .then(() => patchMenu());
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
@@ -23,9 +34,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
-  });
+});

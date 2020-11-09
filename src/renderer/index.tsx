@@ -3,7 +3,7 @@
 import { App } from "./components/App";
 import { render, h } from "preact";
 import { registerHandlers } from './utils/registerHandlers';
-import { RootStore } from './store/RootStore';
+import { RootStore } from './store/rootStore';
 
 export const rootStore = new RootStore();
 

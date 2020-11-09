@@ -7,8 +7,9 @@ import { Pane, PaneGroup, SideBar } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
-// import { List } from "../store/List";
-// import { DropzonePane } from "./DropzonePane";
+ import { List } from "../store/List";
+ import { ListItem } from "../store/ListItem";
+import { DropzonePane } from "./DropzonePane";
 // import { Toolbar } from "./Toolbar";
 
 interface IAppProps {
@@ -16,7 +17,11 @@ interface IAppProps {
 }
 
 export class App extends Component<IAppProps> {
-
+    model = new List([
+        new ListItem("Philipp", "Lead"),
+        new ListItem("Jannik", "Frontend"),
+        new ListItem("Anca", "Backend")
+    ]);
     constructor (props: IAppProps) {
         super(props);
 
@@ -55,6 +60,7 @@ export class App extends Component<IAppProps> {
                                     // TODO: this Component should be resized to full height minus of the component below.
                                 }
                                 <VerticalSmallPane>
+                                    <DropzonePane uistate={uistate} model={this.model}></DropzonePane>
                                     <StoryComponentGallery>
                                         <GalleryItemView item={{id: "asdoasmdas"}}><p>Text</p></GalleryItemView>
                                         <GalleryItemView item={{id: "asdoasmdas"}}><p>Image</p></GalleryItemView>

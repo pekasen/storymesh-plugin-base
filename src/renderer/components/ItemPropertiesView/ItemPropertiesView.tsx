@@ -1,3 +1,4 @@
+import { reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { UIStore } from '../../store/UIStore';
 import { IMenuTemplate } from '../../utils/PlugInClassRegistry';
@@ -8,6 +9,16 @@ export interface IItemPropertiesViewProperties {
 }
 
 export class ItemPropertiesView extends Component<IItemPropertiesViewProperties> {
+
+    constructor(props: IItemPropertiesViewProperties) {
+        super(props);
+        reaction(
+            () => props.store.activeitem,
+            () => {
+                this.setState({});
+            }
+        );
+    }
 
     render({ template, store }: IItemPropertiesViewProperties): h.JSX.Element {
         let menuItems: h.JSX.Element[] = [];
@@ -48,8 +59,3 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
         </form>
     }
 }
-// TypeError: 'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them
-//     at Function.invokeGetter (<anonymous>:1:142)
-//     at Object._TextObject.getName [as value] (/Users/philipp/repos/ngwebs-editor/dist/plugins/TextObject.js:85:26)
-//     at Object.onChange [as changefalse] (/Users/philipp/repos/ngwebs-editor/dist/renderer/components/ItemPropertiesView/ItemPropertiesView.js:23:79)
-//     at HTMLInputElement.P (/Users/philipp/repos/ngwebs-editor/node_modules/preact/dist/preact.js:1:4283)

@@ -93,7 +93,7 @@ export class ClassRegistry<T> extends Registry<T> {
  reg.getRegisteredValue("Bert") // 42
  * ```
  */
-export class ValueRegistry<T> {
+export class ValueRegistry<T extends IValue> {
     
     public registry: Map<string, T>
     
@@ -101,36 +101,35 @@ export class ValueRegistry<T> {
         this.registry = new Map<string, T>();
         makeObservable(this, {
             registry: observable,
-            registerValue: action,
-            deregisterValue: action,
-            overwriteValue: action,
-            getRegisteredValue: false
+            register: action,
+            deregister: action,
+            overwrite: action,
+            getValue: false
         });
     }
 
-    public registerValue({id, value}: IValue<T>): boolean {
-        if (this.registry.get(id) === undefined) {
-            this.registry.set(id, value);
+    public register(value: T): boolean {
+        if (this.registry.get(value.id) === undefined) {
+            this.registry.set(value.id, value);
 
             return true
         }
         else return false
     }
 
-    public deregisterValue(id: string): boolean {
+    public deregister(id: string): boolean {
         return this.registry.delete(id)
     }
 
-    public getRegisteredValue(id: string): T | undefined{
-        return this.registry.get(id)
+    public getValue(forId: string): T | undefined{
+        return this.registry.get(forId)
     }
 
-    public overwriteValue(value: IValue<T>): void {
-        this.registry.set(value.id, value.value);
+    public overwrite(value: T): void {
+        this.registry.set(value.id, value);
     }
 }
 
-interface IValue<T> {
-    value: T
+export interface IValue {
     id: string
 }

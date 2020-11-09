@@ -15,6 +15,12 @@
   min-height: 150px;
   background-color: transparent;
   transition: 0.5s;
+  display: flex;
+  flex-direction: row;
+
+  p {
+    font-weight: bold;
+  }
 }
 
 .gallery-item:hover {

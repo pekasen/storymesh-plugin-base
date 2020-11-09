@@ -6,9 +6,7 @@ export const Gallery: FunctionComponent = ({ children }) => (
 );
 
 export const StoryComponentGallery: FunctionComponent = ({ children }) => (
-    <div class="verticalPaneGroup">
-        <Gallery>
+    <Gallery>
             {children}
-        </Gallery>
-    </div>
+    </Gallery>
 )

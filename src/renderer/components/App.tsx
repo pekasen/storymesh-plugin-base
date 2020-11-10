@@ -1,19 +1,25 @@
 import { reaction } from 'mobx';
 import { Component, h } from "preact";
-import { UIStore } from "../store/UIStore";
+
 import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
 import { Pane, PaneGroup, SideBar } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
- import { List } from "../store/List";
- import { ListItem } from "../store/ListItem";
+
+import { RootStore } from '../store/rootStore';
+import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
+import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
+
+import { rootStore } from '..';
+
+import { List } from "../store/List";
+import { ListItem } from "../store/ListItem";
 import { DropzonePane } from "./DropzonePane";
-// import { Toolbar } from "./Toolbar";
 
 interface IAppProps {
-    uistate: UIStore
+    store: RootStore
 }
 
 export class App extends Component<IAppProps> {
@@ -26,49 +32,54 @@ export class App extends Component<IAppProps> {
         super(props);
 
         reaction(
-            () => ({
-                file: props.uistate.file,
-                sidebar: props.uistate.leftSidebar,
-                hidden: props.uistate.leftSidebar
-            }),
-            () => {
-                this.setState({});
-        });
+            () => props.store.uistate.activeitem,
+            () => this.setState({})
+        );
     }
 
-    public render({ uistate }: IAppProps): h.JSX.Element {
+    public render({ store }: IAppProps): h.JSX.Element {
         return <Window>
                 <Header
-                    title={uistate.windowProperties.title}
+                    title={store.uistate.windowProperties.title}
                     leftToolbar={[
                     <button class="btn btn-default"
                         onClick={() =>{
-                            uistate.toggleSidebar();
+                            store.uistate.toggleSidebar();
                         }}>
                         <span class="icon icon-left-dir"></span>
                     </button>]}
                 ></Header>
                 <WindowContent>
                     <PaneGroup>
-                        <SideBar></SideBar>
+                        <SideBar>
+                            <ItemPropertiesView
+                                template={
+                                    (() => {
+                                        const res = store.
+                                        storyContentObjectRegistry.
+                                        getValue(store.uistate.activeitem);
+                                        return res?.
+                                        menuTemplate;
+                                    })()
+                                }
+                                store={store.uistate}>
+                            </ItemPropertiesView>
+                        </SideBar>
+                        <DropzonePane uistate={store.uistate} model={this.model}></DropzonePane>
                         <Pane>
                             <VerticalPaneGroup>
                                 <VerticalPane>
-                                    <canvas height={400} width={400}></canvas>
+                                        <DummyObjectRenderer store={rootStore}>
+                                        </DummyObjectRenderer>
                                 </VerticalPane>
-                                {
-                                    // TODO: this Component should be resized to full height minus of the component below.
-                                }
-                                <VerticalSmallPane>
-                                    <DropzonePane uistate={uistate} model={this.model}></DropzonePane>
+                                <VerticalSmallPane>                                    
                                     <StoryComponentGallery>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Text</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Image</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Video</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Audio</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Image Gallery</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Cats</p></GalleryItemView>
-                                        <GalleryItemView item={{id: "asdoasmdas"}}><p>Dogs</p></GalleryItemView>
+                                        {
+                                            // TODO: compute gallery items from plugin registry
+                                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
+                                                <GalleryItemView item={{id: item.id}}><p>{item.name}</p></GalleryItemView>
+                                            ))
+                                        }
                                     </StoryComponentGallery>
                                 </VerticalSmallPane>
                             </VerticalPaneGroup>

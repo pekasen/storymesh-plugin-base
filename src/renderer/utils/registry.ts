@@ -9,6 +9,8 @@
 //     }
 // }
 
+import { action, makeObservable, observable } from 'mobx';
+
 
 // Crazy stuff, sauce here: https://2ality.com/2020/04/classes-as-values-typescript.html
 export interface Class<T> {
@@ -19,6 +21,7 @@ export interface IRegistryEntry<T> {
     // Index signature to limit possible keys as string and property values to either string, template type or undefined.
     [key: string]: string | T | Class<T> | undefined
     name: string
+    id: string
     class: Class<T>
 }
 
@@ -43,8 +46,8 @@ export class Registry<T> {
      */
     public register(entries: IRegistryEntry<T>[]): void {
         entries.forEach(entry => {
-            if (!this.registry.has(entry.name)) {
-                this.registry.set(entry.name, entry);
+            if (!this.registry.has(entry.id)) {
+                this.registry.set(entry.id, entry);
             } else throw("cannot assign double entries");
         });
     }
@@ -90,37 +93,43 @@ export class ClassRegistry<T> extends Registry<T> {
  reg.getRegisteredValue("Bert") // 42
  * ```
  */
-export class ValueRegistry<T> {
+export class ValueRegistry<T extends IValue> {
     
-    private registry: Map<string, T>
+    public registry: Map<string, T>
     
     constructor () {
         this.registry = new Map<string, T>();
+        makeObservable(this, {
+            registry: observable,
+            register: action,
+            deregister: action,
+            overwrite: action,
+            getValue: false
+        });
     }
 
-    public registerValue(value: IValue<T>): boolean {
+    public register(value: T): boolean {
         if (this.registry.get(value.id) === undefined) {
-            this.registry.set(value.id, value.value);
+            this.registry.set(value.id, value);
 
             return true
         }
         else return false
     }
 
-    public deregisterValue(id: string): boolean {
+    public deregister(id: string): boolean {
         return this.registry.delete(id)
     }
 
-    public getRegisteredValue(id: string): T | undefined{
-        return this.registry.get(id)
+    public getValue(forId: string): T | undefined{
+        return this.registry.get(forId)
     }
 
-    public overwriteValue(value: IValue<T>): void {
-        this.registry.set(value.id, value.value);
+    public overwrite(value: T): void {
+        this.registry.set(value.id, value);
     }
 }
 
-interface IValue<T> {
-    value: T
+export interface IValue {
     id: string
 }

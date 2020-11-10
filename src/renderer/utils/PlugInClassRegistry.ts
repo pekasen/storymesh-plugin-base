@@ -1,3 +1,4 @@
+import { action, makeObservable, observable } from 'mobx';
 import { h } from 'preact';
 import { Class, ClassRegistry, IRegistryEntry } from './registry';
 
@@ -11,11 +12,16 @@ export class PlugInClassRegistry<T extends IPlugIn> extends ClassRegistry<T> {
     constructor() {
         super();
         this.registry = new Map();
+        // makeObservable(this, {
+        //     register: action,
+        //     registry: observable
+        // })
     }
 }
 
-interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
+export interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
     name: string;
+    id: string;
     author: string;
     version: string;
     website?: string;
@@ -23,16 +29,16 @@ interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
     class: Class<T>;
 }
 
-interface IPlugIn {
-    getMenuTemplate(): IMenuTemplate[];
+export interface IPlugIn {
+    readonly menuTemplate: IMenuTemplate[];
     render(): h.JSX.Element;
 }
 
-type MenuItemSpecification = "radio" | "text" | "hslider" | "vslider" | "dropdown" | "check" | "url" | "color";
+export type MenuItemSpecification = "radio" | "textarea" | "text" | "hslider" | "vslider" | "dropdown" | "check" | "url" | "color";
 
-interface IMenuTemplate {
+export interface IMenuTemplate {
     label: string;
     type: MenuItemSpecification;
-    valueReference: unknown;
-    valueTemplate: unknown;
+    valueReference: (newValue: any) => void;
+    value: (() => string);
 }

@@ -20,6 +20,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     term: string
     file: string
     leftSidebar: boolean
+    activeitem: string;
 
     constructor() {
         this.searchResults = [];
@@ -28,6 +29,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.file = "";
         this.leftSidebar = false;
         this.windowProperties = new WindowProperties();
+        this.activeitem = "";
         makeAutoObservable(this);
     }
 
@@ -83,6 +85,17 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     toggleSidebar(): void {
         this.leftSidebar = !this.leftSidebar;
     }
+
+    setActiveItem(id: string): void {
+        this.activeitem = id;
+    }
+
+    // updateItem(id: string, field: string, value: unknown): void {
+    //     const item = rootStore.storyContentObjectRegistry.getRegisteredValue(id);
+    //     if (item) {
+
+    //     }
+    // }
 
     get untitledDocument (): boolean {
         return this.file === "";

@@ -20,6 +20,7 @@ describe("ClassRegistry", () => {
             assert.doesNotThrow(() => {
                 reg.register([{
                     name: "Sub1",
+                    id: "Sub1",
                     class: SubTestClass
                 }]);
             });

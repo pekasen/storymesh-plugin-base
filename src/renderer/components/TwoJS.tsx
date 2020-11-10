@@ -9,15 +9,12 @@ export class TwoJS extends Component {
     myNoodles: EdgeView[];
     constructor() {
         super();
-       this.svg = new Two({
+        this.svg = new Two({
             type: Two.Types.svg,
             fullscreen: false,
             autostart: true
         });
-        
 
-        
-      //  this.myCircles = [];
         this.myNoodles = [];
         this.myCircles = [1,2,2,1,2,2,42,1,1]
         .map(() => ({
@@ -30,17 +27,15 @@ export class TwoJS extends Component {
 
     drawCircle(x: number, y: number, r: number): Two.Circle {
         const c = this.svg.makeCircle(x, y, r)
-        c.fill = "#FFe2a5"
-        
-        this.svg.update()
+        c.fill = this.getRandomColor();   
+        this.svg.update();
         return c;
     }
 
     updateMyCircles(moveableItems: MoveableItem[]): void {
         if (this.myCircles.length === moveableItems.length) {
             this.myCircles.map((e, i) => {
-                const root = moveableItems[i];
-                
+                const root = moveableItems[i];                
                 e.translation = new Two.Vector(
                     root.x,
                     root.y
@@ -49,24 +44,13 @@ export class TwoJS extends Component {
         } else {
             this.svg.clear();
             this.myCircles = moveableItems.map(e => {
-                    const circ = this.drawCircle(e.x, e.y, 50);
-                    /*const elem = document.getElementById(circ.id);
-                    console.log(elem, circ.id);
-                    elem?.addEventListener('click', () => console.log("Say Hello from " + circ.id))*/
-                    return circ;
-                });
-           /* const circ = this.drawCircle(1, 1, 50);
-            document.querySelector(circ.id)?.addEventListener('click', () => {
-                circ.fill = this.getRandomColor();
-            }, false);
-            */
+                return this.drawCircle(e.x, e.y, 50);
+            });
         }
         this.svg.update();
     }
-
     
     updateMyNoodles(moveableItems: MoveableItem[]): void {
-        // generate
         if (this.myNoodles.length !== moveableItems.length) {
             this.svg.clear();
             this.myNoodles = moveableItems
@@ -94,6 +78,7 @@ export class TwoJS extends Component {
     
     
     componentDidMount(): void {
+        this.svg.appendTo(document.getElementsByClassName("vertical-pane")[0] as HTMLElement);
         // const two = this.two;
         // const circle = two.makeCircle(72, 100, 50);
         // const rect = two.makeRectangle(413, 100, 100, 100);      
@@ -106,12 +91,11 @@ export class TwoJS extends Component {
         // rect.opacity = 0.75;
         // rect.noStroke();
         //this.svg.update();
-        console.log("hi from "); /*
+        console.log("hi from "); 
         this.myCircles.forEach((e: Two.Circle) => {
             const elem = document.getElementById(e.id);
-            console.log(elem, e.id);
             elem?.addEventListener('click', () => console.log("Say Hello from " + e.id))
-        })*/
+        })
     }
 
     drawNoodleCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {

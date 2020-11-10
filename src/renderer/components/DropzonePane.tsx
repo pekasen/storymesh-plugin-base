@@ -21,14 +21,13 @@ interface IDropzonePaneProps {
 
 
 export class DropzonePane extends Component<IDropzonePaneProps> {
-
-    two: TwoJS;
+    //two: TwoJS;
     ref = createRef();
     deleter = new MoveableItem(new ListItem("Delete", "DELETER"), 0, 0);
     deleterBox = new BoxStore(new ListItem("Delete", "DELETER"), 0, 0, 100, 100);
     constructor(props: IDropzonePaneProps) {
         super(props);
-        this.two = new TwoJS();        
+       // this.two = new TwoJS();        
 
         props.uistate.appendMoveableItem(this.deleter);
 
@@ -42,15 +41,16 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
         reaction(
             () => (props.uistate.moveableItems.map(e => {e.x,  e.y})),
             () => {
-                this.two.updateMyCircles(props.uistate.moveableItems);
-                this.two.updateMyNoodles(props.uistate.moveableItems);
+                // TODO: pass properties to TwoJS component in render()
+                // this.two.updateMyCircles(props.uistate.moveableItems);
+                // this.two.updateMyNoodles(props.uistate.moveableItems);
             }
         )
     }
     
     componentDidMount(): void {
-        this.two.svg.appendTo(this.ref.current);
-        console.log("hi from ", this);
+       // this.two.svg.appendTo(this.ref.current);
+        //console.log("hi from ", this);
     }
 
     render({ uistate, model }: IDropzonePaneProps): h.JSX.Element {
@@ -80,6 +80,7 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
             }}
         >
             <div class="vertical-pane-group">
+                <TwoJS></TwoJS> 
                 <div class="vertical-pane">
                     {
                         uistate.moveableItems.filter(e => (e.data.name !== "Delete")).map(e => (<Moveable item={e}><button class="btn btn-default">{e.data.name}</button></Moveable>))

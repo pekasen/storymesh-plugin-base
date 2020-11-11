@@ -40,14 +40,14 @@ export const BreadCrumb: FunctionalComponent<IBreadCrumbPropeties> = ({ store, l
         <ul>
             {
                 path?.reverse().map(e => (
-                    <li class="breadcrumb-item" onDblClick={() => store.uistate.setLoadedItem(e.id)}>
+                    <li class="item" onDblClick={() => store.uistate.setLoadedItem(e.id)}>
                         {e.name}
                     </li>
                 ))
             }
             {
                 (store.uistate.selectedItem !== "") ?
-                (<li class="breadcrumb-item selected-item">{store.storyContentObjectRegistry.getValue(store.uistate.selectedItem)?.name}</li>) :
+                (<li class="item selected">{store.storyContentObjectRegistry.getValue(store.uistate.selectedItem)?.name}</li>) :
                 null
             }
         </ul>

@@ -108,8 +108,11 @@ export class DummyObject extends Component<DummyObjectProperties> {
         this.active = props.store.uistate.selectedItem === props.object.id;
 
         reaction(
-            () => props.store.uistate.selectedItem,
-            (selectedItem) => {
+            () => ({
+                selectedItem: props.store.uistate.selectedItem,
+                name: props.object.name
+            }),
+            ({ selectedItem, name }) => {
                 if (props.object.id === selectedItem) {
                     this.active = true;
                 } else this.active = false;

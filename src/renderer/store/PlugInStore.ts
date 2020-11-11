@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { IPlugIn, IPlugInRegistryEntry } from '../utils/PlugInClassRegistry';
 
-export const  PlugInsStore = () : IPlugInRegistryEntry<IStoryObject & IPlugIn>[] => {
+export const  plugInLoader = () : IPlugInRegistryEntry<IStoryObject & IPlugIn>[] => {
     const regex = /\.js/gm;
     const localPath = __dirname + "/../../plugins/";
     const plugs = fs.readdirSync(localPath)
@@ -11,5 +11,6 @@ export const  PlugInsStore = () : IPlugInRegistryEntry<IStoryObject & IPlugIn>[]
     console.log(plugs);
     
     return  plugs
-    .map(plug => require(localPath + plug))
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    .map(plug => require(localPath + plug).plugInExport)
 };

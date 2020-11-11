@@ -10,9 +10,8 @@ import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
-
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
+import { BreadCrumb } from "./BreadCumbs/BreadCrumbs";
+import { IStoryObject } from 'storygraph';
 
 interface IAppProps {
     store: RootStore
@@ -46,48 +45,6 @@ export class App extends Component<IAppProps> {
                 </WindowContent>             
         </Window>
     }
-}
-
-interface IBreadCrumbPropeties {
-    loadedObject: IStoryObject
-    store: RootStore
-}
-
-export const BreadCrumb: FunctionalComponent<IBreadCrumbPropeties> = ({ store, loadedObject }) => {
-    
-    const recursePath = ( obj: IStoryObject ): IStoryObject[] => {
-        const res: IStoryObject[] = [];
-        res.push(obj);
-        console.log(res);
-
-        if (obj.parent) {
-            const rObj = store.storyContentObjectRegistry.getValue(obj.parent);
-            if (rObj) {
-                const r = recursePath(rObj);
-                if (r) res.push(...r)
-            }
-        }
-
-        return res
-    }
-    const path = recursePath(loadedObject);
-    
-    return <div class="vertical-pane-group">
-        <ul>
-            {
-                path?.reverse().map(e => (
-                    <li class="breadcrumb-item" onDblClick={() => store.uistate.setLoadedItem(e.id)}>
-                        {e.name}
-                    </li>
-                ))
-            }
-            {
-                (store.uistate.selectedItem !== "") ?
-                (<li class="breadcrumb-item selected-item">{store.storyContentObjectRegistry.getValue(store.uistate.selectedItem)?.name}</li>) :
-                null
-            }
-        </ul>
-    </div>
 }
 
 interface EditorPaneGroupProperties {

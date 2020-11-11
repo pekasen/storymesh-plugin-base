@@ -26,6 +26,7 @@
 
 .vertical-pane-sm {
     flex: none;
-    min-height: 150px;
+    height: fit-content;
+    min-height: 50px;
     max-height: 250px;
 }

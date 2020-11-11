@@ -1,13 +1,18 @@
 import { Component, h } from 'preact';
 import Two from 'twojs-ts';
 import { MoveableItem } from "../store/MoveableItem";
-import { EdgeView } from './EdgeView';
+import { EdgeItem } from '../store/EdgeItem';
 
-export class TwoJS extends Component {
+interface ITwoJS {
+    noodles: EdgeItem[]
+}
+
+export class TwoJS extends Component<ITwoJS> {
     svg: Two;
     myCircles: Two.Circle[];
-    myNoodles: EdgeView[];
-    constructor() {
+    noodles: EdgeItem[];
+
+    constructor(props: ITwoJS) {
         super();
         this.svg = new Two({
             type: Two.Types.svg,
@@ -15,7 +20,7 @@ export class TwoJS extends Component {
             autostart: true
         });
 
-        this.myNoodles = [];
+        this.noodles = props.noodles;
         this.myCircles = [1,2,2,1,2,2,42,1,1]
         .map(() => ({
             x: Math.random() * 640,
@@ -51,28 +56,28 @@ export class TwoJS extends Component {
     }
     
     updateMyNoodles(moveableItems: MoveableItem[]): void {
-        if (this.myNoodles.length !== moveableItems.length) {
+        if (this.noodles.length !== moveableItems.length) {
             this.svg.clear();
-            this.myNoodles = moveableItems
+            this.noodles = moveableItems
             .map((node1) => {
                 return moveableItems.map(node2 => {
                     if (node1 !== node2) {
                         return {
                             a: node1,
-                            b: node2,
-                            line: this.drawNoodleCurve(node1.x, node1.y, node2.x, node2.y)
-                        } as EdgeView
+                            b: node2//,
+//line: this.drawNoodleCurve(node1.x, node1.y, node2.x, node2.y)
+                        } as EdgeItem
                     }
                 });
             }).reduce((p, c) => (
                 [...p, ...c].filter(e => e !== undefined)
-            )) as EdgeView[];
-        } else this.myNoodles.forEach(edge => {
+            )) as EdgeItem[];
+        } else this.noodles.forEach(edge => {
             const _arr = [edge.a, edge.b];
-            edge.line.vertices.forEach((v, i) => {
-                v.x = _arr[i].x;
-                v.y = _arr[i].y;
-            })
+          //  edge.line.vertices.forEach((v, i) => {
+          //      v.x = _arr[i].x;
+         //       v.y = _arr[i].y;
+          //  })
         })
     }
     

@@ -48,7 +48,7 @@ export class Registry<T> {
         entries.forEach(entry => {
             if (!this.registry.has(entry.id)) {
                 this.registry.set(entry.id, entry);
-            } else throw("cannot assign double entries");
+            } else console.trace("cannot assign double entries");
         });
     }
 }
@@ -125,8 +125,10 @@ export class ValueRegistry<T extends IValue> {
         return this.registry.get(forId)
     }
 
-    public overwrite(value: T): void {
+    public overwrite(value: T): boolean {
         this.registry.set(value.id, value);
+
+        return true
     }
 }
 

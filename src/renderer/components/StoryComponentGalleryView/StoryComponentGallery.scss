@@ -9,14 +9,21 @@
 
 .gallery-item {
   flex: 1 0;
+  border-left: solid;
+  border-width: 1px;
   padding: 10px;
-  min-width: 150px;
-  max-width: 200px;
-  min-height: 150px;
+  height: fit-content;
+  width: fit-content;
+  max-width: 100px;
+  // align-content: center;
+  vertical-align: middle;
+  // min-width: 150px;
+  // max-width: 200px;
+  // min-height: 150px;
   background-color: transparent;
   transition: 0.5s;
-  display: flex;
-  flex-direction: row;
+  display: inline-block;
+  // flex-direction: row;
 
   p {
     font-weight: bold;

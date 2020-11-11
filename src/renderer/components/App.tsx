@@ -1,5 +1,5 @@
 import { reaction } from 'mobx';
-import { Component, h } from "preact";
+import { Component, FunctionalComponent, h } from "preact";
 
 import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
@@ -7,32 +7,23 @@ import { Pane, PaneGroup, SideBar } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
-
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
-
-import { rootStore } from '..';
-
-import { List } from "../store/List";
-import { ListItem } from "../store/ListItem";
-import { DropzonePane } from "./DropzonePane";
+import { BreadCrumb } from "./BreadCumbs/BreadCrumbs";
+import { IStoryObject } from 'storygraph';
 
 interface IAppProps {
     store: RootStore
 }
 
 export class App extends Component<IAppProps> {
-    model = new List([
-        new ListItem("Philipp", "Lead"),
-        new ListItem("Jannik", "Frontend"),
-        new ListItem("Anca", "Backend")
-    ]);
+
     constructor (props: IAppProps) {
         super(props);
 
         reaction(
-            () => props.store.uistate.activeitem,
+            () => [props.store.uistate.selectedItem, props.store.uistate.loadedItem],
             () => this.setState({})
         );
     }
@@ -50,42 +41,54 @@ export class App extends Component<IAppProps> {
                     </button>]}
                 ></Header>
                 <WindowContent>
-                    <PaneGroup>
-                        <SideBar>
-                            <ItemPropertiesView
-                                template={
-                                    (() => {
-                                        const res = store.
-                                        storyContentObjectRegistry.
-                                        getValue(store.uistate.activeitem);
-                                        return res?.
-                                        menuTemplate;
-                                    })()
-                                }
-                                store={store.uistate}>
-                            </ItemPropertiesView>
-                        </SideBar>
-                        <DropzonePane uistate={store.uistate} model={this.model}></DropzonePane>
-                        <Pane>
-                            <VerticalPaneGroup>
-                                <VerticalPane>
-                                        <DummyObjectRenderer store={rootStore}>
-                                        </DummyObjectRenderer>
-                                </VerticalPane>
-                                <VerticalSmallPane>                                    
-                                    <StoryComponentGallery>
-                                        {
-                                            // TODO: compute gallery items from plugin registry
-                                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
-                                                <GalleryItemView item={{id: item.id}}><p>{item.name}</p></GalleryItemView>
-                                            ))
-                                        }
-                                    </StoryComponentGallery>
-                                </VerticalSmallPane>
-                            </VerticalPaneGroup>
-                        </Pane>
-                    </PaneGroup>
+                    <EditorPaneGroup store={store} loadedItem={store.storyContentObjectRegistry.getValue(store.uistate.loadedItem) as IStoryObject}></EditorPaneGroup>
                 </WindowContent>             
         </Window>
     }
 }
+
+interface EditorPaneGroupProperties {
+    loadedItem: IStoryObject
+    store: RootStore
+}
+
+const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loadedItem, store}) => {
+    return <PaneGroup>
+        <SideBar>
+            <ItemPropertiesView
+                template={
+                    (() => {
+                        const res = store.
+                        storyContentObjectRegistry.
+                        getValue(store.uistate.selectedItem);
+                        return res?.
+                        menuTemplate;
+                    })()
+                }
+                store={store.uistate}>
+            </ItemPropertiesView>
+        </SideBar>
+        {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}
+        <Pane>
+            <VerticalPaneGroup>
+                <VerticalPane>
+                    <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
+                </VerticalPane>
+                <VerticalPane>
+                        <DummyObjectRenderer loadedObject={loadedItem} store={store}>
+                        </DummyObjectRenderer>
+                </VerticalPane>
+                <VerticalSmallPane>
+                    <StoryComponentGallery>
+                        {
+                            // TODO: compute gallery items from plugin registry
+                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
+                                <GalleryItemView item={{id: item.id}}><p>{item.name}</p></GalleryItemView>
+                            ))
+                        }
+                    </StoryComponentGallery>
+                </VerticalSmallPane>
+            </VerticalPaneGroup>
+        </Pane>
+    </PaneGroup>
+};

@@ -7,6 +7,7 @@ import { IPlugIn } from '../../utils/PlugInClassRegistry';
 import { DragReceiver } from "../DragReceiver";
 
 export interface IDummyObjectRendererProperties {
+    loadedObject: IStoryObject
     store: RootStore
 }
 
@@ -16,14 +17,14 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         super(props);
 
         reaction(
-            () => (Array.from(props.store.storyContentObjectRegistry.registry).map(e => e[1].name)),
+            () => (Array.from(props.loadedObject.id)),
             () => {
                 this.setState({});
             }
-        )
+        );
     }
     
-    render({store}: IDummyObjectRendererProperties): h.JSX.Element {
+    render({loadedObject, store}: IDummyObjectRendererProperties): h.JSX.Element {
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
@@ -40,8 +41,17 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                                     const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
                                     console.log(instance);
                                     if (instance) {
-                                        store.storyContentObjectRegistry.register(instance);
-                                        store.uistate.setActiveItem(instance?.id);
+                                        loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
+                                        store.uistate.setselectedItem(instance.id);
+                                    }
+                                    break;
+                                }
+                                case "container": {
+                                    const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
+                                    console.log(instance);
+                                    if (instance) {
+                                        loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
+                                        store.uistate.setselectedItem(instance.id)
                                     }
                                     break;
                                 }
@@ -61,13 +71,13 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
             <div id="hello-world" style="width: 100%; height: 100%;" onDblClick={(e) => {
                 const target = e.target as HTMLElement;
                 if (target.id === "hello-world"){
-                    store.uistate.setActiveItem("");
+                    store.uistate.setselectedItem("");
                 }
             }}>
                 {
-                    Array.from(store.storyContentObjectRegistry.registry)
+                    loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    .map(([_, object]) => (
+                    .map((object) => (
                         <DummyObject store={store} object={object}>{object.name}</DummyObject>
                         ))
                     }
@@ -78,7 +88,7 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
 
 interface DummyObjectProperties {
     store: RootStore
-    object: IStoryObject & IPlugIn
+    object: IStoryObject
     children: string
 }
 
@@ -89,12 +99,12 @@ export class DummyObject extends Component<DummyObjectProperties> {
     constructor(props: DummyObjectProperties) {
         super(props);
 
-        this.active = props.store.uistate.activeitem === props.object.id;
+        this.active = props.store.uistate.selectedItem === props.object.id;
 
         reaction(
-            () => props.store.uistate.activeitem,
-            (activeItem) => {
-                if (props.object.id === activeItem) {
+            () => props.store.uistate.selectedItem,
+            (selectedItem) => {
+                if (props.object.id === selectedItem) {
                     this.active = true;
                 } else this.active = false;
                 this.setState({});
@@ -104,9 +114,15 @@ export class DummyObject extends Component<DummyObjectProperties> {
 
     render({ store, object, children}: DummyObjectProperties): h.JSX.Element {
         return <div
+            onClick={(e) => {
+                e.preventDefault();
+                store.uistate.setselectedItem(object.id)
+            }}
             onDblClick={(e) => {
                 e.preventDefault();
-                store.uistate.setActiveItem(object.id)
+                if(object.role === "container") {
+                    store.uistate.setLoadedItem(object.id);
+                }
             }}
             class={(this.active) ? "dummy-object active" : "dummy-object inactive"}
         >{children}</div>

@@ -56,16 +56,7 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
     return <PaneGroup>
         <SideBar>
             <ItemPropertiesView
-                template={
-                    (() => {
-                        const res = store.
-                        storyContentObjectRegistry.
-                        getValue(store.uistate.selectedItem);
-                        return res?.
-                        menuTemplate;
-                    })()
-                }
-                store={store.uistate}>
+                store={store}>
             </ItemPropertiesView>
         </SideBar>
         {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}

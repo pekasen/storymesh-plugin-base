@@ -11,7 +11,7 @@ import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 
 import { v4 } from "uuid";
-import { action, computed, makeObservable, observable, reaction } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 /**
  * Our second little dummy PlugIn
  * 
@@ -72,11 +72,6 @@ class _Container implements IPlugIn, IStoryObject{
             // parent:     observable,
             // network:    observable
         });
-
-        reaction(
-            () => (this.name),
-            () => console.log("Update", this)
-        );
     }
 
     // @computed

@@ -30,3 +30,9 @@
    /* min-height: 50px; */
     max-height: 250px;
 }
+
+.vertical-pane-mini {
+    height: fit-content;
+    flex: none;
+    max-height: 150px;
+}

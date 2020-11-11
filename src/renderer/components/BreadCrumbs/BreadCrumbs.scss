@@ -1,0 +1,51 @@
+.breadcrumb-container {
+    display: inline-block;
+    height: auto;
+    width: 100%;
+    background: rgb(62,62,62);
+    background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%);
+
+    ul {
+        margin: 5px 0;
+        padding: 0 0 0 10px;
+    }
+
+    .item {
+        display: inline;
+        list-style: none;
+        font-size: .65rem;
+        color: #fff;
+        padding: 0 0 0 10px;
+    }
+
+    .item:first-of-type {
+        padding: 0;
+    }
+
+    /* highlight selected node */
+
+    .item.selected {
+        color: hotpink;
+    }
+
+    /* Arrow between nodes */
+
+    .item::before {
+        content: "\25B6";
+        font-size: 1em;
+        padding: 0 10px 0 0;
+        display: inline-block;
+        transform: translateY(1px);
+        color: #fff;
+    }
+
+    .item.selected::before {
+        color: hotpink;
+    }
+    
+    /* hide arrow after last node */
+
+    .item:first-of-type::before {
+        display: none;
+    }
+}

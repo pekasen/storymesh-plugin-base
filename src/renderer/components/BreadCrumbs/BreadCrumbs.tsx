@@ -40,7 +40,10 @@ export const BreadCrumb: FunctionalComponent<IBreadCrumbPropeties> = ({ store, l
         <ul>
             {
                 path?.reverse().map(e => (
-                    <li class="item" onDblClick={() => store.uistate.setLoadedItem(e.id)}>
+                    <li
+                        class="item"
+                        onClick={() => store.uistate.setselectedItem(e.id)}
+                        onDblClick={() => store.uistate.setLoadedItem(e.id)}>
                         {e.name}
                     </li>
                 ))

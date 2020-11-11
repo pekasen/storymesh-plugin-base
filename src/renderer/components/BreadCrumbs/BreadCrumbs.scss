@@ -18,6 +18,10 @@
         padding: 0 0 0 10px;
     }
 
+    .item:hover {
+        text-decoration: underline;
+    }
+
     .item:first-of-type {
         padding: 0;
     }

@@ -29,14 +29,14 @@ export const BreadCrumb: FunctionalComponent<IBreadCrumbPropeties> = ({ store, l
     const path = recursePath(loadedObject);
     
     reaction(
-        () => path.map(e => e.name).push(store.uistate.selectedItem),
+        () => [path.map(e => e.name), store.uistate.selectedItem],
         (i) => {
             console.log(i)
             setState({});
         }
     );
         
-    return <div class="breadcumb-container">
+    return <div class="breadcrumb-container">
         <ul>
             {
                 path?.reverse().map(e => (

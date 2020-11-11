@@ -15,6 +15,11 @@
         list-style: none;
         font-size: .65rem;
         color: #fff;
+        padding: 0 0 0 10px;
+    }
+
+    .item:first-of-type {
+        padding: 0;
     }
 
     /* highlight selected node */
@@ -25,18 +30,22 @@
 
     /* Arrow between nodes */
 
-    .item::after {
+    .item::before {
         content: "\25B6";
         font-size: 1em;
-        padding: 0 10px;
+        padding: 0 10px 0 0;
         display: inline-block;
         transform: translateY(1px);
         color: #fff;
     }
+
+    .item.selected::before {
+        color: hotpink;
+    }
     
     /* hide arrow after last node */
 
-    .item.selected::after {
+    .item:first-of-type::before {
         display: none;
     }
 }

@@ -21,6 +21,7 @@ import { action, computed, makeObservable, observable, reaction } from 'mobx';
 // @observable
 class _TextObject implements IPlugIn, IStoryObject{
     id = v4();
+    role: string
     name: string;
     userDefinedProperties: any;
     content?: IContent | undefined;
@@ -36,7 +37,8 @@ class _TextObject implements IPlugIn, IStoryObject{
     isContentNode = true;
 
     constructor() {
-        this.name = "textobject_" + this.id;
+        this.role = "content"
+        this.name = [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,
             order: 1,
@@ -67,7 +69,7 @@ class _TextObject implements IPlugIn, IStoryObject{
             incoming:   observable,
             modifiers:  observable,
             menuTemplate: computed,
-            getName: false,
+            updateText: action,
             updateName: action
             // menuTemplate: computed
             // inputs:     observable,
@@ -91,6 +93,12 @@ class _TextObject implements IPlugIn, IStoryObject{
                 valueReference: (name: string) => {this.updateName(name)},
                 value: () => (this.name)
             },
+            {
+                label: "Content",
+                type: "text",
+                valueReference: (text: string) => {this.updateText(text)},
+                value: () => (this.content?.resource as string)
+            }
             // {
             //     label: "Text",
             //     type: "textarea",
@@ -105,10 +113,10 @@ class _TextObject implements IPlugIn, IStoryObject{
         this.name = newValue;
     }
 
-    getName(): string {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        return this.name
+    updateText(text: string) {
+        if (this.content) this.content.resource = text;
     }
+
 
     public render(): h.JSX.Element {
         return <div>Hello</div>
@@ -118,7 +126,7 @@ class _TextObject implements IPlugIn, IStoryObject{
 /**
  * Define the metadata
  */
-export const TextObject: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
+export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
     name: "Text",
     id: "internal.content.text",
     shortId: "text",

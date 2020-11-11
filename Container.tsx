@@ -21,6 +21,7 @@ import { action, computed, makeObservable, observable, reaction } from 'mobx';
 class _Container implements IPlugIn, IStoryObject{
     id = v4();
     name: string;
+    role: string;
     userDefinedProperties: any;
     metaData: IMetaData;
     outgoing: IEdge[];
@@ -35,7 +36,8 @@ class _Container implements IPlugIn, IStoryObject{
     childNetwork: StoryGraph;
 
     constructor() {
-        this.name = "container_" + this.id;
+        this.role = "container"
+        this.name = [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,
             order: 1,
@@ -113,7 +115,7 @@ class _Container implements IPlugIn, IStoryObject{
 /**
  * Define the metadata
  */
-export const Container: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
+export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
     name: "Container",
     id: "internal.container.container",
     shortId: "container",

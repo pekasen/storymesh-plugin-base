@@ -1,0 +1,42 @@
+.breadcrumb-container {
+    display: inline-block;
+    height: auto;
+    width: 100%;
+    background: rgb(62,62,62);
+    background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%);
+
+    ul {
+        margin: 5px 0;
+        padding: 0 0 0 10px;
+    }
+
+    .item {
+        display: inline;
+        list-style: none;
+        font-size: .65rem;
+        color: #fff;
+    }
+
+    /* highlight selected node */
+
+    .item.selected {
+        color: hotpink;
+    }
+
+    /* Arrow between nodes */
+
+    .item::after {
+        content: "\25B6";
+        font-size: 1em;
+        padding: 0 10px;
+        display: inline-block;
+        transform: translateY(1px);
+        color: #fff;
+    }
+    
+    /* hide arrow after last node */
+
+    .item.selected::after {
+        display: none;
+    }
+}

@@ -10,7 +10,7 @@ import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
-import { BreadCrumb } from "./BreadCumbs/BreadCrumbs";
+import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
 
 interface IAppProps {
@@ -83,7 +83,7 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                         {
                             // TODO: compute gallery items from plugin registry
                             Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
-                                <GalleryItemView item={{id: item.id}}><p>{item.name}</p></GalleryItemView>
+                                <GalleryItemView item={{id: item.id}}><span>{item.name}</span></GalleryItemView>
                             ))
                         }
                     </StoryComponentGallery>

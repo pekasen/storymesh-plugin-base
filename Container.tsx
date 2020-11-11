@@ -11,7 +11,7 @@ import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 
 import { v4 } from "uuid";
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
 /**
  * Our second little dummy PlugIn
  * 
@@ -51,14 +51,14 @@ class _Container implements IPlugIn, IStoryObject{
             name: "NGWebS user",
             tags: []
         };
-        this.childNetwork = new StoryGraph(this);
+        this.childNetwork = makeAutoObservable(new StoryGraph(this));
         this.userDefinedProperties = {};
 
         makeObservable(this, {
             id: false,
             name: observable,
             userDefinedProperties:  observable,
-            childNetwork:           observable,
+            childNetwork:           observable.deep,
             metaData:               observable,
             outgoing:               observable,
             incoming:               observable,

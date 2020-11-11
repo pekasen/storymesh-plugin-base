@@ -28,12 +28,10 @@ export class GalleryItemView extends Component<IGalleryItemViewProps<IItem>> {
     render({ item, children, onClick }: IGalleryItemViewProps<IItem>): h.JSX.Element {
         return <Draggable id={item.id}>
             <li class="gallery-item" onClick={onClick}>
-                <span>
                     <span class="icon icon-doc-text pull-left"></span>
                     <div class="media-body">
                         {children}
                     </div>
-                </span>
             </li>
         </Draggable>
     }

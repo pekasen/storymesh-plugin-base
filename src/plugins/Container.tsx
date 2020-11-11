@@ -1,6 +1,5 @@
 import { h } from "preact";
 import { StoryGraph } from 'storygraph/dist/StoryGraph/StoryGraph';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { IEdge } from 'storygraph/dist/StoryGraph/IEdge';
 import { IGraph } from 'storygraph/dist/StoryGraph/IGraph';
 import { IMetaData } from 'storygraph/dist/StoryGraph/IMetaData';
@@ -14,29 +13,29 @@ import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/P
 import { v4 } from "uuid";
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 /**
- * Our first little dummy PlugIn
+ * Our second little dummy PlugIn
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
-class _TextObject implements IPlugIn, IStoryObject{
+class _Container implements IPlugIn, IStoryObject{
     id = v4();
     name: string;
     userDefinedProperties: any;
-    content?: IContent | undefined;
     metaData: IMetaData;
     outgoing: IEdge[];
     incoming: IEdge[];
     parent?: string;
-    network?: IGraph | undefined;
+    network: IGraph | undefined;
     renderingProperties: IRenderingProperties;
     modifiers: IStoryModifier[];
     outputs?: IReactiveOutput | undefined;
     inputs?: IReactiveInput[] | undefined;
     isContentNode = true;
+    childNetwork: StoryGraph;
 
     constructor() {
-        this.name = "textobject_" + this.id;
+        this.name = "container_" + this.id;
         this.renderingProperties = {
             width: 100,
             order: 1,
@@ -50,25 +49,21 @@ class _TextObject implements IPlugIn, IStoryObject{
             name: "NGWebS user",
             tags: []
         };
-        this.content = {
-            resource: "empty",
-            altText: "empty",
-            contentType: "text"
-        };
+        this.childNetwork = new StoryGraph(this);
         this.userDefinedProperties = {};
 
         makeObservable(this, {
             id: false,
             name: observable,
-            userDefinedProperties: observable,
-            content:    observable,
-            metaData:   observable,
-            outgoing:   observable,
-            incoming:   observable,
-            modifiers:  observable,
-            menuTemplate: computed,
-            getName: false,
-            updateName: action
+            userDefinedProperties:  observable,
+            childNetwork:           observable,
+            metaData:               observable,
+            outgoing:               observable,
+            incoming:               observable,
+            modifiers:              observable,
+            menuTemplate:           computed,
+            updateName:             action,
+            getName:                false
             // menuTemplate: computed
             // inputs:     observable,
             // outputs:    observable,
@@ -118,13 +113,13 @@ class _TextObject implements IPlugIn, IStoryObject{
 /**
  * Define the metadata
  */
-export const TextObject: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
-    name: "Text",
-    id: "internal.content.text",
-    shortId: "text",
+export const Container: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
+    name: "Container",
+    id: "internal.container.container",
+    shortId: "container",
     author: "NGWebS-Core",
     version: "1.0.0",
-    class: _TextObject
+    class: _Container
 }, {
     name: false,
     id: false,

@@ -2,7 +2,6 @@ import { reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { RootStore } from '../../store/rootStore';
-import { UIStore } from '../../store/UIStore';
 import { IPlugIn } from '../../utils/PlugInClassRegistry';
 import { DragReceiver } from "../DragReceiver";
 
@@ -41,7 +40,16 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                                     console.log(instance);
                                     if (instance) {
                                         store.storyContentObjectRegistry.register(instance);
-                                        store.uistate.setActiveItem(instance?.id);
+                                        store.uistate.setActiveItem(instance.id);
+                                    }
+                                    break;
+                                }
+                                case "container": {
+                                    const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
+                                    console.log(instance);
+                                    if (instance) {
+                                        store.storyContentObjectRegistry.register(instance);
+                                        store.uistate.setActiveItem(instance.id)
                                     }
                                     break;
                                 }

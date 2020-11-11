@@ -4,7 +4,9 @@ import { ClassRegistry, ValueRegistry } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { IPlugIn, PlugInClassRegistry } from '../utils/PlugInClassRegistry';
 import { TextObject } from "../../plugins/TextObject";
-import { action, makeObservable, observable, reaction } from 'mobx';
+import { Container } from "../../plugins/Container";
+import { reaction } from 'mobx';
+import { PlugInsStore } from './PlugInStore';
 
 export interface IRootStoreProperties {
     // TODO: implement real data model
@@ -40,7 +42,8 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
         //     getNewInstance: false
         // });
 
-        this.storyContentTemplatesRegistry.register([TextObject]);
+        // this.storyContentTemplatesRegistry.register(PlugInsStore());
+        this.storyContentTemplatesRegistry.register([TextObject, Container]);
 
         reaction(
             () => (this.storyContentObjectRegistry.registry.size),

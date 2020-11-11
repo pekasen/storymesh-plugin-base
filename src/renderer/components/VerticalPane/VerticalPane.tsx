@@ -29,3 +29,13 @@ export const VerticalPane: FunctionalComponent = ({children}) => (
 export const VerticalSmallPane: FunctionalComponent = ({children}) => (
     <div class="vertical-pane vertical-pane-sm">{children}</div>
 )
+
+/**
+ * Creates a minituare flexible vertical pane
+ * 
+ * @param {ComponentProps} props Props passed to the component
+ * @returns {Element} Preact Element
+ */
+export const VerticalMiniPane: FunctionalComponent = ({children}) => (
+    <div class="vertical-pane vertical-pane-mini">{children}</div>
+)

@@ -5,7 +5,7 @@ import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
 import { Pane, PaneGroup, SideBar } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
-import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
+import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
@@ -62,9 +62,9 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
         {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}
         <Pane>
             <VerticalPaneGroup>
-                <VerticalPane>
+                <VerticalMiniPane>
                     <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
-                </VerticalPane>
+                </VerticalMiniPane>
                 <VerticalPane>
                         <DummyObjectRenderer loadedObject={loadedItem} store={store}>
                         </DummyObjectRenderer>

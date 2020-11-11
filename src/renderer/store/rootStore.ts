@@ -3,13 +3,10 @@ import { UIStore } from './UIStore';
 import { ClassRegistry, ValueRegistry } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { IPlugIn, PlugInClassRegistry } from '../utils/PlugInClassRegistry';
-import { TextObject } from "../../plugins/TextObject";
-import { action, makeObservable, observable, reaction } from 'mobx';
+import { plugInLoader } from './PlugInStore';
 
 export interface IRootStoreProperties {
-    // TODO: implement real data model
     uistate: UIStore
-    
     storyContentObjectRegistry: ValueRegistry<IStoryObject>
     storyContentTemplatesRegistry: ClassRegistry<IStoryObject>
 }
@@ -20,33 +17,36 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
     storyContentTemplatesRegistry: PlugInClassRegistry<IStoryObject & IPlugIn>
 
     constructor(uistate?: UIStore) {
-        this.uistate = uistate || new UIStore();
+        /**
+         * initialize the template store
+         */
+        this.uistate = uistate || new UIStore(this);
 
-        // initialize all necessary registries
-       
-        // these ones are made observable
+        /**
+         * In this registry we store our instantiated StoryObjects
+         */
         this.storyContentObjectRegistry = new ValueRegistry<IStoryObject & IPlugIn>()
-        // makeObservable(, {
-        //     registerValue: action,
-        //     deregisterValue: action,
-        //     registry: observable,
-        //     getRegisteredValue: false
-        // });
 
+        /**
+         * In this registry we store our templates and plugin classes
+         */
         this.storyContentTemplatesRegistry = new PlugInClassRegistry<IStoryObject & IPlugIn>()
-        // makeObservable( , {
-        //     registry: observable,
-        //     register: action,
-        //     getNewInstance: false
-        // });
+        /**
+         * Read the plugins and register them in the template store
+         */
+        this.storyContentTemplatesRegistry.register(
+            plugInLoader()
+        );
 
-        this.storyContentTemplatesRegistry.register([TextObject]);
-
-        reaction(
-            () => (this.storyContentObjectRegistry.registry.size),
-            () => {
-                console.log("Changed!")
-        });
+        if (this.uistate.untitledDocument) {
+            const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
+            if (emptyStory) {
+                this.storyContentObjectRegistry.register(
+                    emptyStory
+                );
+                this.uistate.setLoadedItem(emptyStory.id);
+            }
+        }
     }
 
     loadFromPersistance(from: IRootStoreProperties): void {
@@ -60,6 +60,6 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
 
     reset(): void {
         // this.model = new List();
-        this.uistate = new UIStore();
+        this.uistate = new UIStore(this);
     }
 }

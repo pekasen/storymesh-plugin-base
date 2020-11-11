@@ -13,7 +13,7 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
     constructor(props: IItemPropertiesViewProperties) {
         super(props);
         reaction(
-            () => props.store.activeitem,
+            () => props.store.selectedItem,
             () => {
                 this.setState({});
             }

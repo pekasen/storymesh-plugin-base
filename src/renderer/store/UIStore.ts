@@ -1,69 +1,57 @@
 import { makeAutoObservable } from "mobx";
 import { MoveableItem } from "./MoveableItem";
-import { ListItem } from "./ListItem";
 import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
-import { rootStore } from '..';
+import { ValueRegistry } from '../utils/registry';
+import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { RootStore } from './rootStore';
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
-    searchResults: ListItem[]
-    moveableItems: MoveableItem[]
+    moveableItems: ValueRegistry<MoveableItem<IStoryObject>>
     term: string
     file: string
 }
 
 export class UIStore implements IStoreableObject<IUIStoreProperties> {
     windowProperties: WindowProperties
-    searchResults: ListItem[]
-    moveableItems: MoveableItem[]
+    moveableItems: ValueRegistry<MoveableItem<IStoryObject>>
     term: string
     file: string
     leftSidebar: boolean
-    activeitem: string;
+    selectedItem: string
+    loadedItem: string
+    private _parent: RootStore
 
-    constructor() {
-        this.searchResults = [];
-        this.moveableItems = [];
-        this.term = "";
+    constructor(parent: RootStore) {
+        this._parent = parent;
+        this.loadedItem = "";
+        this.selectedItem = "";
+
+        // TODO: make stuff move again!!1
+        this.moveableItems = new ValueRegistry<MoveableItem<IStoryObject>>();
         this.file = "";
-        this.leftSidebar = false;
+        // TODO: actually use the WindowProperties!
         this.windowProperties = new WindowProperties();
-        this.activeitem = "";
+        
+        this.term = "";
+        this.leftSidebar = false;
+        
         makeAutoObservable(this);
     }
 
-    setSearchResults(items: ListItem[]): void {
-        console.log(items);
-        this.searchResults = items;
+    setLoadedItem(id: string): void {
+        const obj = this._parent.storyContentObjectRegistry.getValue(id);
+        if (obj) {
+            this.loadedItem = obj.id;
+        }
     }
 
     setFile(file: string): void {
         this.file = file;
     }
 
-    clearSearchResults(): void {
-        console.log("Do you crap yourself?");
-        this.searchResults = [];
-    }
-
-    appendMoveableItem(item: MoveableItem): void {
-        this.moveableItems = [...this.moveableItems, item];
-    }
-
-    clearMoveableItems(butKeep?: MoveableItem): void {
-        if (butKeep) {
-            const keep = this.moveableItems.filter((item) => (item === butKeep));
-            this.moveableItems = keep;
-        } else {
-            this.moveableItems = [];
-        }
-    }
-
-    setSearchTerm(term: string): void {
-        this.term = term;
-    }
-
+  
     loadFromPersistance(from: IUIStoreProperties): void {
         this.file = from.file;
         this.term = from.term;
@@ -74,7 +62,6 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         //     if (data !== undefined) return new MoveableItem(data, e.x, e.y)
         // })
         // .filter(e => e !== undefined) as MoveableItem[];
-        this.searchResults = from.searchResults.map(e => new ListItem(e.name, e.type));
     }
 
     // TODO: implement
@@ -86,16 +73,9 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.leftSidebar = !this.leftSidebar;
     }
 
-    setActiveItem(id: string): void {
-        this.activeitem = id;
+    setselectedItem(id: string): void {
+        this.selectedItem = id;
     }
-
-    // updateItem(id: string, field: string, value: unknown): void {
-    //     const item = rootStore.storyContentObjectRegistry.getRegisteredValue(id);
-    //     if (item) {
-
-    //     }
-    // }
 
     get untitledDocument (): boolean {
         return this.file === "";

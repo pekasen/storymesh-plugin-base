@@ -4,6 +4,7 @@ import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
 import { ValueRegistry } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { RootStore } from './rootStore';
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -18,16 +19,32 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     term: string
     file: string
     leftSidebar: boolean
-    activeitem: string;
+    selectedItem: string
+    loadedItem: string
+    private _parent: RootStore
 
-    constructor() {
+    constructor(parent: RootStore) {
+        this._parent = parent;
+        this.loadedItem = "";
+        this.selectedItem = "";
+
+        // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem<IStoryObject>>();
-        this.term = "";
         this.file = "";
-        this.leftSidebar = false;
+        // TODO: actually use the WindowProperties!
         this.windowProperties = new WindowProperties();
-        this.activeitem = "";
+        
+        this.term = "";
+        this.leftSidebar = false;
+        
         makeAutoObservable(this);
+    }
+
+    setLoadedItem(id: string): void {
+        const obj = this._parent.storyContentObjectRegistry.getValue(id);
+        if (obj) {
+            this.loadedItem = obj.id;
+        }
     }
 
     setFile(file: string): void {
@@ -56,8 +73,8 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.leftSidebar = !this.leftSidebar;
     }
 
-    setActiveItem(id: string): void {
-        this.activeitem = id;
+    setselectedItem(id: string): void {
+        this.selectedItem = id;
     }
 
     get untitledDocument (): boolean {

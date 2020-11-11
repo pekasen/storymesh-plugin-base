@@ -23,7 +23,7 @@ export class App extends Component<IAppProps> {
         super(props);
 
         reaction(
-            () => [props.store.uistate.selectedItem, props.store.uistate.loadedItem],
+            () => [props.store.uistate.loadedItem],
             () => this.setState({})
         );
     }

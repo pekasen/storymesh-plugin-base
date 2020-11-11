@@ -2,8 +2,6 @@ import { reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { RootStore } from '../../store/rootStore';
-import { UIStore } from '../../store/UIStore';
-import { IPlugIn } from '../../utils/PlugInClassRegistry';
 import { DragReceiver } from "../DragReceiver";
 
 export interface IDummyObjectRendererProperties {
@@ -17,8 +15,16 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         super(props);
 
         reaction(
-            () => (Array.from(props.loadedObject.id)),
             () => {
+                const id = props.store.uistate.loadedItem;
+                const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork?.nodes.length;
+                return {
+                    selectedItem: id,
+                    network: network
+                }
+            },
+            () => {
+                console.log("I changed!");
                 this.setState({});
             }
         );

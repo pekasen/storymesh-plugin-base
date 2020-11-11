@@ -1,4 +1,6 @@
+import { reaction } from 'mobx';
 import { FunctionalComponent, h } from "preact";
+import { useState } from "preact/hooks";
 import { IStoryObject } from "storygraph";
 import { RootStore } from "../../store/rootStore";
 
@@ -8,7 +10,7 @@ interface IBreadCrumbPropeties {
 }
 
 export const BreadCrumb: FunctionalComponent<IBreadCrumbPropeties> = ({ store, loadedObject }) => {
-    
+    const [, setState] = useState({});
     const recursePath = ( obj: IStoryObject ): IStoryObject[] => {
         const res: IStoryObject[] = [];
         res.push(obj);
@@ -26,6 +28,14 @@ export const BreadCrumb: FunctionalComponent<IBreadCrumbPropeties> = ({ store, l
     }
     const path = recursePath(loadedObject);
     
+    reaction(
+        () => path.map(e => e.name).push(store.uistate.selectedItem),
+        (i) => {
+            console.log(i)
+            setState({});
+        }
+    );
+        
     return <div class="breadcumb-container">
         <ul>
             {

@@ -78,6 +78,9 @@ export class ClassRegistry<T> extends Registry<T> {
     }
 }
 
+export interface INotifyable<T extends IValue> {
+    registry: ValueRegistry<T>
+}
 
 /**
  * Creates a registery for a specific type which

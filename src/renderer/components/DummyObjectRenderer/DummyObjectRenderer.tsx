@@ -1,8 +1,10 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
+import { Moveable } from '../Moveable';
 
 export interface IDummyObjectRendererProperties {
     loadedObject: IStoryObject
@@ -38,6 +40,9 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
+            const coords = {x: e.x, y: e.y};
+
+            console.log(coords);
 
             if (input) {
                 const [loc, type, id] = input.split(".");
@@ -53,6 +58,7 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                                     if (instance) {
                                         loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
                                         store.uistate.setselectedItem(instance.id);
+                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
                                     }
                                     break;
                                 }
@@ -62,6 +68,7 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                                     if (instance) {
                                         loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
                                         store.uistate.setselectedItem(instance.id)
+                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
                                     }
                                     break;
                                 }
@@ -88,7 +95,9 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .map((object) => (
-                        <DummyObject store={store} object={object}>{object.name}</DummyObject>
+                        <Moveable item={store.uistate.moveableItems.getValue(object.id) as MoveableItem}>
+                            <DummyObject store={store} object={object}>{object.name}</DummyObject>
+                        </Moveable>
                         ))
                     }
             </div>

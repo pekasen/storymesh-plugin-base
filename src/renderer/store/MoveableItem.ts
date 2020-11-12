@@ -1,6 +1,4 @@
 import { observable, makeObservable, action } from "mobx";
-import { IValue } from '../utils/registry';
-
 
 export class MoveableItem { //<T extends IValue>
 
@@ -8,13 +6,13 @@ export class MoveableItem { //<T extends IValue>
     id: string;
     public x: number;
     public y: number;
-
+    
     constructor(id: string, x?: number, y?: number) {
         // this.data = data;
         this.id = id
         this.x = x || 0;
         this.y = y || 0;
-
+    
         makeObservable(this, {
             // data: observable,
             x: observable,
@@ -23,7 +21,7 @@ export class MoveableItem { //<T extends IValue>
         });
     }
 
-    updatePosition(x: number, y: number): void {
+    public updatePosition(x: number, y: number): void {
         this.x = x;
         this.y = y;
     }

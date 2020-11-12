@@ -1,4 +1,4 @@
-import { reaction } from 'mobx';
+import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { RootStore } from '../../store/rootStore';
@@ -11,16 +11,20 @@ export interface IDummyObjectRendererProperties {
 
 export class DummyObjectRenderer extends Component<IDummyObjectRendererProperties> {
     
+    disposer: IReactionDisposer
+
     constructor(props: IDummyObjectRendererProperties) {
         super(props);
 
-        reaction(
+        this.disposer = reaction(
             () => {
                 const id = props.store.uistate.loadedItem;
-                const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork?.nodes.length;
+                const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork;
+                const names = network?.nodes.map(_ => _.name)
                 return {
                     selectedItem: id,
-                    network: network
+                    network: network?.nodes.length,
+                    names: names
                 }
             },
             () => {
@@ -89,6 +93,10 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                     }
             </div>
         </DragReceiver>
+    }
+
+    componentWillUnmount(): void {
+        this.disposer();
     }
 }
 

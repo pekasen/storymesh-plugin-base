@@ -1,7 +1,7 @@
 import { observable, makeObservable } from "mobx";
-import { MoveableItem } from '../store/MoveableItem';
+import { MoveableItem } from './MoveableItem';
 
-export class BoxStore extends MoveableItem {
+export class ConnectorItem extends MoveableItem {
 
     public width: number;
     public height: number;

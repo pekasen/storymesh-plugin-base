@@ -9,6 +9,7 @@ import { MoveableItem } from "../store/MoveableItem";
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { TwoJS } from './TwoJS';
 import { RootStore } from "../store/rootStore";
+import { ConnectorView } from './Connector/ConnectorView';
 
 interface IDropzonePaneProps {
     uistate: UIStore//,

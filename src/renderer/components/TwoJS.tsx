@@ -6,8 +6,7 @@ import { UIStore } from '../store/UIStore';
 
 interface ITwoJS {
     noodles: EdgeItem[],
-    uistate: UIStore
-  //  store: RootStore    
+    uistate: UIStore 
 }
 
 export class TwoJS extends Component<ITwoJS> {
@@ -15,8 +14,6 @@ export class TwoJS extends Component<ITwoJS> {
     myCircles: Two.Circle[];
     noodles: EdgeItem[];
     myNoodles: Two.Path[];
-    //topGroup: Two.Group;
-   // bottomGroup: Two.Group;
     x1: number; 
     y1: number;
     x2: number;
@@ -43,19 +40,6 @@ export class TwoJS extends Component<ITwoJS> {
         /*this.noodles.map(e =>
             //this.drawNoodleCurve(e.from.x, e.from.y, e.b.x, e.b.y)
             this.drawNoodleCurve(1, 1, 1000, 1000)
-        );
-        this.myCircles = [1,2,2,1,2,2,42,1,1]
-        .map((e) => ({
-            x:  e * 0.3 * 640,
-            y:  e * 0.3 * 480
-        })).map(e => this.drawCircle(e.x, e.y, 5)            
-        );
-        
-        this.myNoodles = [1,2,2,1,2,2,42,1,1].map((e) => ({
-            x: e * 0.3 * 640,
-            y: e * 0.3 * 480
-        })).map(e =>
-            this.drawNoodleCurve(e.x, e.y, 2*e.x, 2*e.y)
         );*/
 
         this.myCircles = [];
@@ -63,21 +47,16 @@ export class TwoJS extends Component<ITwoJS> {
         this.myCircles.push(this.drawCircle(this.x1, this.y1, 5));
         this.myCircles.push(this.drawCircle(this.x2, this.y2, 5));
         this.myNoodles.push(this.drawNoodleCurve(this.x1, this.y1, this.x2, this.y2));
+        /* 
         this.myNoodles.forEach(edge => { 
-           // edge.center();
-            
+            edge.center();
             const _arr = [edge.beginning, edge.ending];
-           /* edge.vertices.forEach((v, i) => {
-                
+            edge.vertices.forEach((v, i) => {               
                 v.x = v.x + 125;
                 v.y = v.y + 125;
                 console.log("Verts: ", v.x, v.y);
-            }) */
-            
-        })
-
-       // this.bottomGroup = this.svg.makeGroup(this.myNoodles);
-        //this.topGroup = this.svg.makeGroup(this.myCircles);
+            })
+        */
     }
 
     updateMyCircles(moveableItems: MoveableItem[]): void {
@@ -152,9 +131,9 @@ export class TwoJS extends Component<ITwoJS> {
 
         this.myNoodles.forEach((e: Two.Path) => {
             const elem = document.getElementById(e.id);
-            elem?.addEventListener('mouseover', (me) => (this.updateNoodle(e, me.clientX - 350, me.clientY - 170)) 
-                //this.dragstart_handler(me.dataTransfer)
-                )
+            elem?.addEventListener('click', () => {
+                console.log(elem);
+            })
         })
     }
 
@@ -164,11 +143,6 @@ export class TwoJS extends Component<ITwoJS> {
         c.fill = this.getRandomColor();   
         this.svg.update();
         return c;
-    }
-
-    dragstart_handler(ev: DataTransfer|null) {
-        if (ev) 
-        ev.dropEffect = "copy";
     }
 
     drawRectangle(x1: number, y1: number, x2: number, y2: number): Two.Rectangl {

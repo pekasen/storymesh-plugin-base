@@ -13,6 +13,7 @@ import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
+import { ConnectorView } from './Connector/ConnectorView';
 
 interface IAppProps {
     store: RootStore
@@ -71,6 +72,14 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                         </DummyObjectRenderer>
                 </VerticalPane>
                 <VerticalSmallPane>
+                    {
+                        Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
+                            <ConnectorView item={{id: item.id}} onDrag={() => {
+                                console.log("connector message");
+                            }}><span>{item.name}</span></ConnectorView>
+                        ))
+                    }
+                {/*  
                     <StoryComponentGallery>
                         {
                             // TODO: compute gallery items from plugin registry
@@ -79,6 +88,7 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                             ))
                         }
                     </StoryComponentGallery>
+                */}
                 </VerticalSmallPane>
             </VerticalPaneGroup>
         </Pane>

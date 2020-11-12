@@ -80,16 +80,12 @@ export class Moveable extends Component<IMoveableProps> {
                                 );
                                 _item.updateCached(d_x, d_y);
                             }
-
-                            console.log(_item?.x, _item?.y);
                         });
                     }
 
                     function remover () {
                         document.removeEventListener("mousemove", updater)
                         document.removeEventListener("mouseup", remover);
-
-                        console.log(registry)
                     }
                     
                     document.addEventListener("mousemove", updater);

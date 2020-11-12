@@ -3,19 +3,18 @@ import { MoveableItem } from "./MoveableItem";
 import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
 import { ValueRegistry } from '../utils/registry';
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { RootStore } from './rootStore';
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
-    moveableItems: ValueRegistry<MoveableItem<IStoryObject>>
+    moveableItems: ValueRegistry<MoveableItem>
     term: string
     file: string
 }
 
 export class UIStore implements IStoreableObject<IUIStoreProperties> {
     windowProperties: WindowProperties
-    moveableItems: ValueRegistry<MoveableItem<IStoryObject>>
+    moveableItems: ValueRegistry<MoveableItem>
     term: string
     file: string
     leftSidebar: boolean
@@ -29,7 +28,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.selectedItem = "";
 
         // TODO: make stuff move again!!1
-        this.moveableItems = new ValueRegistry<MoveableItem<IStoryObject>>();
+        this.moveableItems = new ValueRegistry<MoveableItem>();
         this.file = "";
         // TODO: actually use the WindowProperties!
         this.windowProperties = new WindowProperties();

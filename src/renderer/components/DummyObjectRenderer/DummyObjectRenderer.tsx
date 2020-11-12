@@ -149,7 +149,7 @@ export class DummyObject extends Component<DummyObjectProperties> {
             }}
             onDblClick={(e) => {
                 e.preventDefault();
-                if(object.role === "container") {
+                if(object.role === "internal.container.container") {
                     store.uistate.setLoadedItem(object.id);
                 }
             }}

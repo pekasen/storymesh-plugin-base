@@ -1,4 +1,5 @@
-import { h } from "preact";
+import { FunctionComponent, h } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { StoryGraph } from 'storygraph/dist/StoryGraph/StoryGraph';
 import { IEdge } from 'storygraph/dist/StoryGraph/IEdge';
 import { IGraph } from 'storygraph/dist/StoryGraph/IGraph';
@@ -8,19 +9,19 @@ import { IReactiveOutput } from 'storygraph/dist/StoryGraph/IReactiveOutput';
 import { IRenderingProperties } from 'storygraph/dist/StoryGraph/IRenderingProperties';
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import { IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
 
 import { v4 } from "uuid";
-import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { action, computed, makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer } from 'mobx';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
+
 /**
  * Our second little dummy PlugIn
  * 
- * @todo It should actually inherit from StoryObject and not StoryGraph...
+ * 
  */
-// @observable
 class _Container implements IPlugIn, IStoryObject{
-    id = v4();
+    id: string;
     name: string;
     role: string;
     userDefinedProperties: any;
@@ -37,7 +38,8 @@ class _Container implements IPlugIn, IStoryObject{
     childNetwork: StoryGraph;
 
     constructor() {
-        this.role = "container"
+        this.id = v4();
+        this.role = "internal.container.container";
         this.name = "Container" // [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,
@@ -65,13 +67,7 @@ class _Container implements IPlugIn, IStoryObject{
             incoming:               observable,
             modifiers:              observable,
             menuTemplate:           computed,
-            updateName:             action,
-            getName:                false
-            // menuTemplate: computed
-            // inputs:     observable,
-            // outputs:    observable,
-            // parent:     observable,
-            // network:    observable
+            updateName:             action
         });
     }
 
@@ -103,8 +99,40 @@ class _Container implements IPlugIn, IStoryObject{
         return this.name
     }
 
-    public render(): h.JSX.Element {
-        return <div>Hello</div>
+    public getComponent() {
+        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph}) => {
+            const [_, setState] = useState({});
+            let disposer: IReactionDisposer;
+            useEffect(() => {
+                disposer = reaction(
+                    () => (graph?.nodes.length),
+                    () => {
+                        setState({});
+                    }
+                )
+    
+                return () => {
+                    disposer();
+                }
+            });
+            return <div id={id}>
+                {
+                    graph?.nodes.map(e => {
+                        const Comp = (e as unknown as IPlugIn).getComponent();
+        
+                        return <Comp
+                            registry={registry}
+                            id={e.id}
+                            renderingProperties={e.renderingProperties}
+                            content={e.content}
+                            modifiers={e.modifiers}
+                            graph={e.childNetwork}
+                        ></Comp>
+                    }) || null
+                }
+            </div>
+}
+        return Comp
     }
 
     public willDeregister(registry: IRegistry): void {
@@ -130,9 +158,3 @@ export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeOb
     version: false,
     class: false
 });
-
-
-/**
- * Let's plug ourselves in!
- */
-// rootStore.storyContentTemplatesRegistry.register([TextObject]);

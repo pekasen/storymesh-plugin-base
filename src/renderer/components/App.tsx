@@ -3,7 +3,7 @@ import { Component, FunctionalComponent, h } from "preact";
 
 import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
-import { Pane, PaneGroup, SideBar } from './Pane';
+import { Pane, PaneGroup, SideBar, HorizontalPaneGroup } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
@@ -54,6 +54,7 @@ interface EditorPaneGroupProperties {
 
 const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loadedItem, store}) => {
     return <PaneGroup>
+        <HorizontalPaneGroup>
         <SideBar>
             <ItemPropertiesView
                 store={store}>
@@ -81,5 +82,6 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                 </VerticalSmallPane>
             </VerticalPaneGroup>
         </Pane>
+        </HorizontalPaneGroup>
     </PaneGroup>
 };

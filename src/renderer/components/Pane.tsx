@@ -4,6 +4,10 @@ export const PaneGroup: FunctionalComponent = ({ children }) => (
     <div class="pane-group">{children}</div>
 );
 
+export const HorizontalPaneGroup: FunctionalComponent = ({ children }) => (
+    <div class="pane-group horizontal-pane-group">{children}</div>
+);
+
 export const Pane: FunctionalComponent = ({ children }) => (
     <div class="pane">{children}</div>
 );

@@ -12,6 +12,7 @@ import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/P
 
 import { v4 } from "uuid";
 import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 /**
  * Our second little dummy PlugIn
  * 
@@ -104,6 +105,10 @@ class _Container implements IPlugIn, IStoryObject{
 
     public render(): h.JSX.Element {
         return <div>Hello</div>
+    }
+
+    public willDeregister(registry: IRegistry): void {
+        this.childNetwork.willDeregister(registry)
     }
 }
 

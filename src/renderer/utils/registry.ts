@@ -11,7 +11,6 @@
 
 import { action, makeObservable, observable } from 'mobx';
 
-
 // Crazy stuff, sauce here: https://2ality.com/2020/04/classes-as-values-typescript.html
 export interface Class<T> {
     new(...args: unknown[]): T
@@ -78,6 +77,9 @@ export class ClassRegistry<T> extends Registry<T> {
     }
 }
 
+export interface INotifyable<T extends IValue<T>> {
+    registry: ValueRegistry<T>
+}
 
 /**
  * Creates a registery for a specific type which
@@ -93,7 +95,7 @@ export class ClassRegistry<T> extends Registry<T> {
  reg.getRegisteredValue("Bert") // 42
  * ```
  */
-export class ValueRegistry<T extends IValue> {
+export class ValueRegistry<T extends IValue<T>> {
     
     public registry: Map<string, T>
     
@@ -118,6 +120,12 @@ export class ValueRegistry<T extends IValue> {
     }
 
     public deregister(id: string): boolean {
+        // notify deregistring item to brace if it is interested
+        const hangman = this.getValue(id);
+        if (hangman && hangman.willDeregister){
+            hangman.willDeregister(this);
+        }
+
         return this.registry.delete(id)
     }
 
@@ -132,6 +140,7 @@ export class ValueRegistry<T extends IValue> {
     }
 }
 
-export interface IValue {
+export interface IValue<T extends IValue<T>> {
     id: string
+    willDeregister?(registry: ValueRegistry<T>): void
 }

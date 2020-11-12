@@ -46,16 +46,18 @@ export function registerHandlers(): void {
     });
 
     ipcRenderer.on('delete', () => {
-        const selectedItemID = rootStore.uistate.selectedItem;
+        const selectedItemIds = rootStore.uistate.selectedItems.ids;
         const reg = rootStore.storyContentObjectRegistry;
-        console.log("delete", selectedItemID);
+        console.log("delete", selectedItemIds);
         
-        const selectedItem = reg.getValue(selectedItemID);
-        if ( selectedItem && selectedItem.parent ) {
-            const parentItem = reg.getValue(selectedItem.parent)
+        selectedItemIds.forEach(selectedItemID => {
+            const selectedItem = reg.getValue(selectedItemID);
+            if ( selectedItem && selectedItem.parent ) {
+                const parentItem = reg.getValue(selectedItem.parent)
 
-            parentItem?.childNetwork?.removeNode(reg, selectedItem);
-            rootStore.uistate.moveableItems.deregister(selectedItemID);
-        }
+                parentItem?.childNetwork?.removeNode(reg, selectedItem);
+                rootStore.uistate.moveableItems.deregister(selectedItemID);
+            }
+        });
     });
 }

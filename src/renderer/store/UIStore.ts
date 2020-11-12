@@ -4,6 +4,7 @@ import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
 import { ValueRegistry } from '../utils/registry';
 import { RootStore } from './rootStore';
+import { SelectedItemStore } from './SelectedItemStore';
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -18,14 +19,14 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     term: string
     file: string
     leftSidebar: boolean
-    selectedItem: string
+    selectedItems: SelectedItemStore
     loadedItem: string
     private _parent: RootStore
 
     constructor(parent: RootStore) {
         this._parent = parent;
         this.loadedItem = "";
-        this.selectedItem = "";
+        this.selectedItems = new SelectedItemStore();
 
         // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem>();
@@ -70,10 +71,6 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
 
     toggleSidebar(): void {
         this.leftSidebar = !this.leftSidebar;
-    }
-
-    setselectedItem(id: string): void {
-        this.selectedItem = id;
     }
 
     get untitledDocument (): boolean {

@@ -1,10 +1,10 @@
-import { reaction } from 'mobx';
+import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
-import { UIStore } from '../../store/UIStore';
-import { IPlugIn } from '../../utils/PlugInClassRegistry';
 import { DragReceiver } from "../DragReceiver";
+import { Moveable } from '../Moveable';
 
 export interface IDummyObjectRendererProperties {
     loadedObject: IStoryObject
@@ -13,12 +13,24 @@ export interface IDummyObjectRendererProperties {
 
 export class DummyObjectRenderer extends Component<IDummyObjectRendererProperties> {
     
+    disposer: IReactionDisposer
+
     constructor(props: IDummyObjectRendererProperties) {
         super(props);
 
-        reaction(
-            () => (Array.from(props.loadedObject.id)),
+        this.disposer = reaction(
             () => {
+                const id = props.store.uistate.loadedItem;
+                const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork;
+                const names = network?.nodes.map(_ => _.name)
+                return {
+                    selectedItem: id,
+                    network: network?.nodes.length,
+                    names: names
+                }
+            },
+            () => {
+                console.log("I changed!");
                 this.setState({});
             }
         );
@@ -28,6 +40,9 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
+            const coords = {x: e.x, y: e.y};
+
+            console.log(coords);
 
             if (input) {
                 const [loc, type, id] = input.split(".");
@@ -43,6 +58,7 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                                     if (instance) {
                                         loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
                                         store.uistate.setselectedItem(instance.id);
+                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
                                     }
                                     break;
                                 }
@@ -52,6 +68,7 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                                     if (instance) {
                                         loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
                                         store.uistate.setselectedItem(instance.id)
+                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
                                     }
                                     break;
                                 }
@@ -78,11 +95,17 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .map((object) => (
-                        <DummyObject store={store} object={object}>{object.name}</DummyObject>
+                        <Moveable item={store.uistate.moveableItems.getValue(object.id) as MoveableItem}>
+                            <DummyObject store={store} object={object}>{object.name}</DummyObject>
+                        </Moveable>
                         ))
                     }
             </div>
         </DragReceiver>
+    }
+
+    componentWillUnmount(): void {
+        this.disposer();
     }
 }
 
@@ -94,19 +117,15 @@ interface DummyObjectProperties {
 
 export class DummyObject extends Component<DummyObjectProperties> {
 
-    public active: boolean
-
     constructor(props: DummyObjectProperties) {
         super(props);
 
-        this.active = props.store.uistate.selectedItem === props.object.id;
-
         reaction(
-            () => props.store.uistate.selectedItem,
-            (selectedItem) => {
-                if (props.object.id === selectedItem) {
-                    this.active = true;
-                } else this.active = false;
+            () => ({
+                selectedItem: props.store.uistate.selectedItem,
+                name: props.object.name
+            }),
+            ({ selectedItem, name }) => {
                 this.setState({});
             }
         );
@@ -124,7 +143,11 @@ export class DummyObject extends Component<DummyObjectProperties> {
                     store.uistate.setLoadedItem(object.id);
                 }
             }}
-            class={(this.active) ? "dummy-object active" : "dummy-object inactive"}
+            class={(this.active(store.uistate.selectedItem)) ? "dummy-object active" : "dummy-object inactive"}
         >{children}</div>
+    }
+
+    active(id: string): boolean {
+        return this.props.object.id === id;
     }
 }

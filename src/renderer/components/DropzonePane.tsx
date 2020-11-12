@@ -19,8 +19,8 @@ interface IDropzonePaneProps {
 export class DropzonePane extends Component<IDropzonePaneProps> {
     //two: TwoJS;
     ref = createRef();
-    deleter = new MoveableItem({name: "Delete", id: "DELETER1", role: "meme", userDefinedProperties: undefined, isContentNode: false}, 0, 0);
-    deleterBox = new MoveableItem({name: "Delete", id: "DELETER2"}, 110, 110);
+    deleter = new MoveableItem("DELETER1", 0, 0);
+    deleterBox = new MoveableItem("DELETER2", 110, 110);
     constructor(props: IDropzonePaneProps) {
         super(props); 
 

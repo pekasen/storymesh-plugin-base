@@ -5,13 +5,13 @@ import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
 import { Pane, PaneGroup, SideBar } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
-import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
+import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
 import { DropzonePane } from "./DropzonePane";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
-import { BreadCrumb } from "./BreadCumbs/BreadCrumbs";
+import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
 
 interface IAppProps {
@@ -24,7 +24,7 @@ export class App extends Component<IAppProps> {
         super(props);
 
         reaction(
-            () => [props.store.uistate.selectedItem, props.store.uistate.loadedItem],
+            () => [props.store.uistate.loadedItem],
             () => this.setState({})
         );
     }
@@ -57,24 +57,15 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
     return <PaneGroup>
         <SideBar>
             <ItemPropertiesView
-                template={
-                    (() => {
-                        const res = store.
-                        storyContentObjectRegistry.
-                        getValue(store.uistate.selectedItem);
-                        return res?.
-                        menuTemplate;
-                    })()
-                }
-                store={store.uistate}>
+                store={store}>
             </ItemPropertiesView>
         </SideBar>
         <DropzonePane uistate={store.uistate}></DropzonePane>
         <Pane>
             <VerticalPaneGroup>
-                <VerticalPane>
+                <VerticalMiniPane>
                     <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
-                </VerticalPane>
+                </VerticalMiniPane>
                 <VerticalPane>
                         <DummyObjectRenderer loadedObject={loadedItem} store={store}>
                         </DummyObjectRenderer>
@@ -84,7 +75,7 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                         {
                             // TODO: compute gallery items from plugin registry
                             Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
-                                <GalleryItemView item={{id: item.id}}><p>{item.name}</p></GalleryItemView>
+                                <GalleryItemView item={{id: item.id}}><span>{item.name}</span></GalleryItemView>
                             ))
                         }
                     </StoryComponentGallery>

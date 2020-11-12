@@ -44,4 +44,10 @@ export function registerHandlers(): void {
     ipcRenderer.on('new', () => {
         rootStore.reset();
     });
+
+    ipcRenderer.on('delete', () => {
+        const currentItem = rootStore.uistate.selectedItem;
+        rootStore.storyContentObjectRegistry.deregister(currentItem);
+        rootStore.uistate.moveableItems.deregister(currentItem);
+    });
 }

@@ -38,9 +38,13 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
             plugInLoader()
         );
 
+        /**
+         * If we are in a empty and untitled document, make a root storyobject
+         */
         if (this.uistate.untitledDocument) {
             const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
             if (emptyStory) {
+                emptyStory.name = "MyStory";
                 this.storyContentObjectRegistry.register(
                     emptyStory
                 );

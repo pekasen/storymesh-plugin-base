@@ -1,6 +1,6 @@
 import { app, Menu } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
-import { handleSaveEvent, handleLoadEvent, handleNewDocumentEvent } from "./event-handlers/save-handler";
+import { handleSaveEvent, handleLoadEvent, handleNewDocumentEvent, handleDeleteEvent } from "./event-handlers/save-handler";
 
 export function patchMenu(): void {
     const isMac = process.platform === "darwin"
@@ -65,7 +65,7 @@ export function patchMenu(): void {
           { role: "paste" },
         //   ...(isMac ? [
             { role: "pasteAndMatchStyle" },
-            { role: "delete" },
+            { role: "delete", click: handleDeleteEvent },
             { role: "selectAll" },
             { type: "separator" },
             {

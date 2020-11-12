@@ -1,5 +1,4 @@
 import { h } from "preact";
-import { StoryGraph } from 'storygraph/dist/StoryGraph/StoryGraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { IEdge } from 'storygraph/dist/StoryGraph/IEdge';
 import { IGraph } from 'storygraph/dist/StoryGraph/IGraph';
@@ -12,7 +11,7 @@ import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 
 import { v4 } from "uuid";
-import { action, computed, makeObservable, observable, reaction } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 /**
  * Our first little dummy PlugIn
  * 
@@ -38,7 +37,7 @@ class _TextObject implements IPlugIn, IStoryObject{
 
     constructor() {
         this.role = "content"
-        this.name = [this.role, this.id].join("_");
+        this.name = "Text" // [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,
             order: 1,
@@ -77,11 +76,6 @@ class _TextObject implements IPlugIn, IStoryObject{
             // parent:     observable,
             // network:    observable
         });
-
-        reaction(
-            () => (this.name),
-            () => console.log("Update", this)
-        );
     }
 
     // @computed

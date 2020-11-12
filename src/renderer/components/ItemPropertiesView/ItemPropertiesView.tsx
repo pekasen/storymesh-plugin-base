@@ -1,11 +1,11 @@
 import { reaction } from 'mobx';
 import { Component, h } from 'preact';
-import { UIStore } from '../../store/UIStore';
+import { RootStore } from '../../store/rootStore';
 import { IMenuTemplate } from '../../utils/PlugInClassRegistry';
 
 export interface IItemPropertiesViewProperties {
-    template: IMenuTemplate[] | undefined
-    store: UIStore
+    // template: IMenuTemplate[] | undefined
+    store: RootStore
 }
 
 export class ItemPropertiesView extends Component<IItemPropertiesViewProperties> {
@@ -13,14 +13,22 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
     constructor(props: IItemPropertiesViewProperties) {
         super(props);
         reaction(
-            () => props.store.selectedItem,
-            () => {
+            () => props.store.uistate.selectedItem,
+            (i) => {
+                console.log("Now selected:", i)
                 this.setState({});
             }
         );
     }
 
-    render({ template, store }: IItemPropertiesViewProperties): h.JSX.Element {
+    render({ store }: IItemPropertiesViewProperties): h.JSX.Element {
+        const template = (() => {
+            const res = store.
+            storyContentObjectRegistry.
+            getValue(store.uistate.selectedItem);
+            return res?.
+            menuTemplate;
+        })()
         let menuItems: h.JSX.Element[] = [];
         if (template) {
             menuItems = template.map(item => {

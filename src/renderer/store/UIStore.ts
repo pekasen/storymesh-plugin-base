@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { MoveableItem } from "./MoveableItem";
 import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
@@ -18,15 +18,18 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     moveableItems: ValueRegistry<MoveableItem>
     term: string
     file: string
-    leftSidebar: boolean
+    hideLeftSidebar: boolean
+    hideRightSidebar: boolean
     selectedItems: SelectedItemStore
     loadedItem: string
+    topLevelObjectID: string
     private _parent: RootStore
 
     constructor(parent: RootStore) {
         this._parent = parent;
         this.loadedItem = "";
         this.selectedItems = new SelectedItemStore();
+        this.topLevelObjectID = "";
 
         // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem>();
@@ -35,9 +38,15 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.windowProperties = new WindowProperties();
         
         this.term = "";
-        this.leftSidebar = false;
-        
+        this.hideLeftSidebar = false;
+        this.hideRightSidebar = false;
+
         makeAutoObservable(this);
+
+        reaction(
+            () => (this.loadedItem),
+            (id: string) => console.log("loaded item:", id)
+        )
     }
 
     setLoadedItem(id: string): void {
@@ -50,27 +59,21 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     setFile(file: string): void {
         this.file = file;
     }
-
   
     loadFromPersistance(from: IUIStoreProperties): void {
         this.file = from.file;
         this.term = from.term;
         this.windowProperties.loadFromPersistance(from.windowProperties);
-        // this.moveableItems = from.moveableItems
-        // .map(e => {
-        //     const data = rootStore.model.itemByID(e.data.id);
-        //     if (data !== undefined) return new MoveableItem(data, e.x, e.y)
-        // })
-        // .filter(e => e !== undefined) as MoveableItem[];
     }
 
-    // TODO: implement
-    writeToPersistance(): void {
+    writeToPersistance(): void {    
+        // TODO: implement
         null
     }
 
-    toggleSidebar(): void {
-        this.leftSidebar = !this.leftSidebar;
+    toggleSidebar(which: "left" | "right"): void {
+        if (which === "left") this.hideLeftSidebar = !this.hideLeftSidebar
+        if (which === "right") this.hideRightSidebar = !this.hideRightSidebar
     }
 
     get untitledDocument (): boolean {

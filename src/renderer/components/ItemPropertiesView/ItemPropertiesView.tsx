@@ -1,7 +1,6 @@
 import { reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { RootStore } from '../../store/rootStore';
-import { IMenuTemplate } from '../../utils/PlugInClassRegistry';
 
 export interface IItemPropertiesViewProperties {
     // template: IMenuTemplate[] | undefined
@@ -13,9 +12,8 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
     constructor(props: IItemPropertiesViewProperties) {
         super(props);
         reaction(
-            () => props.store.uistate.selectedItem,
-            (i) => {
-                console.log("Now selected:", i)
+            () => props.store.uistate.selectedItems.ids,
+            () => {
                 this.setState({});
             }
         );
@@ -25,10 +23,12 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
         const template = (() => {
             const res = store.
             storyContentObjectRegistry.
-            getValue(store.uistate.selectedItem);
+            getValue(store.uistate.selectedItems.first);
+            
             return res?.
             menuTemplate;
         })()
+
         let menuItems: h.JSX.Element[] = [];
         if (template) {
             menuItems = template.map(item => {

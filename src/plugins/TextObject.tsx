@@ -37,7 +37,7 @@ class _TextObject implements IPlugIn, IStoryObject{
 
     constructor() {
         this.role = "content"
-        this.name = [this.role, this.id].join("_");
+        this.name = "Text" // [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,
             order: 1,

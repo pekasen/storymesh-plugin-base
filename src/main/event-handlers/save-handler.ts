@@ -35,3 +35,9 @@ export const handleNewDocumentEvent = (menuItem: MenuItem, window: BrowserWindow
         window.webContents.send('new');
     }
 };
+
+export const handleDeleteEvent =  (menuItem: MenuItem, window: BrowserWindow | undefined): void => {
+    if (window) {
+        window.webContents.send('delete');
+    }
+};

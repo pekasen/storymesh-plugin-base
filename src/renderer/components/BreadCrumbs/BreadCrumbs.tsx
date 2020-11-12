@@ -27,11 +27,14 @@ export const BreadCrumb: FunctionalComponent<IBreadCrumbPropeties> = ({ store, l
         return res
     }
     const path = recursePath(loadedObject);
+    let counter = 0;
     
+    // TODO: this reaction increases it's call count with each call!!
     reaction(
-        () => [path.map(e => e.name), store.uistate.selectedItem],
+        () => [...path.map(e => e.name), store.uistate.selectedItem],
         (i) => {
-            console.log(i)
+            counter++
+            console.log(i, counter)
             setState({});
         }
     );

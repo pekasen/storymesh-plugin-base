@@ -19,5 +19,5 @@ export const SmallPane: FunctionalComponent = ({ children }) => (
  * @returns {h.JSX.Element} A Peact Component
  */
 export const SideBar: FunctionalComponent = ({ children }) => (
-    <div class="pane pane-sm sidebar">{children}</div>
+    <div class="pane pane-sm sidebar">{children}<div class="drag-handle-horizontal"></div></div>
 );

@@ -5,6 +5,7 @@ import { WindowProperties } from './WindowProperties';
 import { ValueRegistry } from '../utils/registry';
 import { RootStore } from './rootStore';
 import { SelectedItemStore } from './SelectedItemStore';
+import { EdgeItem } from "./EdgeItem";
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -16,6 +17,7 @@ interface IUIStoreProperties {
 export class UIStore implements IStoreableObject<IUIStoreProperties> {
     windowProperties: WindowProperties
     moveableItems: ValueRegistry<MoveableItem>
+    edges: EdgeItem[]
     term: string
     file: string
     hideLeftSidebar: boolean
@@ -30,6 +32,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.loadedItem = "";
         this.selectedItems = new SelectedItemStore();
         this.topLevelObjectID = "";
+        this.edges = [];
 
         // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem>();
@@ -47,6 +50,18 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
             () => (this.loadedItem),
             (id: string) => console.log("loaded item:", id)
         )
+    }
+
+        
+    appendEdgeItem(edge: EdgeItem): void {
+        this.edges = [...this.edges, edge];
+    }
+
+    removeEdgeItem(edge: EdgeItem): void {
+        const index = this.edges.indexOf(edge);
+        if (index !== -1) {
+            this.edges.splice(index, 1);
+        }
     }
 
     setLoadedItem(id: string): void {

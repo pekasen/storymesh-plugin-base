@@ -4,11 +4,12 @@ import { reaction, IReactionDisposer } from "mobx";
 import { IItem } from './IItem';
 
 interface IDataItem extends IItem {
-    name: string
+    // name: string
+    id: string
 }
 
 interface IMoveableItem<T extends IDataItem> {
-    data: T
+    // data: T
     x: number
     y: number
     updatePosition(x: number, y: number): void
@@ -29,7 +30,11 @@ export class Moveable<T extends IDataItem> extends Component<IMoveableProps<T>> 
         super(props);
 
         this.reactionDisposer = reaction(
-            () => ({x: props.item.x, y: props.item.y, name: props.item.data.name }),
+            () => ({
+                x: props.item.x,
+                y: props.item.y,
+                // name: props.item.data.name
+            }),
             () => {
                 this.setState({});
             }

@@ -117,12 +117,8 @@ interface DummyObjectProperties {
 
 export class DummyObject extends Component<DummyObjectProperties> {
 
-    public active: boolean
-
     constructor(props: DummyObjectProperties) {
         super(props);
-
-        this.active = props.store.uistate.selectedItem === props.object.id;
 
         reaction(
             () => ({
@@ -130,9 +126,6 @@ export class DummyObject extends Component<DummyObjectProperties> {
                 name: props.object.name
             }),
             ({ selectedItem, name }) => {
-                if (props.object.id === selectedItem) {
-                    this.active = true;
-                } else this.active = false;
                 this.setState({});
             }
         );
@@ -150,7 +143,11 @@ export class DummyObject extends Component<DummyObjectProperties> {
                     store.uistate.setLoadedItem(object.id);
                 }
             }}
-            class={(this.active) ? "dummy-object active" : "dummy-object inactive"}
+            class={(this.active(store.uistate.selectedItem)) ? "dummy-object active" : "dummy-object inactive"}
         >{children}</div>
+    }
+
+    active(id: string): boolean {
+        return this.props.object.id === id;
     }
 }

@@ -41,7 +41,11 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
-            const coords = {x: e.x, y: e.y};
+            const bounds = (e.target as HTMLElement).getBoundingClientRect()
+            const coords = {
+                x: e.x - bounds.left,
+                y: e.y - bounds.top
+            };
 
             console.log(coords);
 
@@ -54,23 +58,11 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                         case "internal": {
                             switch(type) {
                                 case "content": {
-                                    const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-                                    console.log(instance);
-                                    if (instance) {
-                                        loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
-                                        store.uistate.selectedItems.setSelectedItems([instance.id]);
-                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
-                                    }
+                                    this.makeNewInstance(store, input, loadedObject, coords);
                                     break;
                                 }
                                 case "container": {
-                                    const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-                                    console.log(instance);
-                                    if (instance) {
-                                        loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
-                                        store.uistate.selectedItems.setSelectedItems([instance.id]);
-                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
-                                    }
+                                    this.makeNewInstance(store, input, loadedObject, coords);
                                     break;
                                 }
                                 default: break;
@@ -96,13 +88,23 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .map((object) => (
-                        <Moveable item={store.uistate.moveableItems.getValue(object.id) as MoveableItem}>
+                        <Moveable registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
                             <DummyObject store={store} object={object}>{object.name}</DummyObject>
                         </Moveable>
                         ))
                     }
             </div>
         </DragReceiver>
+    }
+
+    private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
+        const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
+        console.log(instance);
+        if (instance) {
+            loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
+            store.uistate.selectedItems.setSelectedItems([instance.id]);
+            store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
+        }
     }
 
     componentWillUnmount(): void {

@@ -1,5 +1,12 @@
 import { makeAutoObservable } from 'mobx'
 
+export interface ISelectableProps {
+    selectedItems: SelectedItemStore
+}
+
+/**
+ * Creates a storage for the selected items
+ */
 export class SelectedItemStore {
     private selectedItemIds: string[]
 

@@ -1,35 +1,28 @@
 import { reaction } from 'mobx';
 import { Component, createRef, h } from "preact";
-
+import { IItem } from './IItem';
 import Two from 'twojs-ts';
 import { UIStore } from "../store/UIStore";
 
 import { Moveable } from './Moveable';
-import { Draggable } from './Draggable';
-import { EdgeView } from './EdgeView';
 import { MoveableItem } from "../store/MoveableItem";
-import { BoxStore } from "../store/BoxStore";
-import { List } from '../store/List';
-import { ListItem } from '../store/ListItem';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { TwoJS } from './TwoJS';
+import { RootStore } from "../store/rootStore";
 
 interface IDropzonePaneProps {
-    uistate: UIStore
-    model: List
+    uistate: UIStore//,
+    //store: RootStore
 }
 
 
 export class DropzonePane extends Component<IDropzonePaneProps> {
     //two: TwoJS;
     ref = createRef();
-    deleter = new MoveableItem(new ListItem("Delete", "DELETER"), 0, 0);
-    deleterBox = new BoxStore(new ListItem("Delete", "DELETER"), 0, 0, 100, 100);
+    deleter = new MoveableItem({name: "Delete", id: "DELETER1", role: "meme", userDefinedProperties: undefined, isContentNode: false}, 0, 0);
+    deleterBox = new MoveableItem({name: "Delete", id: "DELETER2"}, 110, 110);
     constructor(props: IDropzonePaneProps) {
-        super(props);
-       // this.two = new TwoJS();        
-
-        props.uistate.appendMoveableItem(this.deleter);
+        super(props); 
 
         reaction(
             () => (props.uistate.moveableItems),
@@ -39,7 +32,7 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
         );
 
         reaction(
-            () => (props.uistate.moveableItems.map(e => {e.x,  e.y})),
+            () => (props.uistate.moveableItems.registry.forEach(e => {e.x,  e.y})),
             () => {
                 // TODO: pass properties to TwoJS component in render()
                 // this.two.updateMyCircles(props.uistate.moveableItems);
@@ -53,7 +46,7 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
         //console.log("hi from ", this);
     }
 
-    render({ uistate, model }: IDropzonePaneProps): h.JSX.Element {
+    render({ uistate }: IDropzonePaneProps): h.JSX.Element {
         console.log(uistate.moveableItems);
 
         return <div ref={this.ref}
@@ -66,13 +59,14 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
                 if (e.target) {
                     const elem = e.target as Element;
                     const boundingRect = elem.getBoundingClientRect();
-
+                    /*
                     if (id !== undefined) {
                         const data = model.itemByID(id);
                         console.log(data);
                         if (data) 
-                        uistate.appendMoveableItem(new MoveableItem(data, e.clientX - boundingRect.left, e.clientY - boundingRect.top));
+                            uistate.moveableItems.register(new MoveableItem(data, e.clientX - boundingRect.left, e.clientY - boundingRect.top));
                     }
+                    */
                 }
             }}
             onDragOver={(e) => {
@@ -80,21 +74,21 @@ export class DropzonePane extends Component<IDropzonePaneProps> {
             }}
         >
             <div class="vertical-pane-group">
-                <TwoJS></TwoJS> 
+                <TwoJS noodles={uistate.edges} uistate={uistate}></TwoJS> 
                 <div class="vertical-pane">
                     {
-                        uistate.moveableItems.filter(e => (e.data.name !== "Delete")).map(e => (<Moveable item={e}><button class="btn btn-default">{e.data.name}</button></Moveable>))
+                       // uistate.moveableItems.registry.values.filter(e => (e.data.name !== "Delete")).map(e => (<Moveable item={e}><button class="btn btn-default">{e.data.name}</button></Moveable>))
                     }
-                    <Moveable item={this.deleterBox}><div style={"width: " + this.deleterBox.width + "; height: " + this.deleterBox.width + "; background-color: red;"}>
+                    <Moveable item={this.deleterBox}><div style={"width: 100; height:20; background-color: red;"}>
                         <button class="btn btn-negative" onClick={() => {
-                            uistate.clearMoveableItems(this.deleter);
+                        //    uistate.clearMoveableItems(this.deleter);
                         }}>DELETE</button>
                     </div>
                     </Moveable>
 
                     <Moveable item={this.deleter}><div style={"width: 100; height:20; background-color: red;"}>
                         <button class="btn btn-negative" onClick={() => {
-                            uistate.clearMoveableItems(this.deleter);
+                            //uistate.clearMoveableItems(this.deleter);
                         }}>DELETE</button>
                     </div>
                     </Moveable>

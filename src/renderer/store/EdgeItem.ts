@@ -1,18 +1,26 @@
 import { observable, makeObservable } from "mobx";
+import { IItem } from '../components/IItem';
 import { MoveableItem } from './MoveableItem';
 
-export class EdgeItem {
+export interface IEdge extends IItem {
+    id: string;
+    from: MoveableItem<IItem>;
+    to: MoveableItem<IItem>;
+}
 
-    a: MoveableItem;
-    b: MoveableItem;
+export class EdgeItem implements IEdge {
+    from: MoveableItem<IItem>;
+    to: MoveableItem<IItem>;
+    id: string;
 
-    constructor(a: MoveableItem, b: MoveableItem) {
-        this.a = a;
-        this.b = b;
+    constructor(props: IEdge) {
+        this.from = props.from;
+        this.to = props.to;
+        this.id = props.id; 
 
         makeObservable(this, {
-            a: observable,
-            b: observable
+            from: observable,
+            to: observable
         });
     }
 }

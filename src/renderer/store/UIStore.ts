@@ -5,6 +5,7 @@ import { WindowProperties } from './WindowProperties';
 import { ValueRegistry } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { RootStore } from './rootStore';
+import { EdgeItem } from "./EdgeItem";
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -16,6 +17,7 @@ interface IUIStoreProperties {
 export class UIStore implements IStoreableObject<IUIStoreProperties> {
     windowProperties: WindowProperties
     moveableItems: ValueRegistry<MoveableItem<IStoryObject>>
+    edges: EdgeItem[]
     term: string
     file: string
     leftSidebar: boolean
@@ -27,6 +29,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this._parent = parent;
         this.loadedItem = "";
         this.selectedItem = "";
+        this.edges = [];
 
         // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem<IStoryObject>>();
@@ -38,6 +41,18 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.leftSidebar = false;
         
         makeAutoObservable(this);
+    }
+
+        
+    appendEdgeItem(edge: EdgeItem): void {
+        this.edges = [...this.edges, edge];
+    }
+
+    removeEdgeItem(edge: EdgeItem): void {
+        const index = this.edges.indexOf(edge);
+        if (index !== -1) {
+            this.edges.splice(index, 1);
+        }
     }
 
     setLoadedItem(id: string): void {

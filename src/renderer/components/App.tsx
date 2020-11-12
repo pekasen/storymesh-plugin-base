@@ -7,6 +7,7 @@ import { Pane, PaneGroup, SideBar } from './Pane';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
+import { DropzonePane } from "./DropzonePane";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
@@ -68,7 +69,7 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                 store={store.uistate}>
             </ItemPropertiesView>
         </SideBar>
-        {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}
+        <DropzonePane uistate={store.uistate}></DropzonePane>
         <Pane>
             <VerticalPaneGroup>
                 <VerticalPane>

@@ -5,8 +5,8 @@ import { Component, createRef, h } from "preact";
 import { IItem } from './IItem';
 
 interface IEdge<T extends IItem> {
-    a: MoveableItem
-    b: MoveableItem
+    a: MoveableItem<IItem>
+    b: MoveableItem<IItem>
     line: Two.Path
     onClick?: () => void
     onDrag?: () => void
@@ -16,8 +16,8 @@ interface IEdge<T extends IItem> {
 }
 
 export class EdgeView extends Component<IEdge<IItem>> {
-    a: MoveableItem;
-    b: MoveableItem;
+    a: MoveableItem<IItem>;
+    b: MoveableItem<IItem>;
     line: Two.Path;
 
     constructor(props: IEdge<IItem>) {

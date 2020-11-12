@@ -2,18 +2,33 @@ import { Component, h } from 'preact';
 import Two from 'twojs-ts';
 import { MoveableItem } from "../store/MoveableItem";
 import { EdgeItem } from '../store/EdgeItem';
+import { IItem } from './IItem';
+import { IStoryObject } from "storygraph";
+import { RootStore } from "../store/rootStore";
+import { UIStore } from '../store/UIStore';
+
 
 interface ITwoJS {
-    noodles: EdgeItem[]
+    noodles: EdgeItem[],
+    uistate: UIStore
+  //  store: RootStore    
 }
 
 export class TwoJS extends Component<ITwoJS> {
     svg: Two;
     myCircles: Two.Circle[];
     noodles: EdgeItem[];
+    myNoodles: Two.Path[];
+    topGroup: Two.Group;
+    bottomGroup: Two.Group;
+    x1, y1, x2, y2: number;
 
     constructor(props: ITwoJS) {
         super();
+        this.x1 = 50;
+        this.y1 = 50;
+        this.x2 = 250;
+        this.y2 = 250;
         this.svg = new Two({
             type: Two.Types.svg,
             fullscreen: false,
@@ -21,24 +36,37 @@ export class TwoJS extends Component<ITwoJS> {
         });
 
         this.noodles = props.noodles;
-        this.myCircles = [1,2,2,1,2,2,42,1,1]
-        .map(() => ({
-            x: Math.random() * 640,
-            y: Math.random() * 480
-        })).map(e =>
-            this.drawCircle(e.x, e.y, 50)
+        /*this.noodles.map(e =>
+            //this.drawNoodleCurve(e.from.x, e.from.y, e.b.x, e.b.y)
+            this.drawNoodleCurve(1, 1, 1000, 1000)
         );
+        this.myCircles = [1,2,2,1,2,2,42,1,1]
+        .map((e) => ({
+            x:  e * 0.3 * 640,
+            y:  e * 0.3 * 480
+        })).map(e => this.drawCircle(e.x, e.y, 5)            
+        );
+        
+        this.myNoodles = [1,2,2,1,2,2,42,1,1].map((e) => ({
+            x: e * 0.3 * 640,
+            y: e * 0.3 * 480
+        })).map(e =>
+            this.drawNoodleCurve(e.x, e.y, 2*e.x, 2*e.y)
+        );*/
+
+        this.myCircles = [];
+        this.myNoodles = [];
+        this.myCircles.push(this.drawCircle(this.x1, this.y1, 5));
+        this.myCircles.push(this.drawCircle(this.x2, this.y2, 5));
+        this.myNoodles.push(this.drawNoodleCurve(this.x1, this.y1, this.x2, this.y2));
+
+
+        this.bottomGroup = this.svg.makeGroup(this.myNoodles);
+        this.topGroup = this.svg.makeGroup(this.myCircles);
     }
 
-    drawCircle(x: number, y: number, r: number): Two.Circle {
-        const c = this.svg.makeCircle(x, y, r)
-        c.fill = this.getRandomColor();   
-        this.svg.update();
-        return c;
-    }
-
-    updateMyCircles(moveableItems: MoveableItem[]): void {
-        if (this.myCircles.length === moveableItems.length) {
+    updateMyCircles(moveableItems: MoveableItem<IItem>[]): void {
+      /*  if (this.myCircles.length === moveableItems.length) {
             this.myCircles.map((e, i) => {
                 const root = moveableItems[i];                
                 e.translation = new Two.Vector(
@@ -46,16 +74,16 @@ export class TwoJS extends Component<ITwoJS> {
                     root.y
                 );
             });
-        } else {
+        } else {*/
             this.svg.clear();
             this.myCircles = moveableItems.map(e => {
                 return this.drawCircle(e.x, e.y, 50);
             });
-        }
+      //  }
         this.svg.update();
     }
     
-    updateMyNoodles(moveableItems: MoveableItem[]): void {
+    updateMyNoodles(moveableItems: MoveableItem<IItem>[]): void {
         if (this.noodles.length !== moveableItems.length) {
             this.svg.clear();
             this.noodles = moveableItems
@@ -63,9 +91,10 @@ export class TwoJS extends Component<ITwoJS> {
                 return moveableItems.map(node2 => {
                     if (node1 !== node2) {
                         return {
-                            a: node1,
-                            b: node2//,
-//line: this.drawNoodleCurve(node1.x, node1.y, node2.x, node2.y)
+                            from: node1,
+                            to: node2, 
+                            id: "meme"//,
+                            //line: this.drawNoodleCurve(node1.x, node1.y, node2.x, node2.y)
                         } as EdgeItem
                     }
                 });
@@ -73,7 +102,7 @@ export class TwoJS extends Component<ITwoJS> {
                 [...p, ...c].filter(e => e !== undefined)
             )) as EdgeItem[];
         } else this.noodles.forEach(edge => {
-            const _arr = [edge.a, edge.b];
+            const _arr = [edge.from, edge.to];
           //  edge.line.vertices.forEach((v, i) => {
           //      v.x = _arr[i].x;
          //       v.y = _arr[i].y;
@@ -103,8 +132,35 @@ export class TwoJS extends Component<ITwoJS> {
         })
     }
 
-    drawNoodleCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {
-        return this.svg.makeCurve([x1, y1, x2, y2], true);
+    drawCircle(x: number, y: number, r: number): Two.Circle {
+        const c = this.svg.makeCircle(x, y, r)
+        c.fill = this.getRandomColor();   
+        this.svg.update();
+        return c;
+    }
+
+    drawRectangle(x1: number, y1: number, x2: number, y2: number): Two.Rectangl {
+        const rect = this.svg.makeRectangle(x1, y1, x2, y2);
+        rect.fill = "orange";
+        rect.opacity = 0.25;
+        rect.noStroke();        
+        this.svg.update();
+        return rect;
+    }
+
+    drawNoodleCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {  
+        /*const curve = this.svg.makeCurve(110, 100, 120, 50, 140, 150, 160, 50, 180, 150, 190, 100, true);
+        curve.linewidth = 2;
+        curve.scale = 1.75;
+        curve.rotation = Math.PI / 2; // Quarter-turn
+        curve.noFill();
+        return curve;*/
+
+        const c = this.svg.makeCurve(x1, y1, x2, y2, true);
+        c.rotation = Math.PI / 4; // Quarter-turn
+        c.noFill();
+        this.svg.update();
+        return c;
     }
 
     getRandomColor(): string {

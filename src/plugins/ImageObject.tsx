@@ -1,4 +1,5 @@
-import { h } from "preact";
+import { FunctionComponent, h } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { IEdge } from 'storygraph/dist/StoryGraph/IEdge';
 import { IGraph } from 'storygraph/dist/StoryGraph/IGraph';
@@ -8,10 +9,11 @@ import { IReactiveOutput } from 'storygraph/dist/StoryGraph/IReactiveOutput';
 import { IRenderingProperties } from 'storygraph/dist/StoryGraph/IRenderingProperties';
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
 
 import { v4 } from "uuid";
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, IReactionDisposer, makeObservable, observable, reaction } from 'mobx';
+
 /**
  * Our first little dummy PlugIn
  * 
@@ -112,8 +114,31 @@ class _ImageObject implements IPlugIn, IStoryObject{
     }
 
 
-    public render(): h.JSX.Element {
-        return <div>Hello</div>
+    public getComponent() {
+        const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
+
+            const [_, setState] = useState({});
+            let disposer: IReactionDisposer;
+            useEffect(() => {
+                disposer = reaction(
+                    () => (content?.resource),
+                    () => {
+                        setState({});
+                    }
+                )
+
+                return () => {
+                    disposer();
+                }
+            })
+
+            return <p>
+                {
+                    content?.resource
+                }
+            </p>
+        }
+        return Comp
     }
 }
 

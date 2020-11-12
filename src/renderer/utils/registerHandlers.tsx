@@ -46,8 +46,16 @@ export function registerHandlers(): void {
     });
 
     ipcRenderer.on('delete', () => {
-        const currentItem = rootStore.uistate.selectedItem;
-        rootStore.storyContentObjectRegistry.deregister(currentItem);
-        rootStore.uistate.moveableItems.deregister(currentItem);
+        const selectedItemID = rootStore.uistate.selectedItem;
+        const reg = rootStore.storyContentObjectRegistry;
+        console.log("delete", selectedItemID);
+        
+        const selectedItem = reg.getValue(selectedItemID);
+        if ( selectedItem && selectedItem.parent ) {
+            const parentItem = reg.getValue(selectedItem.parent)
+
+            parentItem?.childNetwork?.removeNode(reg, selectedItem);
+            rootStore.uistate.moveableItems.deregister(selectedItemID);
+        }
     });
 }

@@ -77,13 +77,18 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                 }
             }
             console.log(store.storyContentObjectRegistry)
-        }}>
-            <div id="hello-world" style="width: 100%; height: 100%;" onDblClick={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.id === "hello-world"){
-                    store.uistate.selectedItems.setSelectedItems([]);
+        }
+        }>
+            <div
+                id="hello-world"
+                style="width: 100%; height: 100%;"
+                onDblClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.id === "hello-world"){
+                        store.uistate.selectedItems.setSelectedItems([]);
+                    }
                 }
-            }}>
+            }>
                 {
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars

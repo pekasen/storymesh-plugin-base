@@ -29,7 +29,8 @@ export class Preview extends Component<IPreviewProps> {
         const children = graph?.nodes
         console.log("children", children);
         
-        return <div class={"ngwebs-story " + topLevelObjectId}>{
+        return <div class="preview-container">
+            <div class={"ngwebs-story " + topLevelObjectId}>{
             children?.map(node => {
                 const _node = node as unknown as IPlugIn;
 
@@ -41,5 +42,6 @@ export class Preview extends Component<IPreviewProps> {
                 })
             })
         }</div>
+        </div>
     }
 }

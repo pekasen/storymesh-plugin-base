@@ -11,7 +11,8 @@ function createWindow() {
         titleBarStyle: "hidden",
         webPreferences: {
             nodeIntegration: true,
-            worldSafeExecuteJavaScript: true
+            worldSafeExecuteJavaScript: true,
+            enableRemoteModule: true
         }
     });
 

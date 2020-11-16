@@ -138,6 +138,8 @@ export class DummyObject extends Component<DummyObjectProperties> {
     render({ store, object, children}: DummyObjectProperties): h.JSX.Element {
 
         return <Draggable id={object.id}>
+            <div class="outer">
+            <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
             <div
                 onClick={(e) => {
                     e.preventDefault();
@@ -156,8 +158,14 @@ export class DummyObject extends Component<DummyObjectProperties> {
                 }}
                 class={(store.uistate.selectedItems.isSelected(object.id)) ? "dummy-object active" : "dummy-object inactive"}
             >
-                {children}
-                <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}><p>moveme</p></MoveSender>
+                <div class="area-meta">
+                    {children}
+                </div>
+                <div class="area-content">
+                    <span>Content!</span>
+                </div>
+            </div>
+            </MoveSender>
             </div>
         </Draggable>
     }

@@ -5,13 +5,35 @@
     overflow: scroll;    
 }
 
+.outer {
+    background: transparent;
+    padding: 10px;
+    cursor: cell;
+}
+
 .dummy-object {
-    border: 1px;
-    border-radius: 10px;
-    border-style: solid;
-    padding: 5px;
-    margin: 5px;
-    width: fit-content;
+    width: 300px;
+    height: auto;
+    border: 1px solid #616161;
+
+    .area-meta {
+        width: auto;
+        height: 2em;
+        background: #616161;
+        line-height: 25px;
+        font-size: 1.5em;
+        font-weight: bold;
+        vertical-align: middle;
+        padding: 5px;
+        color: #fff;
+    }
+
+    .area-content{
+        width: auto;
+        height: 200px;
+        padding: 5px;
+        background: #fff;
+    }
 }
 .dummy-object.inactive {
     background-color: whitesmoke;

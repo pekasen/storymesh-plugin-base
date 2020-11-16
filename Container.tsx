@@ -2,11 +2,7 @@ import { FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { v4 } from "uuid";
 import { action, computed, makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer } from 'mobx';
-import { StoryGraph, IStoryObject } from 'storygraph';
-
-import { IEdge } from 'storygraph/dist/StoryGraph/IEdge';
-import { IMetaData } from 'storygraph/dist/StoryGraph/IMetaData';
-import { IRenderingProperties } from 'storygraph/dist/StoryGraph/IRenderingProperties';
+import { StoryGraph, IStoryObject, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";

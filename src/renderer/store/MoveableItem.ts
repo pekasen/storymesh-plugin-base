@@ -32,8 +32,8 @@ export class MoveableItem { //<T extends IValue>
     }
 
     public updatePosition(x: number, y: number): void {
-        this.x += x;
-        this.y += y;
+        this.x += (this.x >= 0) ? x : 0;
+        this.y += (this.y >= 0) ? y : 0;
     }
 
     get cached(): ICoords {

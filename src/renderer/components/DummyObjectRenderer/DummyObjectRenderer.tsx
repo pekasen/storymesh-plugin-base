@@ -1,11 +1,11 @@
 import { IReactionDisposer, reaction } from 'mobx';
-import { objectPrototype } from 'mobx/dist/internal';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
+import { Draggable } from '../Draggable';
 import { DragReceiver } from "../DragReceiver";
-import { Moveable } from '../Moveable';
+import { MoveReceiver, MoveSender } from '../Moveable';
 
 export interface IDummyObjectRendererProperties {
     loadedObject: IStoryObject
@@ -81,8 +81,8 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         }>
             <div
                 id="hello-world"
-                style="width: 100%; height: 100%;"
-                onDblClick={(e) => {
+                style="min-width: 600px; min-height: 400px;"
+                onClick={(e) => {
                     const target = e.target as HTMLElement;
                     if (target.id === "hello-world"){
                         store.uistate.selectedItems.setSelectedItems([]);
@@ -93,9 +93,9 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .map((object) => (
-                        <Moveable registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
+                        <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
                             <DummyObject store={store} object={object}>{object.name}</DummyObject>
-                        </Moveable>
+                        </MoveReceiver>
                         ))
                     }
             </div>
@@ -137,23 +137,29 @@ export class DummyObject extends Component<DummyObjectProperties> {
     }
 
     render({ store, object, children}: DummyObjectProperties): h.JSX.Element {
-        return <div
-            onClick={(e) => {
-                e.preventDefault();
-                const selectedItems = store.uistate.selectedItems;
-                if (e.shiftKey) {
-                    selectedItems.addToSelectedItems(object.id);
-                } else {
-                    selectedItems.setSelectedItems([object.id]);
-                }
-            }}
-            onDblClick={(e) => {
-                e.preventDefault();
-                if(object.role === "internal.container.container") {
-                    store.uistate.setLoadedItem(object.id);
-                }
-            }}
-            class={(store.uistate.selectedItems.isSelected(object.id)) ? "dummy-object active" : "dummy-object inactive"}
-        >{children}</div>
+
+        return <Draggable id={object.id}>
+            <div
+                onClick={(e) => {
+                    e.preventDefault();
+                    const selectedItems = store.uistate.selectedItems;
+                    if (e.shiftKey) {
+                        selectedItems.addToSelectedItems(object.id);
+                    } else {
+                        selectedItems.setSelectedItems([object.id]);
+                    }
+                }}
+                onDblClick={(e) => {
+                    e.preventDefault();
+                    if(object.role === "internal.container.container") {
+                        store.uistate.setLoadedItem(object.id);
+                    }
+                }}
+                class={(store.uistate.selectedItems.isSelected(object.id)) ? "dummy-object active" : "dummy-object inactive"}
+            >
+                {children}
+                <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}><p>moveme</p></MoveSender>
+            </div>
+        </Draggable>
     }
 }

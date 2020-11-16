@@ -1,13 +1,10 @@
 import { reaction } from 'mobx';
 import { Component, FunctionalComponent, h } from "preact";
 
-import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
-import { Pane, PaneGroup, SideBar, HiddeableSideBar, HorizontalPaneGroup } from './Pane';
-import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
+import { Pane, HiddeableSideBar, HorizontalPaneGroup } from './Pane';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
-import { DropzonePane } from "./DropzonePane";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
@@ -15,6 +12,8 @@ import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
 import { Preview } from './Preview/Preview';
 import { ConnectorView } from './Connector/ConnectorView';
+import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
+import { GalleryItemView } from './GalleryItemView';
 
 interface IAppProps {
     store: RootStore
@@ -57,8 +56,7 @@ interface EditorPaneGroupProperties {
 }
 
 const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loadedItem, store}) => {
-    return <PaneGroup>
-        <HorizontalPaneGroup>
+    return <HorizontalPaneGroup>
         <HiddeableSideBar uistate={store.uistate}>
             <ItemPropertiesView
                 store={store}>
@@ -75,13 +73,18 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                         </DummyObjectRenderer>
                 </VerticalPane>
                 <VerticalSmallPane>
-                    {
-                        Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
-                            <ConnectorView item={{id: item.id}} onDrag={() => {
-                                console.log("connector message");
-                            }}><span>{item.name}</span></ConnectorView>
-                        ))
-                    }
+                    <StoryComponentGallery>    
+                        {
+                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
+                                <GalleryItemView item={item}>
+                                    <span>{item.name}</span>
+                                </GalleryItemView>
+                                // <ConnectorView item={{id: item.id}} onDrag={() => {
+                                //     console.log("connector message");
+                                // }}><span>{item.name}</span></ConnectorView>
+                            ))
+                        }
+                    </StoryComponentGallery>
                 {/*  
                     <StoryComponentGallery>
                         {
@@ -104,6 +107,5 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
             >
             </Preview>
         </Pane>
-        </HorizontalPaneGroup>
-    </PaneGroup>
+    </HorizontalPaneGroup>
 };

@@ -46,11 +46,20 @@ export interface IPlugIn {
     getComponent(): FunctionalComponent<INGWebSProps>;
 }
 
-export type MenuItemSpecification = "radio" | "textarea" | "text" | "hslider" | "vslider" | "dropdown" | "check" | "url" | "color";
+export type MenuItemSpecification = "table" |
+    "radio" |
+    "textarea" |
+    "text" |
+    "hslider" |
+    "vslider" |
+    "dropdown" |
+    "check" |
+    "url" |
+    "color";
 
 export interface IMenuTemplate {
     label: string;
     type: MenuItemSpecification;
-    valueReference: (newValue: any) => void;
-    value: (() => string);
+    valueReference: (...args: any[]) => void;
+    value: (() => any);
 }

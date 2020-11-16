@@ -66,7 +66,7 @@ export interface IResizablePaneProps {
     children: ComponentChildren
     resizable: "none" | "left" | "right"
     paneState: PaneProperties
-    classes: string[]
+    classes?: string[]
 }
 
 export const ResizablePane: FunctionalComponent<IResizablePaneProps> = ({children, resizable, paneState, classes}: IResizablePaneProps) => {

@@ -78,7 +78,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     loadFromPersistance(from: IUIStoreProperties): void {
         this.file = from.file;
         this.term = from.term;
-        this.windowProperties.loadFromPersistance(from.windowProperties);
+        // this.windowProperties.loadFromPersistance(from.windowProperties);
     }
 
     writeToPersistance(): void {    

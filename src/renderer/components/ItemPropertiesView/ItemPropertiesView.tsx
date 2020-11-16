@@ -65,7 +65,13 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                     case "textarea": {
                         return <div class="form-group-item">
                             <label>{item.label}</label>
-                            <textarea class="form-control" rows={5}></textarea>
+                    <textarea class="form-control" rows={5}  onInput={(e: Event) => {
+                                        const target = e.target as HTMLInputElement
+                                        
+                                        if (item.valueReference && target.value && target.value !== item.value().length) {
+                                            item.valueReference(target.value);
+                                        }
+                                    }}>{item.value() as string}</textarea>
                         </div>
                     }
                     // this is specifically an edge-list!!!

@@ -99,7 +99,7 @@ class _TextObject implements IPlugIn, IStoryObject{
             },
             {
                 label: "Content",
-                type: "text",
+                type: "textarea",
                 valueReference: (text: string) => {this.updateText(text)},
                 value: () => (this.content?.resource as string)
             }, ...defaultFields(this)

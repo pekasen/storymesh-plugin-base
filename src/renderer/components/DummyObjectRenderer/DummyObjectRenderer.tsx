@@ -81,7 +81,6 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         }>
             <div
                 id="hello-world"
-                style="min-width: 600px; min-height: 400px;"
                 onClick={(e) => {
                     const target = e.target as HTMLElement;
                     if (target.id === "hello-world"){

@@ -1,19 +1,15 @@
 import { FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { reaction, IReactionDisposer } from "mobx";
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { IEdge } from 'storygraph/dist/StoryGraph/IEdge';
-import { IGraph } from 'storygraph/dist/StoryGraph/IGraph';
-import { IMetaData } from 'storygraph/dist/StoryGraph/IMetaData';
-import { IReactiveInput } from 'storygraph/dist/StoryGraph/IReactiveInput';
-import { IReactiveOutput } from 'storygraph/dist/StoryGraph/IReactiveOutput';
-import { IRenderingProperties } from 'storygraph/dist/StoryGraph/IRenderingProperties';
-import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+
 import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
 
 import { v4 } from "uuid";
 import { action, computed, makeObservable, observable } from 'mobx';
+import { IStoryObject, IMetaData, IEdge, IRenderingProperties, IStoryModifier, IConnectorPort } from 'storygraph';
+import { IContent } from 'storygraph/dist/StoryGraph/IContent';
+import { defaultFields } from './helpers/plugInHelpers';
+import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 /**
  * Our first little dummy PlugIn
  * 
@@ -27,14 +23,11 @@ class _TextObject implements IPlugIn, IStoryObject{
     userDefinedProperties: any;
     content?: IContent | undefined;
     metaData: IMetaData;
-    outgoing: IEdge[];
-    incoming: IEdge[];
+    connections: IEdge[];
+    connectors: IConnectorPort[];
     parent?: string;
-    network?: IGraph | undefined;
     renderingProperties: IRenderingProperties;
     modifiers: IStoryModifier[];
-    outputs?: IReactiveOutput | undefined;
-    inputs?: IReactiveInput[] | undefined;
     isContentNode = true;
 
     constructor() {
@@ -46,8 +39,24 @@ class _TextObject implements IPlugIn, IStoryObject{
             collapsable: false
         };
         this.modifiers = [];
-        this.outgoing = [];
-        this.incoming = [];
+        this.connections = [];
+        this.connectors = [
+            {
+                name: "flow-in",
+                type: "flow",
+                direction: "in"
+            },
+            {
+                name: "flow-out",
+                type: "flow",
+                direction: "out"
+            },
+            {
+                name: "enterView",
+                type: "reaction",
+                direction: "out"
+            }
+        ]
         this.metaData = {
             createdAt: new Date(Date.now()),
             name: "NGWebS user",
@@ -66,8 +75,7 @@ class _TextObject implements IPlugIn, IStoryObject{
             userDefinedProperties: observable,
             content:    observable,
             metaData:   observable,
-            outgoing:   observable,
-            incoming:   observable,
+            connections:   observable,
             modifiers:  observable,
             menuTemplate: computed,
             updateText: action,
@@ -94,7 +102,7 @@ class _TextObject implements IPlugIn, IStoryObject{
                 type: "text",
                 valueReference: (text: string) => {this.updateText(text)},
                 value: () => (this.content?.resource as string)
-            }
+            }, ...defaultFields(this)
             // {
             //     label: "Text",
             //     type: "textarea",
@@ -113,6 +121,23 @@ class _TextObject implements IPlugIn, IStoryObject{
         if (this.content) this.content.resource = text;
     }
 
+    updateConnections(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in") {
+        if (this.parent) {
+            const isIncoming = direction === "in";
+
+            const parentNetwork = registry.getValue(this.parent)?.childNetwork;
+            if (parentNetwork) {
+                const newEdge: IEdge = {
+                    id: (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
+                    from: ((isIncoming) ? `${id}.${theirport}` : `${this.id}.${myport}`),
+                    to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
+                    parent: parentNetwork
+                };
+                console.log(newEdge);
+                parentNetwork.connect(registry, [newEdge]);
+            }
+        }
+    }
 
     public getComponent() {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {

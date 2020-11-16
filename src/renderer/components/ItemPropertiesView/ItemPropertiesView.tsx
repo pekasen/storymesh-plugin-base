@@ -4,9 +4,7 @@ const { Menu, MenuItem } = remote;
 
 import { reaction, IReactionDisposer } from 'mobx';
 import { Component, h } from 'preact';
-import { StoryGraph } from 'storygraph';
-import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
-import { IEdge } from 'storygraph/src/StoryGraph/IEdge';
+import { StoryGraph, IConnectorPort, IEdge } from 'storygraph';
 import { RootStore } from '../../store/rootStore';
 import { IMenuTemplate } from '../../utils/PlugInClassRegistry';
 

@@ -162,13 +162,13 @@ export class TwoJS extends Component<ITwoJS> {
         curve.noFill();
         return curve;*/
 
-        const c = this.svg.makeCurve(x1, y1, x2, y2, true);
+        const c = this.svg.makeCurve([x1, y1, x2, y2], true);
     //    c.rotation = Math.PI / 4; // Quarter-turn
         c.linewidth = 5;
         c.cap = "round";
         c.noFill();
         this.svg.update();
-        console.log(x1, y1, x2, y2, c.getBoundingClientRect());
+        // console.log(x1, y1, x2, y2, c.getBoundingClientRect());
         return c;
     }
 

@@ -168,7 +168,7 @@ export class TwoJS extends Component<ITwoJS> {
         c.cap = "round";
         c.noFill();
         this.svg.update();
-        console.log(x1, y1, x2, y2, c.getBoundingClientRect());
+        // console.log(x1, y1, x2, y2, c.getBoundingClientRect());
         return c;
     }
 

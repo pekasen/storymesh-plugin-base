@@ -6,7 +6,6 @@ import { ValueRegistry } from '../utils/registry';
 import { RootStore } from './rootStore';
 import { EdgeItem } from "./EdgeItem";
 import { SelectedItemStore } from './SelectedItemStore';
-import { EdgeItem } from "./EdgeItem";
 
 
 interface IUIStoreProperties {
@@ -32,7 +31,6 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     constructor(parent: RootStore) {
         this._parent = parent;
         this.loadedItem = "";
-        this.selectedItem = "";
         this.edges = []
         this.selectedItems = new SelectedItemStore();
         this.topLevelObjectID = "";
@@ -56,19 +54,6 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         )
     }
 
-        
-    appendEdgeItem(edge: EdgeItem): void {
-        this.edges = [...this.edges, edge];
-    }
-
-    removeEdgeItem(edge: EdgeItem): void {
-        const index = this.edges.indexOf(edge);
-        if (index !== -1) {
-            this.edges.splice(index, 1);
-        }
-    }
-
-        
     appendEdgeItem(edge: EdgeItem): void {
         this.edges = [...this.edges, edge];
     }

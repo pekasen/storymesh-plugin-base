@@ -1,0 +1,34 @@
+.sidebar {
+    /* for testing */
+    max-width: 300px;
+    form {
+        display: flex;
+        flex-direction: column;
+
+        .form-group-item {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            margin: 0 0 15px 0;
+        }
+
+        label {
+            display: inline-flex;
+            flex-grow: 0;
+            flex-shrink: 0;
+            margin: 0 10px 0 0;
+            line-height: 2.5em;
+            /* should be replaced with logic calculating the width of the widest label
+            and setting that width for every label in the form */
+            min-width: 50px;
+        }
+        input.form-control {
+            /* reset unnecessary photn values */
+            width: auto;
+            /* make resizeable */
+            flex-grow: 1;
+            flex-shrink: 1;
+        } 
+
+    }
+}

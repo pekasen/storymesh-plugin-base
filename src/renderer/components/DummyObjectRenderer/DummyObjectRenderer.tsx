@@ -1,4 +1,5 @@
 import { IReactionDisposer, reaction } from 'mobx';
+import { objectPrototype } from 'mobx/dist/internal';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
@@ -40,7 +41,11 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
-            const coords = {x: e.x, y: e.y};
+            const bounds = (e.target as HTMLElement).getBoundingClientRect()
+            const coords = {
+                x: e.x - bounds.left,
+                y: e.y - bounds.top
+            };
 
             console.log(coords);
 
@@ -53,23 +58,11 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                         case "internal": {
                             switch(type) {
                                 case "content": {
-                                    const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-                                    console.log(instance);
-                                    if (instance) {
-                                        loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
-                                        store.uistate.setselectedItem(instance.id);
-                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
-                                    }
+                                    this.makeNewInstance(store, input, loadedObject, coords);
                                     break;
                                 }
                                 case "container": {
-                                    const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-                                    console.log(instance);
-                                    if (instance) {
-                                        loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
-                                        store.uistate.setselectedItem(instance.id)
-                                        store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y))
-                                    }
+                                    this.makeNewInstance(store, input, loadedObject, coords);
                                     break;
                                 }
                                 default: break;
@@ -84,24 +77,39 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                 }
             }
             console.log(store.storyContentObjectRegistry)
-        }}>
-            <div id="hello-world" style="width: 100%; height: 100%;" onDblClick={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.id === "hello-world"){
-                    store.uistate.setselectedItem("");
+        }
+        }>
+            <div
+                id="hello-world"
+                style="width: 100%; height: 100%;"
+                onDblClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.id === "hello-world"){
+                        store.uistate.selectedItems.setSelectedItems([]);
+                    }
                 }
-            }}>
+            }>
                 {
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .map((object) => (
-                        <Moveable item={store.uistate.moveableItems.getValue(object.id) as MoveableItem}>
+                        <Moveable registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
                             <DummyObject store={store} object={object}>{object.name}</DummyObject>
                         </Moveable>
                         ))
                     }
             </div>
         </DragReceiver>
+    }
+
+    private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
+        const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
+        console.log(instance);
+        if (instance) {
+            loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
+            store.uistate.selectedItems.setSelectedItems([instance.id]);
+            store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
+        }
     }
 
     componentWillUnmount(): void {
@@ -121,11 +129,8 @@ export class DummyObject extends Component<DummyObjectProperties> {
         super(props);
 
         reaction(
-            () => ({
-                selectedItem: props.store.uistate.selectedItem,
-                name: props.object.name
-            }),
-            ({ selectedItem, name }) => {
+            () => ([...props.store.uistate.selectedItems.ids, props.object.name]),
+            () => {
                 this.setState({});
             }
         );
@@ -135,7 +140,12 @@ export class DummyObject extends Component<DummyObjectProperties> {
         return <div
             onClick={(e) => {
                 e.preventDefault();
-                store.uistate.setselectedItem(object.id)
+                const selectedItems = store.uistate.selectedItems;
+                if (e.shiftKey) {
+                    selectedItems.addToSelectedItems(object.id);
+                } else {
+                    selectedItems.setSelectedItems([object.id]);
+                }
             }}
             onDblClick={(e) => {
                 e.preventDefault();
@@ -143,11 +153,7 @@ export class DummyObject extends Component<DummyObjectProperties> {
                     store.uistate.setLoadedItem(object.id);
                 }
             }}
-            class={(this.active(store.uistate.selectedItem)) ? "dummy-object active" : "dummy-object inactive"}
+            class={(store.uistate.selectedItems.isSelected(object.id)) ? "dummy-object active" : "dummy-object inactive"}
         >{children}</div>
-    }
-
-    active(id: string): boolean {
-        return this.props.object.id === id;
     }
 }

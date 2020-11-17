@@ -17,9 +17,8 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
 
          // TODO: this reaction increases it's call count with each call!!
         this.reactionDisposer = reaction(
-            () => [props.store.uistate.selectedItem],
-            (i) => {
-                console.log(i);
+            () => [...props.store.uistate.selectedItems.ids],
+            () => {
                 this.setState({});
             }
         );
@@ -48,16 +47,30 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
                     path?.reverse().map(e => (
                         <li
                             class="item"
-                            onClick={() => store.uistate.setselectedItem(e.id)}
+                            onClick={() => store.uistate.selectedItems.setSelectedItems([e.id])}
                             onDblClick={() => store.uistate.setLoadedItem(e.id)}>
                             {e.name}
                         </li>
                     ))
                 }
                 {
-                    (store.uistate.selectedItem !== "") ?
-                    (<li class="item selected">{store.storyContentObjectRegistry.getValue(store.uistate.selectedItem)?.name}</li>) :
-                    null
+                    (() => {
+                        const selectedItems = store.uistate.selectedItems.size;
+
+                        switch(selectedItems) {
+                            case 0: {
+                                return null
+                            }
+                            case 1: {
+                                return <li class="item selected">{
+                                    store.storyContentObjectRegistry.getValue(store.uistate.selectedItems.first)?.name
+                                    }</li>
+                            }
+                            default: {
+                                return <li class="item selected">Multiselection</li>
+                            }
+                        }
+                    })()
                 }
             </ul>
         </div>

@@ -7,7 +7,7 @@ import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } 
 import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
-import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
+import { StoryObjectViewRenderer } from "./StoryObjectViewRenderer/StoryObjectViewRenderer";
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
 import { Preview } from './Preview/Preview';
@@ -69,8 +69,8 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                     <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
                 </VerticalMiniPane>
                 <VerticalPane>
-                        <DummyObjectRenderer loadedObject={loadedItem} store={store}>
-                        </DummyObjectRenderer>
+                        <StoryObjectViewRenderer loadedObject={loadedItem} store={store}>
+                        </StoryObjectViewRenderer>
                 </VerticalPane>
                 <VerticalSmallPane>
                     <StoryComponentGallery>    

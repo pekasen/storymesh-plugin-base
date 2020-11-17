@@ -145,11 +145,7 @@ class _ImageObject implements IPlugIn, IStoryObject{
                 }
             })
 
-            return <p>
-                {
-                    content?.resource
-                }
-            </p>
+            return <img src={content?.resource}></img>
         }
         return Comp
     }

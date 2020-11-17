@@ -128,7 +128,7 @@ export class DummyObject extends Component<DummyObjectProperties> {
         super(props);
 
         reaction(
-            () => ([...props.store.uistate.selectedItems.ids, props.object.name]),
+            () => ([...props.store.uistate.selectedItems.ids, props.object.name, props.object.content?.resource]),
             () => {
                 this.setState({});
             }
@@ -163,7 +163,7 @@ export class DummyObject extends Component<DummyObjectProperties> {
                 </div>
                 </MoveSender>
                 <div class="area-content">
-                    <span>Content!</span>
+                    <span>{object.content?.resource}</span>
                 </div>
             </div>
             </div>

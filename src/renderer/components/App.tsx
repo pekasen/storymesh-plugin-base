@@ -5,15 +5,20 @@ import { Header } from './Header';
 import { Pane, HiddeableSideBar, HorizontalPaneGroup, ResizablePane } from './Pane';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
+import { DropzonePane } from "./DropzonePane";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
+<<<<<<< HEAD
 import { Preview } from './Preview/Preview';
 import { ConnectorView } from './Connector/ConnectorView';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { GalleryItemView } from './GalleryItemView';
+=======
+import { ConnectorView } from './Connector/ConnectorView';
+>>>>>>> 248bf571eb71c64b91c0955c2b5073ac44d6b5d9
 
 interface IAppProps {
     store: RootStore

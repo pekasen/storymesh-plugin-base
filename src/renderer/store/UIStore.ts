@@ -4,8 +4,10 @@ import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
 import { ValueRegistry } from '../utils/registry';
 import { RootStore } from './rootStore';
+import { EdgeItem } from "./EdgeItem";
 import { SelectedItemStore } from './SelectedItemStore';
 import { EdgeItem } from "./EdgeItem";
+
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -30,6 +32,8 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     constructor(parent: RootStore) {
         this._parent = parent;
         this.loadedItem = "";
+        this.selectedItem = "";
+        this.edges = []
         this.selectedItems = new SelectedItemStore();
         this.topLevelObjectID = "";
         this.edges = [];
@@ -50,6 +54,18 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
             () => (this.loadedItem),
             (id: string) => console.log("loaded item:", id)
         )
+    }
+
+        
+    appendEdgeItem(edge: EdgeItem): void {
+        this.edges = [...this.edges, edge];
+    }
+
+    removeEdgeItem(edge: EdgeItem): void {
+        const index = this.edges.indexOf(edge);
+        if (index !== -1) {
+            this.edges.splice(index, 1);
+        }
     }
 
         

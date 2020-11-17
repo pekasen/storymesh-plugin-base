@@ -14,8 +14,14 @@ export class MoveSender extends Component<IMoveableProps> {
     render ({ registry, id, children, selectedItems}: IMoveableProps): h.JSX.Element {
         const item = registry.getValue(id);
         if (!item) throw("Nono1")
+
+        // const _ref = getRef
+
         children.props["draggable"] = true;
         children.props["onDragStart"] = (e: DragEvent) => {
+            e.preventDefault();
+        }
+        children.props["onMouseDown"] = (e: DragEvent) => {
             e = e || window.event;
 
             e.dataTransfer?.setDragImage(new Image(0, 0), 0, 0);
@@ -25,10 +31,10 @@ export class MoveSender extends Component<IMoveableProps> {
             const x_0 = e.clientX;
             const y_0 = e.clientY;
 
-            selectedItems.ids.forEach(itemID => {
-                const _item = registry.getValue(itemID)
-                if (_item) _item.resetCache();
-            });
+            // selectedItems.ids.forEach(itemID => {
+            //     const _item = registry.getValue(itemID)
+            //     if (_item) _item.resetCache();
+            // });
 
             // TODO: prevent dragging beyond 0, since, it would move items out of view
             function updater (this: Document, event: MouseEvent) {
@@ -41,26 +47,26 @@ export class MoveSender extends Component<IMoveableProps> {
                 // change on mouse event while mouse down
                 const d_x = (_x - x_0);
                 const d_y = (_y - y_0);
-                console.log(d_x, d_y);
+                console.log(event.movementX, event.movementY);
                 selectedItems.ids.forEach(itemID => {
                     const _item = registry.getValue(itemID)
                     if (_item) {
-                        const cached = _item.cached
+                        // const cached = _item.cached
                         _item.updatePosition(
-                            d_x - cached.x,
-                            d_y - cached.y
+                            event.movementX,
+                            event.movementY
                         );
-                        _item.updateCached(d_x, d_y);
+                        // _item.updateCached(d_x, d_y);
                     }
                 });
             }
 
             function remover () {
-                document.removeEventListener("drag", updater)
-                document.removeEventListener("dragend", remover);
+                document.removeEventListener("mousemove", updater)
+                document.removeEventListener("mouseup", remover);
             }       
-            document.addEventListener("drag", updater);
-            document.addEventListener("dragend", remover);
+            document.addEventListener("mousemove", updater);
+            document.addEventListener("mouseup", remover);
         }
         return children
     }
@@ -92,8 +98,9 @@ export class MoveReceiver extends Component<IMoveableProps> {
         if (!item) throw("Nono1")
         
         return <div
+            id={id}
             style={
-                "position: absolute;" +
+                "position: relative;" +
                 (item.x === 0 ? "" : `left: ${item.x};`) +
                 (item.y === 0 ? "" : `top: ${item.y};`)
             }
@@ -136,6 +143,7 @@ export class Moveable extends Component<IMoveableProps> {
         if (!item) throw("Nono1")
         
         return <div
+            id={id}
             draggable={true}
             style={
                 "position: absolute;" +

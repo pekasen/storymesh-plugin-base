@@ -1,8 +1,8 @@
 import { Component, ComponentChildren, FunctionalComponent, h } from 'preact';
 import { IReactionDisposer, reaction } from "mobx";
-import { UIStore } from '../store/UIStore';
+import { UIStore } from '../../store/UIStore';
 import { useEffect, useState } from 'preact/hooks';
-import { PaneProperties } from '../store/PaneProperties';
+import { PaneProperties } from '../../store/PaneProperties';
 
 export const PaneGroup: FunctionalComponent = ({ children }) => (
     <div class="pane-group">{children}</div>

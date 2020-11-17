@@ -2,7 +2,7 @@ import { reaction } from 'mobx';
 import { Component, FunctionalComponent, h } from "preact";
 
 import { Header } from './Header';
-import { Pane, HiddeableSideBar, HorizontalPaneGroup, ResizablePane } from './Pane';
+import { Pane, HiddeableSideBar, HorizontalPaneGroup, ResizablePane } from './Pane/Pane';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
@@ -85,16 +85,6 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                             ))
                         }
                     </StoryComponentGallery>
-                {/*  
-                    <StoryComponentGallery>
-                        {
-                            // TODO: compute gallery items from plugin registry
-                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
-                                <GalleryItemView item={{id: item.id}}><span>{item.name}</span></GalleryItemView>
-                            ))
-                        }
-                    </StoryComponentGallery>
-                */}
                 </VerticalSmallPane>
             </VerticalPaneGroup>
         </Pane>

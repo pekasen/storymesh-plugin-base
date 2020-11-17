@@ -1,0 +1,49 @@
+.preview-container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.ngwebs-story {
+    margin: 0 auto;
+    max-width: 768px;
+}
+
+/* Basic styling, could be moved to separate file. Might need to be dynamic anyway, once
+font sizes should be changeable. */
+
+:root {
+    font-size: 16px;
+}
+
+p, a, span {
+    font-size: 1rem;
+}
+
+h1, h2, h3, h4, h5, h6, strong, b {
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.8rem;
+}
+
+h4 {
+    font-size: 1.6rem;
+}
+
+h5 {
+    font-size: 1.4rem;
+}
+
+h6 {
+    font-size: 1.2rem;
+}

@@ -1,10 +1,8 @@
 import { reaction } from 'mobx';
 import { Component, FunctionalComponent, h } from "preact";
 
-import { GalleryItemView } from './GalleryItemView';
 import { Header } from './Header';
-import { Pane, PaneGroup, SideBar, HorizontalPaneGroup } from './Pane';
-import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
+import { Pane, HiddeableSideBar, HorizontalPaneGroup, ResizablePane } from './Pane';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
@@ -12,6 +10,10 @@ import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
+import { Preview } from './Preview/Preview';
+import { ConnectorView } from './Connector/ConnectorView';
+import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
+import { GalleryItemView } from './GalleryItemView';
 
 interface IAppProps {
     store: RootStore
@@ -34,10 +36,11 @@ export class App extends Component<IAppProps> {
                     title={store.uistate.windowProperties.title}
                     leftToolbar={[
                     <button class="btn btn-default"
-                        onClick={() =>{
-                            store.uistate.toggleSidebar();
+                        onClick={() => {
+                            console.log("Hello");
+                            store.uistate.windowProperties.sidebarPane.toggleHidden();
                         }}>
-                        <span class="icon icon-left-dir"></span>
+                        <span class={"icon icon-left-dir"}></span>
                     </button>]}
                 ></Header>
                 <WindowContent>
@@ -53,13 +56,12 @@ interface EditorPaneGroupProperties {
 }
 
 const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loadedItem, store}) => {
-    return <PaneGroup>
-        <HorizontalPaneGroup>
-        <SideBar>
+    return <HorizontalPaneGroup>
+        <ResizablePane paneState={store.uistate.windowProperties.sidebarPane} resizable="right" classes={["sidebar"]}>
             <ItemPropertiesView
                 store={store}>
             </ItemPropertiesView>
-        </SideBar>
+        </ResizablePane>
         {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}
         <Pane>
             <VerticalPaneGroup>
@@ -71,6 +73,19 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                         </DummyObjectRenderer>
                 </VerticalPane>
                 <VerticalSmallPane>
+                    <StoryComponentGallery>    
+                        {
+                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
+                                <GalleryItemView item={item}>
+                                    <span>{item.name}</span>
+                                </GalleryItemView>
+                                // <ConnectorView item={{id: item.id}} onDrag={() => {
+                                //     console.log("connector message");
+                                // }}><span>{item.name}</span></ConnectorView>
+                            ))
+                        }
+                    </StoryComponentGallery>
+                {/*  
                     <StoryComponentGallery>
                         {
                             // TODO: compute gallery items from plugin registry
@@ -79,9 +94,18 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                             ))
                         }
                     </StoryComponentGallery>
+                */}
                 </VerticalSmallPane>
             </VerticalPaneGroup>
         </Pane>
-        </HorizontalPaneGroup>
-    </PaneGroup>
+        <ResizablePane paneState={store.uistate.windowProperties.previewPane} resizable="left">
+            <Preview
+                topLevelObjectId={store.uistate.topLevelObjectID}
+                id={"g"}
+                graph={store.storyContentObjectRegistry.getValue(store.uistate.topLevelObjectID)?.childNetwork}
+                registry={store.storyContentObjectRegistry}
+            >
+            </Preview>
+        </ResizablePane >
+    </HorizontalPaneGroup>
 };

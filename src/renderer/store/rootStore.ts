@@ -49,6 +49,7 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
                     emptyStory
                 );
                 this.uistate.setLoadedItem(emptyStory.id);
+                this.uistate.topLevelObjectID = emptyStory.id;
             }
         }
     }

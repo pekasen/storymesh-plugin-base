@@ -1,43 +1,37 @@
-import { h } from "preact";
-import { StoryGraph } from 'storygraph/dist/StoryGraph/StoryGraph';
-import { IEdge } from 'storygraph/dist/StoryGraph/IEdge';
-import { IGraph } from 'storygraph/dist/StoryGraph/IGraph';
-import { IMetaData } from 'storygraph/dist/StoryGraph/IMetaData';
-import { IReactiveInput } from 'storygraph/dist/StoryGraph/IReactiveInput';
-import { IReactiveOutput } from 'storygraph/dist/StoryGraph/IReactiveOutput';
-import { IRenderingProperties } from 'storygraph/dist/StoryGraph/IRenderingProperties';
-import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
-
+import { FunctionComponent, h } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { v4 } from "uuid";
-import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { action, computed, makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer } from 'mobx';
+import { StoryGraph, IStoryObject, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
+import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
+import { IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
+
+import { defaultFields } from './helpers/plugInHelpers';
+import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
+
 /**
  * Our second little dummy PlugIn
  * 
- * @todo It should actually inherit from StoryObject and not StoryGraph...
+ * 
  */
-// @observable
 class _Container implements IPlugIn, IStoryObject{
-    id = v4();
+    id: string;
     name: string;
     role: string;
     userDefinedProperties: any;
     metaData: IMetaData;
-    outgoing: IEdge[];
-    incoming: IEdge[];
+    connections: IEdge[];
     parent?: string;
-    network: IGraph | undefined;
     renderingProperties: IRenderingProperties;
     modifiers: IStoryModifier[];
-    outputs?: IReactiveOutput | undefined;
-    inputs?: IReactiveInput[] | undefined;
-    isContentNode = true;
+    isContentNode = false;
     childNetwork: StoryGraph;
+    connectors: IConnectorPort[]
 
     constructor() {
-        this.role = "container"
+        this.id = v4();
+        this.role = "internal.container.container";
         this.name = "Container" // [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,
@@ -45,8 +39,7 @@ class _Container implements IPlugIn, IStoryObject{
             collapsable: false
         };
         this.modifiers = [];
-        this.outgoing = [];
-        this.incoming = [];
+        this.connections = [];
         this.metaData = {
             createdAt: new Date(Date.now()),
             name: "NGWebS user",
@@ -54,6 +47,10 @@ class _Container implements IPlugIn, IStoryObject{
         };
         this.childNetwork = makeAutoObservable(new StoryGraph(this));
         this.userDefinedProperties = {};
+        this.connectors = [
+            {name: "flow-in", type: "flow", direction: "in"},
+            {name: "flow-out", type: "flow", direction: "out"}
+        ];
 
         makeObservable(this, {
             id: false,
@@ -61,17 +58,10 @@ class _Container implements IPlugIn, IStoryObject{
             userDefinedProperties:  observable,
             childNetwork:           observable.deep,
             metaData:               observable,
-            outgoing:               observable,
-            incoming:               observable,
+            connections:               observable,
             modifiers:              observable,
             menuTemplate:           computed,
-            updateName:             action,
-            getName:                false
-            // menuTemplate: computed
-            // inputs:     observable,
-            // outputs:    observable,
-            // parent:     observable,
-            // network:    observable
+            updateName:             action
         });
     }
 
@@ -83,7 +73,7 @@ class _Container implements IPlugIn, IStoryObject{
                 type: "text",
                 valueReference: (name: string) => {this.updateName(name)},
                 value: () => (this.name)
-            },
+            }, ...defaultFields(this)
             // {
             //     label: "Text",
             //     type: "textarea",
@@ -98,13 +88,63 @@ class _Container implements IPlugIn, IStoryObject{
         this.name = newValue;
     }
 
+    updateConnections(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in") {
+        if (this.parent) {
+            const isIncoming = direction === "in";
+
+            const parentNetwork = registry.getValue(this.parent)?.childNetwork;
+            if (parentNetwork) {
+                const newEdge: IEdge = {
+                    id: (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
+                    from: ((isIncoming) ? `${id}.${theirport}` : `${this.id}.${myport}`),
+                    to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
+                    parent: parentNetwork
+                };
+                console.log(newEdge);
+                parentNetwork.connect(registry, [newEdge]);
+            }
+        }
+    }
+
     getName(): string {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         return this.name
     }
 
-    public render(): h.JSX.Element {
-        return <div>Hello</div>
+    public getComponent() {
+        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph}) => {
+            const [_, setState] = useState({});
+            let disposer: IReactionDisposer;
+            useEffect(() => {
+                disposer = reaction(
+                    () => (graph?.nodes.length),
+                    () => {
+                        setState({});
+                    }
+                )
+    
+                return () => {
+                    disposer();
+                }
+            });
+            return <div id={id}>
+                {
+                    graph?.nodes.map(e => {
+                        const Comp = (e as unknown as IPlugIn).getComponent();
+        
+                        return <Comp
+                            registry={registry}
+                            id={e.id}
+                            renderingProperties={e.renderingProperties}
+                            content={e.content}
+                            modifiers={e.modifiers}
+                            graph={e.childNetwork}
+                        ></Comp>
+                    }) || null
+                }
+            </div>
+}
+        return Comp
     }
 
     public willDeregister(registry: IRegistry): void {
@@ -130,9 +170,3 @@ export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeOb
     version: false,
     class: false
 });
-
-
-/**
- * Let's plug ourselves in!
- */
-// rootStore.storyContentTemplatesRegistry.register([TextObject]);

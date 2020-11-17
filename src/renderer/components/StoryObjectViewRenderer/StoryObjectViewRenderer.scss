@@ -10,37 +10,3 @@
     padding: 10px;
     cursor: cell;
 }
-
-.story-object-view {
-    width: 300px;
-    height: auto;
-    border: 1px solid #616161;
-
-    .area-meta {
-        width: auto;
-        height: 2em;
-        line-height: 25px;
-        font-size: 1.5em;
-        font-weight: bold;
-        vertical-align: middle;
-        padding: 5px;
-        color: #fff;
-    }
-
-    .inactive {
-        background: #616161;
-        z-index: auto;
-    }
-    
-    .active {
-        background: #062fb4;
-        z-index: 99;
-    }
-
-    .area-content{
-        width: auto;
-        height: 200px;
-        padding: 5px;
-        background: #fff;
-    }
-}

@@ -160,6 +160,10 @@ export class DummyObject extends Component<DummyObjectProperties> {
                 <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
                 <div class="area-meta">
                     {children}
+                    <button class="toggle-content">
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
                 </MoveSender>
                 <div class="area-content">

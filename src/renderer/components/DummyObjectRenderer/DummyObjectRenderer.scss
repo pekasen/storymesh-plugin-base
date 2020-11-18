@@ -21,11 +21,23 @@
         height: 2em;
         background: #616161;
         line-height: 25px;
-        font-size: 1.5em;
+        font-size: 1.35em;
         font-weight: bold;
         vertical-align: middle;
         padding: 5px;
         color: #fff;
+        position: relative;
+
+        button.toggle-content {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+
+            span:first-of-type::after {
+                border-top: 4px solid #fff;
+                display: block;
+            }
+        }
     }
 
     .area-content{
@@ -35,11 +47,13 @@
         background: #fff;
     }
 }
+/*
 .dummy-object.inactive {
     background-color: whitesmoke;
 }
+*/
 
 .dummy-object.active {
-    background-color: lightblue;
+    border-color: yellowgreen;
 }
 

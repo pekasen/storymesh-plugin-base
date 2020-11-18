@@ -19,8 +19,7 @@
     height: auto;
     border: 1px solid #616161;
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    transition: all .2s ease-in-out;
-    z-index: 0;
+    z-index: 1;
 
     .area-meta {
         width: auto;
@@ -73,6 +72,7 @@
 }
 
 .dummy-object.active {   
+    z-index: 10;
     .area-meta {
         background: salmon;
     }            
@@ -80,5 +80,9 @@
 
 .dummy-object.active::after {
     opacity: 1;
+}
+
+.dummy-object.inactive {
+    z-index: 5;
 }
 

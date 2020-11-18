@@ -4,6 +4,7 @@
     width: 100%;
     background: rgb(62,62,62);
     background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%);
+    border-left: 3px dashed #fff;
 
     ul {
         margin: 5px 0;
@@ -30,7 +31,7 @@
     /* highlight selected node */
 
     .item.selected {
-        color: hotpink;
+        color: salmon;
     }
 
     /* Arrow between nodes */
@@ -45,7 +46,7 @@
     }
 
     .item.selected::before {
-        color: hotpink;
+        color: salmon;
     }
     
     /* hide arrow after last node */

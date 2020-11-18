@@ -1,9 +1,16 @@
 .sidebar {
+    padding: 10px;
+    background: linear-gradient(90deg, #3e3e3e 0%, #3e3e3e 100%);
+    color: #fff;
     /* for testing */
     max-width: 300px;
     form {
         display: flex;
         flex-direction: column;
+
+        .form-control {
+            color: #000;
+        }
 
         .form-group-item {
             display: flex;
@@ -28,6 +35,10 @@
             /* make resizeable */
             flex-grow: 1;
             flex-shrink: 1;
+        }
+        .table-striped tr {
+            color: #fff;
+            background: transparent;
         } 
 
     }

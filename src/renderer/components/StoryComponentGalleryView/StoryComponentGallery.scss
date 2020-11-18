@@ -6,20 +6,25 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  background: linear-gradient(90deg, #3e3e3e 0%, #3e3e3e 100%);
+  border-left: 3px dashed #fff;
 
   .gallery-item {
-    border-left: solid;
-    border-width: 1px;
-    padding: 10px;
+    padding: 15px;
     transition: 0.5s;
+    background: transparent;
+    color: #fff;
+    transform: scale(1);
 
     span {
       padding: 0 5px;
+      transition: all .3s ease-in-out;
     }
   }
 
   .gallery-item:hover {
-    background-color: royalblue;
+    background-color: salmon;
+    transform: scale(1.055);
   }
 
   .gallery-item-line {

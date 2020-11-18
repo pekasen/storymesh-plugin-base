@@ -138,7 +138,6 @@ export class DummyObject extends Component<DummyObjectProperties> {
     render({ store, object, children}: DummyObjectProperties): h.JSX.Element {
 
         return <Draggable id={object.id}>
-            <div class="outer">
             <div
                 onClick={(e) => {
                     e.preventDefault();
@@ -169,7 +168,6 @@ export class DummyObject extends Component<DummyObjectProperties> {
                 <div class="area-content">
                     <span>Content!</span>
                 </div>
-            </div>
             </div>
         </Draggable>
     }

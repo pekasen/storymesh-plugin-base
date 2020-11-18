@@ -5,16 +5,22 @@
     overflow: scroll;    
 }
 
+/*
 .outer {
     background: transparent;
     padding: 10px;
     cursor: cell;
 }
+*/
 
 .dummy-object {
+    position: relative;
     width: 300px;
     height: auto;
     border: 1px solid #616161;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    transition: all .2s ease-in-out;
+    z-index: 0;
 
     .area-meta {
         width: auto;
@@ -27,6 +33,7 @@
         padding: 5px;
         color: #fff;
         position: relative;
+        transition: background .1s ease-in-out;
 
         button.toggle-content {
             position: absolute;
@@ -47,13 +54,31 @@
         background: #fff;
     }
 }
-/*
-.dummy-object.inactive {
-    background-color: whitesmoke;
-}
-*/
 
-.dummy-object.active {
-    border-color: yellowgreen;
+.dummy-object::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    box-shadow:   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                  0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                  0 12.5px 10px rgba(0, 0, 0, 0.06),
+                  0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+                  0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+                  0 100px 80px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.dummy-object.active {   
+    .area-meta {
+        background: salmon;
+    }            
+}
+
+.dummy-object.active::after {
+    opacity: 1;
 }
 

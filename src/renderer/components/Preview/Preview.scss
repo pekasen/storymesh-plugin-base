@@ -21,7 +21,6 @@
     span {
         display: inline-block;
         font-size: .85rem;
-        //color: $ui-font;
           @include customize(theme) {
            color: getValue(ui-font);
           }
@@ -35,9 +34,6 @@
     padding: 0 15px;
 
 }
-
-/* Basic styling, could be moved to separate file. Might need to be dynamic anyway, once
-font sizes should be changeable. */
 
 // Font sizes
 
@@ -91,11 +87,3 @@ blockquote {
 // CTA
 
 // Utilities
-
-/* Theme 2: NGWebS Classic
-
-.ngwebs-story.classic {
-    **overrides**
-}
-
-*/

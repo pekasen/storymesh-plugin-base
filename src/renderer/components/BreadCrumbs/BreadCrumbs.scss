@@ -4,8 +4,6 @@
     display: inline-block;
     height: auto;
     width: 100%;
-   // background: $ui-background;
-    //border-left: 3px dashed $ui-font;
     @include customize(theme) {
         background: getValue(ui-background);
         border-left: 3px dashed getValue(ui-font); 
@@ -20,7 +18,6 @@
         display: inline;
         list-style: none;
         font-size: .85rem;
-       // color: $ui-font;
       @include customize(theme) {
        color: getValue(ui-font);
       }
@@ -50,7 +47,6 @@
         padding: 0 10px 0 0;
         display: inline-block;
         transform: translateY(1px);
-        //color: $ui-font;
         @include customize(color) {
             color: getValue(ui-font); 
           }

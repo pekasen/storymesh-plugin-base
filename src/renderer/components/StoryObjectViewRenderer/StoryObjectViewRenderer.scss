@@ -10,14 +10,6 @@
        }
 }
 
-/*
-.outer {
-    background: transparent;
-    padding: 10px;
-    cursor: cell;
-}
-*/
-
 .story-object-view {
     position: relative;
     width: 300px;
@@ -45,7 +37,7 @@
             top: 5px;
 
             span:first-of-type::after {
-              border-top: 4px solid /*$ui-font*/;
+              border-top: 4px solid;
               @include customize(theme) {
                border-color: getValue(ui-font);
               }
@@ -58,7 +50,6 @@
         width: auto;
         height: 200px;
         padding: 5px;
-       // background: $ui-font;
        @include customize(theme) {
         background: getValue(ui-object-content); 
       }

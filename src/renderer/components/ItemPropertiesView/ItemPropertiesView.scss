@@ -29,8 +29,6 @@
             flex-shrink: 0;
             margin: 0 10px 0 0;
             line-height: 2.5em;
-            /* should be replaced with logic calculating the width of the widest label
-            and setting that width for every label in the form */
             min-width: 50px;
         }
         input.form-control {
@@ -41,7 +39,6 @@
             flex-shrink: 1;
         }
         .table-striped tr {
-        //    color: $ui-font;
           @include customize(theme) {
            color: getValue(ui-font);
           }

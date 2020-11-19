@@ -3,8 +3,10 @@
 .sidebar {
     padding: 10px;
     @include customize(theme) {
-    background: getValue(ui-background); 
-    color: getValue(ui-font);
+    background: getValue(menu-background); 
+    color: getValue(menu-font);
+    /* add to themes? */
+    border-right: 1px solid lightgray;
   }
     /* for testing */
     max-width: 300px;
@@ -40,7 +42,7 @@
         }
         .table-striped tr {
           @include customize(theme) {
-           color: getValue(ui-font);
+           color: getValue(menu-font);
           }
             background: transparent;
         } 

@@ -6,6 +6,6 @@
     position: relative;
     overflow: scroll;    
     @include customize(theme) {
-        background: getValue(ui-node-background);
+        background: getValue(node-editor-background);
        }
 }

@@ -29,7 +29,7 @@
             span:first-of-type::after {
               border-top: 4px solid;
               @include customize(theme) {
-               border-color: getValue(ui-font);
+               border-color: getValue(border-color);
               }
                 display: block;
             }
@@ -45,7 +45,7 @@
         line-break: anywhere;
         overflow: hidden;
        @include customize(theme) {
-        background: getValue(ui-object-content); 
+        background: getValue(node-object-background); 
       }
     }
     .area-content::after {
@@ -79,7 +79,9 @@
 .story-object-view.active {   
     z-index: 10;
     .area-meta {
-        background: salmon;
+        @include customize(theme) {
+            background: getValue(highlight-color); 
+          }
     }            
 }
 

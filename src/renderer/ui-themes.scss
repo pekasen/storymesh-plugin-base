@@ -2,16 +2,24 @@
 
 $themes: (
   light: (
-    ui-background: #e5e5e5,
-    ui-font: #191919,
-    ui-object-content: #fff,
-    ui-node-background: #fff,
+    menu-background: #e5e5e5,
+    menu-font: #191919,
+    content-font: #000,
+    node-object-background: #e5e5e5,
+    node-editor-background: #fff,
+    highlight-color: rgb(35, 90, 94),
+    highlight-color-font: #fff,
+    border-color: #252525,
   ),
   dark: (
-    ui-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%),
-    ui-font: #fff,
-    ui-object-content: #fff,
-    ui-node-background: #e5e5e5,
+    menu-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%),
+    menu-font: #fff,
+    content-font: #000,
+    node-object-background: #fff,
+    node-editor-background: #e5e5e5,
+    highlight-color: salmon,
+    highlight-color-font: #fff,
+    border-color: #fff,
   ),
 );
 
@@ -36,3 +44,10 @@ $themes: (
 @function getValue($key) {
   @return map-get($array-map, $key);
 }
+
+/*
+    ui-background: #e5e5e5,
+    ui-font: #191919,
+    ui-object-content: #fff,
+    ui-node-background: #fff,
+    */

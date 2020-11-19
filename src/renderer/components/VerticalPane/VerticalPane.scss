@@ -12,7 +12,7 @@
     height: 100%;
     border-right: 3px solid;
     @include customize(color) {
-        border-color: getValue(ui-font); 
+        border-color: getValue(menu-font); 
       }
 }
 
@@ -31,8 +31,9 @@
     flex: 4;
     width: 100%;
     border-top: 1px solid;
-    @include customize(color) {
-        background-color: getValue(ui-background); 
+    border-color: lightgray;
+    @include customize(theme) {
+        background-color: getValue(menu-background); 
       }
 }
 

@@ -9,27 +9,30 @@
   margin: 0;
   padding: 0;
   @include customize(theme) {
-    background: getValue(ui-background);
-    border-left: 3px dashed getValue(ui-font); 
+    background: getValue(menu-background);
+    border-left: 3px dashed getValue(border-color); 
   }
 
   .gallery-item {
     padding: 15px;
-    transition: 0.5s;
+    transition: .2s;
     background: transparent;
     @include customize(theme) {
-     color: getValue(ui-font);
+     color: getValue(menu-font);
     }
     transform: scale(1);
 
     span {
       padding: 0 5px;
-      transition: all .3s ease-in-out;
+      transition: all ease-in-out;
     }
   }
 
   .gallery-item:hover {
-    background-color: salmon;
+    @include customize(theme) {
+      background: getValue(highlight-color);
+      color: getValue(highlight-color-font); 
+    }
     transform: scale(1.055);
   }
 

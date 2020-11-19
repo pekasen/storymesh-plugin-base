@@ -5,8 +5,8 @@
     height: auto;
     width: 100%;
     @include customize(theme) {
-        background: getValue(ui-background);
-        border-left: 3px dashed getValue(ui-font); 
+        background: getValue(menu-background);
+        border-left: 3px dashed getValue(border-color); 
       }
 
     ul {
@@ -19,7 +19,7 @@
         list-style: none;
         font-size: .85rem;
       @include customize(theme) {
-       color: getValue(ui-font);
+       color: getValue(menu-font);
       }
         padding: 0 0 0 10px;
         cursor: pointer;
@@ -36,7 +36,9 @@
     /* highlight selected node */
 
     .item.selected {
-        color: salmon;
+        @include customize(theme) {
+            color: getValue(highlight-color); 
+          }
     }
 
     /* Arrow between nodes */
@@ -47,13 +49,15 @@
         padding: 0 10px 0 0;
         display: inline-block;
         transform: translateY(1px);
-        @include customize(color) {
-            color: getValue(ui-font); 
+        @include customize(theme) {
+            color: getValue(menu-font); 
           }
     }
 
     .item.selected::before {
-        color: salmon;
+        @include customize(theme) {
+            color: getValue(highlight-color); 
+          }
     }
     
     /* hide arrow after last node */

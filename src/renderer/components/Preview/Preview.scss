@@ -14,15 +14,15 @@
 }
 
 .header-preview {
-  @include customize(storytheme) {
-   background: getValue(blockquote-color);
+  @include customize(theme) {
+   background: getValue(menu-background);
   }
 
     span {
         display: inline-block;
         font-size: .85rem;
-          @include customize(storytheme) {
-           color: getValue(color);
+          @include customize(theme) {
+           color: getValue(menu-font);
           }
         margin: 5px 0 5px 10px;
     }

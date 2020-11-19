@@ -1,3 +1,4 @@
+/* ================= THEMES =================== */
 /* ==================== PREVIEW ===================== */
 .preview-container {
   margin: 0;
@@ -8,9 +9,6 @@
   .preview-container .vertical-pane-mini {
     position: fixed;
     width: 100%; }
-
-.storytheme-modern .header-preview {
-  background: lightblue; }
 
 .header-preview span {
   display: inline-block;

@@ -44,10 +44,3 @@ $themes: (
 @function getValue($key) {
   @return map-get($array-map, $key);
 }
-
-/*
-    ui-background: #e5e5e5,
-    ui-font: #191919,
-    ui-object-content: #fff,
-    ui-node-background: #fff,
-    */

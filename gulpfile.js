@@ -6,10 +6,11 @@ var merge = require('merge-stream');
 sass.compiler = require('node-sass');
 
 gulp.task('sass-story', function () {
+  const uiThemes = gulp.src('./src/**/ui-themes.scss')
   const storyThemes = gulp.src('./src/**/story-themes.scss')
   const preview = gulp.src( './src/**/Preview.scss')
 
-  return merge(storyThemes, preview)
+  return merge(uiThemes, storyThemes, preview)
     .pipe(concat('./ngwebs-story.scss'))
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest('./dist/css/'));

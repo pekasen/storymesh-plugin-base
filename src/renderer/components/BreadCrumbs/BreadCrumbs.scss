@@ -4,9 +4,12 @@
     display: inline-block;
     height: auto;
     width: 100%;
-    background: rgb(62,62,62);
-    background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%);
-    border-left: 3px dashed #fff;
+   // background: $ui-background;
+    //border-left: 3px dashed $ui-font;
+    @include customize(theme) {
+        background: getValue(ui-background);
+        border-left: 3px dashed getValue(ui-font); 
+      }
 
     ul {
         margin: 5px 0;
@@ -17,7 +20,10 @@
         display: inline;
         list-style: none;
         font-size: .85rem;
-        color: #fff;
+       // color: $ui-font;
+      @include customize(theme) {
+       color: getValue(ui-font);
+      }
         padding: 0 0 0 10px;
         cursor: pointer;
     }
@@ -44,7 +50,10 @@
         padding: 0 10px 0 0;
         display: inline-block;
         transform: translateY(1px);
-        color: #fff;
+        //color: $ui-font;
+        @include customize(color) {
+            color: getValue(ui-font); 
+          }
     }
 
     .item.selected::before {

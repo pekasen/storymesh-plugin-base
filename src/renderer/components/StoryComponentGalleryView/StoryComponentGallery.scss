@@ -8,14 +8,21 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  background: linear-gradient(90deg, #3e3e3e 0%, #3e3e3e 100%);
-  border-left: 3px dashed #fff;
+  //background: $ui-background;
+  //border-left: 3px dashed $ui-font;
+  @include customize(theme) {
+    background: getValue(ui-background);
+    border-left: 3px dashed getValue(ui-font); 
+  }
 
   .gallery-item {
     padding: 15px;
     transition: 0.5s;
     background: transparent;
-    color: #fff;
+    //color: $ui-font;
+    @include customize(theme) {
+     color: getValue(ui-font);
+    }
     transform: scale(1);
 
     span {

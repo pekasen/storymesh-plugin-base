@@ -1,1 +1,52 @@
 /* ==================== ROOT CSS ===================== */
+
+/* background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%) */
+
+$themes: (
+  light: (
+    ui-background: #e5e5e5,
+    ui-font: #191919,
+    ui-object-content: #fff,
+    ui-node-background: #fff,
+  ),
+  dark: (
+    ui-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%),
+    ui-font: #fff,
+    ui-object-content: #fff,
+    ui-node-background: #e5e5e5,
+  ),
+);
+
+@mixin customize($arg: theme) {
+  $array: $themes;
+  $prefix: theme;
+
+  @each $theme, $map in $array {
+    .#{$prefix}-#{$theme} & {
+      $array-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($array, $theme), '#{$key}');
+        $array-map: map-merge($array-map, ($key: $value)) !global;
+      }
+
+      @content;
+      $array-map: null !global;
+    }
+  }
+}
+
+@function getValue($key) {
+  @return map-get($array-map, $key);
+}
+
+/*
+$ui-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%);
+$ui-font: #fff;
+*/
+
+
+:root {
+    font-size: 16px;
+}
+
+

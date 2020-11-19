@@ -2,8 +2,10 @@
 
 .sidebar {
     padding: 10px;
-    background: linear-gradient(90deg, #3e3e3e 0%, #3e3e3e 100%);
-    color: #fff;
+    @include customize(theme) {
+    background: getValue(ui-background); 
+    color: getValue(ui-font);
+  }
     /* for testing */
     max-width: 300px;
     form {
@@ -39,9 +41,11 @@
             flex-shrink: 1;
         }
         .table-striped tr {
-            color: #fff;
+        //    color: $ui-font;
+          @include customize(theme) {
+           color: getValue(ui-font);
+          }
             background: transparent;
         } 
-
     }
 }

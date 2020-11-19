@@ -1,9 +1,5 @@
 /* ==================== PREVIEW ===================== */
 
-:root {
-    font-size: 16px;
-}
-
 .preview-container {
     margin: 0;
     padding: 0;
@@ -18,12 +14,17 @@
 }
 
 .header-preview {
-    background: linear-gradient(90deg, #3e3e3e 0%, #3e3e3e 100%);
+  @include customize(theme) {
+   background: getValue(ui-background);
+  }
 
     span {
         display: inline-block;
         font-size: .85rem;
-        color: #fff;
+        //color: $ui-font;
+          @include customize(theme) {
+           color: getValue(ui-font);
+          }
         margin: 5px 0 5px 10px;
     }
 }

@@ -47,7 +47,7 @@ export class MoveSender extends Component<IMoveableProps> {
                 // change on mouse event while mouse down
                 const d_x = (_x - x_0);
                 const d_y = (_y - y_0);
-                console.log(event.movementX, event.movementY);
+               // console.log(event.movementX, event.movementY);
                 selectedItems.ids.forEach(itemID => {
                     const _item = registry.getValue(itemID)
                     if (_item) {

@@ -7,6 +7,7 @@ import { ConnectorView } from '../Connector/ConnectorView';
 import { Draggable } from '../Draggable';
 import { DragReceiver } from "../DragReceiver";
 import { MoveReceiver, MoveSender } from '../Moveable';
+import { TwoJS } from '../TwoJS';
 
 export interface IStoryObjectViewRendererProperties {
     loadedObject: IStoryObject
@@ -16,15 +17,17 @@ export interface IStoryObjectViewRendererProperties {
 export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererProperties> {
     
     disposeReaction: IReactionDisposer
-
+    two: TwoJS;
     constructor(props: IStoryObjectViewRendererProperties) {
         super(props);
+        this.two = new TwoJS({noodles: props.loadedObject.childNetwork?.edges, uistate: props.store.uistate});
 
         this.disposeReaction = reaction(
             () => {
                 const id = props.store.uistate.loadedItem;
                 const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork;
                 const names = network?.nodes.map(_ => _.name)
+                
                 return {
                     selectedItem: id,
                     network: network?.nodes.length,
@@ -38,8 +41,9 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
         );
     }
     
-    render({loadedObject, store}: IStoryObjectViewRendererProperties): h.JSX.Element {
-        return <DragReceiver 
+    render({loadedObject, store}: IStoryObjectViewRendererProperties): h.JSX.Element {    
+        
+        return <DragReceiver         
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
             const bounds = (e.target as HTMLElement).getBoundingClientRect()
@@ -48,8 +52,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 y: e.y - bounds.top
             };
 
-            console.log(coords);
-
+            console.log("coords", coords);
             if (input) {
                 const [loc, type, id] = input.split(".");
             
@@ -76,8 +79,12 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                         default: break;
                     }
                 }
+                this.two.updateMyNoodles(loadedObject.childNetwork?.edges);
             }
-            console.log(store.storyContentObjectRegistry)
+            /*console.log(store.storyContentObjectRegistry);
+            console.log("Connectors", loadedObject.connectors);
+            console.log("Connections", loadedObject.connections);
+              */     
         }
         }>
             <div
@@ -86,7 +93,8 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                     const target = e.target as HTMLElement;
                     if (target.id === "hello-world"){
                         store.uistate.selectedItems.setSelectedItems([]);
-                    }
+                    }             
+                    console.log("hello click");                       
                 }
             }>
                 {
@@ -97,9 +105,11 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                             <StoryObjectView store={store} object={object}>{object.name}</StoryObjectView>
                         </MoveReceiver>
                         ))
+                        //  <TwoJS noodles={loadedObject.childNetwork?.edges} uistate={store.uistate}></TwoJS>  
                     }
-            </div>
-        </DragReceiver>
+                   
+            </div>            
+        </DragReceiver>        
     }
 
     private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
@@ -111,6 +121,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
         }
     }
+
 
     componentWillUnmount(): void {
         this.disposeReaction();
@@ -139,10 +150,15 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
     }
 
     render({ store, object, children}: StoryObjectViewProperties): h.JSX.Element {
+        
+        const obj = store.uistate.moveableItems.registry.get(object.id);
         const nudle = this.two.drawNoodleCurve(100, 100, 400, 400);
+        if (obj) 
+             this.two.redrawNoodleCurve(nudle, obj.x, obj.y, obj.x, obj.y);
         const connectorPorts = object.connectors.map(() => {
-            return <ConnectorView id={object.id} onDrag={()=> { 
-                this.two.redrawNoodleCurve(nudle, 100, 100, 400, 400);
+            return <ConnectorView id={object.id} onDrag={(e: DragEvent)=> { 
+                if (obj)
+                    this.two.redrawNoodleCurve(nudle, obj.x, obj.y, e.clientX, e.clientY);
                  }}></ConnectorView>
         }) 
         /*connectorPorts.map((dragTarget) => {

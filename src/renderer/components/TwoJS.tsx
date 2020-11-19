@@ -5,9 +5,6 @@ import { EdgeItem } from '../store/EdgeItem';
 import { UIStore } from '../store/UIStore';
 import { StoryObjectView } from './StoryObjectViewRenderer/StoryObjectViewRenderer';
 import { IEdge, IStoryObject } from 'storygraph';
-import { Moveable } from './Moveable';
-import { RootStore } from '../store/rootStore';
-import { storeDecorator } from 'mobx/dist/internal';
 
 interface ITwoJS {
     noodles?: IEdge[],
@@ -43,7 +40,6 @@ export class TwoJS {
         });
         this.noodles = props.noodles;
         this.uistate = props.uistate;
-        this.store = props.store;
         
         this.myCircles = [];
         this.noodles?.map(e => {
@@ -218,8 +214,12 @@ export class TwoJS {
     redrawNoodleCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void { 
         c.vertices[0].x = x1;
         c.vertices[0].y = y1;
-        c.vertices[1].x = x2;
-        c.vertices[1].y = y2;
+        c.vertices[1].x = x1 + 100;
+        c.vertices[1].y = y1;
+        c.vertices[2].x = x2 - 100;
+        c.vertices[2].y = y2;
+        c.vertices[3].x = x2;
+        c.vertices[3].y = y2;
 /*
         c.vertices.forEach((v, i) => {
             v.x = _arr[i].x;

@@ -54,10 +54,8 @@ blockquote {
   margin: 0 auto;
   opacity: .9; }
 
-/* Theme 2: NGWebS Classic
-
-.ngwebs-story.classic {
-    **overrides**
-}
-
-*/
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 20px 0; }

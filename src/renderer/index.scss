@@ -1,7 +1,5 @@
 /* ==================== ROOT CSS ===================== */
 
-/* background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%) */
-
 $themes: (
   light: (
     ui-background: #e5e5e5,
@@ -38,11 +36,6 @@ $themes: (
 @function getValue($key) {
   @return map-get($array-map, $key);
 }
-
-/*
-$ui-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%);
-$ui-font: #fff;
-*/
 
 
 :root {

@@ -2,17 +2,21 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
+var merge = require('merge-stream');
 sass.compiler = require('node-sass');
 
-gulp.task('sass', function () {
-  return gulp.src('./src/renderer/index.scss')
-    .pipe(concat('./ngwebs.scss'))
+gulp.task('sass-story', function () {
+  const storyThemes = gulp.src('./src/**/story-themes.scss')
+  const preview = gulp.src( './src/**/Preview.scss')
+
+  return merge(storyThemes, preview)
+    .pipe(concat('./ngwebs-story.scss'))
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest('./dist/css/'));
 });
  
 gulp.task('sass', function () {
-  return gulp.src('./src/**/*.scss')
+  return gulp.src(['./src/**/*.scss', '!./src/**/Preview.scss'])
     .pipe(concat('./ngwebs.scss'))
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest('./dist/css/'));

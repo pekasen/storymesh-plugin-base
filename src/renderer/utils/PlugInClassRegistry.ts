@@ -42,7 +42,7 @@ export interface INGWebSProps {
 }
 
 export interface IPlugIn {
-    readonly menuTemplate: IMenuTemplate[];
+    menuTemplate: IMenuTemplate[];
     getComponent(): FunctionalComponent<INGWebSProps>;
 }
 

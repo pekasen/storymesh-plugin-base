@@ -21,17 +21,17 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
         this.disposeReaction = reaction(
             () => {
-                const id = props.store.uistate.loadedItem;
-                const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork;
-                const names = network?.nodes.map(_ => _.name)
-                return {
-                    selectedItem: id,
-                    network: network?.nodes.length,
-                    names: names
-                }
-            },
-            () => {
-                console.log("I changed!");
+            return {
+                id: props.store.uistate.loadedItem,
+                names: props.loadedObject.childNetwork?.nodes.map(e => e.name),
+                edges: props.loadedObject.childNetwork?.edges.map(e => e.id)
+            // const 
+                // const network = ;
+                // if ( names ) return [id, names.length, ...names] 
+                // else return id
+            }},
+            (i) => {
+                console.log("I changed!", i);
                 this.setState({});
             }
         );

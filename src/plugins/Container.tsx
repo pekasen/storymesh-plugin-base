@@ -1,13 +1,9 @@
 import { FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { v4 } from "uuid";
-import { action, computed, makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer } from 'mobx';
-import { StoryGraph, IStoryObject, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
-import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
-import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
-import { IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
-
-import { defaultFields } from './helpers/plugInHelpers';
+import { makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
+import { StoryGraph, IStoryObject } from 'storygraph';
+import { IPlugInRegistryEntry, IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 
 /**
@@ -15,105 +11,49 @@ import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
  * 
  * 
  */
-class _Container implements IPlugIn, IStoryObject{
-    id: string;
-    name: string;
-    role: string;
-    userDefinedProperties: any;
-    metaData: IMetaData;
-    connections: IEdge[];
-    parent?: string;
-    renderingProperties: IRenderingProperties;
-    modifiers: IStoryModifier[];
-    isContentNode = false;
-    childNetwork: StoryGraph;
-    connectors: IConnectorPort[]
+class _Container extends AbstractStoryObject {
+    public name: string;
+    public role: string;
+    public isContentNode: boolean;
+    public userDefinedProperties: any;
+    public childNetwork: StoryGraph;
+    public connectors: IConnectorPort[];
 
     constructor() {
-        this.id = v4();
-        this.role = "internal.container.container";
-        this.name = "Container" // [this.role, this.id].join("_");
-        this.renderingProperties = {
-            width: 100,
-            order: 1,
-            collapsable: false
-        };
-        this.modifiers = [];
-        this.connections = [];
-        this.metaData = {
-            createdAt: new Date(Date.now()),
-            name: "NGWebS user",
-            tags: []
-        };
-        this.childNetwork = makeAutoObservable(new StoryGraph(this));
-        this.userDefinedProperties = {};
+        super();
+
+        this.name = "Container";
+        this.role = "container";
+        this.isContentNode = false;
+        this.childNetwork = makeObservable(new StoryGraph(this), {
+            nodes: observable,
+            edges: observable,
+            addNode: action,
+            connect: action,
+            disconnect: action,
+            removeNode: action
+        });
+        // this.childNetwork = makeAutoObservable(new StoryGraph(this));
         this.connectors = [
             {name: "flow-in", type: "flow", direction: "in"},
             {name: "flow-out", type: "flow", direction: "out"}
         ];
+        this.userDefinedProperties = {};
 
         makeObservable(this, {
-            id: false,
+            role: false,
+            isContentNode: false,
             name: observable,
-            userDefinedProperties:  observable,
-            childNetwork:           observable.deep,
-            metaData:               observable,
-            connections:               observable,
-            modifiers:              observable,
-            menuTemplate:           computed,
-            updateName:             action
+            userDefinedProperties: observable,
+            childNetwork: observable.deep,
+            connectors: observable,
+            updateName: action
         });
-    }
-
-    // @computed
-    get menuTemplate(): IMenuTemplate[]  {
-        return [
-            {
-                label: "Name",
-                type: "text",
-                valueReference: (name: string) => {this.updateName(name)},
-                value: () => (this.name)
-            }, ...defaultFields(this)
-            // {
-            //     label: "Text",
-            //     type: "textarea",
-            //     valueReference: this.updateName(),
-            //     value: this.getName()
-            // }
-        ]
-    }
-
-    updateName(newValue: string): void {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        this.name = newValue;
-    }
-
-    updateConnections(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in") {
-        if (this.parent) {
-            const isIncoming = direction === "in";
-
-            const parentNetwork = registry.getValue(this.parent)?.childNetwork;
-            if (parentNetwork) {
-                const newEdge: IEdge = {
-                    id: (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
-                    from: ((isIncoming) ? `${id}.${theirport}` : `${this.id}.${myport}`),
-                    to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
-                    parent: parentNetwork
-                };
-                console.log(newEdge);
-                parentNetwork.connect(registry, [newEdge]);
-            }
-        }
-    }
-
-    getName(): string {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        return this.name
     }
 
     public getComponent() {
         const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph}) => {
-            const [_, setState] = useState({});
+            const [, setState] = useState({});
             let disposer: IReactionDisposer;
             useEffect(() => {
                 disposer = reaction(
@@ -143,13 +83,38 @@ class _Container implements IPlugIn, IStoryObject{
                     }) || null
                 }
             </div>
-}
+        }
         return Comp
     }
 
-    public willDeregister(registry: IRegistry): void {
-        this.childNetwork.willDeregister(registry)
+    public updateName(name: string): void {
+        this.name = name
     }
+
+    public getEditorComponent(): FunctionComponent<INGWebSProps> {
+        throw new Error('Method not implemented.');
+    }
+
+    menuTemplate: IMenuTemplate[] = [
+        {
+            label: "Test",
+            type: "text",
+            value: () => this.name,
+            valueReference: (name: string) => {this.name = name}
+        }
+    ]
+    // public menuTemplate(): IMenuTemplate[] {
+
+    //     return [
+    //         //...super.menuTemplate()
+    //         {
+    //             label: "Test",
+    //             type: "text",
+    //             value: () => {return this.name},
+    //             valueReference: (name: string) => this.name = name
+    //         }
+    //     ]
+    // }
 }
 
 /**

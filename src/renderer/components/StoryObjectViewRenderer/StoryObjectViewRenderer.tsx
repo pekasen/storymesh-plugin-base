@@ -126,10 +126,10 @@ interface StoryObjectViewProperties {
 export class StoryObjectView extends Component<StoryObjectViewProperties> {
 
     reactionDisposer: IReactionDisposer
-
+    two: TwoJS;
     constructor(props: StoryObjectViewProperties) {
         super(props);
-
+        this.two = new TwoJS({noodles: props.object.childNetwork?.edges, uistate: props.store.uistate});
         this.reactionDisposer = reaction(
             () => ([...props.store.uistate.selectedItems.ids, props.object.name, props.object.content?.resource]),
             () => {
@@ -139,24 +139,26 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
     }
 
     render({ store, object, children}: StoryObjectViewProperties): h.JSX.Element {
-        const connectorPorts = object.connectors.map((el) => {
-            return <ConnectorView id={object.id} onDrag={()=> { console.log("drag connector"); }}></ConnectorView>
+        const nudle = this.two.drawNoodleCurve(100, 100, 400, 400);
+        const connectorPorts = object.connectors.map(() => {
+            return <ConnectorView id={object.id} onDrag={()=> { 
+                this.two.redrawNoodleCurve(nudle, 100, 100, 400, 400);
+                 }}></ConnectorView>
         }) 
+        /*connectorPorts.map((dragTarget) => {
+            dragTarget.addEventListener("dragend", function(ev: DragEvent) {
+                // Call the drag and drop data processor
+                if (ev.dataTransfer !== null) 
+                    console.log("drag connector");
+            }, false);
+        })*/
+
         return <Draggable id={object.id}>            
             <div class="outer">                    
             {connectorPorts}  
                 <div
-                    onClick={(e) => {
-                        
-                        
+                    onClick={(e) => {                       
                         e.preventDefault();
-                        console.log("movable item click", store.uistate.moveableItems.registry);
-                        <ConnectorView id={object.id}></ConnectorView>
-                        {
-                            store.uistate.moveableItems.registry.forEach(itemID => {
-                                <ConnectorView id={itemID.id}></ConnectorView>
-                            })                        
-                        }
                         const selectedItems = store.uistate.selectedItems;
                         if (e.shiftKey) {
                             selectedItems.addToSelectedItems(object.id);
@@ -171,7 +173,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                         }
                     }}
                     class="story-object-view"
-                >
+                >            
                     <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
                     <div class={`area-meta ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}>
                         {children}
@@ -187,5 +189,8 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
 
     componentWillUnmount(): void {
         this.reactionDisposer()
+    }
+    componentDidMount(): void {
+        this.two.svg.appendTo(document.getElementById("hello-world") as HTMLElement);
     }
 }

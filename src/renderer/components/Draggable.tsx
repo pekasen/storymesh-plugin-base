@@ -13,6 +13,7 @@ export const Draggable: FunctionComponent<IItem> = ({ children, id }) => {
     _children.props['onDragStart'] = (e: DragEvent) => {
         if (e.target) {
             e.dataTransfer?.setData("text", id);
+            e.dataTransfer?.setDragImage(new Image(0, 0), 0 ,0);
         }
     }
 

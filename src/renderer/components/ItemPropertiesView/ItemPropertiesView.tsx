@@ -151,7 +151,7 @@ export class ConnectionTableView extends Component<IItemView> {
                             }                     
                         }
                     }}>
-                    <th colSpan={3}><strong>{port.name}</strong></th>
+                    <th><strong>{port.name}</strong></th>
                     {(
                         item
                         .value()

@@ -7,19 +7,19 @@ import { Draggable } from '../Draggable';
 import { DragReceiver } from "../DragReceiver";
 import { MoveReceiver, MoveSender } from '../Moveable';
 
-export interface IDummyObjectRendererProperties {
+export interface IStoryObjectViewRendererProperties {
     loadedObject: IStoryObject
     store: RootStore
 }
 
-export class DummyObjectRenderer extends Component<IDummyObjectRendererProperties> {
+export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererProperties> {
     
-    disposer: IReactionDisposer
+    disposeReaction: IReactionDisposer
 
-    constructor(props: IDummyObjectRendererProperties) {
+    constructor(props: IStoryObjectViewRendererProperties) {
         super(props);
 
-        this.disposer = reaction(
+        this.disposeReaction = reaction(
             () => {
                 const id = props.store.uistate.loadedItem;
                 const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork;
@@ -37,7 +37,7 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
         );
     }
     
-    render({loadedObject, store}: IDummyObjectRendererProperties): h.JSX.Element {
+    render({loadedObject, store}: IStoryObjectViewRendererProperties): h.JSX.Element {
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
@@ -93,7 +93,7 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <DummyObject store={store} object={object}>{object.name}</DummyObject>
+                            <StoryObjectView store={store} object={object}>{object.name}</StoryObjectView>
                         </MoveReceiver>
                         ))
                     }
@@ -112,63 +112,67 @@ export class DummyObjectRenderer extends Component<IDummyObjectRendererPropertie
     }
 
     componentWillUnmount(): void {
-        this.disposer();
+        this.disposeReaction();
     }
 }
 
-interface DummyObjectProperties {
+interface StoryObjectViewProperties {
     store: RootStore
     object: IStoryObject
     children: string
 }
 
-export class DummyObject extends Component<DummyObjectProperties> {
+export class StoryObjectView extends Component<StoryObjectViewProperties> {
 
-    constructor(props: DummyObjectProperties) {
+    reactionDisposer: IReactionDisposer
+
+    constructor(props: StoryObjectViewProperties) {
         super(props);
 
-        reaction(
-            () => ([...props.store.uistate.selectedItems.ids, props.object.name]),
+        this.reactionDisposer = reaction(
+            () => ([...props.store.uistate.selectedItems.ids, props.object.name, props.object.content?.resource]),
             () => {
                 this.setState({});
             }
         );
     }
 
-    render({ store, object, children}: DummyObjectProperties): h.JSX.Element {
+    render({ store, object, children}: StoryObjectViewProperties): h.JSX.Element {
 
         return <Draggable id={object.id}>
-            <div
-                onClick={(e) => {
-                    e.preventDefault();
-                    const selectedItems = store.uistate.selectedItems;
-                    if (e.shiftKey) {
-                        selectedItems.addToSelectedItems(object.id);
-                    } else {
-                        selectedItems.setSelectedItems([object.id]);
-                    }
-                }}
-                onDblClick={(e) => {
-                    e.preventDefault();
-                    if(object.role === "internal.container.container") {
-                        store.uistate.setLoadedItem(object.id);
-                    }
-                }}
-                class={(store.uistate.selectedItems.isSelected(object.id)) ? "dummy-object active" : "dummy-object inactive"}
-            >
-                <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
-                <div class="area-meta">
-                    {children}
-                    <button class="toggle-content">
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-                </MoveSender>
-                <div class="area-content">
-                    <span>Content!</span>
+            <div class="outer">
+                <div
+                    onClick={(e) => {
+                        e.preventDefault();
+                        const selectedItems = store.uistate.selectedItems;
+                        if (e.shiftKey) {
+                            selectedItems.addToSelectedItems(object.id);
+                        } else {
+                            selectedItems.setSelectedItems([object.id]);
+                        }
+                    }}
+                    onDblClick={(e) => {
+                        e.preventDefault();
+                        if(object.role === "internal.container.container") {
+                            store.uistate.setLoadedItem(object.id);
+                        }
+                    }}
+                    class="story-object-view"
+                >
+                    <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
+                    <div class={`area-meta ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}>
+                        {children}
+                    </div>
+                    </MoveSender>
+                    <div class="area-content">
+                        <span>{object.content?.resource}</span>
+                    </div>
                 </div>
             </div>
         </Draggable>
+    }
+
+    componentWillUnmount(): void {
+        this.reactionDisposer()
     }
 }

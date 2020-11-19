@@ -2,12 +2,12 @@ import { reaction } from 'mobx';
 import { Component, FunctionalComponent, h } from "preact";
 
 import { Header } from './Header';
-import { Pane, HiddeableSideBar, HorizontalPaneGroup } from './Pane';
+import { Pane, HiddeableSideBar, HorizontalPaneGroup, ResizablePane } from './Pane/Pane';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
-import { DummyObjectRenderer } from "./DummyObjectRenderer/DummyObjectRenderer";
+import { StoryObjectViewRenderer } from "./StoryObjectViewRenderer/StoryObjectViewRenderer";
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
 import { Preview } from './Preview/Preview';
@@ -38,7 +38,7 @@ export class App extends Component<IAppProps> {
                     <button class="btn btn-default"
                         onClick={() => {
                             console.log("Hello");
-                            store.uistate.toggleSidebar("left");
+                            store.uistate.windowProperties.sidebarPane.toggleHidden();
                         }}>
                         <span class={"icon icon-left-dir"}></span>
                     </button>]}
@@ -57,11 +57,11 @@ interface EditorPaneGroupProperties {
 
 const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loadedItem, store}) => {
     return <HorizontalPaneGroup>
-        <HiddeableSideBar uistate={store.uistate}>
+        <ResizablePane paneState={store.uistate.windowProperties.sidebarPane} resizable="right" classes={["sidebar"]}>
             <ItemPropertiesView
                 store={store}>
             </ItemPropertiesView>
-        </HiddeableSideBar>
+        </ResizablePane>
         {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}
         <Pane>
             <VerticalPaneGroup>
@@ -69,8 +69,8 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                     <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
                 </VerticalMiniPane>
                 <VerticalPane>
-                        <DummyObjectRenderer loadedObject={loadedItem} store={store}>
-                        </DummyObjectRenderer>
+                        <StoryObjectViewRenderer loadedObject={loadedItem} store={store}>
+                        </StoryObjectViewRenderer>
                 </VerticalPane>
                 <VerticalSmallPane>
                     <StoryComponentGallery>    
@@ -85,20 +85,10 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                             ))
                         }
                     </StoryComponentGallery>
-                {/*  
-                    <StoryComponentGallery>
-                        {
-                            // TODO: compute gallery items from plugin registry
-                            Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
-                                <GalleryItemView item={{id: item.id}}><span>{item.name}</span></GalleryItemView>
-                            ))
-                        }
-                    </StoryComponentGallery>
-                */}
                 </VerticalSmallPane>
             </VerticalPaneGroup>
         </Pane>
-        <Pane>
+        <ResizablePane paneState={store.uistate.windowProperties.previewPane} resizable="left">
             <Preview
                 topLevelObjectId={store.uistate.topLevelObjectID}
                 id={"g"}
@@ -106,6 +96,6 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                 registry={store.storyContentObjectRegistry}
             >
             </Preview>
-        </Pane>
+        </ResizablePane >
     </HorizontalPaneGroup>
 };

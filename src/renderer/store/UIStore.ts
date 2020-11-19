@@ -4,8 +4,9 @@ import { IStoreableObject } from './StoreableObject';
 import { WindowProperties } from './WindowProperties';
 import { ValueRegistry } from '../utils/registry';
 import { RootStore } from './rootStore';
-import { SelectedItemStore } from './SelectedItemStore';
 import { EdgeItem } from "./EdgeItem";
+import { SelectedItemStore } from './SelectedItemStore';
+
 
 interface IUIStoreProperties {
     windowProperties: WindowProperties
@@ -30,6 +31,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     constructor(parent: RootStore) {
         this._parent = parent;
         this.loadedItem = "";
+        this.edges = []
         this.selectedItems = new SelectedItemStore();
         this.topLevelObjectID = "";
         this.edges = [];
@@ -52,7 +54,6 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         )
     }
 
-        
     appendEdgeItem(edge: EdgeItem): void {
         this.edges = [...this.edges, edge];
     }
@@ -78,7 +79,7 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     loadFromPersistance(from: IUIStoreProperties): void {
         this.file = from.file;
         this.term = from.term;
-        this.windowProperties.loadFromPersistance(from.windowProperties);
+        // this.windowProperties.loadFromPersistance(from.windowProperties);
     }
 
     writeToPersistance(): void {    

@@ -1,13 +1,14 @@
 $themes: (
-  dark: (
-    ui-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%),
-    ui-font: #fff,
+  modern: (
+    font-family-text: serif,
+    font-size-h1: 2.5rem,
+    blockquote-color: lightblue,
   ),
 );
 
-@mixin customize($arg: theme) {
+@mixin customize($arg: storytheme) {
   $array: $themes;
-  $prefix: theme;
+  $prefix: storytheme;
 
   @each $theme, $map in $array {
     .#{$prefix}-#{$theme} & {

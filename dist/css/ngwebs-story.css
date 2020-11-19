@@ -9,15 +9,13 @@
     position: fixed;
     width: 100%; }
 
-.theme-dark .header-preview {
-  background: linear-gradient(90deg, #3e3e3e 0%, #3e3e3e 100%); }
+.storytheme-modern .header-preview {
+  background: lightblue; }
 
 .header-preview span {
   display: inline-block;
   font-size: .85rem;
   margin: 5px 0 5px 10px; }
-  .theme-dark .header-preview span {
-    color: #fff; }
 
 .ngwebs-story {
   margin: 0 auto;

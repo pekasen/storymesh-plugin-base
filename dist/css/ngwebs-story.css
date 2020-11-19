@@ -9,14 +9,15 @@
     position: fixed;
     width: 100%; }
 
-.header-preview {
+.theme-dark .header-preview {
+  background: linear-gradient(90deg, #3e3e3e 0%, #3e3e3e 100%); }
+
+.header-preview span {
+  display: inline-block;
+  font-size: .85rem;
   margin: 5px 0 5px 10px; }
-  .theme-basic .header-preview {
-    background: #e5e5e5; }
-  .header-preview span {
-    display: inline-block;
-    font-size: .85rem;
-    color: #000; }
+  .theme-dark .header-preview span {
+    color: #fff; }
 
 .ngwebs-story {
   margin: 0 auto;

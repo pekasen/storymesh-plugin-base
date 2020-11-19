@@ -24,8 +24,6 @@
   max-width: 768px;
   padding: 0 15px; }
 
-/* Basic styling, could be moved to separate file. Might need to be dynamic anyway, once
-font sizes should be changeable. */
 p, a, span {
   font-size: 1rem; }
 

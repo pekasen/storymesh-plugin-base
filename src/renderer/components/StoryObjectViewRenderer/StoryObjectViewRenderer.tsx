@@ -3,6 +3,7 @@ import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
+import { ConnectorView } from '../Connector/ConnectorView';
 import { Draggable } from '../Draggable';
 import { DragReceiver } from "../DragReceiver";
 import { MoveReceiver, MoveSender } from '../Moveable';
@@ -138,12 +139,24 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
     }
 
     render({ store, object, children}: StoryObjectViewProperties): h.JSX.Element {
-
-        return <Draggable id={object.id}>
-            <div class="outer">
+        const connectorPorts = object.connectors.map((el) => {
+            return <ConnectorView id={object.id} onDrag={()=> { console.log("drag connector"); }}></ConnectorView>
+        }) 
+        return <Draggable id={object.id}>            
+            <div class="outer">                    
+            {connectorPorts}  
                 <div
                     onClick={(e) => {
+                        
+                        
                         e.preventDefault();
+                        console.log("movable item click", store.uistate.moveableItems.registry);
+                        <ConnectorView id={object.id}></ConnectorView>
+                        {
+                            store.uistate.moveableItems.registry.forEach(itemID => {
+                                <ConnectorView id={itemID.id}></ConnectorView>
+                            })                        
+                        }
                         const selectedItems = store.uistate.selectedItems;
                         if (e.shiftKey) {
                             selectedItems.addToSelectedItems(object.id);

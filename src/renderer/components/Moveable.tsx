@@ -100,7 +100,7 @@ export class MoveReceiver extends Component<IMoveableProps> {
         return <div
             id={id}
             style={
-                "position: relative;" +
+                "position: absolute;" +
                 (item.x === 0 ? "" : `left: ${item.x};`) +
                 (item.y === 0 ? "" : `top: ${item.y};`)
             }

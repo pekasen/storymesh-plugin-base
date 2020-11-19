@@ -1,0 +1,27 @@
+$themes: (
+  modern: (
+    blockquote-color: lightblue,
+  ),
+);
+
+@mixin customize($arg: storytheme) {
+  $array: $themes;
+  $prefix: storytheme;
+
+  @each $theme, $map in $array {
+    .#{$prefix}-#{$theme} & {
+      $array-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($array, $theme), '#{$key}');
+        $array-map: map-merge($array-map, ($key: $value)) !global;
+      }
+
+      @content;
+      $array-map: null !global;
+    }
+  }
+}
+
+@function getValue($key) {
+  @return map-get($array-map, $key);
+}

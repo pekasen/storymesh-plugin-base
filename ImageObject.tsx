@@ -6,7 +6,7 @@ import { action, IReactionDisposer, makeObservable, observable, reaction } from 
 import { IStoryObject, IConnectorPort, StoryGraph } from 'storygraph';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { defaultFields } from './helpers/plugInHelpers';
+import { connectionField } from './helpers/plugInHelpers';
 
 /**
  * Our first little dummy PlugIn
@@ -48,7 +48,7 @@ class _ImageObject extends AbstractStoryObject {
             contentType: "url",
             altText: "This is an image"
         }
-        this.menuTemplate = defaultFields(this);
+        this.menuTemplate = connectionField(this);
 
         makeObservable(this,{
             name:       observable,

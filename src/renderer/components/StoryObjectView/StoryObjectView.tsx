@@ -38,7 +38,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                     }}
                     onDblClick={(e) => {
                         e.preventDefault();
-                        if (object.role === "internal.container.container") {
+                        if (object.role === "container") {
                             store.uistate.setLoadedItem(object.id);
                         }
                     }}

@@ -78,6 +78,31 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                     case "table": {
                         return <ConnectionTableView store={store} item={item} />
                     }
+                    case "dropdown": {
+                        return <div class="form-group-item">
+                            <label>{item.label}</label>
+                            <select
+                                name={item.label.toLowerCase()}
+                                id={item.label.toLowerCase()}
+                                size={1}
+                                onInput={(e: Event) => {
+                                    const target = e.target as HTMLSelectElement;
+
+                                    if (item.valueReference && target) {
+                                        if (target.selectedOptions.length === 1) {
+                                            item.valueReference(target.selectedOptions.item(0)?.value);
+                                        }
+                                    }
+                                }}
+                            >
+                            {
+                                item.options?.map(e => (
+                                    <option value={e}>{e}</option>
+                                ))
+                            }
+                            </select>
+                        </div>
+                    }
                     default: return <li>Empty</li>;
                 }
             })

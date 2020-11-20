@@ -5,6 +5,7 @@ import { StoryGraph, IStoryObject } from 'storygraph';
 import { IPlugInRegistryEntry, IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
+import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 
 /**
  * Our second little dummy PlugIn
@@ -96,12 +97,15 @@ class _Container extends AbstractStoryObject {
     }
 
     menuTemplate: IMenuTemplate[] = [
+        ...nameField(this),
+        ...dropDownField(this),
         {
             label: "Test",
             type: "text",
             value: () => this.name,
             valueReference: (name: string) => {this.name = name}
-        }
+        },
+        ...connectionField(this)
     ]
     // public menuTemplate(): IMenuTemplate[] {
 

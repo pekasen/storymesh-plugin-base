@@ -8,7 +8,7 @@ import { v4 } from "uuid";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { IStoryObject, IMetaData, IEdge, IRenderingProperties, IStoryModifier, IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { defaultFields } from './helpers/plugInHelpers';
+import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 /**
@@ -62,7 +62,17 @@ class _TextObject extends AbstractStoryObject {
             contentType: "text"
         };
         this.userDefinedProperties = {};
-        this.menuTemplate = defaultFields(this);
+        this.menuTemplate = [
+            ...nameField(this),
+            {
+                label: "Content",
+                type: "textarea",
+                value: () => this.content.resource,
+                valueReference: (text: string) => {this.updateText(text)}
+            },
+            ...dropDownField(this),
+            ...connectionField(this)
+        ];
 
         makeObservable(this, {
             id: false,

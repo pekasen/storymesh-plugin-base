@@ -1,12 +1,11 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph, IStoryObject, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 
-import { defaultFields } from './plugInHelpers';
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 
 /**

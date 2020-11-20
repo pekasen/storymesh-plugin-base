@@ -1,11 +1,12 @@
 import { IStoryObject } from 'storygraph'
 import { IMenuTemplate, IPlugIn } from '../../renderer/utils/PlugInClassRegistry'
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
+import { AbstractStoryObject } from './AbstractStoryObject';
 
 interface IDefaultFieldsMethods {
     updateConnections: (registry: IRegistry, ids: string,  myport: string, theirport: string, direction: "in" | "out") => void
 }
-export function defaultFields(target: IStoryObject & IPlugIn & IDefaultFieldsMethods): IMenuTemplate[] {
+export function connectionField(target: IStoryObject & IPlugIn & IDefaultFieldsMethods): IMenuTemplate[] {
     return [
         {
             label: "Connections",
@@ -16,6 +17,29 @@ export function defaultFields(target: IStoryObject & IPlugIn & IDefaultFieldsMet
                 id: target.id
             }),
             valueReference: (registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out") => {target.updateConnections(registry, id, myport, theirport, direction)}
+        }
+    ]
+}
+
+export function nameField(target: AbstractStoryObject): IMenuTemplate[] {
+    return [
+        {
+            label: "Name",
+            type: "text",
+            value: () => target.name,
+            valueReference: (name: string) => target.name = name
+        }
+    ]
+}
+
+export function dropDownField(target: AbstractStoryObject): IMenuTemplate[] {
+    return [
+        {
+            label: "Style",
+            type: "dropdown",
+            value: () => target.renderingProperties.width,
+            valueReference: (_class: string) => {target.renderingProperties.width = _class},
+            options: ["h1", "h2", "h3", "p", "b"]
         }
     ]
 }

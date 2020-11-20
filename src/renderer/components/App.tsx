@@ -2,7 +2,7 @@ import { reaction } from 'mobx';
 import { Component, FunctionalComponent, h } from "preact";
 
 import { Header } from './Header';
-import { Pane, HiddeableSideBar, HorizontalPaneGroup, ResizablePane } from './Pane/Pane';
+import { Pane, HorizontalPaneGroup, ResizablePane } from './Pane/Pane';
 import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
 import { Window, WindowContent } from "./Window";
 import { RootStore } from '../store/rootStore';
@@ -11,7 +11,6 @@ import { StoryObjectViewRenderer } from "./StoryObjectViewRenderer/StoryObjectVi
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
 import { IStoryObject } from 'storygraph';
 import { Preview } from './Preview/Preview';
-import { ConnectorView } from './Connector/ConnectorView';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { GalleryItemView } from './GalleryItemView';
 

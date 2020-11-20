@@ -1,7 +1,4 @@
 // import { MenuItem } from 'electron';
-import { remote } from 'electron/renderer';
-const { Menu, MenuItem } = remote;
-
 import { reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { RootStore } from '../../store/rootStore';

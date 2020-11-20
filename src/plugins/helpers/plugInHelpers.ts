@@ -6,6 +6,15 @@ import { AbstractStoryObject } from './AbstractStoryObject';
 interface IDefaultFieldsMethods {
     updateConnections: (registry: IRegistry, ids: string,  myport: string, theirport: string, direction: "in" | "out") => void
 }
+
+interface INameFieldMethods {
+    updateName: (name: string) => void
+}
+
+// interface IDropDownFieldMethods {
+    
+// }
+
 export function connectionField(target: IStoryObject & IPlugIn & IDefaultFieldsMethods): IMenuTemplate[] {
     return [
         {
@@ -21,13 +30,13 @@ export function connectionField(target: IStoryObject & IPlugIn & IDefaultFieldsM
     ]
 }
 
-export function nameField(target: AbstractStoryObject): IMenuTemplate[] {
+export function nameField(target: AbstractStoryObject & INameFieldMethods): IMenuTemplate[] {
     return [
         {
             label: "Name",
             type: "text",
             value: () => target.name,
-            valueReference: (name: string) => target.name = name
+            valueReference: (name: string) => target.updateName(name)
         }
     ]
 }

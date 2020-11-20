@@ -12,7 +12,7 @@ registerHandlers();
 const root = document.getElementById("preact-root") as HTMLElement;
 render(
     <Store.Provider value={rootStore}>
-        <App store={rootStore}></App>
+        <App />
     </Store.Provider>,
     root
 );

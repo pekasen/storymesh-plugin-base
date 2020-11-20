@@ -1,0 +1,27 @@
+table.connection-table {
+
+    color: ;
+    &, tbody, thead {
+        background: transparent;
+    }
+    
+    th {
+        border: none;
+
+        &.flow {
+            color: orange;
+        }
+
+        &.data {
+            color: green;
+        }
+
+        &.reaction {
+            color: royalblue;
+        }
+    }
+
+    td {
+        border: none;
+    }
+}

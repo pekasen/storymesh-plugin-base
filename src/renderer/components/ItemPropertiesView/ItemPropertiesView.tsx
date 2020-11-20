@@ -5,7 +5,7 @@ const { Menu, MenuItem } = remote;
 import { reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { RootStore } from '../../store/rootStore';
-import { ConnectionTableView } from './ConnectionTableView';
+import { ConnectionTableView } from '../ConnectionTableView/ConnectionTableView';
 
 export interface IItemPropertiesViewProperties {
     // template: IMenuTemplate[] | undefined

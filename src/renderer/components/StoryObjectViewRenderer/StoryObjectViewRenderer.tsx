@@ -1,6 +1,8 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
+import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { Store } from '../..';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
@@ -19,16 +21,17 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
     constructor(props: IStoryObjectViewRendererProperties) {
         super(props);
 
+        const store = useContext(Store);
+
         this.disposeReaction = reaction(
             () => {
+                const id = store.uistate.loadedItem;
+                const network = store.storyContentObjectRegistry.getValue(id)?.childNetwork;
+                if (!network) throw("network ist not defined!");
             return {
-                id: props.store.uistate.loadedItem,
-                names: props.loadedObject.childNetwork?.nodes.map(e => e.name),
-                edges: props.loadedObject.childNetwork?.edges.map(e => e.id)
-            // const 
-                // const network = ;
-                // if ( names ) return [id, names.length, ...names] 
-                // else return id
+                id: id,
+                names: network.nodes.map(e => e.name),
+                edges: network.edges.map(e => e.id)
             }},
             (i) => {
                 console.log("I changed!", i);
@@ -37,7 +40,13 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
         );
     }
     
-    render({loadedObject, store}: IStoryObjectViewRendererProperties): h.JSX.Element {
+    render(): h.JSX.Element {
+        const store = useContext(Store);
+        const loadedObjectId = store.uistate.loadedItem;
+        const loadedObject = store.storyContentObjectRegistry.getValue(loadedObjectId);
+
+        if (!loadedObject) throw("loadedObject is not defined");
+
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');

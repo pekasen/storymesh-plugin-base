@@ -16,38 +16,34 @@ import { GalleryItemView } from './GalleryItemView';
 import { Store } from '..';
 import { useContext, useEffect, useState } from 'preact/hooks';
 
-interface IAppProps {
-    store: RootStore
-}
+export const App = (): h.JSX.Element => {
 
-export class App extends Component<IAppProps> {
+    const store = useContext(Store);
 
-    public render({ store }: IAppProps): h.JSX.Element {
-        return <Window>
-                <Header
-                    title={store.uistate.windowProperties.title}
-                    leftToolbar={[
-                    <button class="btn btn-default"
-                        onClick={() => {
-                            console.log("Hello");
-                            store.uistate.windowProperties.sidebarPane.toggleHidden();
-                        }}>
-                        <span class={"icon icon-left-dir"}></span>
-                    </button>]}
-                    rightToolbar={[
-                        <button class="btn btn-default pull-right"
-                        onClick={() => {
-                            store.uistate.windowProperties.previewPane.toggleHidden();
-                        }}>
-                        <span class={"icon icon-right-dir"}></span>
-                    </button>
-                    ]}
-                ></Header>
-                <WindowContent>
-                    <EditorPaneGroup></EditorPaneGroup>
-                </WindowContent>             
-        </Window>
-    }
+    return <Window>
+            <Header
+                title={store.uistate.windowProperties.title}
+                leftToolbar={[
+                <button class="btn btn-default"
+                    onClick={() => {
+                        console.log("Hello");
+                        store.uistate.windowProperties.sidebarPane.toggleHidden();
+                    }}>
+                    <span class={"icon icon-left-dir"}></span>
+                </button>]}
+                rightToolbar={[
+                    <button class="btn btn-default pull-right"
+                    onClick={() => {
+                        store.uistate.windowProperties.previewPane.toggleHidden();
+                    }}>
+                    <span class={"icon icon-right-dir"}></span>
+                </button>
+                ]}
+            ></Header>
+            <WindowContent>
+                <EditorPaneGroup></EditorPaneGroup>
+            </WindowContent>             
+    </Window>
 }
 
 

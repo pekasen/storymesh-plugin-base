@@ -5,6 +5,7 @@ import { StoryGraph, IConnectorPort, IEdge } from 'storygraph';
 import { RootStore } from '../../store/rootStore';
 import { IMenuTemplate } from '../../utils/PlugInClassRegistry';
 
+const { Menu, MenuItem } = remote;
 
 export class ConnectionTableView extends Component<IItemView> {
 

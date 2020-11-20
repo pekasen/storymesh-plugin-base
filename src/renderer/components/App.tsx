@@ -42,6 +42,14 @@ export class App extends Component<IAppProps> {
                         }}>
                         <span class={"icon icon-left-dir"}></span>
                     </button>]}
+                    rightToolbar={[
+                        <button class="btn btn-default pull-right"
+                        onClick={() => {
+                            store.uistate.windowProperties.previewPane.toggleHidden();
+                        }}>
+                        <span class={"icon icon-left-dir"}></span>
+                    </button>
+                    ]}
                 ></Header>
                 <WindowContent>
                     <EditorPaneGroup store={store} loadedItem={store.storyContentObjectRegistry.getValue(store.uistate.loadedItem) as IStoryObject}></EditorPaneGroup>
@@ -50,10 +58,6 @@ export class App extends Component<IAppProps> {
     }
 }
 
-interface EditorPaneGroupProperties {
-    loadedItem: IStoryObject
-    store: RootStore
-}
 
 const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loadedItem, store}) => {
     return <HorizontalPaneGroup>
@@ -99,3 +103,8 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
         </ResizablePane >
     </HorizontalPaneGroup>
 };
+
+interface EditorPaneGroupProperties {
+    loadedItem: IStoryObject
+    store: RootStore
+}

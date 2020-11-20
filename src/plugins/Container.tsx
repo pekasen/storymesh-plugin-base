@@ -103,7 +103,7 @@ class _Container extends AbstractStoryObject {
             label: "Test",
             type: "text",
             value: () => this.name,
-            valueReference: (name: string) => {this.name = name}
+            valueReference: (name: string) => {this.updateName(name)}
         },
         ...connectionField(this)
     ]

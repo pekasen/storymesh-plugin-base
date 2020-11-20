@@ -29,6 +29,7 @@ export interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
     version: string;
     website?: string;
     description?: string;
+    public?: boolean
     class: Class<T>;
 }
 

@@ -1,5 +1,5 @@
 import { reaction } from 'mobx';
-import { Component, FunctionalComponent, h } from "preact";
+import { Component, createContext, FunctionalComponent, h } from "preact";
 
 import { Header } from './Header';
 import { Pane, HorizontalPaneGroup, ResizablePane } from './Pane/Pane';
@@ -13,21 +13,14 @@ import { IStoryObject } from 'storygraph';
 import { Preview } from './Preview/Preview';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { GalleryItemView } from './GalleryItemView';
+import { Store } from '..';
+import { useContext, useEffect, useState } from 'preact/hooks';
 
 interface IAppProps {
     store: RootStore
 }
 
 export class App extends Component<IAppProps> {
-
-    constructor (props: IAppProps) {
-        super(props);
-
-        reaction(
-            () => [props.store.uistate.loadedItem],
-            () => this.setState({})
-        );
-    }
 
     public render({ store }: IAppProps): h.JSX.Element {
         return <Window>
@@ -46,26 +39,44 @@ export class App extends Component<IAppProps> {
                         onClick={() => {
                             store.uistate.windowProperties.previewPane.toggleHidden();
                         }}>
-                        <span class={"icon icon-left-dir"}></span>
+                        <span class={"icon icon-right-dir"}></span>
                     </button>
                     ]}
                 ></Header>
                 <WindowContent>
-                    <EditorPaneGroup store={store} loadedItem={store.storyContentObjectRegistry.getValue(store.uistate.loadedItem) as IStoryObject}></EditorPaneGroup>
+                    <EditorPaneGroup></EditorPaneGroup>
                 </WindowContent>             
         </Window>
     }
 }
 
 
-const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loadedItem, store}) => {
+const EditorPaneGroup: FunctionalComponent = () => {
+    const [_, setState] = useState({});
+
+    const store = useContext(Store);
+
+    useEffect(() => {
+        const disposer = reaction(
+            () => [store.uistate.loadedItem],
+            () => setState({})
+        );
+
+        return () => {
+            disposer();
+        }
+    });
+
+    const loadedItem = store.storyContentObjectRegistry.getValue(
+        store.uistate.loadedItem
+    ) as IStoryObject;
+
     return <HorizontalPaneGroup>
         <ResizablePane paneState={store.uistate.windowProperties.sidebarPane} resizable="right" classes={["sidebar"]}>
             <ItemPropertiesView
                 store={store}>
             </ItemPropertiesView>
         </ResizablePane>
-        {/* <DropzonePane uistate={store.uistate} model={store.model}></DropzonePane> */}
         <Pane>
             <VerticalPaneGroup>
                 <VerticalMiniPane>
@@ -82,9 +93,6 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
                                 <GalleryItemView item={item}>
                                     <span>{item.name}</span>
                                 </GalleryItemView>
-                                // <ConnectorView item={{id: item.id}} onDrag={() => {
-                                //     console.log("connector message");
-                                // }}><span>{item.name}</span></ConnectorView>
                             ))
                         }
                     </StoryComponentGallery>
@@ -102,8 +110,3 @@ const EditorPaneGroup: FunctionalComponent<EditorPaneGroupProperties> = ({loaded
         </ResizablePane >
     </HorizontalPaneGroup>
 };
-
-interface EditorPaneGroupProperties {
-    loadedItem: IStoryObject
-    store: RootStore
-}

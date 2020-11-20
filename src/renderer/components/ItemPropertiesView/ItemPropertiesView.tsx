@@ -18,13 +18,8 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
     constructor(props: IItemPropertiesViewProperties) {
         super(props);
         reaction(
-            () => [
-                // ...props.store.storyContentObjectRegistry.
-                // getValue(props.store.uistate.selectedItems.first)?.menuTemplate.map(e => e.value()).filter(e => e !== undefined) as any[],
-                props.store.uistate.selectedItems.ids,
-            ],
-            (i) => {
-                console.log(i);
+            () => [...props.store.uistate.selectedItems.ids],
+            () => {
                 this.setState({});
             }
         );
@@ -82,6 +77,7 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                         return <div class="form-group-item">
                             <label>{item.label}</label>
                             <select
+                            class="form-control"
                                 name={item.label.toLowerCase()}
                                 id={item.label.toLowerCase()}
                                 size={1}

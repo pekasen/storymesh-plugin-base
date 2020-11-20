@@ -62,4 +62,5 @@ export interface IMenuTemplate {
     type: MenuItemSpecification;
     valueReference: (...args: any[]) => void;
     value: (() => any);
+    options?: string[];
 }

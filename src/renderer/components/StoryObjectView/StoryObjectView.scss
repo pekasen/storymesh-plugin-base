@@ -10,7 +10,7 @@
 
     .area-meta {
         width: auto;
-        height: 2em;
+        height: 1.8em;
         background: #616161;
         line-height: 25px;
         font-size: 1.25em;
@@ -20,6 +20,11 @@
         color: #fff;
         position: relative;
         transition: background .1s ease-in-out;
+
+        p {
+            display: inline;
+            margin-left: 10px;
+        }
 
         button.toggle-content {
             position: absolute;
@@ -39,7 +44,9 @@
     .area-content{
         position: relative;
         width: auto;
-        height: 200px;
+        height: auto;
+        min-height: 60px;
+        max-height: 140px;
         padding: 5px;
         font-size: .9em;
         line-break: anywhere;

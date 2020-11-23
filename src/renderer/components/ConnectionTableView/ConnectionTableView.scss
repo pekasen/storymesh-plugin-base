@@ -1,12 +1,12 @@
 table.connection-table {
 
-    color: ;
     &, tbody, thead {
         background: transparent;
     }
     
     th {
         border: none;
+        font-weight: bold;
 
         &.flow {
             color: orange;

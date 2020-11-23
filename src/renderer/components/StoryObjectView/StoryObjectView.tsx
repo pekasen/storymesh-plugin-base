@@ -51,7 +51,9 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                                 e.preventDefault();
                                 console.log('Hello!!!');
                                 const toggle = document.getElementById('toggle-content');
-                                toggle?.classList.add('minimized');
+                                const contentArea = document.getElementById('area-content');
+                                toggle?.classList.toggle('minimized');
+                                contentArea?.classList.toggle('hidden');
 
                             }}
                             class="toggle-content" id="toggle-content">
@@ -60,7 +62,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                             </div>
                         </div>
                     </MoveSender>
-                    <div class="area-content">
+                    <div class="area-content" id="area-content">
                             <span>{object.content?.resource}</span>
                     </div>
                 </div>

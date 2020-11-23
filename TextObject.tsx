@@ -84,7 +84,9 @@ class _TextObject extends AbstractStoryObject {
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
+        return () => <div class="editor-component">
+            <p>{this.content.resource}</p>
+        </div>
     }
 
     public updateName(newValue: string): void {

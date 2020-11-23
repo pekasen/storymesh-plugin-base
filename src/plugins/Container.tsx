@@ -1,5 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 import { makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
 import { StoryGraph, IStoryObject } from 'storygraph';
 import { IPlugInRegistryEntry, IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
@@ -8,6 +8,7 @@ import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 import { Class } from '../renderer/utils/registry';
 import { exportClass } from './helpers/exportClass';
+import { Store } from '../renderer';
 
 /**
  * Our second little dummy PlugIn
@@ -97,7 +98,42 @@ class _Container extends AbstractStoryObject {
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
+        // TODO: implement mock-drawing of the containers content!
+        // TODO: draw using SVGs!
+        const store = useContext(Store);
+        const [_, setState] = useState({});
+
+        useEffect(
+            () => {
+                const disposer = reaction(
+                    () => this.
+                    childNetwork.
+                    nodes.
+                    map(e => store.uistate.moveableItems.getValue(e.id)).
+                    map(e => [e?.x, e?.y]),
+                    () => setState({})
+                )
+
+                return () => {
+                    disposer()
+                }
+            }
+        );
+
+        const coords = this.childNetwork.nodes.map(node => {
+            const mitem = store.uistate.moveableItems.getValue(node.id);
+            if (!mitem) throw("Item is not defined!");
+            return {
+                x: mitem.x,
+                y: mitem.y
+            }
+        });
+
+        return () => <div class="editor-component">
+            {
+                coords.map(item => <div style={`position: absolute; left: ${item?.x}; top: ${item?.y}; background: dark-grey;`}></div>)
+            }
+        </div>
     }
 
     menuTemplate: IMenuTemplate[] = [
@@ -128,7 +164,7 @@ class _Container extends AbstractStoryObject {
 /**
  * Define the metadata
  */
-// export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
+// export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = makeObservable({
 //     name: "Container",
 //     id: "internal.container.container",
 //     shortId: "container",

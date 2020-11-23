@@ -13,11 +13,11 @@ interface IGalleryItemViewProps<T extends IItem> {
     children: h.JSX.Element
 }
 
-export class GalleryItemView extends Component<IGalleryItemViewProps<IPlugInRegistryEntry<IStoryObject & IPlugIn>>> {
+export class GalleryItemView extends Component<IGalleryItemViewProps<IPlugInRegistryEntry<AbstractStoryObject>>> {
 
     reactionDisposer: IReactionDisposer;
 
-    constructor(props: IGalleryItemViewProps<IPlugInRegistryEntry<IStoryObject & IPlugIn>>) {
+    constructor(props: IGalleryItemViewProps<IPlugInRegistryEntry<AbstractStoryObject>>) {
         super(props);
 
         this.reactionDisposer = reaction(
@@ -28,7 +28,7 @@ export class GalleryItemView extends Component<IGalleryItemViewProps<IPlugInRegi
         );
     }
     
-    render({ item, children, onClick }: IGalleryItemViewProps<IPlugInRegistryEntry<IStoryObject & IPlugIn>>): h.JSX.Element {
+    render({ item, children, onClick }: IGalleryItemViewProps<IPlugInRegistryEntry<AbstractStoryObject>>): h.JSX.Element {
         return <Draggable id={item.id}>
             <li class="gallery-item" onClick={onClick}>
                 <span class={`icon ${item.icon}`}></span>

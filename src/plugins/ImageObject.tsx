@@ -94,7 +94,7 @@ class _ImageObject extends AbstractStoryObject {
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
+        return () => <div class="editor-component"></div>
     }
 }
 

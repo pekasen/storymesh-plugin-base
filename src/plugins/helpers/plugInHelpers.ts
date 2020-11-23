@@ -15,7 +15,7 @@ interface INameFieldMethods {
     
 // }
 
-export function connectionField(target: IStoryObject & IPlugIn & IDefaultFieldsMethods): IMenuTemplate[] {
+export function connectionField(target: AbstractStoryObject & IDefaultFieldsMethods): IMenuTemplate[] {
     return [
         {
             label: "Connections",

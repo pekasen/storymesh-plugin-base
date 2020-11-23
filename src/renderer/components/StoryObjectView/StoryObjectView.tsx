@@ -1,11 +1,11 @@
 import { IReactionDisposer, reaction } from 'mobx';
-import { Component, h } from 'preact';
+import { Component, FunctionalComponent, FunctionComponent, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { RootStore } from '../../store/rootStore';
+import { INGWebSProps, IPlugIn } from '../../utils/PlugInClassRegistry';
 import { Draggable } from '../Draggable';
 import { MoveSender } from '../Moveable';
-
-
 
 export class StoryObjectView extends Component<StoryObjectViewProperties> {
 
@@ -23,6 +23,8 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
     }
 
     render({ store, object, children }: StoryObjectViewProperties): h.JSX.Element {
+        
+        const EditorComponent: FunctionComponent<INGWebSProps> = object.getEditorComponent();
 
         return <Draggable id={object.id}>
             <div class="outer">
@@ -50,7 +52,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                         </div>
                     </MoveSender>
                     <div class="area-content">
-                            <span>{object.content?.resource}</span>
+                        <EditorComponent id={object.id} registry={store.storyContentObjectRegistry}/>
                     </div>
                 </div>
             </div>
@@ -63,6 +65,6 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
 }
 interface StoryObjectViewProperties {
     store: RootStore;
-    object: IStoryObject;
+    object: AbstractStoryObject;
     children: h.JSX.Element;
 }

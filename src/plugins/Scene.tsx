@@ -4,7 +4,8 @@ import { IConnectorPort, IStoryObject, StoryGraph } from 'storygraph';
 import { IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 import { connectionField, nameField } from './helpers/plugInHelpers';
-
+import { Scene } from "three";
+import { exportClass } from './helpers/exportClass';
 class _Scene extends AbstractStoryObject {
     public childNetwork?: StoryGraph | undefined;
     public name: string;
@@ -14,6 +15,8 @@ class _Scene extends AbstractStoryObject {
     public connectors: IConnectorPort[];
     public menuTemplate: IMenuTemplate[];
     public icon: string;
+
+    public scene: Scene;
 
     constructor() {
         super();
@@ -33,6 +36,7 @@ class _Scene extends AbstractStoryObject {
             ...connectionField(this)
         ]
         this.icon = "icon-box";
+        this.scene = new Scene();
 
         makeObservable(
             this, {
@@ -50,23 +54,17 @@ class _Scene extends AbstractStoryObject {
     }
 
     getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw("method not implemented yet.")
+        return () => <div class="editor-component"></div>
+    }
+
+    getScene() {
+        return this.scene;
     }
 }
 
-export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
-    name: "Scene",
-    id: "internal.content.scene",
-    shortId: "scene",
-    author: "NGWebS-Core",
-    version: "1.0.0",
-    icon: "icon-box",
-    class: _Scene
-}, {
-    name: false,
-    id: false,
-    shortId: false,
-    author: false,
-    version: false,
-    class: false
-});
+export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = exportClass(
+    _Scene,
+    "Scene",
+    "internal.content.scene",
+    "icon-box"
+);

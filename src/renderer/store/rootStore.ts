@@ -13,8 +13,8 @@ export interface IRootStoreProperties {
 
 export class RootStore implements IStoreableObject<IRootStoreProperties> {
     uistate: UIStore
-    storyContentObjectRegistry: ValueRegistry<IStoryObject & IPlugIn>
-    storyContentTemplatesRegistry: PlugInClassRegistry<IStoryObject & IPlugIn>
+    storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
+    storyContentTemplatesRegistry: PlugInClassRegistry<AbstractStoryObject>
 
     constructor(uistate?: UIStore) {
         /**
@@ -25,12 +25,12 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
         /**
          * In this registry we store our instantiated StoryObjects
          */
-        this.storyContentObjectRegistry = new ValueRegistry<IStoryObject & IPlugIn>()
+        this.storyContentObjectRegistry = new ValueRegistry<AbstractStoryObject>()
 
         /**
          * In this registry we store our templates and plugin classes
          */
-        this.storyContentTemplatesRegistry = new PlugInClassRegistry<IStoryObject & IPlugIn>()
+        this.storyContentTemplatesRegistry = new PlugInClassRegistry<AbstractStoryObject>()
         /**
          * Read the plugins and register them in the template store
          */

@@ -8,6 +8,10 @@ $themes: (
     node-object-background: #e5e5e5,
     node-editor-background: #fff,
     highlight-color: rgb(35, 90, 94),
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow-color: orange,
+    data-color: green,
+    reaction-color: royalblue,
     highlight-color-font: #fff,
     border-color: #252525,
   ),
@@ -18,6 +22,10 @@ $themes: (
     node-object-background: #fff,
     node-editor-background: #e5e5e5,
     highlight-color: salmon,
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow-color: orange,
+    data-color: green,
+    reaction-color: royalblue,
     highlight-color-font: #fff,
     border-color: #fff,
   ),

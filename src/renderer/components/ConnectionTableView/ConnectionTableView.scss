@@ -7,21 +7,33 @@ table.connection-table {
     th {
         border: none;
         font-weight: bold;
+        @include customize(theme) {
+            color: getValue(menu-font);
+           }
 
         &.flow {
-            color: orange;
+            @include customize(theme) {
+                color: getValue(flow-color);
+            }
         }
 
         &.data {
-            color: green;
+            @include customize(theme) {
+                color: getValue(data-color);
+            }
         }
 
         &.reaction {
-            color: royalblue;
+            @include customize(theme) {
+                color: getValue(reaction-color);
+            }
         }
     }
 
     td {
         border: none;
+        @include customize(theme) {
+            color: getValue(menu-font);
+        }
     }
 }

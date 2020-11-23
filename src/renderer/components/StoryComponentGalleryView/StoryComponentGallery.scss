@@ -22,21 +22,27 @@
     }
     transform: scale(1);
 
+    &:hover {
+      @include customize(theme) {
+        background: getValue(highlight-color);
+        color: getValue(highlight-color-font); 
+      }
+      transform: scale(1.055);
+    }
+
     span {
       padding: 0 5px;
       transition: all ease-in-out;
     }
   }
 
-  .gallery-item:hover {
-    @include customize(theme) {
-      background: getValue(highlight-color);
-      color: getValue(highlight-color-font); 
-    }
-    transform: scale(1.055);
-  }
-
   .gallery-item-line {
     left: 1px;
+  }
+}
+
+@media only screen and(max-width: 400px) {
+  .gallery-container {
+    color: red !important;
   }
 }

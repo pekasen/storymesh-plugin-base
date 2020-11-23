@@ -1,12 +1,13 @@
 import { FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { IPlugInRegistryEntry, IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import { INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 
 import { action, IReactionDisposer, makeObservable, observable, reaction } from 'mobx';
-import { IStoryObject, IConnectorPort, StoryGraph } from 'storygraph';
+import { IConnectorPort, StoryGraph } from 'storygraph';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField } from './helpers/plugInHelpers';
+import { exportClass } from './helpers/exportClass';
 
 /**
  * Our first little dummy PlugIn
@@ -23,12 +24,15 @@ class _ImageObject extends AbstractStoryObject {
     public connectors: IConnectorPort[];
     public content: IContent;
     public menuTemplate: IMenuTemplate[];
+    public icon: string;
+
+    public static defaultIcon = "icon-picture"
 
     constructor() {
         super();
 
         this.name = "Image";
-        this.role = "image";
+        this.role = "content";
         this.isContentNode = true;
         this.userDefinedProperties = {};
         this.connectors = [
@@ -49,6 +53,7 @@ class _ImageObject extends AbstractStoryObject {
             altText: "This is an image"
         }
         this.menuTemplate = connectionField(this);
+        this.icon = _ImageObject.defaultIcon;
 
         makeObservable(this,{
             name:       observable,
@@ -93,27 +98,9 @@ class _ImageObject extends AbstractStoryObject {
     }
 }
 
-/**
- * Define the metadata
- */
-export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
-    name: "Image",
-    id: "internal.content.image",
-    shortId: "image",
-    author: "NGWebS-Core",
-    version: "1.0.0",
-    class: _ImageObject
-}, {
-    name: false,
-    id: false,
-    shortId: false,
-    author: false,
-    version: false,
-    class: false
-});
-
-
-/**
- * Let's plug ourselves in!
- */
-// rootStore.storyContentTemplatesRegistry.register([TextObject]);
+export const plugInExport = exportClass(
+    _ImageObject,
+    "Image",
+    "internal.content.image",
+    _ImageObject.defaultIcon
+);

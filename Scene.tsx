@@ -1,12 +1,13 @@
 import { makeObservable, observable } from 'mobx';
-import { h, FunctionalComponent, FunctionComponent } from "preact";
-import { IConnectorPort, IStoryObject, StoryGraph } from 'storygraph';
-import { IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
+import { h, FunctionComponent } from "preact";
+import { IConnectorPort, StoryGraph } from 'storygraph';
+import { IPlugInRegistryEntry, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 import { Scene } from "three";
 import { exportClass } from './helpers/exportClass';
 class _Scene extends AbstractStoryObject {
+    public content?: any;
     public childNetwork?: StoryGraph | undefined;
     public name: string;
     public role: string;
@@ -27,9 +28,9 @@ class _Scene extends AbstractStoryObject {
             {
                 name: "data-out",
                 type: "data",
-                direction: "out"
+                direction: "out",
+                call: this.getScene
             }
-
         ];
         this.menuTemplate = [
             ...nameField(this),
@@ -60,11 +61,17 @@ class _Scene extends AbstractStoryObject {
     getScene() {
         return this.scene;
     }
+
+    private _createMockScene() {
+        this.scene.add(
+        );
+    }
 }
 
 export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = exportClass(
     _Scene,
     "Scene",
     "internal.content.scene",
-    "icon-box"
+    "icon-box",
+    true
 );

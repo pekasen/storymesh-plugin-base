@@ -27,6 +27,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public abstract childNetwork?: StoryGraph;
     public abstract connectors: IConnectorPort[]
     public abstract menuTemplate: IMenuTemplate[]
+    public abstract icon: string
     
     constructor() {
         this.id = v4();
@@ -48,7 +49,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             metaData:               observable,
             connections:            observable,
             modifiers:              observable,
-            updateConnections:      action
+            updateConnections:      action,
         });
     }
 

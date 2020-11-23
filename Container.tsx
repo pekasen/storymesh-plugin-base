@@ -6,6 +6,8 @@ import { IPlugInRegistryEntry, IPlugIn, INGWebSProps, IMenuTemplate } from "../r
 import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
+import { Class } from '../renderer/utils/registry';
+import { exportClass } from './helpers/exportClass';
 
 /**
  * Our second little dummy PlugIn
@@ -19,7 +21,8 @@ class _Container extends AbstractStoryObject {
     public userDefinedProperties: any;
     public childNetwork: StoryGraph;
     public connectors: IConnectorPort[];
-
+    public icon: string
+    public static defaultIcon = "icon-doc"
     constructor() {
         super();
 
@@ -40,6 +43,7 @@ class _Container extends AbstractStoryObject {
             {name: "flow-out", type: "flow", direction: "out"}
         ];
         this.userDefinedProperties = {};
+        this.icon = _Container.defaultIcon;
 
         makeObservable(this, {
             role: false,
@@ -124,18 +128,25 @@ class _Container extends AbstractStoryObject {
 /**
  * Define the metadata
  */
-export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
-    name: "Container",
-    id: "internal.container.container",
-    shortId: "container",
-    author: "NGWebS-Core",
-    version: "1.0.0",
-    class: _Container
-}, {
-    name: false,
-    id: false,
-    shortId: false,
-    author: false,
-    version: false,
-    class: false
-});
+// export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
+//     name: "Container",
+//     id: "internal.container.container",
+//     shortId: "container",
+//     author: "NGWebS-Core",
+//     version: "1.0.0",
+//     class: _Container
+// }, {
+//     name: false,
+//     id: false,
+//     shortId: false,
+//     author: false,
+//     version: false,
+//     class: false
+// });
+
+export const plugInExport = exportClass(
+    _Container,
+    "Container",
+    "internal.container.container",
+    _Container.defaultIcon
+);

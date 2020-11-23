@@ -1,22 +1,19 @@
 import { FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { reaction, IReactionDisposer } from "mobx";
-
-import {IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
-
-import { v4 } from "uuid";
-import { action, computed, makeObservable, observable } from 'mobx';
-import { IStoryObject, IMetaData, IEdge, IRenderingProperties, IStoryModifier, IConnectorPort, StoryGraph } from 'storygraph';
+import { IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
+import { action, makeObservable, observable } from 'mobx';
+import { IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
+import { exportClass } from './helpers/exportClass';
+
 /**
  * Our first little dummy PlugIn
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
-// @observable
 class _TextObject extends AbstractStoryObject {
     
     public name: string;
@@ -27,7 +24,8 @@ class _TextObject extends AbstractStoryObject {
     public childNetwork?: StoryGraph | undefined;
     public connectors: IConnectorPort[];
     public menuTemplate: IMenuTemplate[];
-
+    public icon: string;
+    public static defaultIcon = "icon-newspaper";
     constructor() {
 
         super();
@@ -73,6 +71,7 @@ class _TextObject extends AbstractStoryObject {
             ...dropDownField(this),
             ...connectionField(this)
         ];
+        this.icon = _TextObject.defaultIcon;
 
         makeObservable(this, {
             id: false,
@@ -99,7 +98,7 @@ class _TextObject extends AbstractStoryObject {
 
     public getComponent() {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            const [_, setState] = useState({});
+            const [, setState] = useState({});
             let disposer: IReactionDisposer;
             useEffect(() => {
                 disposer = reaction(
@@ -123,27 +122,9 @@ class _TextObject extends AbstractStoryObject {
     }
 }
 
-/**
- * Define the metadata
- */
-export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
-    name: "Text",
-    id: "internal.content.text",
-    shortId: "text",
-    author: "NGWebS-Core",
-    version: "1.0.0",
-    class: _TextObject
-}, {
-    name: false,
-    id: false,
-    shortId: false,
-    author: false,
-    version: false,
-    class: false
-});
-
-
-/**
- * Let's plug ourselves in!
- */
-// rootStore.storyContentTemplatesRegistry.register([TextObject]);
+export const plugInExport = exportClass(
+    _TextObject,
+    "Text",
+    "internal.content.text",
+    _TextObject.defaultIcon
+);

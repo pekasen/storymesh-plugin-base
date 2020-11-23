@@ -47,6 +47,17 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                     <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
                         <div class={`area-meta`}>
                             {children}
+                            <div onClick={(e) => {
+                                e.preventDefault();
+                                console.log('Hello!!!');
+                                const toggle = document.getElementById('toggle-content');
+                                toggle?.classList.add('minimized');
+
+                            }}
+                            class="toggle-content" id="toggle-content">
+                                <span class="span-top"></span>
+                                <span class="span-bottom"></span>
+                            </div>
                         </div>
                     </MoveSender>
                     <div class="area-content">

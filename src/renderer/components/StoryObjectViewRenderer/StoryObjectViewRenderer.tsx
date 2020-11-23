@@ -1,11 +1,13 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
+import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { Store } from '../..';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
-import { Draggable } from '../Draggable';
 import { DragReceiver } from "../DragReceiver";
-import { MoveReceiver, MoveSender } from '../Moveable';
+import { MoveReceiver } from '../Moveable';
+import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
 
 export interface IStoryObjectViewRendererProperties {
     loadedObject: IStoryObject
@@ -19,25 +21,32 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
     constructor(props: IStoryObjectViewRendererProperties) {
         super(props);
 
+        const store = useContext(Store);
+
         this.disposeReaction = reaction(
             () => {
-                const id = props.store.uistate.loadedItem;
-                const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork;
-                const names = network?.nodes.map(_ => _.name)
-                return {
-                    selectedItem: id,
-                    network: network?.nodes.length,
-                    names: names
-                }
-            },
-            () => {
-                console.log("I changed!");
+                const id = store.uistate.loadedItem;
+                const network = store.storyContentObjectRegistry.getValue(id)?.childNetwork;
+                if (!network) throw("network ist not defined!");
+            return {
+                id: id,
+                names: network.nodes.map(e => e.name),
+                edges: network.edges.map(e => e.id)
+            }},
+            (i) => {
+                console.log("I changed!", i);
                 this.setState({});
             }
         );
     }
     
-    render({loadedObject, store}: IStoryObjectViewRendererProperties): h.JSX.Element {
+    render(): h.JSX.Element {
+        const store = useContext(Store);
+        const loadedObjectId = store.uistate.loadedItem;
+        const loadedObject = store.storyContentObjectRegistry.getValue(loadedObjectId);
+
+        if (!loadedObject) throw("loadedObject is not defined");
+
         return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
@@ -91,9 +100,14 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 {
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    // TODO: declare icon in IStoryObject
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <StoryObjectView store={store} object={object}>{object.name}</StoryObjectView>
+                            <StoryObjectView store={store} object={object}>
+                                <span class={`icon ${object.icon}`}>
+                                    <p>{object.name}</p>
+                                </span> 
+                            </StoryObjectView>
                         </MoveReceiver>
                         ))
                     }
@@ -113,64 +127,5 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
     componentWillUnmount(): void {
         this.disposeReaction();
-    }
-}
-
-interface StoryObjectViewProperties {
-    store: RootStore
-    object: IStoryObject
-    children: string
-}
-
-export class StoryObjectView extends Component<StoryObjectViewProperties> {
-
-    reactionDisposer: IReactionDisposer
-
-    constructor(props: StoryObjectViewProperties) {
-        super(props);
-
-        this.reactionDisposer = reaction(
-            () => ([...props.store.uistate.selectedItems.ids, props.object.name, props.object.content?.resource]),
-            () => {
-                this.setState({});
-            }
-        );
-    }
-
-    render({ store, object, children}: StoryObjectViewProperties): h.JSX.Element {
-
-        return <Draggable id={object.id}>
-            <div
-                onClick={(e) => {
-                    e.preventDefault();
-                    const selectedItems = store.uistate.selectedItems;
-                    if (e.shiftKey) {
-                        selectedItems.addToSelectedItems(object.id);
-                    } else {
-                        selectedItems.setSelectedItems([object.id]);
-                    }
-                }}
-                onDblClick={(e) => {
-                    e.preventDefault();
-                    if(object.role === "internal.container.container") {
-                        store.uistate.setLoadedItem(object.id);
-                    }
-                }}
-                class={`story-object-view ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}
-            >
-                <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
-                    <div class={`area-meta ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}>
-                        {children}
-                    </div>
-                </MoveSender>
-                <div class="area-content">
-                    <span>{object.content?.resource}</span>
-                    </div>
-                </div>
-            </Draggable>
-    }
-
-    componentWillUnmount(): void {
-        this.reactionDisposer()
     }
 }

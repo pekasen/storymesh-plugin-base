@@ -42,15 +42,15 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                             store.uistate.setLoadedItem(object.id);
                         }
                     }}
-                    class="story-object-view"
+                    class={`story-object-view ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}
                 >
                     <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
-                        <div class={`area-meta ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}>
+                        <div class={`area-meta`}>
                             {children}
                         </div>
                     </MoveSender>
                     <div class="area-content">
-                        <span>{object.content?.resource}</span>
+                            <span>{object.content?.resource}</span>
                     </div>
                 </div>
             </div>
@@ -64,5 +64,5 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
 interface StoryObjectViewProperties {
     store: RootStore;
     object: IStoryObject;
-    children: string;
+    children: h.JSX.Element;
 }

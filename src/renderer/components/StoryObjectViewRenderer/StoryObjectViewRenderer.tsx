@@ -100,9 +100,14 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 {
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    // TODO: declare icon in IStoryObject
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <StoryObjectView store={store} object={object}>{object.name}</StoryObjectView>
+                            <StoryObjectView store={store} object={object}>
+                                <span class={`icon ${object.icon}`}>
+                                    <p>{object.name}</p>
+                                </span> 
+                            </StoryObjectView>
                         </MoveReceiver>
                         ))
                     }

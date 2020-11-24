@@ -6,5 +6,5 @@ export const Window: FunctionalComponent = ({ children }) => (
 )
 
 export const WindowContent: FunctionalComponent = ({ children })=> (
-    <div class="window-content theme-dark">{children}</div>
+    <div class="window-content theme-modern">{children}</div>
 )

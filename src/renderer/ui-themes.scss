@@ -29,6 +29,19 @@ $themes: (
     highlight-color-font: #fff,
     border-color: #fff,
   ),
+  modern: (
+    menu-background: #1F253A,
+    menu-font: #fff,
+    content-font: #1F253A,
+    node-object-background: #fff,
+    node-editor-background: #A0A5B9,
+    highlight-color: #33D69F,
+    flow-color: #33D69F,
+    data-color: #A0A5B9,
+    reaction-color: #A0A5B9,
+    highlight-color-font: #1F253A,
+    border-color: #A0A5B9,
+  ),
 );
 
 @mixin customize($arg: theme) {

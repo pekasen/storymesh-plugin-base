@@ -5,8 +5,6 @@
     @include customize(theme) {
     background: getValue(menu-background); 
     color: getValue(menu-font);
-    /* add to themes? */
-    border-right: 1px solid lightgray;
   }
     /* for testing */
     max-width: 300px;

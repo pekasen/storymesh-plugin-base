@@ -31,7 +31,6 @@
     flex: 4;
     width: 100%;
     border-top: 1px solid;
-    border-color: lightgray;
     @include customize(theme) {
         background-color: getValue(menu-background); 
       }

@@ -5,8 +5,7 @@ import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
-import { makeObservable } from 'mobx';
-import { Scene } from 'three';
+import { action, makeObservable, observable } from 'mobx';
 
 class _CameraView extends AbstractStoryObject {
     public content: any;
@@ -49,7 +48,8 @@ class _CameraView extends AbstractStoryObject {
         this.cameraId = "";
 
         makeObservable(this, {
-
+            name: observable,
+            updateName: action
         });
     }
 

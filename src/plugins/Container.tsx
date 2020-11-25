@@ -1,14 +1,14 @@
 import { FunctionComponent, h } from "preact";
 import { useContext, useEffect, useState } from "preact/hooks";
-import { makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
-import { StoryGraph, IStoryObject } from 'storygraph';
-import { IPlugInRegistryEntry, IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
+import { StoryGraph } from 'storygraph';
+import { IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
-import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { Class } from '../renderer/utils/registry';
+import { addConnectionPortField, connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
 import { Store } from '../renderer';
+import { ConnectorDirection, ConnectorPort, ConnectorType } from '../renderer/utils/ConnectorPort';
 
 /**
  * Our second little dummy PlugIn
@@ -23,7 +23,9 @@ class _Container extends AbstractStoryObject {
     public childNetwork: StoryGraph;
     public connectors: IConnectorPort[];
     public icon: string
+    public content: undefined;
     public static defaultIcon = "icon-doc"
+    
     constructor() {
         super();
 
@@ -53,7 +55,8 @@ class _Container extends AbstractStoryObject {
             userDefinedProperties: observable,
             childNetwork: observable.deep,
             connectors: observable,
-            updateName: action
+            updateName: action,
+            addConnector: action
         });
     }
 
@@ -101,7 +104,7 @@ class _Container extends AbstractStoryObject {
         // TODO: implement mock-drawing of the containers content!
         // TODO: draw using SVGs!
         const store = useContext(Store);
-        const [_, setState] = useState({});
+        const [, setState] = useState({});
 
         useEffect(
             () => {
@@ -145,8 +148,20 @@ class _Container extends AbstractStoryObject {
             value: () => this.name,
             valueReference: (name: string) => {this.updateName(name)}
         },
-        ...connectionField(this)
+        ...connectionField(this),
+        ...addConnectionPortField(this)
     ]
+
+    addConnector(type: ConnectorType, dir: ConnectorDirection) {
+        console.log("new connector", type, dir);
+        this.connectors.push(
+            new ConnectorPort(type, dir)
+        );
+    }
+
+    removeConnector() {
+
+    }
     // public menuTemplate(): IMenuTemplate[] {
 
     //     return [
@@ -184,5 +199,6 @@ export const plugInExport = exportClass(
     _Container,
     "Container",
     "internal.container.container",
-    _Container.defaultIcon
+    _Container.defaultIcon,
+    true
 );

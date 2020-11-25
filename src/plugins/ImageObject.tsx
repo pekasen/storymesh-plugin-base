@@ -102,5 +102,6 @@ export const plugInExport = exportClass(
     _ImageObject,
     "Image",
     "internal.content.image",
-    _ImageObject.defaultIcon
+    _ImageObject.defaultIcon,
+    true
 );

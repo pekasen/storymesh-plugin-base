@@ -1,7 +1,7 @@
-import { IStoryObject } from 'storygraph'
-import { IMenuTemplate, IPlugIn } from '../../renderer/utils/PlugInClassRegistry'
+import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry'
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { AbstractStoryObject } from './AbstractStoryObject';
+import { ConnectorDirection, ConnectorPort, ConnectorType } from '../../renderer/utils/ConnectorPort';
 
 interface IDefaultFieldsMethods {
     updateConnections: (registry: IRegistry, ids: string,  myport: string, theirport: string, direction: "in" | "out") => void
@@ -11,9 +11,10 @@ interface INameFieldMethods {
     updateName: (name: string) => void
 }
 
-// interface IDropDownFieldMethods {
-    
-// }
+interface IConnectorMethods {
+    addConnector: (type: ConnectorType, dir: ConnectorDirection) => void
+    removeConnector: (port: ConnectorPort) => void
+}
 
 export function connectionField(target: AbstractStoryObject & IDefaultFieldsMethods): IMenuTemplate[] {
     return [
@@ -26,6 +27,21 @@ export function connectionField(target: AbstractStoryObject & IDefaultFieldsMeth
                 id: target.id
             }),
             valueReference: (registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out") => {target.updateConnections(registry, id, myport, theirport, direction)}
+        }
+    ]
+}
+
+export function addConnectionPortField(target: AbstractStoryObject & IConnectorMethods): IMenuTemplate[] {
+    return [
+        {
+            label: "Add Port",
+            type: "button",
+            value: () => {
+                return target.connectors
+            },
+            valueReference: (type: ConnectorType, direction: ConnectorDirection) => {
+                target.addConnector(type, direction);
+            }
         }
     ]
 }

@@ -3,6 +3,9 @@ import { reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { RootStore } from '../../store/rootStore';
 import { ConnectionTableView } from '../ConnectionTableView/ConnectionTableView';
+import { remote } from "electron";
+
+const { Menu, MenuItem } = remote;
 
 export interface IItemPropertiesViewProperties {
     // template: IMenuTemplate[] | undefined
@@ -93,6 +96,61 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                                 ))
                             }
                             </select>
+                        </div>
+                    }
+                    case "button": {
+                        return <div class="form-group-item">
+                            <button class="btn btn-default" onClick={
+                                (e) => {
+                                    let _type = "";
+                                    let _dir = "";
+                                    const contextMenu = new Menu();
+                                    ["flow","reaction","data"].forEach(f => {
+                                        contextMenu.append(new MenuItem({
+                                            label: f,
+                                            click: () => _type = f
+                                        }))
+                                    });
+                                    contextMenu.popup({
+                                        window: remote.getCurrentWindow(),
+                                        x: e.x,
+                                        y: e.y
+                                    });
+                                    const contextMenu2 = new Menu();
+                                    ["in","out"].forEach(f => {
+                                        contextMenu2.append(new MenuItem({
+                                            label: f,
+                                            click: () => _dir = f
+                                        }))
+                                    });
+                                    contextMenu2.popup({
+                                        window: remote.getCurrentWindow(),
+                                        x: e.x,
+                                        y: e.y
+                                    });
+
+                                    if (item && item.valueReference) item.valueReference(_type, _dir);
+                                }
+                            }>{item.label}</button>
+                        </div>
+                    }
+                    case "file-selector": {
+                        return <div class="form-group-item">
+                            <input class="form-control" type="text" value={item.value()}></input>
+                            <button class="btn btn-default" onClick={(e) => {
+                                const file = remote.dialog.showOpenDialogSync(
+                                    remote.getCurrentWindow(), {
+                                        title: "Open scene",
+                                        properties: [
+                                            "openFile"
+                                        ]
+                                    }
+                                )
+
+                                if (file && item.valueReference) item.valueReference(file);
+                            }}>
+                                load Scene
+                            </button>
                         </div>
                     }
                     default: return <li>Empty</li>;

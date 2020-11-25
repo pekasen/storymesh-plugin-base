@@ -34,7 +34,6 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
         this.edges = []
         this.selectedItems = new SelectedItemStore();
         this.topLevelObjectID = "";
-        this.edges = [];
 
         // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem>();

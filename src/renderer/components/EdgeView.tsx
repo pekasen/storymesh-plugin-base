@@ -6,7 +6,8 @@ import { IItem } from './IItem';
 
 interface IEdge<T extends IItem> {
     a: MoveableItem
-    b: MoveableItem
+    b: MoveableItem    
+    id: string;
     line: Two.Path
     onClick?: () => void
     onDrag?: () => void
@@ -19,12 +20,14 @@ export class EdgeView extends Component<IEdge<IItem>> {
     a: MoveableItem;
     b: MoveableItem;
     line: Two.Path;
+    id: string;
 
     constructor(props: IEdge<IItem>) {
         super(props);
         this.a = props.a;
         this.b = props.b;
         this.line = props.line;
+        this.id = props.id;
     }
 
     render({ a, b, line }: IEdge<IItem>): h.JSX.Element { 

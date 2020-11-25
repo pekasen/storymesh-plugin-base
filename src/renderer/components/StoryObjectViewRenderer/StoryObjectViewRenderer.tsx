@@ -9,6 +9,7 @@ import { OutputConnectorView } from '../../../plugins/OutputConnectorView';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
+import { EdgeRenderer } from '../EdgeRenderer';
 import { MoveReceiver } from '../Moveable';
 import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
 
@@ -100,6 +101,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                     }
                 }
             }>
+                <EdgeRenderer></EdgeRenderer>
                 {
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars

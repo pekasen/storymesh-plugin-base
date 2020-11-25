@@ -2,8 +2,9 @@ import { IStoreableObject } from './StoreableObject';
 import { UIStore } from './UIStore';
 import { ClassRegistry, ValueRegistry } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import { IPlugIn, PlugInClassRegistry } from '../utils/PlugInClassRegistry';
+import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
 import { plugInLoader } from './PlugInStore';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -34,10 +35,23 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
         /**
          * Read the plugins and register them in the template store
          */
-        this.storyContentTemplatesRegistry.register(
-            plugInLoader()
-        );
-
+        // plugInLoader().then(plugins => {
+        //     this.storyContentTemplatesRegistry.register(plugins);
+            
+        //     if (this.uistate.untitledDocument) {
+        //         const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
+        //         if (emptyStory) {
+        //             emptyStory.name = "MyStory";
+        //             this.storyContentObjectRegistry.register(
+        //                 emptyStory
+        //             );
+        //             this.uistate.setLoadedItem(emptyStory.id);
+        //             this.uistate.topLevelObjectID = emptyStory.id;
+        //         }
+        //     }
+        // });
+        const plugins = plugInLoader();
+        this.storyContentTemplatesRegistry.register(plugins);
         /**
          * If we are in a empty and untitled document, make a root storyobject
          */

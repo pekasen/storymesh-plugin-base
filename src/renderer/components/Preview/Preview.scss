@@ -17,13 +17,13 @@
   @include customize(theme) {
    background: getValue(menu-background);
   }
+  @include customize(theme) {
+    color: getValue(menu-font);
+   }
 
     span {
         display: inline-block;
         font-size: .85rem;
-          @include customize(theme) {
-           color: getValue(menu-font);
-          }
         margin: 5px 0 5px 10px;
     }
 }
@@ -76,6 +76,9 @@ blockquote {
     max-width: 440px;
     margin: 0 auto;
     opacity: .9;
+    @include customize(storytheme){
+        color: getValue(blockquote-color);
+    }
 }
 
 // Image

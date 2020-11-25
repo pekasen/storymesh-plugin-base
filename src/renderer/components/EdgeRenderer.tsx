@@ -1,7 +1,7 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
-import { IEdge, IStoryObject, StoryGraph } from 'storygraph';
+import { IStoryObject, StoryGraph } from 'storygraph';
 import Two from 'twojs-ts';
 import { Store } from '..';
 import { MoveableItem } from '../store/MoveableItem';
@@ -27,8 +27,6 @@ export class EdgeRenderer extends Component {
             autostart: true
         });
 
-        let moveableItems: MoveableItem[];
-
         let nestedDisposeReaction: IReactionDisposer;
 
         this.disposeReaction = reaction(
@@ -47,7 +45,7 @@ export class EdgeRenderer extends Component {
                 nestedDisposeReaction = reaction(
                     () => ([...moveableItems.map(e => e.x),
                     ...moveableItems.map(e => e.y)]),
-                    (e) => {
+                    () => {
                         this.setState({});
 
                         loadedObject?.childNetwork?.edges.map(

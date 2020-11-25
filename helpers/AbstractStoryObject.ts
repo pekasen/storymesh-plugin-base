@@ -20,6 +20,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public parent?: string;
     public renderingProperties: IRenderingProperties;
     public modifiers: IStoryModifier[];
+    public deletable: boolean;
     public abstract name: string;
     public abstract role: string;
     public abstract isContentNode: boolean;
@@ -28,6 +29,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public abstract connectors: IConnectorPort[]
     public abstract menuTemplate: IMenuTemplate[]
     public abstract icon: string
+    public abstract content?: any;
     
     constructor() {
         this.id = v4();
@@ -43,6 +45,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             name: "NGWebS default user",
             tags: []
         };
+        this.deletable = true;
 
         makeObservable(this, {
             id: false,

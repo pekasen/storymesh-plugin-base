@@ -2,9 +2,11 @@ import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from './helpers/exportClass';
 import { IConnectorPort, IEdge } from 'storygraph';
+import { ConnectorPort } from "../renderer/utils/ConnectorPort";
 import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from './helpers/plugInHelpers';
+import { action, makeObservable, observable } from 'mobx';
 
 export class InputConnectorView extends AbstractStoryObject {
     public name: string;
@@ -19,7 +21,7 @@ export class InputConnectorView extends AbstractStoryObject {
     public isContentNode = false;
     public deletable = false;
 
-    public static defaultIcon: "icon-down-circled";
+    public static defaultIcon = "icon-down";
 
     constructor() {
         super();
@@ -33,6 +35,12 @@ export class InputConnectorView extends AbstractStoryObject {
         ];
         this.connections = [];
         this.connectors = [];
+
+        makeObservable(this,{
+            name: observable,
+            updateName: action,
+            updateConnections: action
+        });
     }
 
     setup(registry: IRegistry): void {
@@ -43,11 +51,7 @@ export class InputConnectorView extends AbstractStoryObject {
         this.connectors = parentNode.
         connectors.
         filter(e => e.direction === "in").
-        map(() => ({
-            name: "flow-out",
-            direction: "out",
-            type: "flow"
-        }));
+        map(e => new ConnectorPort(e.type, "out"));
     }
 
     getComponent() {

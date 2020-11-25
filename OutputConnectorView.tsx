@@ -5,6 +5,8 @@ import { IConnectorPort, IEdge } from 'storygraph';
 import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from './helpers/plugInHelpers';
+import { ConnectorPort } from '../renderer/utils/ConnectorPort';
+import { makeObservable, observable, action } from 'mobx';
 
 export class OutputConnectorView extends AbstractStoryObject {
     public name: string;
@@ -19,7 +21,7 @@ export class OutputConnectorView extends AbstractStoryObject {
     public isContentNode = false;
     public deletable = false;
 
-    public static defaultIcon: "icon-down-circled";
+    public static defaultIcon = "icon-down";
 
     constructor() {
         super();
@@ -33,6 +35,12 @@ export class OutputConnectorView extends AbstractStoryObject {
         ];
         this.connections = [];
         this.connectors = [];
+        
+        makeObservable(this,{
+            name: observable,
+            updateName: action,
+            updateConnections: action
+        });
     }
 
     setup(registry: IRegistry) {
@@ -42,11 +50,7 @@ export class OutputConnectorView extends AbstractStoryObject {
         this.connectors = parentNode.
         connectors.
         filter(e => e.direction === "out").
-        map(() => ({
-            name: "flow-in",
-            direction: "in",
-            type: "flow"
-        }));
+        map(e => (new ConnectorPort(e.type, "in")));
     }
 
     getComponent() {

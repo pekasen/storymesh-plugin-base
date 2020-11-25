@@ -128,5 +128,6 @@ export const plugInExport = exportClass(
     _TextObject,
     "Text",
     "internal.content.text",
-    _TextObject.defaultIcon
+    _TextObject.defaultIcon,
+    true
 );

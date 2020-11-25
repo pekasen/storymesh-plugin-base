@@ -3,7 +3,6 @@ import Two from 'twojs-ts';
 import { MoveableItem } from "../store/MoveableItem";
 import { EdgeItem } from '../store/EdgeItem';
 import { UIStore } from '../store/UIStore';
-import { StoryObjectView } from './StoryObjectViewRenderer/StoryObjectViewRenderer';
 import { IEdge, IStoryObject } from 'storygraph';
 
 interface ITwoJS {
@@ -220,12 +219,6 @@ export class TwoJS {
         c.vertices[2].y = y2;
         c.vertices[3].x = x2;
         c.vertices[3].y = y2;
-/*
-        c.vertices.forEach((v, i) => {
-            v.x = _arr[i].x;
-            v.y = _arr[i].y;
-        })
-        */
     }
 
     getRandomColor(): string {

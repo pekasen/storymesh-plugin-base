@@ -6,7 +6,6 @@ import { Draggable } from '../Draggable';
 import { MoveSender } from '../Moveable';
 
 
-
 export class StoryObjectView extends Component<StoryObjectViewProperties> {
 
     reactionDisposer: IReactionDisposer;

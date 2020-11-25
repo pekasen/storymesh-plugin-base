@@ -1,0 +1,46 @@
+/* ================= THEMES =================== */
+
+$themes: (
+  light: (
+    menu-background: #e5e5e5,
+    menu-font: #191919,
+    content-font: #000,
+    node-object-background: #e5e5e5,
+    node-editor-background: #fff,
+    highlight-color: rgb(35, 90, 94),
+    highlight-color-font: #fff,
+    border-color: #252525,
+  ),
+  dark: (
+    menu-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%),
+    menu-font: #fff,
+    content-font: #000,
+    node-object-background: #fff,
+    node-editor-background: #e5e5e5,
+    highlight-color: salmon,
+    highlight-color-font: #fff,
+    border-color: #fff,
+  ),
+);
+
+@mixin customize($arg: theme) {
+  $array: $themes;
+  $prefix: theme;
+
+  @each $theme, $map in $array {
+    .#{$prefix}-#{$theme} & {
+      $array-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($array, $theme), '#{$key}');
+        $array-map: map-merge($array-map, ($key: $value)) !global;
+      }
+
+      @content;
+      $array-map: null !global;
+    }
+  }
+}
+
+@function getValue($key) {
+  @return map-get($array-map, $key);
+}

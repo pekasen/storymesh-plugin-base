@@ -1,5 +1,8 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, FunctionalComponent, h } from 'preact';
+import { IStoryObject } from 'storygraph';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { IPlugIn, IPlugInRegistryEntry } from '../utils/PlugInClassRegistry';
 import { Draggable } from './Draggable';
 import { IItem } from './IItem';
 
@@ -10,11 +13,11 @@ interface IGalleryItemViewProps<T extends IItem> {
     children: h.JSX.Element
 }
 
-export class GalleryItemView extends Component<IGalleryItemViewProps<IItem>> {
+export class GalleryItemView extends Component<IGalleryItemViewProps<IPlugInRegistryEntry<IStoryObject & IPlugIn>>> {
 
     reactionDisposer: IReactionDisposer;
 
-    constructor(props: IGalleryItemViewProps<IItem>) {
+    constructor(props: IGalleryItemViewProps<IPlugInRegistryEntry<IStoryObject & IPlugIn>>) {
         super(props);
 
         this.reactionDisposer = reaction(
@@ -25,10 +28,10 @@ export class GalleryItemView extends Component<IGalleryItemViewProps<IItem>> {
         );
     }
     
-    render({ item, children, onClick }: IGalleryItemViewProps<IItem>): h.JSX.Element {
+    render({ item, children, onClick }: IGalleryItemViewProps<IPlugInRegistryEntry<IStoryObject & IPlugIn>>): h.JSX.Element {
         return <Draggable id={item.id}>
             <li class="gallery-item" onClick={onClick}>
-                <span class="icon icon-doc-text"></span>
+                <span class={`icon ${item.icon}`}></span>
                 {children}
             </li>
         </Draggable>

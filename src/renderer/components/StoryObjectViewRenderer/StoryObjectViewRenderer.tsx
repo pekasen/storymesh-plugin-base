@@ -1,15 +1,13 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
+import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { Store } from '../..';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
-
-import { ConnectorView } from '../Connector/ConnectorView';
-import { Draggable } from '../Draggable';
 import { DragReceiver } from "../DragReceiver";
-import { MoveReceiver, MoveSender } from '../Moveable';
+import { MoveReceiver } from '../Moveable';
 import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
-import { TwoJS } from '../TwoJS';
 
 export interface IStoryObjectViewRendererProperties {
     loadedObject: IStoryObject
@@ -19,33 +17,37 @@ export interface IStoryObjectViewRendererProperties {
 export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererProperties> {
     
     disposeReaction: IReactionDisposer
-    two: TwoJS;
+
     constructor(props: IStoryObjectViewRendererProperties) {
         super(props);
-        this.two = new TwoJS({noodles: props.loadedObject.childNetwork?.edges, uistate: props.store.uistate});
+
+        const store = useContext(Store);
 
         this.disposeReaction = reaction(
             () => {
-                const id = props.store.uistate.loadedItem;
-                const network = props.store.storyContentObjectRegistry.getValue(id)?.childNetwork;
-                const names = network?.nodes.map(_ => _.name)
-                
-                return {
-                    selectedItem: id,
-                    network: network?.nodes.length,
-                    names: names
-                }
-            },
-            () => {
-                console.log("I changed!");
+                const id = store.uistate.loadedItem;
+                const network = store.storyContentObjectRegistry.getValue(id)?.childNetwork;
+                if (!network) throw("network ist not defined!");
+            return {
+                id: id,
+                names: network.nodes.map(e => e.name),
+                edges: network.edges.map(e => e.id)
+            }},
+            (i) => {
+                console.log("I changed!", i);
                 this.setState({});
             }
         );
     }
     
-    render({loadedObject, store}: IStoryObjectViewRendererProperties): h.JSX.Element {    
-        
-        return <DragReceiver         
+    render(): h.JSX.Element {
+        const store = useContext(Store);
+        const loadedObjectId = store.uistate.loadedItem;
+        const loadedObject = store.storyContentObjectRegistry.getValue(loadedObjectId);
+
+        if (!loadedObject) throw("loadedObject is not defined");
+
+        return <DragReceiver 
         onDrop={(e) => {
             const input = e.dataTransfer?.getData('text');
             const bounds = (e.target as HTMLElement).getBoundingClientRect()
@@ -54,7 +56,8 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 y: e.y - bounds.top
             };
 
-            console.log("coords", coords);
+            console.log(coords);
+
             if (input) {
                 const [loc, type, id] = input.split(".");
             
@@ -81,12 +84,8 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                         default: break;
                     }
                 }
-                this.two.updateMyNoodles(loadedObject.childNetwork?.edges);
             }
-            /*console.log(store.storyContentObjectRegistry);
-            console.log("Connectors", loadedObject.connectors);
-            console.log("Connections", loadedObject.connections);
-              */     
+            console.log(store.storyContentObjectRegistry)
         }
         }>
             <div
@@ -95,23 +94,25 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                     const target = e.target as HTMLElement;
                     if (target.id === "hello-world"){
                         store.uistate.selectedItems.setSelectedItems([]);
-                    }             
-                    console.log("hello click");                       
+                    }
                 }
             }>
                 {
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    // TODO: declare icon in IStoryObject
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <StoryObjectView store={store} object={object}>{object.name}</StoryObjectView>
+                            <StoryObjectView store={store} object={object}>
+                                <span class={`icon ${object.icon}`}>
+                                    <p>{object.name}</p>
+                                </span> 
+                            </StoryObjectView>
                         </MoveReceiver>
                         ))
-                        //  <TwoJS noodles={loadedObject.childNetwork?.edges} uistate={store.uistate}></TwoJS>  
                     }
-                   
-            </div>            
-        </DragReceiver>        
+            </div>
+        </DragReceiver>
     }
 
     private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
@@ -123,7 +124,6 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
         }
     }
-
 
     componentWillUnmount(): void {
         this.disposeReaction();

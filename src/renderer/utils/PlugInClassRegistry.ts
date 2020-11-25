@@ -27,8 +27,10 @@ export interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
     id: string;
     author: string;
     version: string;
+    icon: string;
     website?: string;
     description?: string;
+    public?: boolean
     class: Class<T>;
 }
 
@@ -42,7 +44,7 @@ export interface INGWebSProps {
 }
 
 export interface IPlugIn {
-    readonly menuTemplate: IMenuTemplate[];
+    menuTemplate: IMenuTemplate[];
     getComponent(): FunctionalComponent<INGWebSProps>;
 }
 
@@ -62,4 +64,5 @@ export interface IMenuTemplate {
     type: MenuItemSpecification;
     valueReference: (...args: any[]) => void;
     value: (() => any);
+    options?: string[];
 }

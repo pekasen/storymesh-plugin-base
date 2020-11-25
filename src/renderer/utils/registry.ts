@@ -10,15 +10,16 @@
 // }
 
 import { action, makeObservable, observable } from 'mobx';
+import { IItem } from '../components/IItem';
 
 // Crazy stuff, sauce here: https://2ality.com/2020/04/classes-as-values-typescript.html
 export interface Class<T> {
     new(...args: unknown[]): T
 }
 
-export interface IRegistryEntry<T> {
+export interface IRegistryEntry<T> extends IItem {
     // Index signature to limit possible keys as string and property values to either string, template type or undefined.
-    [key: string]: string | T | Class<T> | undefined
+    [key: string]: string | boolean | T | Class<T> | undefined
     name: string
     id: string
     class: Class<T>

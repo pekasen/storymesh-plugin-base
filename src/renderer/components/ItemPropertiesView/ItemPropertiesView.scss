@@ -1,9 +1,22 @@
+/* ==================== ITEM PROPERTIES ===================== */
+
 .sidebar {
+    padding: 10px;
+    @include customize(theme) {
+    background: getValue(menu-background); 
+    color: getValue(menu-font);
+    /* add to themes? */
+    border-right: 1px solid lightgray;
+  }
     /* for testing */
     max-width: 300px;
     form {
         display: flex;
         flex-direction: column;
+
+        .form-control {
+            color: #000;
+        }
 
         .form-group-item {
             display: flex;
@@ -18,8 +31,6 @@
             flex-shrink: 0;
             margin: 0 10px 0 0;
             line-height: 2.5em;
-            /* should be replaced with logic calculating the width of the widest label
-            and setting that width for every label in the form */
             min-width: 50px;
         }
         input.form-control {
@@ -28,7 +39,12 @@
             /* make resizeable */
             flex-grow: 1;
             flex-shrink: 1;
+        }
+        .table-striped tr {
+          @include customize(theme) {
+           color: getValue(menu-font);
+          }
+            background: transparent;
         } 
-
     }
 }

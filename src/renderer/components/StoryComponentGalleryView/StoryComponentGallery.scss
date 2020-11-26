@@ -22,6 +22,7 @@
     }
     transform: scale(1);
     flex: 1 0 auto;
+    cursor: pointer;
 
     &:hover {
       @include customize(theme) {

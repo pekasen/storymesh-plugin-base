@@ -27,8 +27,6 @@ export class EdgeRenderer extends Component {
             autostart: true
         });
 
-        let moveableItems: MoveableItem[];
-
         let nestedDisposeReaction: IReactionDisposer;
 
         this.disposeReaction = reaction(
@@ -58,12 +56,20 @@ export class EdgeRenderer extends Component {
                             })
                         ).forEach(edge => {
                             if (edge && edge.from && edge.to) {
-                                const edg = this.edges.get(edge.id);
-                                if (edg) {
-                                    this.redrawEdgeCurve(edg, edge.from.x, edge.from.y, edge.to.x, edge.to.y);
+                                let twoPath = this.edges.get(edge.id);
+                                if (twoPath) {
+                                    this.redrawEdgeCurve(twoPath, edge.from.x, edge.from.y, edge.to.x, edge.to.y);
                                 } else {
-                                    this.edges.set(edge.id, this.drawEdgeCurve(edge.from.x, edge.from.y, edge.to.x, edge.to.y));
+                                    twoPath = this.drawEdgeCurve(edge.from.x, edge.from.y, edge.to.x, edge.to.y);
+                                    this.edges.set(edge.id, twoPath);
                                 }
+                                                           
+                                if (twoPath) {
+                                    const elem = document.getElementById(twoPath.id);
+                                    elem?.addEventListener('click', () => {
+                                        console.log("Clicked on", twoPath?.id);
+                                })
+                            }
                             }
                         });
                     }

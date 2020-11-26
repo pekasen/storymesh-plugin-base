@@ -96,11 +96,8 @@ export class EdgeRenderer extends Component {
         return c;
     }
 
-    redrawEdgeCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void {
-        c.vertices.forEach((v) => {     
-            console.log("Verts: ", v.x, v.y);
-        })
-
+    redrawEdgeCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void {      
+        c.translation.set(0, 0);
         c.vertices[0].x = x1;
         c.vertices[0].y = y1;
         c.vertices[1].x = x1 + 100;
@@ -109,10 +106,6 @@ export class EdgeRenderer extends Component {
         c.vertices[2].y = y2;
         c.vertices[3].x = x2;
         c.vertices[3].y = y2;
-
-        c.vertices.forEach((v) => {     
-            console.log("Verts: ", v.x, v.y);
-        })
     }
 
     render(): h.JSX.Element {

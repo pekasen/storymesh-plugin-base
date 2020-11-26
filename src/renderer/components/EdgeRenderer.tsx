@@ -41,15 +41,8 @@ export class EdgeRenderer extends Component {
                     throw ("Undefined loaded object");
                 const moveableItems = loadedObject?.childNetwork?.nodes.map((node) => {
                     return this.store.uistate.moveableItems.getValue(node.id);
-                }).filter(e => e != undefined) as MoveableItem[];                
-
-                const connectors = loadedObject?.childNetwork?.nodes.map((node) => {
-                    return node.connectors;
-                });
-
-                if (connectors && connectors[0])
-                    console.log("connectors items", connectors[0][0]);
-
+                }).filter(e => e != undefined) as MoveableItem[];    
+                
                 nestedDisposeReaction = reaction(
                     () => ([...moveableItems.map(e => e.x),
                     ...moveableItems.map(e => e.y)]),

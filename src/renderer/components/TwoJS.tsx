@@ -1,33 +1,35 @@
-import { Component, h } from 'preact';
+import { Component, h, RefObject } from 'preact';
 import Two from 'twojs-ts';
 import { MoveableItem } from "../store/MoveableItem";
 import { EdgeItem } from '../store/EdgeItem';
 import { UIStore } from '../store/UIStore';
+import { IEdge, IStoryObject } from 'storygraph';
 
 interface ITwoJS {
-    noodles: EdgeItem[],
-    uistate: UIStore 
+    noodles?: IEdge[],
+    uistate: UIStore//,
+    //store: RootStore
+  //  ref: RefObject<HTMLElement>
 }
 
-export class TwoJS extends Component<ITwoJS> {
+export class TwoJS {
     svg: Two;
     myCircles: Two.Circle[];
-    noodles: EdgeItem[];
-    myNoodles: Two.Path[];
+    noodles: IEdge[] | undefined;
+    //myNoodles: EdgeItem[];
     x1: number; 
     y1: number;
     x2: number;
     y2: number;
 
-    width = 800;
-    height = 600;
-
+    width = 8000;
+    height = 6000;
+    uistate: UIStore;
     constructor(props: ITwoJS) {
-        super();
-        this.x1 = 50;
-        this.y1 = 50;
-        this.x2 = 200;
-        this.y2 = 200;
+        this.x1 = 150;
+        this.y1 = 150;
+        this.x2 = 500;
+        this.y2 = 500;
         this.svg = new Two({
             width: this.width,
             height: this.height,
@@ -35,18 +37,28 @@ export class TwoJS extends Component<ITwoJS> {
             fullscreen: false,
             autostart: true
         });
-
         this.noodles = props.noodles;
-        /*this.noodles.map(e =>
-            //this.drawNoodleCurve(e.from.x, e.from.y, e.b.x, e.b.y)
-            this.drawNoodleCurve(1, 1, 1000, 1000)
-        );*/
-
+        this.uistate = props.uistate;
+        
         this.myCircles = [];
-        this.myNoodles = [];
-        this.myCircles.push(this.drawCircle(this.x1, this.y1, 5));
-        this.myCircles.push(this.drawCircle(this.x2, this.y2, 5));
-        this.myNoodles.push(this.drawNoodleCurve(this.x1, this.y1, this.x2, this.y2));
+        this.noodles?.map(e => {
+            const movableItemFrom = this.uistate.moveableItems.registry.get(e.from);
+            const movableItemTo = this.uistate.moveableItems.registry.get(e.to);
+            
+            if (movableItemFrom && movableItemTo) {
+                return new EdgeItem({
+                    from: movableItemFrom,
+                    to: movableItemTo, 
+                    id: e.id,
+                    line: this.drawNoodleCurve(movableItemFrom.x, movableItemFrom.y, movableItemTo.x, movableItemTo.y)
+                }) 
+            }
+            else return undefined;
+        });
+        // this.myCircles.push(this.drawCircle(this.x1, this.y1, 5));
+        // this.myCircles.push(this.drawCircle(this.x2, this.y2, 5));
+        // this.myNoodles.push(this.drawNoodleCurve(this.x1, this.y1, this.x2, this.y2));
+        
         /* 
         this.myNoodles.forEach(edge => { 
             edge.center();
@@ -77,8 +89,38 @@ export class TwoJS extends Component<ITwoJS> {
         this.svg.update();
     }
     
-    updateMyNoodles(moveableItems: MoveableItem[]): void {
-        if (this.noodles.length !== moveableItems.length) {
+    public updateMyNoodles(noodles: IEdge[] | undefined): void {       
+        this.noodles = noodles;
+        console.log("Noodles", noodles);
+        //this.drawNoodleCurve(100, 100, 300, 500);
+        this.noodles?.map(e => {
+            const movableItemFrom = this.uistate.moveableItems.getValue(e.from);
+           // store.storyContentObjectRegistry.getValue(StoryGraph.parseNodeId(edge.from)[0]
+            const movableItemTo = this.uistate.moveableItems.getValue(e.to);
+            console.log("Movable Items", this.uistate.moveableItems.registry.get(e.from), this.uistate.moveableItems.registry.get(e.to));
+            if (movableItemFrom && movableItemTo) {
+                return new EdgeItem({
+                    from: movableItemFrom,
+                    to: movableItemTo, 
+                    id: e.id,
+                    line: this.drawNoodleCurve(movableItemFrom.x, movableItemFrom.y, movableItemTo.x, movableItemTo.y)
+                }) 
+            }
+            else return undefined;
+        });
+
+        this.noodles?.forEach((e) => {
+            if (e) {
+                const elem = document.getElementById(e.id);
+                elem?.addEventListener('click', () => {
+                    console.log(elem);
+                })
+            }            
+        });
+
+        
+
+        /*if (this.noodles.length !== moveableItems.length) {
             this.svg.clear();
             this.noodles = moveableItems
             .map((node1) => {
@@ -102,6 +144,23 @@ export class TwoJS extends Component<ITwoJS> {
                 v.y = _arr[i].y;
             })
         })
+
+       
+        this.myNoodles = moveableItems
+            .map((node1) => {
+                return moveableItems.map(node2 => {
+                    if (node1 !== node2) {
+                        return {
+                            from: node1,
+                            to: node2, 
+                            id: "meme",
+                            line: this.drawNoodleCurve(node1.x, node1.y, node2.x, node2.y)
+                        } as EdgeItem
+                    }
+                });
+            }).reduce((p, c) => (
+                [...p, ...c].filter(e => e !== undefined)
+            )) as EdgeItem[];*/
     }
     
     updateNoodle(nudel: Two.Path, x: number, y: number): void {
@@ -110,31 +169,18 @@ export class TwoJS extends Component<ITwoJS> {
     }
     
     componentDidMount(): void {
-        this.svg.appendTo(document.getElementsByClassName("vertical-pane")[0] as HTMLElement);
-        // const two = this.two;
-        // const circle = two.makeCircle(72, 100, 50);
-        // const rect = two.makeRectangle(413, 100, 100, 100);      
-        
-        // circle.fill = '#FF8000';
-        // circle.stroke = 'orangered'; 
-        // circle.linewidth = 5;
-        
-        // rect.fill = 'rgb(0, 200, 255)';
-        // rect.opacity = 0.75;
-        // rect.noStroke();
-        //this.svg.update();
+        this.svg.appendTo(document.getElementById("hello-world") as HTMLElement);
         this.myCircles.forEach((e: Two.Circle) => {
             const elem = document.getElementById(e.id);
             elem?.addEventListener('mousedown', (me) => console.log("Say Hello from " + me.clientX, e.vertices[0].y, e.vertices[1].x, e.vertices[1].y));
-            //elem.ondrag((this, ev) => mouseenter);
         })
 
-        this.myNoodles.forEach((e: Two.Path) => {
+       /* this.myNoodles.forEach((e: EdgeItem) => {
             const elem = document.getElementById(e.id);
             elem?.addEventListener('click', () => {
                 console.log(elem);
             })
-        })
+        }) */
     }
 
     
@@ -155,21 +201,24 @@ export class TwoJS extends Component<ITwoJS> {
     }
 
     drawNoodleCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {  
-        /*const curve = this.svg.makeCurve(110, 100, 120, 50, 140, 150, 160, 50, 180, 150, 190, 100, true);
-        curve.linewidth = 2;
-        curve.scale = 1.75;
-        curve.rotation = Math.PI / 2; // Quarter-turn
-        curve.noFill();
-        return curve;*/
-
-        const c = this.svg.makeCurve([x1, y1, x2, y2], true);
-    //    c.rotation = Math.PI / 4; // Quarter-turn
+        const c = this.svg.makeCurve(x1, y1, x1 + 100, y1, x2 - 100, y2, x2, y2, true);
         c.linewidth = 5;
+        c.stroke
         c.cap = "round";
         c.noFill();
         this.svg.update();
-        // console.log(x1, y1, x2, y2, c.getBoundingClientRect());
         return c;
+    }
+    
+    redrawNoodleCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void { 
+        c.vertices[0].x = x1;
+        c.vertices[0].y = y1;
+        c.vertices[1].x = x1 + 100;
+        c.vertices[1].y = y1;
+        c.vertices[2].x = x2 - 100;
+        c.vertices[2].y = y2;
+        c.vertices[3].x = x2;
+        c.vertices[3].y = y2;
     }
 
     getRandomColor(): string {
@@ -179,7 +228,4 @@ export class TwoJS extends Component<ITwoJS> {
           + Math.floor(Math.random() * 255) + ')';
       }
 
-      render():  h.JSX.Element {
-          return <div></div>;
-      }
 }

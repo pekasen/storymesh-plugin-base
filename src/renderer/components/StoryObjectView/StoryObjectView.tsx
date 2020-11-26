@@ -2,6 +2,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { RootStore } from '../../store/rootStore';
+import { ConnectorView } from '../Connector/ConnectorView';
 import { Draggable } from '../Draggable';
 import { MoveSender } from '../Moveable';
 
@@ -23,8 +24,18 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
 
     render({ store, object, children }: StoryObjectViewProperties): h.JSX.Element {
 
+        
+
+
         return <Draggable id={object.id}>
             <div class="outer">
+                {
+                    object.connectors.map(obj => {
+                        console.log(obj.type);
+                        return <ConnectorView class={obj.type + " " + obj.direction} id={object.id + "." + obj.name}></ConnectorView>
+                    })                    
+                }
+                
                 <div
                     onClick={(e) => {
                         e.preventDefault();

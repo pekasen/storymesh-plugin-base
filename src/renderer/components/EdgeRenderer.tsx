@@ -4,6 +4,7 @@ import { useContext } from 'preact/hooks';
 import { IEdge, IStoryObject, StoryGraph } from 'storygraph';
 import Two from 'twojs-ts';
 import { Store } from '..';
+import { ConnectorItem } from '../store/ConnectorItem';
 import { MoveableItem } from '../store/MoveableItem';
 
 export interface IEdgeRendererProperties {
@@ -40,19 +41,26 @@ export class EdgeRenderer extends Component {
                     throw ("Undefined loaded object");
                 const moveableItems = loadedObject?.childNetwork?.nodes.map((node) => {
                     return this.store.uistate.moveableItems.getValue(node.id);
-                }).filter(e => e != undefined) as MoveableItem[];
+                }).filter(e => e != undefined) as MoveableItem[];                
+
+                const connectors = loadedObject?.childNetwork?.nodes.map((node) => {
+                    return node.connectors;
+                });
+
+                if (connectors && connectors[0])
+                    console.log("connectors items", connectors[0][0]);
 
                 nestedDisposeReaction = reaction(
                     () => ([...moveableItems.map(e => e.x),
                     ...moveableItems.map(e => e.y)]),
-                    (e) => {
+                    () => {
                         this.setState({});
 
                         loadedObject?.childNetwork?.edges.map(
                             edge => ({
                                 id: edge.id,
-                                from: this.store.uistate.moveableItems.getValue(StoryGraph.parseNodeId(edge.from)[0]),
-                                to: this.store.uistate.moveableItems.getValue(StoryGraph.parseNodeId(edge.to)[0])
+                                from: this.store.uistate.moveableItems.getValue(edge.from),
+                                to: this.store.uistate.moveableItems.getValue(edge.to)
                             })
                         ).forEach(edge => {
                             if (edge && edge.from && edge.to) {
@@ -94,7 +102,7 @@ export class EdgeRenderer extends Component {
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {
-        const c = this.two.makeCurve(x1, y1, x1 + 100, y1, x2 - 100, y2, x2, y2, true);
+        const c = this.two.makeCurve(x1, y1, x1 + 50, y1, x2 - 50, y2, x2, y2, true);
         c.linewidth = 5;
         c.cap = "round";
         c.noFill();
@@ -106,9 +114,9 @@ export class EdgeRenderer extends Component {
         c.translation.set(0, 0);
         c.vertices[0].x = x1;
         c.vertices[0].y = y1;
-        c.vertices[1].x = x1 + 100;
+        c.vertices[1].x = x1 + 50;
         c.vertices[1].y = y1;
-        c.vertices[2].x = x2 - 100;
+        c.vertices[2].x = x2 - 50;
         c.vertices[2].y = y2;
         c.vertices[3].x = x2;
         c.vertices[3].y = y2;

@@ -1,4 +1,4 @@
-/* ==================== PREVIEW ===================== */
+/* ==================== PREVIEW CONTAINER ===================== */
 
 .preview-container {
     margin: 0;
@@ -17,16 +17,18 @@
   @include customize(theme) {
    background: getValue(menu-background);
   }
+  @include customize(theme) {
+    color: getValue(menu-font);
+   }
 
     span {
         display: inline-block;
         font-size: .85rem;
-          @include customize(theme) {
-           color: getValue(menu-font);
-          }
         margin: 5px 0 5px 10px;
     }
 }
+
+/*================== STORY WRAPPER =================*/
 
 .ngwebs-story {
     margin: 0 auto;
@@ -35,7 +37,27 @@
 
 }
 
-// Font sizes
+// UTILITIES
+
+// TEMPLATE GRID
+
+.container {
+    display: grid;
+    grid-template-columns: 12fr;
+    grid-row-gap: 20px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 12fr;
+    grid-gap: 1rem;
+}
+
+.content {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 12fr))
+}
+
+// FONT SIZES
 
 p, a, span {
     font-size: 1rem;
@@ -69,16 +91,19 @@ h6 {
     font-size: 1.2rem;
 }
 
-// Quotes
+// QUOTES
 
 blockquote {
     font-size: 2.3rem;
     max-width: 440px;
     margin: 0 auto;
     opacity: .9;
+    @include customize(storytheme){
+        color: getValue(blockquote-color);
+    }
 }
 
-// Image
+// IMAGE
 
 img {
     display: block;
@@ -87,10 +112,8 @@ img {
     margin: 20px 0;
 }
 
-// List
+// LIST
 
-// Table
+// TABLE
 
 // CTA
-
-// Utilities

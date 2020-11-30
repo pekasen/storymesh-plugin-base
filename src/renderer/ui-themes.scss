@@ -8,6 +8,10 @@ $themes: (
     node-object-background: #e5e5e5,
     node-editor-background: #fff,
     highlight-color: rgb(35, 90, 94),
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow-color: orange,
+    data-color: green,
+    reaction-color: royalblue,
     highlight-color-font: #fff,
     border-color: #252525,
   ),
@@ -18,8 +22,25 @@ $themes: (
     node-object-background: #fff,
     node-editor-background: #e5e5e5,
     highlight-color: salmon,
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow-color: orange,
+    data-color: green,
+    reaction-color: royalblue,
     highlight-color-font: #fff,
     border-color: #fff,
+  ),
+  eggplant: (
+    menu-background: #1F253A,
+    menu-font: #fff,
+    content-font: #1F253A,
+    node-object-background: #fff,
+    node-editor-background: #A0A5B9,
+    highlight-color: #33D69F,
+    flow-color: #33D69F,
+    data-color: #A0A5B9,
+    reaction-color: #A0A5B9,
+    highlight-color-font: #1F253A,
+    border-color: #A0A5B9,
   ),
 );
 

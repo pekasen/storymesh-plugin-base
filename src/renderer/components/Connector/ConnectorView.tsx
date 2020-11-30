@@ -2,23 +2,25 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { MoveableItem } from '../../store/MoveableItem';
 import { Draggable } from '../Draggable';
-import { IItem } from '../IItem';
+import { DragReceiver } from '../DragReceiver';
 
-interface IConnectorViewProps<T extends MoveableItem> {
+interface IConnectorViewProps {
     id: string
-    item: MoveableItem
+    class: string
     onClick?: () => void    
     onDblClick?: () => void
-    onDrag?: () => void
+    //onDrag?: () => void
     children?: h.JSX.Element
 }
 
-export class ConnectorView extends Component<IConnectorViewProps<MoveableItem>> {
+export class ConnectorView extends Component<IConnectorViewProps> {
 
     reactionDisposer: IReactionDisposer;
+    class: string;
 
-    constructor(props: IConnectorViewProps<MoveableItem>) {
+    constructor(props: IConnectorViewProps) {
         super(props);
+        this.class = props.class;
 
         this.reactionDisposer = reaction(
             () => ({ ...props }),
@@ -28,13 +30,24 @@ export class ConnectorView extends Component<IConnectorViewProps<MoveableItem>> 
         );
     }
     
-    render({ id, children, onDrag }: IConnectorViewProps<MoveableItem>): h.JSX.Element {
-        return <Draggable id={id}> 
-            <span  id={id} class="connector" onDrag={onDrag}>{children}</span>
-        </Draggable>
+    render({ id, children }: IConnectorViewProps): h.JSX.Element {
+        return <DragReceiver onDrop={this.onDrop(id)}>
+                    <Draggable id={id} onDrag={this.onDrag(id)}>
+                        <span id={id} class={this.class}>{children}</span>
+                    </Draggable>
+                </DragReceiver>
     }
 
     componentWillUnmount(): void {
         this.reactionDisposer();
     }
+
+    onDrag(id: string): void {
+        console.log("drag", id);
+    }
+
+    onDrop(id: string): void {
+        console.log("drop", id);
+    }
+
 }

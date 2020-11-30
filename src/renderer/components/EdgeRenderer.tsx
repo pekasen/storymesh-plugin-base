@@ -40,30 +40,36 @@ export class EdgeRenderer extends Component {
                     throw ("Undefined loaded object");
                 const moveableItems = loadedObject?.childNetwork?.nodes.map((node) => {
                     return this.store.uistate.moveableItems.getValue(node.id);
-                }).filter(e => e != undefined) as MoveableItem[];
-
+                }).filter(e => e != undefined) as MoveableItem[];    
+                
                 nestedDisposeReaction = reaction(
-                    () => ([
-                        ...moveableItems.map(e => e.x),
-                        ...moveableItems.map(e => e.y)
-                    ]),
+                    () => ([...moveableItems.map(e => e.x),
+                    ...moveableItems.map(e => e.y)]),
                     () => {
-                        // this.setState({});
+                        this.setState({});
 
                         loadedObject?.childNetwork?.edges.map(
                             edge => ({
                                 id: edge.id,
-                                from: this.store.uistate.moveableItems.getValue(StoryGraph.parseNodeId(edge.from)[0]),
-                                to: this.store.uistate.moveableItems.getValue(StoryGraph.parseNodeId(edge.to)[0])
+                                from: this.store.uistate.moveableItems.getValue(edge.from),
+                                to: this.store.uistate.moveableItems.getValue(edge.to)
                             })
                         ).forEach(edge => {
                             if (edge && edge.from && edge.to) {
-                                const edg = this.edges.get(edge.id);
-                                if (edg) {
-                                    this.redrawEdgeCurve(edg, edge.from.x, edge.from.y, edge.to.x, edge.to.y);
+                                let twoPath = this.edges.get(edge.id);
+                                if (twoPath) {
+                                    this.redrawEdgeCurve(twoPath, edge.from.x, edge.from.y, edge.to.x, edge.to.y);
                                 } else {
-                                    this.edges.set(edge.id, this.drawEdgeCurve(edge.from.x, edge.from.y, edge.to.x, edge.to.y));
+                                    twoPath = this.drawEdgeCurve(edge.from.x, edge.from.y, edge.to.x, edge.to.y);
+                                    this.edges.set(edge.id, twoPath);
                                 }
+                                                           
+                                if (twoPath) {
+                                    const elem = document.getElementById(twoPath.id);
+                                    elem?.addEventListener('click', () => {
+                                        console.log("Clicked on", twoPath?.id);
+                                })
+                            }
                             }
                         });
                     }
@@ -88,7 +94,7 @@ export class EdgeRenderer extends Component {
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {
-        const c = this.two.makeCurve(x1, y1, x1 + 100, y1, x2 - 100, y2, x2, y2, true);
+        const c = this.two.makeCurve(x1, y1, x1 + 50, y1, x2 - 50, y2, x2, y2, true);
         c.linewidth = 5;
         c.cap = "round";
         c.noFill();
@@ -96,23 +102,16 @@ export class EdgeRenderer extends Component {
         return c;
     }
 
-    redrawEdgeCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void {
-        c.vertices.forEach((v) => {     
-            console.log("Verts: ", v.x, v.y);
-        })
-
+    redrawEdgeCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void {      
+        c.translation.set(0, 0);
         c.vertices[0].x = x1;
         c.vertices[0].y = y1;
-        c.vertices[1].x = x1 + 100;
+        c.vertices[1].x = x1 + 50;
         c.vertices[1].y = y1;
-        c.vertices[2].x = x2 - 100;
+        c.vertices[2].x = x2 - 50;
         c.vertices[2].y = y2;
         c.vertices[3].x = x2;
         c.vertices[3].y = y2;
-
-        c.vertices.forEach((v) => {     
-            console.log("Verts: ", v.x, v.y);
-        })
     }
 
     render(): h.JSX.Element {

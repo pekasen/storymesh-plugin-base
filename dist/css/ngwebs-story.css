@@ -49,6 +49,8 @@ blockquote {
   max-width: 440px;
   margin: 0 auto;
   opacity: .9; }
+  .storytheme-basic blockquote {
+    color: lightblue; }
 
 img {
   display: block;

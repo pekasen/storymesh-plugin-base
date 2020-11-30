@@ -1,5 +1,6 @@
 .sidebar {
     padding: 10px;
+    border: 0;
 }
 
 .hidden {
@@ -10,6 +11,7 @@
 
 .pane-resizable {
     flex: auto;
+    border: 0;
 }
 
 .drag-handle-vertical {

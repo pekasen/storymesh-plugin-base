@@ -7,13 +7,14 @@ import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 import { action, makeObservable, observable } from 'mobx';
+import { stringify } from 'uuid';
 
 export class InputConnectorView extends AbstractStoryObject {
     public name: string;
     public role: string;
     public icon: string;
     public connections: IEdge[];
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public content: undefined;
     public childNetwork: undefined;
     public userDefinedProperties: undefined;
@@ -34,7 +35,7 @@ export class InputConnectorView extends AbstractStoryObject {
             ...connectionField(this)
         ];
         this.connections = [];
-        this.connectors = [];
+        this.connectors = new Map<string, IConnectorPort>();
 
         makeObservable(this,{
             name: observable,
@@ -48,10 +49,17 @@ export class InputConnectorView extends AbstractStoryObject {
         const parentNode = registry.getValue(this.parent) as AbstractStoryObject;
         if (!parentNode) throw("No, no, no, that'S not possible!");
         // this.menuTemplate = parentNode.menuTemplate;
-        this.connectors = parentNode.
+
+        parentNode.
         connectors.
-        filter(e => e.direction === "in").
-        map(e => new ConnectorPort(e.type, "out"));
+        forEach(e => {
+            const _new = new ConnectorPort(e.type, "out");
+            if (e.direction === "in") {
+                this.connectors.set(
+                    _new.name, _new
+                )
+            }
+        });
     }
 
     getComponent() {

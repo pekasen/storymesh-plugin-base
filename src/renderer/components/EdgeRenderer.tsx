@@ -12,9 +12,9 @@ export interface IEdgeRendererProperties {
 
 export class EdgeRenderer extends Component {
     disposeReaction: IReactionDisposer;
-    store = useContext(Store);
     two: Two;
     edges: Map<string, Two.Path>;
+    store = useContext(Store);
 
     constructor() {
         super();
@@ -43,10 +43,12 @@ export class EdgeRenderer extends Component {
                 }).filter(e => e != undefined) as MoveableItem[];
 
                 nestedDisposeReaction = reaction(
-                    () => ([...moveableItems.map(e => e.x),
-                    ...moveableItems.map(e => e.y)]),
+                    () => ([
+                        ...moveableItems.map(e => e.x),
+                        ...moveableItems.map(e => e.y)
+                    ]),
                     () => {
-                        this.setState({});
+                        // this.setState({});
 
                         loadedObject?.childNetwork?.edges.map(
                             edge => ({

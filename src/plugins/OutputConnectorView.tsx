@@ -13,7 +13,7 @@ export class OutputConnectorView extends AbstractStoryObject {
     public role: string;
     public icon: string;
     public connections: IEdge[];
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public content: undefined;
     public childNetwork: undefined;
     public userDefinedProperties: undefined;
@@ -34,7 +34,7 @@ export class OutputConnectorView extends AbstractStoryObject {
             ...connectionField(this)
         ];
         this.connections = [];
-        this.connectors = [];
+        this.connectors = new Map<string, IConnectorPort>();
         
         makeObservable(this,{
             name: observable,
@@ -47,10 +47,17 @@ export class OutputConnectorView extends AbstractStoryObject {
         if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
         const parentNode = registry.getValue(this.parent) as AbstractStoryObject;
         if (!parentNode) throw("No, no, no, that'S not possible!");
-        this.connectors = parentNode.
+
+        parentNode.
         connectors.
-        filter(e => e.direction === "out").
-        map(e => (new ConnectorPort(e.type, "in")));
+        forEach(e => {
+            const _new = new ConnectorPort(e.type, "in");
+            if (e.direction === "out") {
+                this.connectors.set(
+                    _new.name, _new
+                )
+            }
+        });
     }
 
     getComponent() {

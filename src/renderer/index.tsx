@@ -7,6 +7,8 @@ import { RootStore } from './store/rootStore';
 
 export const rootStore = new RootStore();
 export const Store = createContext(rootStore);
+// export const webGLEngine = new BABYLON.Engine(new HTMLCanvasElement());
+
 registerHandlers();
 
 const root = document.getElementById("preact-root") as HTMLElement;

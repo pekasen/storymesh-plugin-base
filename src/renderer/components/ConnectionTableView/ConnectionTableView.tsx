@@ -35,13 +35,16 @@ export class ConnectionTableView extends Component<IItemView> {
                 </thead>
                 <tbody>
                 {
-                    item.value().connectors.map((port: IConnectorPort) => {
+                    (item.value().connectors) ? Array.from(item.value().connectors as Map<string, IConnectorPort>).map((input) => {
+                        const [key, port] = input;
+                        
                         const portCons = connections?.filter(
                             (edge: IEdge) => (port.direction === "in") ?
                                 edge.to.match([myId, port.name].join(".")) :
                                 edge.from.match([myId, port.name].join(".")
                             )
                         );
+
                         const onDropOnTableRow = (e: DragEvent) => {
                             const id = e.dataTransfer?.getData("text");
 
@@ -51,27 +54,29 @@ export class ConnectionTableView extends Component<IItemView> {
 
                                 if (_item) {
                                     const contextMenu = new Menu();
-                                    _item.connectors
-                                        .filter(con => (
-                                            con.type === port.type &&
-                                            con.direction !== port.direction
-                                        ))
-                                        .map((_port: IConnectorPort) => (new MenuItem({
-                                            label: _port.name,
-                                            click: () => {
-                                                console.log("add edge to", id + "." + _port.name);
-                                                if (item.valueReference) {
-                                                    item.valueReference(
-                                                        store.storyContentObjectRegistry,
-                                                        id,
-                                                        port.name,
-                                                        _port.name,
-                                                        direction
-                                                    );
-                                                }
+
+                                    _item.connectors.forEach(con => {
+                                        if (con.type === port.type &&
+                                            con.direction !== port.direction) {
+                                                contextMenu.append(
+                                                    new MenuItem({
+                                                        label: con.name,
+                                                        click: () => {
+                                                            console.log("add edge to", id + "." + con.name);
+                                                            if (item.valueReference) {
+                                                                item.valueReference(
+                                                                    store.storyContentObjectRegistry,
+                                                                    id,
+                                                                    port.name,
+                                                                    con.name,
+                                                                    direction
+                                                                );
+                                                            }
+                                                        }
+                                                    })
+                                                );
                                             }
-                                        })))
-                                        .forEach((item: any) => contextMenu.append(item));
+                                    })
 
                                     contextMenu.popup({
                                         window: remote.getCurrentWindow(),
@@ -104,7 +109,7 @@ export class ConnectionTableView extends Component<IItemView> {
                             <th class={port.type}>{port.name}</th>
                             <td></td>
                         </tr>
-                    })
+                    }) : null
                 }
                 </tbody>
             </table>

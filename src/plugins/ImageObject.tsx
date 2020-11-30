@@ -21,7 +21,7 @@ class _ImageObject extends AbstractStoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public content: IContent;
     public menuTemplate: IMenuTemplate[];
     public icon: string;
@@ -35,7 +35,8 @@ class _ImageObject extends AbstractStoryObject {
         this.role = "content";
         this.isContentNode = true;
         this.userDefinedProperties = {};
-        this.connectors = [
+        this.connectors =new Map<string, IConnectorPort>();
+        [
             {
                 name: "flow-in",
                 type: "flow",
@@ -46,7 +47,8 @@ class _ImageObject extends AbstractStoryObject {
                 type: "flow",
                 direction: "out"
             }
-        ];
+        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        
         this.content = {
             resource: "new URL",
             contentType: "url",

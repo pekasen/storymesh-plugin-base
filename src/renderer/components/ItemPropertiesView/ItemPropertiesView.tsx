@@ -137,7 +137,7 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                     case "file-selector": {
                         return <div class="form-group-item">
                             <input class="form-control" type="text" value={item.value()}></input>
-                            <button class="btn btn-default" onClick={(e) => {
+                            <button class="btn btn-default" onClick={() => {
                                 const file = remote.dialog.showOpenDialogSync(
                                     remote.getCurrentWindow(), {
                                         title: "Open scene",
@@ -145,9 +145,9 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                                             "openFile"
                                         ]
                                     }
-                                )
+                                );
 
-                                if (file && item.valueReference) item.valueReference(file);
+                                if (file && file.length === 1 && item.valueReference) item.valueReference(file[0]);
                             }}>
                                 load Scene
                             </button>

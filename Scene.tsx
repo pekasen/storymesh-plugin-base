@@ -4,14 +4,12 @@ import { IConnectorPort, StoryGraph } from 'storygraph';
 import { IPlugInRegistryEntry, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 import { connectionField, nameField } from './helpers/plugInHelpers';
-// import { GLTFFileLoader } from "babylonjs-loaders"
+
 // import * as Three from "three";
 // import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { exportClass } from './helpers/exportClass';
-import { Scene } from 'babylonjs';
 
 export interface ISceneContent {
-    scene?: any
     file: string
 }
 
@@ -22,7 +20,7 @@ class _Scene extends AbstractStoryObject {
     public role: string;
     public isContentNode = true;
     public userDefinedProperties: any;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public menuTemplate: IMenuTemplate[];
     public icon: string;
 
@@ -31,27 +29,27 @@ class _Scene extends AbstractStoryObject {
 
         this.name = "Scene";
         this.role = "scene";
-        this.connectors = [
+        this.connectors = new Map<string, IConnectorPort>();
+        [
             {
                 name: "data-out",
                 type: "data",
                 direction: "out",
-                call: this.getScene
+                call: () => this.content.file
             }
-        ];
+        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         this.menuTemplate = [
             ...nameField(this),
             {
                 label: "Scene Location",
                 type: "file-selector",
                 value: () => this.content.file,
-                valueReference: this.updateContent
+                valueReference: (file: string) => this.updateContent(file)
             },
             ...connectionField(this)
         ]
         this.icon = "icon-box";
         this.content = {
-            // scene: undefined,
             file: ""
         };
 
@@ -77,38 +75,34 @@ class _Scene extends AbstractStoryObject {
         return () => <div class="editor-component"></div>
     }
 
-    public getScene() {
-        // return this.content.scene;
-    }
+    public getScene(engine: BABYLON.Engine) : Promise<BABYLON.Scene> | undefined {
+ 
+        const file = this.content.file;
 
-    public async updateContent(file?: string) {
-        const { SceneLoader } = await import("babylonjs");
-        if (file) {
-            const loader = new SceneLoader.Append();
-            loader.readFile(
-                new Scene(),
+        if (file) { // && scene
+            // const rootURL = /(\w*\/)/gm.exec(file)?.join("");
+            // const filename = /\w+\.\w+/gm.exec(file)?.join("");
+            console.log(file);
+
+            if (file) return BABYLON.SceneLoader.LoadAsync(
                 file,
-                ( gltf ) => {
-                    this.content.scene = gltf;
-                },
-                ( xhr ) => {
-                    console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-                },
-                ( error ) => {
-                    console.error(error);
-                }
+                "",
+                engine
             );
         }
     }
 
-    // private _readScene(path?: string) {
+        // const scene = new BABYLON.Scene(
+        //     new BABYLON.Engine(
+        //         canvas,
+        //         true,
+        //         undefined,
+        //         true
+        //     ));
 
-    // }
-
-    // private _createMockScene() {
-    //     this.content.scene.add(
-    //     );
-    // }
+    public updateContent(file?: string) {
+        if (file) this.content.file = file;
+    }
 }
 
 export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = exportClass(

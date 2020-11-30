@@ -57,14 +57,19 @@ export function nameField(target: AbstractStoryObject & INameFieldMethods): IMen
     ]
 }
 
-export function dropDownField(target: AbstractStoryObject): IMenuTemplate[] {
+export function dropDownField(
+    target: AbstractStoryObject,
+    options: () => string[], //  = ["h1", "h2", "h3", "p", "b"]
+    value: () => string,
+    handler: (selection: string) => void
+    ) : IMenuTemplate[] {
     return [
         {
             label: "Style",
             type: "dropdown",
-            value: () => target.renderingProperties.width,
-            valueReference: (_class: string) => {target.renderingProperties.width = _class},
-            options: ["h1", "h2", "h3", "p", "b"]
+            value: value,
+            valueReference: handler,
+            options: options()
         }
     ]
 }

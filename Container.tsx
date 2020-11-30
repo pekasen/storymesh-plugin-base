@@ -8,7 +8,7 @@ import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { addConnectionPortField, connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
 import { Store } from '../renderer';
-import { ConnectorDirection, ConnectorPort, ConnectorType } from '../renderer/utils/ConnectorPort';
+// import { ConnectorDirection, ConnectorPort, ConnectorType } from '../renderer/utils/ConnectorPort';
 
 /**
  * Our second little dummy PlugIn
@@ -21,7 +21,7 @@ class _Container extends AbstractStoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork: StoryGraph;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public icon: string
     public content: undefined;
     public static defaultIcon = "icon-doc"
@@ -41,10 +41,17 @@ class _Container extends AbstractStoryObject {
             removeNode: action
         });
         // this.childNetwork = makeAutoObservable(new StoryGraph(this));
-        this.connectors = [
+        this.connectors = new Map<string, IConnectorPort>();
+
+        [
             {name: "flow-in", type: "flow", direction: "in"},
             {name: "flow-out", type: "flow", direction: "out"}
-        ];
+        ].forEach(e => {
+            this.connectors.set(
+                e.name, e as IConnectorPort
+            )
+        });
+
         this.userDefinedProperties = {};
         this.icon = _Container.defaultIcon;
 
@@ -56,7 +63,7 @@ class _Container extends AbstractStoryObject {
             childNetwork: observable.deep,
             connectors: observable,
             updateName: action,
-            addConnector: action
+            // addConnector: action
         });
     }
 
@@ -141,7 +148,14 @@ class _Container extends AbstractStoryObject {
 
     menuTemplate: IMenuTemplate[] = [
         ...nameField(this),
-        ...dropDownField(this),
+        ...dropDownField(
+            this,
+            () => ["h1", "h2", "h3", "b", "p"],
+            () => "h1",
+            (selection: string) => {
+                this.userDefinedProperties.class = selection
+            }
+        ),
         {
             label: "Test",
             type: "text",
@@ -149,19 +163,19 @@ class _Container extends AbstractStoryObject {
             valueReference: (name: string) => {this.updateName(name)}
         },
         ...connectionField(this),
-        ...addConnectionPortField(this)
+        // ...addConnectionPortField(this)
     ]
 
-    addConnector(type: ConnectorType, dir: ConnectorDirection) {
-        console.log("new connector", type, dir);
-        this.connectors.push(
-            new ConnectorPort(type, dir)
-        );
-    }
+    // addConnector(type: ConnectorType, dir: ConnectorDirection) {
+    //     console.log("new connector", type, dir);
+    //     this.connectors.push(
+    //         new ConnectorPort(type, dir)
+    //     );
+    // }
 
-    removeConnector() {
+    // removeConnector() {
 
-    }
+    // }
     // public menuTemplate(): IMenuTemplate[] {
 
     //     return [

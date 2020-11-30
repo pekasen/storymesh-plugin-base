@@ -22,7 +22,7 @@ class _TextObject extends AbstractStoryObject {
     public userDefinedProperties: any;
     public content: IContent;
     public childNetwork?: StoryGraph | undefined;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public menuTemplate: IMenuTemplate[];
     public icon: string;
     public static defaultIcon = "icon-newspaper";
@@ -37,7 +37,8 @@ class _TextObject extends AbstractStoryObject {
             order: 1,
             collapsable: false
         };
-        this.connectors = [
+        this.connectors = new Map<string, IConnectorPort>();
+        [
             {
                 name: "flow-in",
                 type: "flow",
@@ -53,7 +54,7 @@ class _TextObject extends AbstractStoryObject {
                 type: "reaction",
                 direction: "out"
             }
-        ];
+        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         this.content = {
             resource: "Type here...",
             altText: "empty",
@@ -68,7 +69,14 @@ class _TextObject extends AbstractStoryObject {
                 value: () => this.content.resource,
                 valueReference: (text: string) => {this.updateText(text)}
             },
-            ...dropDownField(this),
+            ...dropDownField(
+                this,
+                () => ["h1", "h2", "h3", "b", "p"],
+                () => "h1",
+                (selection: string) => {
+                    console.log(selection);
+                }
+            ),
             ...connectionField(this)
         ];
         this.icon = _TextObject.defaultIcon;

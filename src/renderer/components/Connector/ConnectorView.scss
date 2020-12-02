@@ -7,3 +7,51 @@
   border-radius: 50%;
   display: inline-block;
 }
+
+.outer {
+  .data {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    position: absolute;
+    z-index: 99;
+    border-radius: 50%;
+    background: red;
+    border: 2px solid #343434;
+
+    &.in {
+      background: palevioletred;
+      top: 50%;
+      left: -9px;
+    }
+
+    &.out {
+      background: lightgreen;
+      top: 50%;
+      right: -9px;
+    }
+  }
+
+  .flow {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    position: absolute;
+    z-index: 99;
+    border-radius: 50%;
+    background: red;
+    border: 2px solid #343434;
+
+    &.in {
+      background: rgb(227, 187, 28);
+      left: 50%;
+      top: -9px;
+    }
+
+    &.out {
+      background: rgb(128, 124, 7);
+      left: 50%;
+      bottom: -9px;
+    }
+  }
+}

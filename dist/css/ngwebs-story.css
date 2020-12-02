@@ -16,6 +16,8 @@
   margin: 5px 0 5px 10px; }
 
 /*================== STORY WRAPPER =================*/
+/* ============ MIXINS ============ */
+/* =============  BASE =========== */
 .ngwebs-story {
   margin: 0 auto;
   max-width: 768px;

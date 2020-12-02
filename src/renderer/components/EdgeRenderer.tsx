@@ -51,8 +51,8 @@ export class EdgeRenderer extends Component {
                         loadedObject?.childNetwork?.edges.map(
                             edge => ({
                                 id: edge.id,
-                                from: this.store.uistate.moveableItems.getValue(edge.from),
-                                to: this.store.uistate.moveableItems.getValue(edge.to)
+                                from: this.store.uistate.moveableItems.getValue(edge.from.split(".")[0]),
+                                to: this.store.uistate.moveableItems.getValue(edge.to.split(".")[0])
                             })
                         ).forEach(edge => {
                             if (edge && edge.from && edge.to) {

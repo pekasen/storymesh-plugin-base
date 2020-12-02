@@ -34,11 +34,11 @@ export class EdgeRenderer extends Component {
                 if (nestedDisposeReaction) {
                     nestedDisposeReaction();
                 }
-
+                
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
                     throw ("Undefined loaded object");
-                const moveableItems = loadedObject?.childNetwork?.nodes.map((node) => {
+                const moveableItems = loadedObject?.childNetwork?.nodes.map((node) => {                    
                     return this.store.uistate.moveableItems.getValue(node.id);
                 }).filter(e => e != undefined) as MoveableItem[];    
                 
@@ -47,21 +47,26 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
-
+                        console.log("EdgeRenderer", this.store.uistate.moveableItems);
                         loadedObject?.childNetwork?.edges.map(
                             edge => ({
                                 id: edge.id,
-                                from: this.store.uistate.moveableItems.getValue(edge.from.split(".")[0]),
-                                to: this.store.uistate.moveableItems.getValue(edge.to.split(".")[0])
+                                from: edge.from,
+                                to: edge.to
                             })
                         ).forEach(edge => {
                             if (edge && edge.from && edge.to) {
                                 let twoPath = this.edges.get(edge.id);
-                                if (twoPath) {
-                                    this.redrawEdgeCurve(twoPath, edge.from.x, edge.from.y, edge.to.x, edge.to.y);
-                                } else {
-                                    twoPath = this.drawEdgeCurve(edge.from.x, edge.from.y, edge.to.x, edge.to.y);
-                                    this.edges.set(edge.id, twoPath);
+                                const connFrom = document.getElementById(edge.from);
+                                const connTo = document.getElementById(edge.to);
+                                if(connFrom && connTo) {
+                                    console.log(this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
+                                    if (twoPath) {                                    
+                                        this.redrawEdgeCurve(twoPath, this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
+                                    } else {
+                                        twoPath = this.drawEdgeCurve(this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
+                                        this.edges.set(edge.id, twoPath);
+                                    }
                                 }
                                                            
                                 if (twoPath) {
@@ -87,6 +92,11 @@ export class EdgeRenderer extends Component {
 
     }
 
+    getPos(el: HTMLElement): {x: number, y: number} {
+        const rect = el.getBoundingClientRect();
+        return {x:rect.left + rect.width/2, y:rect.top + rect.height/2};
+    }
+
     componentDidMount(): void {
         const obj = document.getElementById("edge-renderer");
         if (obj)
@@ -98,6 +108,7 @@ export class EdgeRenderer extends Component {
         c.linewidth = 5;
         c.cap = "round";
         c.noFill();
+        c.translation.set(0, 0);
         this.two.update();
         return c;
     }

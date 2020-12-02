@@ -30,6 +30,37 @@
 
 /*================== STORY WRAPPER =================*/
 
+/* ============ MIXINS ============ */
+
+@mixin for-mobile {
+    @media (max-width: 599px) { 
+        // Todo: Add rulesets for default resize
+        @content; }
+  }
+  @mixin for-tablet-portrait {
+    @media (min-width: 600px) { 
+        // Todo: Add rulesets for default resize
+        @content; }
+  }
+  @mixin for-tablet-landscape {
+    @media (min-width: 900px) { 
+        // Todo: Add rulesets for default resize
+        @content; }
+  }
+  @mixin for-desktop {
+    @media (min-width: 1200px) { 
+        // Todo: Add rulesets for default resize
+        @content; }
+  }
+  @mixin for-desktop-large {
+    @media (min-width: 1800px) { 
+        // Todo: Add rulesets for default resize
+        @content; }
+  }
+
+
+/* =============  BASE =========== */
+
 .ngwebs-story {
     margin: 0 auto;
     max-width: 768px;
@@ -113,6 +144,8 @@ img {
 }
 
 // LIST
+
+
 
 // TABLE
 

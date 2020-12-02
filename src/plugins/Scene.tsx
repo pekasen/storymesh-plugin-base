@@ -1,17 +1,26 @@
-import { makeObservable, observable } from 'mobx';
-import { h, FunctionalComponent, FunctionComponent } from "preact";
-import { IConnectorPort, IStoryObject, StoryGraph } from 'storygraph';
-import { IPlugInRegistryEntry, IPlugIn, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
+import { action, makeObservable, observable } from 'mobx';
+import { h, FunctionComponent } from "preact";
+import { IConnectorPort, StoryGraph } from 'storygraph';
+import { IPlugInRegistryEntry, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 
+// import * as Three from "three";
+// import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+import { exportClass } from './helpers/exportClass';
+
+export interface ISceneContent {
+    file: string
+}
+
 class _Scene extends AbstractStoryObject {
+    public content: ISceneContent;
     public childNetwork?: StoryGraph | undefined;
     public name: string;
     public role: string;
     public isContentNode = true;
     public userDefinedProperties: any;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public menuTemplate: IMenuTemplate[];
     public icon: string;
 
@@ -20,24 +29,37 @@ class _Scene extends AbstractStoryObject {
 
         this.name = "Scene";
         this.role = "scene";
-        this.connectors = [
+        this.connectors = new Map<string, IConnectorPort>();
+        [
             {
                 name: "data-out",
                 type: "data",
-                direction: "out"
+                direction: "out",
+                call: () => this.content.file
             }
-
-        ];
+        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         this.menuTemplate = [
             ...nameField(this),
+            {
+                label: "Scene Location",
+                type: "file-selector",
+                value: () => this.content.file,
+                valueReference: (file: string) => this.updateContent(file)
+            },
             ...connectionField(this)
         ]
         this.icon = "icon-box";
+        this.content = {
+            file: ""
+        };
 
         makeObservable(
             this, {
             connectors: observable,
-            name: observable
+            name: observable,
+            updateName: action,
+            content: observable,
+            updateContent: action
         });
     }
 
@@ -45,28 +67,48 @@ class _Scene extends AbstractStoryObject {
         this.name = name;
     }
 
-    getComponent() {
+    public getComponent() {
         return () => (<p style="display: none;"></p>)
     }
 
-    getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw("method not implemented yet.")
+    public getEditorComponent(): FunctionComponent<INGWebSProps> {
+        return () => <div class="editor-component"></div>
+    }
+
+    public getScene(engine: BABYLON.Engine) : Promise<BABYLON.Scene> | undefined {
+ 
+        const file = this.content.file;
+
+        if (file) { // && scene
+            // const rootURL = /(\w*\/)/gm.exec(file)?.join("");
+            // const filename = /\w+\.\w+/gm.exec(file)?.join("");
+            console.log(file);
+
+            if (file) return BABYLON.SceneLoader.LoadAsync(
+                file,
+                "",
+                engine
+            );
+        }
+    }
+
+        // const scene = new BABYLON.Scene(
+        //     new BABYLON.Engine(
+        //         canvas,
+        //         true,
+        //         undefined,
+        //         true
+        //     ));
+
+    public updateContent(file?: string) {
+        if (file) this.content.file = file;
     }
 }
 
-export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
-    name: "Scene",
-    id: "internal.content.scene",
-    shortId: "scene",
-    author: "NGWebS-Core",
-    version: "1.0.0",
-    icon: "icon-box",
-    class: _Scene
-}, {
-    name: false,
-    id: false,
-    shortId: false,
-    author: false,
-    version: false,
-    class: false
-});
+export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = exportClass(
+    _Scene,
+    "Scene",
+    "internal.content.scene",
+    "icon-box",
+    true
+);

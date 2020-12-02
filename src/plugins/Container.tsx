@@ -1,13 +1,14 @@
 import { FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
-import { makeAutoObservable, makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
-import { StoryGraph, IStoryObject } from 'storygraph';
-import { IPlugInRegistryEntry, IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import { useContext, useEffect, useState } from "preact/hooks";
+import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
+import { StoryGraph } from 'storygraph';
+import { IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
-import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { Class } from '../renderer/utils/registry';
+import { addConnectionPortField, connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
+import { Store } from '../renderer';
+// import { ConnectorDirection, ConnectorPort, ConnectorType } from '../renderer/utils/ConnectorPort';
 
 /**
  * Our second little dummy PlugIn
@@ -20,9 +21,11 @@ class _Container extends AbstractStoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork: StoryGraph;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public icon: string
+    public content: undefined;
     public static defaultIcon = "icon-doc"
+    
     constructor() {
         super();
 
@@ -38,10 +41,17 @@ class _Container extends AbstractStoryObject {
             removeNode: action
         });
         // this.childNetwork = makeAutoObservable(new StoryGraph(this));
-        this.connectors = [
+        this.connectors = new Map<string, IConnectorPort>();
+
+        [
             {name: "flow-in", type: "flow", direction: "in"},
             {name: "flow-out", type: "flow", direction: "out"}
-        ];
+        ].forEach(e => {
+            this.connectors.set(
+                e.name, e as IConnectorPort
+            )
+        });
+
         this.userDefinedProperties = {};
         this.icon = _Container.defaultIcon;
 
@@ -52,7 +62,8 @@ class _Container extends AbstractStoryObject {
             userDefinedProperties: observable,
             childNetwork: observable.deep,
             connectors: observable,
-            updateName: action
+            updateName: action,
+            // addConnector: action
         });
     }
 
@@ -97,20 +108,74 @@ class _Container extends AbstractStoryObject {
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
+        // TODO: implement mock-drawing of the containers content!
+        // TODO: draw using SVGs!
+        const store = useContext(Store);
+        const [, setState] = useState({});
+
+        useEffect(
+            () => {
+                const disposer = reaction(
+                    () => this.
+                    childNetwork.
+                    nodes.
+                    map(e => store.uistate.moveableItems.getValue(e.id)).
+                    map(e => [e?.x, e?.y]),
+                    () => setState({})
+                )
+
+                return () => {
+                    disposer()
+                }
+            }
+        );
+
+        const coords = this.childNetwork.nodes.map(node => {
+            const mitem = store.uistate.moveableItems.getValue(node.id);
+            if (!mitem) throw("Item is not defined!");
+            return {
+                x: mitem.x,
+                y: mitem.y
+            }
+        });
+
+        return () => <div class="editor-component">
+            {
+                coords.map(item => <div style={`position: absolute; left: ${item?.x}; top: ${item?.y}; background: dark-grey;`}></div>)
+            }
+        </div>
     }
 
     menuTemplate: IMenuTemplate[] = [
         ...nameField(this),
-        ...dropDownField(this),
+        ...dropDownField(
+            this,
+            () => ["h1", "h2", "h3", "b", "p"],
+            () => "h1",
+            (selection: string) => {
+                this.userDefinedProperties.class = selection
+            }
+        ),
         {
             label: "Test",
             type: "text",
             value: () => this.name,
             valueReference: (name: string) => {this.updateName(name)}
         },
-        ...connectionField(this)
+        ...connectionField(this),
+        // ...addConnectionPortField(this)
     ]
+
+    // addConnector(type: ConnectorType, dir: ConnectorDirection) {
+    //     console.log("new connector", type, dir);
+    //     this.connectors.push(
+    //         new ConnectorPort(type, dir)
+    //     );
+    // }
+
+    // removeConnector() {
+
+    // }
     // public menuTemplate(): IMenuTemplate[] {
 
     //     return [
@@ -128,7 +193,7 @@ class _Container extends AbstractStoryObject {
 /**
  * Define the metadata
  */
-// export const plugInExport: IPlugInRegistryEntry<IStoryObject & IPlugIn> = makeObservable({
+// export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = makeObservable({
 //     name: "Container",
 //     id: "internal.container.container",
 //     shortId: "container",
@@ -148,5 +213,6 @@ export const plugInExport = exportClass(
     _Container,
     "Container",
     "internal.container.container",
-    _Container.defaultIcon
+    _Container.defaultIcon,
+    true
 );

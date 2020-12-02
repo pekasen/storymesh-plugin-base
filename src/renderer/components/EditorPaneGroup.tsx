@@ -5,12 +5,12 @@ import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } 
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { StoryObjectViewRenderer } from "./StoryObjectViewRenderer/StoryObjectViewRenderer";
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
-import { IStoryObject } from 'storygraph';
 import { Preview } from './Preview/Preview';
 import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponentGallery';
 import { GalleryItemView } from './GalleryItemView';
 import { Store } from '..';
 import { useContext, useEffect, useState } from 'preact/hooks';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 
 export const EditorPaneGroup: FunctionalComponent = () => {
     const [, setState] = useState({});
@@ -30,7 +30,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
 
     const loadedItem = store.storyContentObjectRegistry.getValue(
         store.uistate.loadedItem
-    ) as IStoryObject;
+    ) as AbstractStoryObject;
 
     return <HorizontalPaneGroup>
         <ResizablePane paneState={store.uistate.windowProperties.sidebarPane} resizable="right" classes={["sidebar"]}>
@@ -49,7 +49,9 @@ export const EditorPaneGroup: FunctionalComponent = () => {
                 </VerticalPane>
                 <VerticalSmallPane>
                     <StoryComponentGallery>
-                        {Array.from(store.storyContentTemplatesRegistry.registry).map(([, item]) => (
+                        {Array.from(store.storyContentTemplatesRegistry.registry).
+                        filter(([_, val]) => (val.public)).
+                        map(([, item]) => (
                             <GalleryItemView item={item}>
                                 <span>{item.name}</span>
                             </GalleryItemView>

@@ -52,7 +52,7 @@ export function registerHandlers(): void {
         
         selectedItemIds.forEach(selectedItemID => {
             const selectedItem = reg.getValue(selectedItemID);
-            if ( selectedItem && selectedItem.parent ) {
+            if ( selectedItem && selectedItem.parent && selectedItem.deletable) {
                 const parentItem = reg.getValue(selectedItem.parent)
 
                 parentItem?.childNetwork?.removeNode(reg, selectedItem);

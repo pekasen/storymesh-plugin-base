@@ -1,13 +1,10 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
-import { StoryGraph, IStoryObject, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
+import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-
-import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
-
 /**
  * Our second little dummy PlugIn
  * 
@@ -20,14 +17,16 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public parent?: string;
     public renderingProperties: IRenderingProperties;
     public modifiers: IStoryModifier[];
+    public deletable: boolean;
     public abstract name: string;
     public abstract role: string;
     public abstract isContentNode: boolean;
     public abstract userDefinedProperties: any;
     public abstract childNetwork?: StoryGraph;
-    public abstract connectors: IConnectorPort[]
+    public abstract connectors: Map<string, IConnectorPort>
     public abstract menuTemplate: IMenuTemplate[]
     public abstract icon: string
+    public abstract content?: any;
     
     constructor() {
         this.id = v4();
@@ -43,6 +42,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             name: "NGWebS default user",
             tags: []
         };
+        this.deletable = true;
 
         makeObservable(this, {
             id: false,

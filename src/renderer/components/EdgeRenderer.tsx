@@ -1,10 +1,9 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
-import { IEdge, IStoryObject, StoryGraph } from 'storygraph';
+import { IStoryObject, StoryGraph } from 'storygraph';
 import Two from 'twojs-ts';
 import { Store } from '..';
-import { ConnectorItem } from '../store/ConnectorItem';
 import { MoveableItem } from '../store/MoveableItem';
 
 export interface IEdgeRendererProperties {
@@ -13,9 +12,9 @@ export interface IEdgeRendererProperties {
 
 export class EdgeRenderer extends Component {
     disposeReaction: IReactionDisposer;
-    store = useContext(Store);
     two: Two;
     edges: Map<string, Two.Path>;
+    store = useContext(Store);
 
     constructor() {
         super();

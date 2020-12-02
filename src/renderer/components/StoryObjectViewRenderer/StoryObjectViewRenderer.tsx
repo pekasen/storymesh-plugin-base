@@ -3,6 +3,9 @@ import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { Store } from '../..';
+import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { InputConnectorView } from '../../../plugins/InputConnectorView';
+import { OutputConnectorView } from '../../../plugins/OutputConnectorView';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
@@ -11,7 +14,7 @@ import { MoveReceiver } from '../Moveable';
 import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
 
 export interface IStoryObjectViewRendererProperties {
-    loadedObject: IStoryObject
+    loadedObject: AbstractStoryObject
     store: RootStore
 }
 
@@ -105,7 +108,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                     // TODO: declare icon in IStoryObject
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <StoryObjectView store={store} object={object}>
+                            <StoryObjectView store={store} object={object as AbstractStoryObject}>
                                 <span class={`icon ${object.icon}`}>
                                     <p>{object.name}</p>
                                 </span> 
@@ -119,9 +122,24 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
     private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
         const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-        console.log(instance);
+
         if (instance) {
             loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
+            
+            if (instance.role === "container" && instance.childNetwork) {
+                const start = store.storyContentTemplatesRegistry.getNewInstance("internal.container.inputconnectorview") as InputConnectorView;
+                const end = store.storyContentTemplatesRegistry.getNewInstance("internal.container.outputconnectorview") as OutputConnectorView;
+                if (start && end) {
+                    instance.childNetwork.addNode(store.storyContentObjectRegistry, start);
+                    store.uistate.moveableItems.register(new MoveableItem(start.id, 50, 50));
+                    instance.childNetwork.addNode(store.storyContentObjectRegistry, end);
+                    store.uistate.moveableItems.register(new MoveableItem(end.id, 50, 350));
+
+                    start.setup(store.storyContentObjectRegistry);
+                    end.setup(store.storyContentObjectRegistry);
+                }
+            }
+            
             store.uistate.selectedItems.setSelectedItems([instance.id]);
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
         }

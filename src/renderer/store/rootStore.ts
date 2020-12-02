@@ -2,8 +2,9 @@ import { IStoreableObject } from './StoreableObject';
 import { UIStore } from './UIStore';
 import { ClassRegistry, ValueRegistry } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import { IPlugIn, PlugInClassRegistry } from '../utils/PlugInClassRegistry';
+import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
 import { plugInLoader } from './PlugInStore';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -13,8 +14,8 @@ export interface IRootStoreProperties {
 
 export class RootStore implements IStoreableObject<IRootStoreProperties> {
     uistate: UIStore
-    storyContentObjectRegistry: ValueRegistry<IStoryObject & IPlugIn>
-    storyContentTemplatesRegistry: PlugInClassRegistry<IStoryObject & IPlugIn>
+    storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
+    storyContentTemplatesRegistry: PlugInClassRegistry<AbstractStoryObject>
 
     constructor(uistate?: UIStore) {
         /**
@@ -25,19 +26,32 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
         /**
          * In this registry we store our instantiated StoryObjects
          */
-        this.storyContentObjectRegistry = new ValueRegistry<IStoryObject & IPlugIn>()
+        this.storyContentObjectRegistry = new ValueRegistry<AbstractStoryObject>()
 
         /**
          * In this registry we store our templates and plugin classes
          */
-        this.storyContentTemplatesRegistry = new PlugInClassRegistry<IStoryObject & IPlugIn>()
+        this.storyContentTemplatesRegistry = new PlugInClassRegistry<AbstractStoryObject>()
         /**
          * Read the plugins and register them in the template store
          */
-        this.storyContentTemplatesRegistry.register(
-            plugInLoader()
-        );
-
+        // plugInLoader().then(plugins => {
+        //     this.storyContentTemplatesRegistry.register(plugins);
+            
+        //     if (this.uistate.untitledDocument) {
+        //         const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
+        //         if (emptyStory) {
+        //             emptyStory.name = "MyStory";
+        //             this.storyContentObjectRegistry.register(
+        //                 emptyStory
+        //             );
+        //             this.uistate.setLoadedItem(emptyStory.id);
+        //             this.uistate.topLevelObjectID = emptyStory.id;
+        //         }
+        //     }
+        // });
+        const plugins = plugInLoader();
+        this.storyContentTemplatesRegistry.register(plugins);
         /**
          * If we are in a empty and untitled document, make a root storyobject
          */

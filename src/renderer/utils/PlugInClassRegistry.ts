@@ -30,7 +30,8 @@ export interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
     icon: string;
     website?: string;
     description?: string;
-    public?: boolean
+    public?: boolean;
+    category?: string;
     class: Class<T>;
 }
 
@@ -50,12 +51,14 @@ export interface IPlugIn {
 
 export type MenuItemSpecification = "table" |
     "radio" |
+    "button" |
     "textarea" |
     "text" |
     "hslider" |
     "vslider" |
     "dropdown" |
     "check" |
+    "file-selector" |
     "url" |
     "color";
 

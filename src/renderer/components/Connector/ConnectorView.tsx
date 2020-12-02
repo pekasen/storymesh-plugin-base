@@ -1,5 +1,6 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
+import { MoveableItem } from '../../store/MoveableItem';
 import { Draggable } from '../Draggable';
 import { DragReceiver } from '../DragReceiver';
 

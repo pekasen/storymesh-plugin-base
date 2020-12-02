@@ -90,14 +90,25 @@ class _CameraView extends AbstractStoryObject {
         
         return () => {
             const canvas = useRef(null);
-            const elem = <canvas id={`canvas-${this.id}`}  ref={canvas}/>;
+            const div = useRef(null);
+            const elem = <canvas id={`canvas-${this.id}`}  ref={canvas} height="auto" width="auto" />;
+            const elem2 = <div class="content canvas-content" id={this.id} ref={div} style="display: block; width=100%; height=100%" />;
+
+            elem2.props["children"] = [elem];
+            // const dimensions = (div.current as unknown as HTMLDivElement).getBoundingClientRect();
+            // elem.props["width"] = dimensions.width;
+            // elem.props["height"] = dimensions.height;
+
             const engine = new BABYLON.Engine(canvas.current);
             // above code works fine!
-
+            const pixelRatio = window.devicePixelRatio;
+            // Set the render engine to scale properly
+            engine.setHardwareScalingLevel(1 / pixelRatio)
             const file = this.pullData() as string | undefined;
             
             if (file) {
                 console.log(file)
+                BABYLON.SceneLoader.ShowLoadingScreen = false;
                 BABYLON.SceneLoader.LoadAsync(
                     file, "", engine
                 ).then((scene: BABYLON.Scene) => {
@@ -109,10 +120,19 @@ class _CameraView extends AbstractStoryObject {
                     engine.runRenderLoop(() => {
                         scene.render();
                     });
+
+                    window.addEventListener("resize", (ev: UIEvent) => {
+                        // ev.currentTarget
+                        engine.resize();
+                    });
                 });
             }
 
-            return elem;
+            return elem2;
+
+            // return <div class="content canvas-content" id={this.id}>
+            //     {elem}
+            // </div>;
         };
     }
 

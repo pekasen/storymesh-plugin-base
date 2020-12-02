@@ -1,5 +1,5 @@
 /* ================= THEMES =================== */
-/* ==================== PREVIEW ===================== */
+/* ==================== PREVIEW CONTAINER ===================== */
 .preview-container {
   margin: 0;
   padding: 0;
@@ -15,10 +15,26 @@
   font-size: .85rem;
   margin: 5px 0 5px 10px; }
 
+/*================== STORY WRAPPER =================*/
+/* ============ MIXINS ============ */
+/* =============  BASE =========== */
 .ngwebs-story {
   margin: 0 auto;
   max-width: 768px;
   padding: 0 15px; }
+
+.container {
+  display: grid;
+  grid-template-columns: 12fr;
+  grid-row-gap: 20px; }
+
+.row {
+  display: grid;
+  grid-template-columns: 12fr;
+  grid-gap: 1rem; }
+
+.content {
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 12fr)); }
 
 p, a, span {
   font-size: 1rem; }

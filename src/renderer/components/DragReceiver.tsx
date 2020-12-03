@@ -1,6 +1,6 @@
 import { FunctionalComponent, h } from 'preact';
 
-interface IDragReceiver {
+export interface IDragReceiver {
     onDrop: (e: DragEvent) => void
 }
 

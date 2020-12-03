@@ -66,15 +66,15 @@ export class EdgeRenderer extends Component {
                                     } else {
                                         twoPath = this.drawEdgeCurve(this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
                                         this.edges.set(edge.id, twoPath);
+                                        if (twoPath) {
+                                            const elem = document.getElementById(twoPath.id);
+                                            elem?.addEventListener('click', () => {
+                                                console.log("Clicked on", twoPath?.id);
+                                        })}
                                     }
                                 }
                                                            
-                                if (twoPath) {
-                                    const elem = document.getElementById(twoPath.id);
-                                    elem?.addEventListener('click', () => {
-                                        console.log("Clicked on", twoPath?.id);
-                                })
-                            }
+                                
                             }
                         });
                     }

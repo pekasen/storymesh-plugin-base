@@ -4,6 +4,7 @@ import { useContext } from 'preact/hooks';
 import { IStoryObject, StoryGraph } from 'storygraph';
 import Two from 'twojs-ts';
 import { Store } from '..';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../store/MoveableItem';
 
 export interface IEdgeRendererProperties {
@@ -49,49 +50,51 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
-                        console.log("EdgeRenderer", this.store.uistate.moveableItems);
-                        loadedObject?.childNetwork?.edges.map(
-                            edge => ({
-                                id: edge.id,
-                                from: edge.from,
-                                to: edge.to
-                            })
-                        ).forEach(edge => {
-                            if (edge && edge.from && edge.to) {
-                                let twoPath = this.edges.get(edge.id);
-                                const connFrom = document.getElementById(edge.from);
-                                const connTo = document.getElementById(edge.to);                                
-                                if(connFrom && connTo) {
-                                    const posFrom = this.getChildOffset(connFrom);
-                                    const posTo = this.getChildOffset(connTo);
-                                    if (twoPath) {                                    
-                                        this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
-                                    } else {
-                                        twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
-                                        this.edges.set(edge.id, twoPath);
-                                        if (twoPath) {
-                                            const elem = document.getElementById(twoPath.id);
-                                            elem?.addEventListener('click', () => {
-                                                console.log("Clicked on", twoPath?.id);
-                                            })
-                                        }
-                                    }
-                                }                                
-                            }
-                        });
+                        this.reactToChanges(loadedObject);
                     }
                 );
-
+                
                 return [
                     this.store.uistate.loadedItem,
                     loadedObject?.childNetwork?.edges.length
                 ]
             },
             () => {
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
                 this.setState({});
+                this.reactToChanges(loadedObject); 
             }
         )
+    }
 
+    reactToChanges(loadedObject: AbstractStoryObject): void {
+        loadedObject.childNetwork?.edges.forEach(edge => {
+            if (edge && edge.from && edge.to) {
+                let twoPath = this.edges.get(edge.id);
+                const connFrom = document.getElementById(edge.from);
+                const connTo = document.getElementById(edge.to);                                
+                if(connFrom && connTo) {
+                    const posFrom = this.getChildOffset(connFrom);
+                    const posTo = this.getChildOffset(connTo);
+                    if (twoPath) {                                    
+                        this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        //console.log("REDRAWING", posFrom.x, posFrom.y, posTo.x, posTo.y);
+                    } else {
+                        //console.log("DRAWING", posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        this.edges.set(edge.id, twoPath);
+                        if (twoPath) {
+                            const elem = document.getElementById(twoPath.id);
+                            elem?.addEventListener('click', () => {
+                                console.log("Clicked on", twoPath?.id);
+                            })
+                        }
+                    }
+                }                                
+            }
+        });
     }
 
     getChildOffset(el: HTMLElement): {x: number, y: number} {
@@ -114,7 +117,7 @@ export class EdgeRenderer extends Component {
         c.linewidth = 5;
         c.cap = "round";
         c.noFill();
-        c.translation.set(0, 0);
+        //c.translation.set(0, 0);
         this.two.update();
         return c;
     }

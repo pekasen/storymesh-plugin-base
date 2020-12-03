@@ -11,6 +11,7 @@ export interface IEdgeRendererProperties {
 }
 
 export class EdgeRenderer extends Component {
+    edgeRendererID!: "edge-renderer";
     disposeReaction: IReactionDisposer;
     two: Two;
     edges: Map<string, Two.Path>;
@@ -27,6 +28,7 @@ export class EdgeRenderer extends Component {
             autostart: true
         });
 
+        this.edgeRendererID = "edge-renderer";
         let nestedDisposeReaction: IReactionDisposer;
 
         this.disposeReaction = reaction(
@@ -58,23 +60,23 @@ export class EdgeRenderer extends Component {
                             if (edge && edge.from && edge.to) {
                                 let twoPath = this.edges.get(edge.id);
                                 const connFrom = document.getElementById(edge.from);
-                                const connTo = document.getElementById(edge.to);
+                                const connTo = document.getElementById(edge.to);                                
                                 if(connFrom && connTo) {
-                                    console.log(this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
+                                    const posFrom = this.getChildOffset(connFrom);
+                                    const posTo = this.getChildOffset(connTo);
                                     if (twoPath) {                                    
-                                        this.redrawEdgeCurve(twoPath, this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
+                                        this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
                                     } else {
-                                        twoPath = this.drawEdgeCurve(this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
+                                        twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
                                         this.edges.set(edge.id, twoPath);
                                         if (twoPath) {
                                             const elem = document.getElementById(twoPath.id);
                                             elem?.addEventListener('click', () => {
                                                 console.log("Clicked on", twoPath?.id);
-                                        })}
+                                            })
+                                        }
                                     }
-                                }
-                                                           
-                                
+                                }                                
                             }
                         });
                     }
@@ -92,13 +94,17 @@ export class EdgeRenderer extends Component {
 
     }
 
-    getPos(el: HTMLElement): {x: number, y: number} {
+    getChildOffset(el: HTMLElement): {x: number, y: number} {
         const rect = el.getBoundingClientRect();
-        return {x:rect.left + rect.width/2, y:rect.top + rect.height/2};
+        const parentRect = document.getElementById(this.edgeRendererID)?.getBoundingClientRect();
+        if (parentRect)
+            return {x: rect.left - parentRect.left + rect.width/2, y: rect.top - parentRect.top + rect.height/2}; 
+        else 
+            return {x: rect.left + rect.width/2, y:rect.top + rect.height/2};
     }
 
     componentDidMount(): void {
-        const obj = document.getElementById("edge-renderer");
+        const obj = document.getElementById(this.edgeRendererID);
         if (obj)
             this.two.appendTo(obj);
     }
@@ -126,6 +132,6 @@ export class EdgeRenderer extends Component {
     }
 
     render(): h.JSX.Element {
-        return <div id="edge-renderer"></div>
+        return <div id={this.edgeRendererID}></div>
     }
 }

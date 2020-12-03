@@ -53,6 +53,14 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         });
     }
 
+    /**
+     * 
+     * @param registry Registry
+     * @param id their id
+     * @param myport our port
+     * @param theirport their port
+     * @param direction which direction does the edge point? 
+     */
     updateConnections(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in"): void {
         if (this.parent) {
             const isIncoming = direction === "in";
@@ -65,7 +73,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
                     to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
                     parent: parentNetwork
                 };
-                console.log(newEdge);
+                console.log("new Edge", newEdge);
                 parentNetwork.connect(registry, [newEdge]);
             }
         }

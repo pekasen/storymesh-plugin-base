@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/pekasen/ngwebs-editor#readme",
   "dependencies": {
-    "merge-stream": "^2.0.0",
     "mobx": "^6.0.1",
     "preact": "^10.5.4",
     "storygraph": "github:pekasen/storygraph#dev-20200930",
@@ -40,6 +39,7 @@
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
+    "acorn": "^8.0.4",
     "babylonjs": "^4.2.0",
     "babylonjs-loaders": "^4.2.0",
     "chai": "^4.2.0",
@@ -50,6 +50,7 @@
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-sass": "^4.1.0",
+    "merge-stream": "^2.0.0",
     "mocha": "^8.2.0",
     "node-sass": "^5.0.0",
     "ts-node": "^9.0.0",

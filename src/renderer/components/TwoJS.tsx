@@ -11,7 +11,11 @@ interface ITwoJS {
     //store: RootStore
   //  ref: RefObject<HTMLElement>
 }
-
+/**
+ * Marked for deletion
+ * 
+ * @deprecated
+ */
 export class TwoJS {
     svg: Two;
     myCircles: Two.Circle[];

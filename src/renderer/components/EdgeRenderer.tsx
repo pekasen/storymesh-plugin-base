@@ -52,7 +52,36 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
-                        this.reactToChanges(loadedObject);
+                        // console.log("EdgeRenderer", this.store.uistate.moveableItems);
+                        loadedObject?.childNetwork?.edges.map(
+                            edge => ({
+                                id: edge.id,
+                                from: edge.from,
+                                to: edge.to
+                            })
+                        ).forEach(edge => {
+                            if (edge && edge.from && edge.to) {
+                                let twoPath = this.edges.get(edge.id);
+                                const connFrom = document.getElementById(edge.from);
+                                const connTo = document.getElementById(edge.to);                                
+                                if(connFrom && connTo) {
+                                    const posFrom = this.getChildOffset(connFrom);
+                                    const posTo = this.getChildOffset(connTo);
+                                    if (twoPath) {                                    
+                                        this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
+                                    } else {
+                                        twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
+                                        this.edges.set(edge.id, twoPath);
+                                        if (twoPath) {
+                                            const elem = document.getElementById(twoPath.id);
+                                            elem?.addEventListener('click', () => {
+                                                console.log("Clicked on", twoPath?.id);
+                                            })
+                                        }
+                                    }
+                                }                                
+                            }
+                        });
                     }
                 );
                 
@@ -129,8 +158,8 @@ export class EdgeRenderer extends Component {
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {
-        const c = this.two.makeCurve(x1, y1, x1 + 50, y1, x2 - 50, y2, x2, y2, true);
-        c.linewidth = 5;
+        const c = this.two.makeCurve(x1, y1, x1 - 50, y1 + 50, x2 + 50, y2 - 50, x2, y2, true);
+        c.linewidth = 1;
         c.cap = "round";
         c.noFill();
         //c.translation.set(0, 0);

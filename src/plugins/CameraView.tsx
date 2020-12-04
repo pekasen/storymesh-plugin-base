@@ -1,4 +1,4 @@
-import { IConnectorPort, StoryGraph } from 'storygraph';
+import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
 import { h } from "preact";
 import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
@@ -78,8 +78,8 @@ class _CameraView extends AbstractStoryObject {
 
     public pullData(): any {
         // get parent network
-        const port = this.getPort();
-        if (port && port.call) return port.call();
+        const port = this.getPort() as DataConnectorOutPort<string >;
+        if (port && port.pull) return port.pull();
     }
 
     public updateName(name: string) {

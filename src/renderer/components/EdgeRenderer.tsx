@@ -49,7 +49,7 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
-                        console.log("EdgeRenderer", this.store.uistate.moveableItems);
+                        // console.log("EdgeRenderer", this.store.uistate.moveableItems);
                         loadedObject?.childNetwork?.edges.map(
                             edge => ({
                                 id: edge.id,
@@ -110,8 +110,8 @@ export class EdgeRenderer extends Component {
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {
-        const c = this.two.makeCurve(x1, y1, x1 + 50, y1, x2 - 50, y2, x2, y2, true);
-        c.linewidth = 5;
+        const c = this.two.makeCurve(x1, y1, x1 - 50, y1 + 50, x2 + 50, y2 - 50, x2, y2, true);
+        c.linewidth = 1;
         c.cap = "round";
         c.noFill();
         c.translation.set(0, 0);

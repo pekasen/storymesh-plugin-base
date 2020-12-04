@@ -4,6 +4,7 @@ import { useContext } from 'preact/hooks';
 import { IStoryObject, StoryGraph } from 'storygraph';
 import Two from 'twojs-ts';
 import { Store } from '..';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../store/MoveableItem';
 
 export interface IEdgeRendererProperties {
@@ -11,10 +12,12 @@ export interface IEdgeRendererProperties {
 }
 
 export class EdgeRenderer extends Component {
+    edgeRendererID!: "edge-renderer";
     disposeReaction: IReactionDisposer;
     two: Two;
     edges: Map<string, Two.Path>;
     store = useContext(Store);
+    disposeReaction2: IReactionDisposer;
 
     constructor() {
         super();
@@ -27,7 +30,9 @@ export class EdgeRenderer extends Component {
             autostart: true
         });
 
+        this.edgeRendererID = "edge-renderer";
         let nestedDisposeReaction: IReactionDisposer;
+        
 
         this.disposeReaction = reaction(
             () => {
@@ -47,58 +52,78 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
-                        console.log("EdgeRenderer", this.store.uistate.moveableItems);
-                        loadedObject?.childNetwork?.edges.map(
-                            edge => ({
-                                id: edge.id,
-                                from: edge.from,
-                                to: edge.to
-                            })
-                        ).forEach(edge => {
-                            if (edge && edge.from && edge.to) {
-                                let twoPath = this.edges.get(edge.id);
-                                const connFrom = document.getElementById(edge.from);
-                                const connTo = document.getElementById(edge.to);
-                                if(connFrom && connTo) {
-                                    console.log(this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
-                                    if (twoPath) {                                    
-                                        this.redrawEdgeCurve(twoPath, this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
-                                    } else {
-                                        twoPath = this.drawEdgeCurve(this.getPos(connFrom).x, this.getPos(connFrom).y, this.getPos(connTo).x, this.getPos(connTo).y);
-                                        this.edges.set(edge.id, twoPath);
-                                    }
-                                }
-                                                           
-                                if (twoPath) {
-                                    const elem = document.getElementById(twoPath.id);
-                                    elem?.addEventListener('click', () => {
-                                        console.log("Clicked on", twoPath?.id);
-                                })
-                            }
-                            }
-                        });
+                        this.reactToChanges(loadedObject);
                     }
                 );
-
+                
                 return [
-                    this.store.uistate.loadedItem,
                     loadedObject?.childNetwork?.edges.length
                 ]
             },
             () => {
-                this.setState({});
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
+                this.setState({});                
+                this.reactToChanges(loadedObject); 
             }
         )
-
+        
+        this.disposeReaction2 = reaction(
+            () => (this.store.uistate.loadedItem),
+            () => {
+                this.two.clear();
+                this.edges.clear();
+                this.setState({});
+                
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
+                this.reactToChanges(loadedObject); 
+            }
+        );
     }
 
-    getPos(el: HTMLElement): {x: number, y: number} {
+    reactToChanges(loadedObject: AbstractStoryObject): void {
+        loadedObject.childNetwork?.edges.forEach(edge => {
+            if (edge && edge.from && edge.to) {
+                let twoPath = this.edges.get(edge.id);
+                // TODO: replace setTimeout with something that makes more sense
+                setTimeout(() => {
+                    const connFrom = document.getElementById(edge.from);
+                    const connTo = document.getElementById(edge.to);             
+                    if (connFrom && connTo) {
+                        const posFrom = this.getChildOffset(connFrom);
+                        const posTo = this.getChildOffset(connTo);
+                        if (twoPath) {                                    
+                            this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        } else {
+                            twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
+                            this.edges.set(edge.id, twoPath);
+                            if (twoPath) {
+                                const elem = document.getElementById(twoPath.id);
+                                elem?.addEventListener('click', () => {
+                                    console.log("Clicked on", twoPath?.id);
+                                })
+                            }
+                        }
+                    }
+                }, 100);                                                
+            }
+        });
+    }
+
+    getChildOffset(el: HTMLElement): {x: number, y: number} {
         const rect = el.getBoundingClientRect();
-        return {x:rect.left + rect.width/2, y:rect.top + rect.height/2};
+        const parentRect = document.getElementById(this.edgeRendererID)?.getBoundingClientRect();
+        if (parentRect)
+            return {x: rect.left - parentRect.left + rect.width/2, y: rect.top - parentRect.top + rect.height/2}; 
+        else 
+            return {x: rect.left + rect.width/2, y:rect.top + rect.height/2};
     }
 
     componentDidMount(): void {
-        const obj = document.getElementById("edge-renderer");
+        const obj = document.getElementById(this.edgeRendererID);
         if (obj)
             this.two.appendTo(obj);
     }
@@ -108,7 +133,7 @@ export class EdgeRenderer extends Component {
         c.linewidth = 5;
         c.cap = "round";
         c.noFill();
-        c.translation.set(0, 0);
+        //c.translation.set(0, 0);
         this.two.update();
         return c;
     }
@@ -126,6 +151,6 @@ export class EdgeRenderer extends Component {
     }
 
     render(): h.JSX.Element {
-        return <div id="edge-renderer"></div>
+        return <div id={this.edgeRendererID}></div>
     }
 }

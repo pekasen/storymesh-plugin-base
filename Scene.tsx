@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from 'mobx';
 import { h, FunctionComponent } from "preact";
-import { IConnectorPort, StoryGraph } from 'storygraph';
+import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { IPlugInRegistryEntry, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
 import { AbstractStoryObject } from './helpers/AbstractStoryObject';
 import { connectionField, nameField } from './helpers/plugInHelpers';
@@ -31,12 +31,16 @@ class _Scene extends AbstractStoryObject {
         this.role = "scene";
         this.connectors = new Map<string, IConnectorPort>();
         [
-            {
-                name: "data-out",
-                type: "data",
-                direction: "out",
-                call: () => this.content.file
-            }
+            // {
+            //     name: "data-out",
+            //     type: "data",
+            //     direction: "out",
+            //     call: () => this.content.file
+            // }
+            new DataConnectorOutPort(
+                "data-out",
+                () => this.content.file
+            )
         ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         this.menuTemplate = [
             ...nameField(this),

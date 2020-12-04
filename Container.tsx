@@ -42,10 +42,14 @@ class _Container extends AbstractStoryObject {
         });
         // this.childNetwork = makeAutoObservable(new StoryGraph(this));
         this.connectors = new Map<string, IConnectorPort>();
+        const _in: IConnectorPort = {name: "flow-in", type: "flow", direction: "in"};
+        const _out: IConnectorPort = {name: "flow-out", type: "flow", direction: "out"};
+        _in.associated = _out;
+        _out.associated = _in;
 
         [
-            {name: "flow-in", type: "flow", direction: "in"},
-            {name: "flow-out", type: "flow", direction: "out"}
+            _in,
+            _out
         ].forEach(e => {
             this.connectors.set(
                 e.name, e as IConnectorPort
@@ -61,7 +65,7 @@ class _Container extends AbstractStoryObject {
             name: observable,
             userDefinedProperties: observable,
             childNetwork: observable.deep,
-            connectors: observable,
+            connectors: observable.shallow,
             updateName: action,
             // addConnector: action
         });

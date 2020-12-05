@@ -4,6 +4,7 @@ import { useContext } from 'preact/hooks';
 import { IStoryObject, StoryGraph } from 'storygraph';
 import Two from 'twojs-ts';
 import { Store } from '..';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../store/MoveableItem';
 
 export interface IEdgeRendererProperties {
@@ -16,6 +17,7 @@ export class EdgeRenderer extends Component {
     two: Two;
     edges: Map<string, Two.Path>;
     store = useContext(Store);
+    disposeReaction2: IReactionDisposer;
 
     constructor() {
         super();
@@ -30,6 +32,7 @@ export class EdgeRenderer extends Component {
 
         this.edgeRendererID = "edge-renderer";
         let nestedDisposeReaction: IReactionDisposer;
+        
 
         this.disposeReaction = reaction(
             () => {
@@ -81,17 +84,62 @@ export class EdgeRenderer extends Component {
                         });
                     }
                 );
-
+                
                 return [
-                    this.store.uistate.loadedItem,
                     loadedObject?.childNetwork?.edges.length
                 ]
             },
             () => {
-                this.setState({});
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
+                this.setState({});                
+                this.reactToChanges(loadedObject); 
             }
         )
+        
+        this.disposeReaction2 = reaction(
+            () => (this.store.uistate.loadedItem),
+            () => {
+                this.two.clear();
+                this.edges.clear();
+                this.setState({});
+                
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
+                this.reactToChanges(loadedObject); 
+            }
+        );
+    }
 
+    reactToChanges(loadedObject: AbstractStoryObject): void {
+        loadedObject.childNetwork?.edges.forEach(edge => {
+            if (edge && edge.from && edge.to) {
+                let twoPath = this.edges.get(edge.id);
+                // TODO: replace setTimeout with something that makes more sense
+                setTimeout(() => {
+                    const connFrom = document.getElementById(edge.from);
+                    const connTo = document.getElementById(edge.to);             
+                    if (connFrom && connTo) {
+                        const posFrom = this.getChildOffset(connFrom);
+                        const posTo = this.getChildOffset(connTo);
+                        if (twoPath) {                                    
+                            this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        } else {
+                            twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
+                            this.edges.set(edge.id, twoPath);
+                            if (twoPath) {
+                                const elem = document.getElementById(twoPath.id);
+                                elem?.addEventListener('click', () => {
+                                    console.log("Clicked on", twoPath?.id);
+                                })
+                            }
+                        }
+                    }
+                }, 100);                                                
+            }
+        });
     }
 
     getChildOffset(el: HTMLElement): {x: number, y: number} {
@@ -114,7 +162,7 @@ export class EdgeRenderer extends Component {
         c.linewidth = 1;
         c.cap = "round";
         c.noFill();
-        c.translation.set(0, 0);
+        //c.translation.set(0, 0);
         this.two.update();
         return c;
     }

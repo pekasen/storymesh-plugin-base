@@ -1,0 +1,29 @@
+#notification-view {
+
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    width: auto;
+    height: auto;
+    z-index: 1337;
+    padding: 25px;
+
+    .notification {
+
+        width: auto;
+        padding: 25px;
+        height: auto;
+
+        &.warn {
+            background-color: yellow;
+        }
+
+        &.error {
+            background-color: red;
+        }
+
+        &.normal {
+            background-color: white;
+        }
+    }
+}

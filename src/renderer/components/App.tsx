@@ -5,10 +5,12 @@ import { Window, WindowContent } from "./Window";
 import { Store } from '..';
 import { useContext } from 'preact/hooks';
 import { EditorPaneGroup } from './EditorPaneGroup';
+import { NotificationView } from './NotificationView/NotificationView';
 
 export const App = (): h.JSX.Element => {
 
     const store = useContext(Store);
+    store.notifications.postNotification("Hello from NWebSCore!", this);
 
     return <Window>
             <Header
@@ -31,6 +33,7 @@ export const App = (): h.JSX.Element => {
                 ]}
             ></Header>
             <WindowContent>
+                <NotificationView />
                 <EditorPaneGroup></EditorPaneGroup>
             </WindowContent>             
     </Window>

@@ -7,7 +7,6 @@ import { RootStore } from './rootStore';
 import { EdgeItem } from "./EdgeItem";
 import { SelectedItemStore } from './SelectedItemStore';
 
-
 interface IUIStoreProperties {
     windowProperties: WindowProperties
     moveableItems: ValueRegistry<MoveableItem>
@@ -31,26 +30,21 @@ export class UIStore implements IStoreableObject<IUIStoreProperties> {
     constructor(parent: RootStore) {
         this._parent = parent;
         this.loadedItem = "";
+        // TODO: Can we remove this one?
         this.edges = []
         this.selectedItems = new SelectedItemStore();
         this.topLevelObjectID = "";
-
-        // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem>();
         this.file = "";
         // TODO: actually use the WindowProperties!
         this.windowProperties = new WindowProperties();
         
+        // TODO: Can we remove these too?
         this.term = "";
         this.hideLeftSidebar = false;
         this.hideRightSidebar = false;
 
         makeAutoObservable(this);
-
-        reaction(
-            () => (this.loadedItem),
-            (id: string) => console.log("loaded item:", id)
-        )
     }
 
     appendEdgeItem(edge: EdgeItem): void {

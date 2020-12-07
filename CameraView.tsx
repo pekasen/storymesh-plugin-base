@@ -38,18 +38,9 @@ class _CameraView extends AbstractStoryObject {
                 name: "data-in",
                 type: "data",
                 direction: "in"
-            },
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
             }
         ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        this.makeFlowInAndOut();
         this.menuTemplate = [
            ...nameField(this),
            ...connectionField(this),
@@ -69,6 +60,7 @@ class _CameraView extends AbstractStoryObject {
             content: observable.deep,
             cameraIds: observable,
             activeCamera: observable,
+            connectors: observable.shallow,
             updateCameraIds: action,
             updateName: action,
             getComponent: false

@@ -86,4 +86,20 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public willDeregister(registry: IRegistry): void {
         if (this.childNetwork) this.childNetwork.willDeregister(registry)
     }
+
+    protected makeFlowInAndOut(): void {
+        const _in: IConnectorPort = { name: "flow-in", type: "flow", direction: "in" };
+        const _out: IConnectorPort = { name: "flow-out", type: "flow", direction: "out" };
+        _in.associated = _out;
+        _out.associated = _in;
+
+        [
+            _in,
+            _out
+        ].forEach(e => {
+            this.connectors.set(
+                e.name, e as IConnectorPort
+            );
+        });
+    }
 }

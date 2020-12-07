@@ -5,6 +5,7 @@ import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
 import { plugInLoader } from './PlugInStore';
 import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { NotificationStore } from './Notification';
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -16,6 +17,7 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
     uistate: UIStore
     storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
     storyContentTemplatesRegistry: PlugInClassRegistry<AbstractStoryObject>
+    notifications: NotificationStore;
 
     constructor(uistate?: UIStore) {
         /**
@@ -35,21 +37,6 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
         /**
          * Read the plugins and register them in the template store
          */
-        // plugInLoader().then(plugins => {
-        //     this.storyContentTemplatesRegistry.register(plugins);
-            
-        //     if (this.uistate.untitledDocument) {
-        //         const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
-        //         if (emptyStory) {
-        //             emptyStory.name = "MyStory";
-        //             this.storyContentObjectRegistry.register(
-        //                 emptyStory
-        //             );
-        //             this.uistate.setLoadedItem(emptyStory.id);
-        //             this.uistate.topLevelObjectID = emptyStory.id;
-        //         }
-        //     }
-        // });
         const plugins = plugInLoader();
         this.storyContentTemplatesRegistry.register(plugins);
         /**
@@ -66,6 +53,10 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
                 this.uistate.topLevelObjectID = emptyStory.id;
             }
         }
+        /**
+         * Initialize notification buffer
+         */
+        this.notifications = new NotificationStore();
     }
 
     loadFromPersistance(from: IRootStoreProperties): void {

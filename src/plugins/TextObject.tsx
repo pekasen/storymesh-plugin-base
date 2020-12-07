@@ -40,21 +40,12 @@ class _TextObject extends AbstractStoryObject {
         this.connectors = new Map<string, IConnectorPort>();
         [
             {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            },
-            {
                 name: "enterView",
                 type: "reaction",
                 direction: "out"
             }
         ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        this.makeFlowInAndOut();
         this.content = {
             resource: "Type here...",
             altText: "empty",
@@ -86,6 +77,7 @@ class _TextObject extends AbstractStoryObject {
             name:                   observable,
             userDefinedProperties:  observable,
             content:                observable,
+            connectors:             observable.shallow,
             updateName:             action,
             updateText:             action
         });

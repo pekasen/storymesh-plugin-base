@@ -36,18 +36,7 @@ class _ImageObject extends AbstractStoryObject {
         this.isContentNode = true;
         this.userDefinedProperties = {};
         this.connectors =new Map<string, IConnectorPort>();
-        [
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            }
-        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        this.makeFlowInAndOut();
         
         this.content = {
             resource: "new URL",
@@ -60,7 +49,7 @@ class _ImageObject extends AbstractStoryObject {
         makeObservable(this,{
             name:       observable,
             userDefinedProperties: observable,
-            connectors: observable,
+            connectors: observable.shallow,
             content: observable,
             updateName: action,
             updateImageURL: action

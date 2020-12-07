@@ -1,5 +1,9 @@
 #notification-view {
 
+    p {
+        font-size: small;
+    }
+
     position: fixed;
     right: 0px;
     bottom: 0px;
@@ -23,7 +27,7 @@
         }
 
         &.normal {
-            background-color: white;
+            background-color: grey;
         }
     }
 }

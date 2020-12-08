@@ -53,35 +53,7 @@ export class EdgeRenderer extends Component {
                     () => {
                         this.setState({});
                         // console.log("EdgeRenderer", this.store.uistate.moveableItems);
-                        loadedObject?.childNetwork?.edges.map(
-                            edge => ({
-                                id: edge.id,
-                                from: edge.from,
-                                to: edge.to
-                            })
-                        ).forEach(edge => {
-                            if (edge && edge.from && edge.to) {
-                                let twoPath = this.edges.get(edge.id);
-                                const connFrom = document.getElementById(edge.from);
-                                const connTo = document.getElementById(edge.to);                                
-                                if(connFrom && connTo) {
-                                    const posFrom = this.getChildOffset(connFrom);
-                                    const posTo = this.getChildOffset(connTo);
-                                    if (twoPath) {                                    
-                                        this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
-                                    } else {
-                                        twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
-                                        this.edges.set(edge.id, twoPath);
-                                        if (twoPath) {
-                                            const elem = document.getElementById(twoPath.id);
-                                            elem?.addEventListener('click', () => {
-                                                console.log("Clicked on", twoPath?.id);
-                                            })
-                                        }
-                                    }
-                                }                                
-                            }
-                        });
+                        this.reactToChanges(loadedObject);
                     }
                 );
                 

@@ -18,6 +18,9 @@ export class EdgeRenderer extends Component {
     edges: Map<string, Two.Path>;
     store = useContext(Store);
     disposeReaction2: IReactionDisposer;
+    mutationObserver: MutationObserver | undefined;
+    mutationTargetNode: HTMLElement | undefined;
+    mutationsConfig: MutationObserverInit;                
 
     constructor() {
         super();
@@ -30,9 +33,11 @@ export class EdgeRenderer extends Component {
             autostart: true
         });
 
+        this.mutationTargetNode = undefined;
         this.edgeRendererID = "edge-renderer";
         let nestedDisposeReaction: IReactionDisposer;
-        
+        // Options for the observer (which mutations to observe)
+        this.mutationsConfig = { attributes: true, childList: true, subtree: true };
 
         this.disposeReaction = reaction(
             () => {
@@ -52,8 +57,7 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
-                        // console.log("EdgeRenderer", this.store.uistate.moveableItems);
-                        this.reactToChanges(loadedObject);
+                        this.executeChangesToEdges(loadedObject);
                     }
                 );
                 
@@ -66,7 +70,7 @@ export class EdgeRenderer extends Component {
                 if (!loadedObject)
                     throw ("Undefined loaded object");
                 this.setState({});                
-                this.reactToChanges(loadedObject); 
+                this.executeChangesToEdges(loadedObject); 
             }
         )
         
@@ -80,36 +84,53 @@ export class EdgeRenderer extends Component {
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
                     throw ("Undefined loaded object");
-                this.reactToChanges(loadedObject); 
+                
+                // Callback function to execute when mutations are observed
+                const callback = (() => {
+                    //(mutationsList: MutationRecord[]) => {
+                    // Use traditional 'for loops' for IE 11
+                    /*   for(const mutation of mutationsList) {
+                        if (mutation.type === 'childList') {
+                            console.log('hello-world: A child node has been added or removed.');
+                        }
+                        else if (mutation.type === 'attributes') {
+                            console.log('hello-world: The ' + mutation.attributeName + ' attribute was modified.');
+                        }
+                    } */
+                    this.executeChangesToEdges(loadedObject);
+                });
+
+                // Create an observer instance linked to the callback function
+                this.mutationObserver = new MutationObserver(callback);
+
+                // Start observing the target node for configured mutations
+                this.mutationObserver.observe(this.mutationTargetNode as Node, this.mutationsConfig);                
             }
         );
     }
 
-    reactToChanges(loadedObject: AbstractStoryObject): void {
+    executeChangesToEdges(loadedObject: AbstractStoryObject): void {        
         loadedObject.childNetwork?.edges.forEach(edge => {
             if (edge && edge.from && edge.to) {
-                let twoPath = this.edges.get(edge.id);
-                // TODO: replace setTimeout with something that makes more sense
-                setTimeout(() => {
-                    const connFrom = document.getElementById(edge.from);
-                    const connTo = document.getElementById(edge.to);             
-                    if (connFrom && connTo) {
-                        const posFrom = this.getChildOffset(connFrom);
-                        const posTo = this.getChildOffset(connTo);
-                        if (twoPath) {                                    
-                            this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
-                        } else {
-                            twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
-                            this.edges.set(edge.id, twoPath);
-                            if (twoPath) {
-                                const elem = document.getElementById(twoPath.id);
-                                elem?.addEventListener('click', () => {
-                                    console.log("Clicked on", twoPath?.id);
-                                })
-                            }
+                let twoPath = this.edges.get(edge.id);               
+                const connFrom = document.getElementById(edge.from);
+                const connTo = document.getElementById(edge.to);             
+                if (connFrom && connTo) {
+                    const posFrom = this.getChildOffset(connFrom);
+                    const posTo = this.getChildOffset(connTo);
+                    if (twoPath) {                                    
+                        this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
+                    } else {
+                        twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        this.edges.set(edge.id, twoPath);
+                        if (twoPath) {
+                            const elem = document.getElementById(twoPath.id);
+                            elem?.addEventListener('click', () => {
+                                console.log("Clicked on", twoPath?.id);
+                            })
                         }
                     }
-                }, 100);                                                
+                }                                               
             }
         });
     }
@@ -125,8 +146,15 @@ export class EdgeRenderer extends Component {
 
     componentDidMount(): void {
         const obj = document.getElementById(this.edgeRendererID);
+        
+                // Select the node that will be observed for mutations
+                this.mutationTargetNode = document.getElementById('hello-world') as HTMLElement;
         if (obj)
             this.two.appendTo(obj);
+    }
+
+    componentWillUnmount(): void {
+        this.mutationObserver?.disconnect();
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {

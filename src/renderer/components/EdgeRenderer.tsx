@@ -18,9 +18,11 @@ export class EdgeRenderer extends Component {
     edges: Map<string, Two.Path>;
     store = useContext(Store);
     disposeReaction2: IReactionDisposer;
+    disposeReaction3: IReactionDisposer;
     mutationObserver: MutationObserver | undefined;
     mutationTargetNode: HTMLElement | undefined;
-    mutationsConfig: MutationObserverInit;                
+    mutationsConfig: MutationObserverInit;            
+    looseNoodle?: Two.Path;
 
     constructor() {
         super();
@@ -37,7 +39,7 @@ export class EdgeRenderer extends Component {
         this.edgeRendererID = "edge-renderer";
         let nestedDisposeReaction: IReactionDisposer;
         // Options for the observer (which mutations to observe)
-        this.mutationsConfig = { attributes: true, childList: true, subtree: true };
+        this.mutationsConfig = { childList: true, subtree: true };
 
         this.disposeReaction = reaction(
             () => {
@@ -107,6 +109,22 @@ export class EdgeRenderer extends Component {
                 this.mutationObserver.observe(this.mutationTargetNode as Node, this.mutationsConfig);                
             }
         );
+
+        document.addEventListener("ConnectorDragStart", (customEvent: Event) => {
+            const e = customEvent as CustomEvent;
+            document.addEventListener("mousemove", (ev) => 
+            {
+                this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY) 
+            });
+        });
+    }
+
+    drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number): void {
+        if (this.looseNoodle) {                                    
+            this.redrawEdgeCurveFixedEnd(this.looseNoodle, mouseX, mouseY);
+        } else {
+            this.looseNoodle = this.drawEdgeCurve(x, y, mouseX, mouseY);            
+        }
     }
 
     executeChangesToEdges(loadedObject: AbstractStoryObject): void {        
@@ -162,7 +180,7 @@ export class EdgeRenderer extends Component {
         c.linewidth = 1;
         c.cap = "round";
         c.noFill();
-        //c.translation.set(0, 0);
+        // c.translation.set(0, 0);
         this.two.update();
         return c;
     }
@@ -178,6 +196,41 @@ export class EdgeRenderer extends Component {
         c.vertices[3].x = x2;
         c.vertices[3].y = y2;
     }
+
+    redrawEdgeCurveFixedEnd(c: Two.Path, x: number, y: number): void {      
+        c.translation.set(0, 0);
+        c.vertices[3].x = x;
+        c.vertices[3].y = y;
+    }
+
+    /*
+    avoidDOMElement(path1: Two.Path, elemClass: string): void {
+        const path1Length = path1.getTotalLength();
+        const elem = document.elementFromPoint(2, 2);
+        if (elem?.classList.contains(elemClass)) {
+
+        }
+        
+        const path2Points = [];
+     
+         for (let j = 0; j < path2Length; j++) {      
+           path2Points.push(path2.getPointAtLength(j));
+         }
+      
+      for (let i = 0; i < path1Length; i++) {  
+        const point1 = path1.getPointAtLength(i);
+    
+        for (let j = 0; j < path2Points.length; j++) {
+          if (pointIntersect(point1, path2Points[j])) {
+            result.innerHTML = point1.x + ',' + point1.y + ' ' + path2Points[j].x + ',' + path2Points[j].y;
+            return;
+          }
+        }
+      }
+    }
+    */
+
+
 
     render(): h.JSX.Element {
         return <div id={this.edgeRendererID}></div>

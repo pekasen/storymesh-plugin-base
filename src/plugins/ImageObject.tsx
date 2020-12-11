@@ -91,10 +91,7 @@ class _ImageObject extends StoryObject {
     }
 }
 
-createModelSchema(_ImageObject, {
-    name: primitive(),
-    content: object(ContentSchema)
-})
+createModelSchema(_ImageObject, {})
 
 export const plugInExport = exportClass(
     _ImageObject,

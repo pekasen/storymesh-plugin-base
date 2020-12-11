@@ -1,4 +1,4 @@
-import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
+import { AbstractStoryObject, StoryObject } from "./helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from './helpers/exportClass';
 import { IConnectorPort, IEdge } from 'storygraph';
@@ -7,8 +7,9 @@ import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 import { ConnectorPort } from '../renderer/utils/ConnectorPort';
 import { makeObservable, observable, action } from 'mobx';
+import { createModelSchema } from 'serializr';
 
-export class OutputConnectorView extends AbstractStoryObject {
+export class OutputConnectorView extends StoryObject {
     public name: string;
     public role: string;
     public icon: string;
@@ -72,6 +73,7 @@ export class OutputConnectorView extends AbstractStoryObject {
         this.name = name;
     }
 }
+createModelSchema(OutputConnectorView, {});
 
 export const plugInExport = exportClass(
     OutputConnectorView,

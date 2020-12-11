@@ -2,14 +2,28 @@ import { h } from "preact";
 
 import { Header } from './Header';
 import { Window, WindowContent } from "./Window";
-import { Store } from '..';
-import { useContext } from 'preact/hooks';
+import { rootStore, Store } from '..';
+import { useContext, useEffect, useState } from 'preact/hooks';
 import { EditorPaneGroup } from './EditorPaneGroup';
 import { NotificationView } from './NotificationView/NotificationView';
+import { reaction } from 'mobx';
 
 export const App = (): h.JSX.Element => {
-
+    const [_, setState] = useState({});
     const store = useContext(Store);
+    useEffect(() => {
+        const disposer = reaction(
+            () => rootStore.root,
+            (root) => {
+                console.log("changed@root", root);
+                setState({})
+            }
+        )
+
+        return () => {
+            disposer();
+        }
+    });
     store.notifications.postNotification("Hello from NWebSCore!", this);
 
     return <Window>

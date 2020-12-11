@@ -8,6 +8,7 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 import { StoryObject } from './helpers/AbstractStoryObject';
 import { exportClass } from './helpers/exportClass';
+import { createModelSchema } from 'serializr';
 
 /**
  * Our first little dummy PlugIn
@@ -123,6 +124,10 @@ class _TextObject extends StoryObject {
         return Comp
     }
 }
+
+createModelSchema(_TextObject,{
+    
+})
 
 export const plugInExport = exportClass(
     _TextObject,

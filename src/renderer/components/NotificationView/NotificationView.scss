@@ -20,8 +20,12 @@
         font-size: 1.1em;
         color: #fff;
 
-        &.normal{
-        background: hsl(120deg, 90%, 40%);
+        &.normal {
+            background: hsl(210deg, 90%, 40%);
+        }
+
+        &.success {
+            background: hsl(120deg, 90%, 40%);  
         }
 
         &.warn {

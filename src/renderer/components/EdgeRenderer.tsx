@@ -1,7 +1,7 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
-import { IStoryObject, StoryGraph } from 'storygraph';
+import { IStoryObject } from 'storygraph';
 import Two from 'twojs-ts';
 import { Store } from '..';
 import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';

@@ -6,7 +6,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { AbstractStoryObject } from './helpers/AbstractStoryObject';
+import { StoryObject } from './helpers/AbstractStoryObject';
 import { exportClass } from './helpers/exportClass';
 
 /**
@@ -14,7 +14,7 @@ import { exportClass } from './helpers/exportClass';
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
-class _TextObject extends AbstractStoryObject {
+class _TextObject extends StoryObject {
     
     public name: string;
     public role: string;
@@ -30,7 +30,7 @@ class _TextObject extends AbstractStoryObject {
 
         super();
         this.isContentNode = true;
-        this.role = "content"
+        this.role = "internal.content.text"
         this.name = "Text" // [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,

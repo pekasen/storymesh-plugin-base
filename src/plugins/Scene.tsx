@@ -2,18 +2,20 @@ import { action, makeObservable, observable } from 'mobx';
 import { h, FunctionComponent } from "preact";
 import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { IPlugInRegistryEntry, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
-import { AbstractStoryObject } from './helpers/AbstractStoryObject';
+import { StoryObject } from './helpers/AbstractStoryObject';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 
 // import * as Three from "three";
 // import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { exportClass } from './helpers/exportClass';
+import { createModelSchema, object } from 'serializr';
+import { ContentSchema } from '../renderer/store/schemas/ContentSchema';
 
 export interface ISceneContent {
     file: string
 }
 
-class _Scene extends AbstractStoryObject {
+class _Scene extends StoryObject {
     public content: ISceneContent;
     public childNetwork?: StoryGraph | undefined;
     public name: string;
@@ -28,7 +30,7 @@ class _Scene extends AbstractStoryObject {
         super();
 
         this.name = "Scene";
-        this.role = "scene";
+        this.role = "internal.content.scene";
         this.connectors = new Map<string, IConnectorPort>();
         [
             // {
@@ -108,8 +110,10 @@ class _Scene extends AbstractStoryObject {
         if (file) this.content.file = file;
     }
 }
-
-export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = exportClass(
+createModelSchema(_Scene, {
+    content: object(ContentSchema)
+})
+export const plugInExport = exportClass(
     _Scene,
     "Scene",
     "internal.content.scene",

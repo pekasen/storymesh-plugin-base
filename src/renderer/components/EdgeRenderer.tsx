@@ -18,7 +18,7 @@ export class EdgeRenderer extends Component {
     edges: Map<string, Two.Path>;
     store = useContext(Store);
     disposeReaction2: IReactionDisposer;
-    disposeReaction3: IReactionDisposer;
+    // disposeReaction3: IReactionDisposer;
     mutationObserver: MutationObserver | undefined;
     mutationTargetNode: HTMLElement | undefined;
     mutationsConfig: MutationObserverInit;            

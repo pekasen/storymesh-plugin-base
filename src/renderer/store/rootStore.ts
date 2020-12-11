@@ -1,11 +1,14 @@
-import { IStoreableObject } from './StoreableObject';
-import { UIStore } from './UIStore';
-import { ClassRegistry, ValueRegistry } from '../utils/registry';
+import { createModelSchema, object, setDefaultModelSchema } from "serializr";
+import { makeAutoObservable } from 'mobx';
+
+import { AbstractStoryObject, StoryObject } from '../../plugins/helpers/AbstractStoryObject';
+// import { makeSchemas } from './schemas/AbstractStoryObjectSchema';
+import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry, ValueRegistrySchema } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { NotificationStore } from './Notification';
 import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
 import { plugInLoader } from './PlugInStore';
-import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
-import { NotificationStore } from './Notification';
+import { UIStore } from './UIStore';
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -13,17 +16,18 @@ export interface IRootStoreProperties {
     storyContentTemplatesRegistry: ClassRegistry<IStoryObject>
 }
 
-export class RootStore implements IStoreableObject<IRootStoreProperties> {
+export class RootStore {
     uistate: UIStore
     storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
     storyContentTemplatesRegistry: PlugInClassRegistry<AbstractStoryObject>
     notifications: NotificationStore;
+    // topLevelObject: AbstractStoryObject;
 
     constructor(uistate?: UIStore) {
         /**
          * initialize the template store
          */
-        this.uistate = uistate || new UIStore(this);
+        this.uistate = uistate || new UIStore();
 
         /**
          * In this registry we store our instantiated StoryObjects
@@ -44,32 +48,47 @@ export class RootStore implements IStoreableObject<IRootStoreProperties> {
          */
         if (this.uistate.untitledDocument) {
             const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
+
             if (emptyStory) {
-                emptyStory.name = "MyStory";
+                emptyStory.name = "My Story";
+                // this.topLevelObject = emptyStory;
                 this.storyContentObjectRegistry.register(
                     emptyStory
                 );
                 this.uistate.setLoadedItem(emptyStory.id);
                 this.uistate.topLevelObjectID = emptyStory.id;
             }
+        } else {
+            // this.topLevelObject = new StoryObject()
         }
         /**
          * Initialize notification buffer
          */
         this.notifications = new NotificationStore();
-    }
 
-    loadFromPersistance(from: IRootStoreProperties): void {
-        // this.model.loadFromPersistance(from.model);
-        this.uistate.loadFromPersistance(from.uistate);
-    }
-
-    writeToPersistance(): void {
-        null
+        makeAutoObservable(this);
     }
 
     reset(): void {
         // this.model = new List();
-        this.uistate = new UIStore(this);
+        this.uistate = new UIStore();
+    }
+
+    replace(root: RootStore): void {
+        this.storyContentObjectRegistry = root.storyContentObjectRegistry;
+        this.uistate = root.uistate;
     }
 }
+// export const { AbstractStoryObjectSchema } = makeSchemas(rootStore.root.storyContentTemplatesRegistry);
+
+/**
+ * Initialize model schema
+ */
+export const RootStoreSchema = createModelSchema(
+    RootStore,
+    {
+        uistate: object(UIStore),
+        // topLevelObject: object(StoryObject)
+        storyContentObjectRegistry: object(AutoValueRegistrySchema())
+    }
+);

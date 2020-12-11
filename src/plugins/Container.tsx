@@ -3,19 +3,22 @@ import { useContext, useEffect, useState } from "preact/hooks";
 import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
 import { StoryGraph } from 'storygraph';
 import { IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
-import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
+import { StoryObject } from "./helpers/AbstractStoryObject";
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
-import { addConnectionPortField, connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
+import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
 import { Store } from '../renderer';
+import { ObservableStoryGraph, ObservableStoryGraphSchema } from './helpers/ObservableStoryGraph';
+import { createModelSchema, object } from 'serializr';
+// import { makeSchemas } from '../renderer/store/schemas/AbstractStoryObjectSchema';
 // import { ConnectorDirection, ConnectorPort, ConnectorType } from '../renderer/utils/ConnectorPort';
-
+// const { StoryGraphSchema } = makeSchemas(rootStore.root.storyContentTemplatesRegistry);
 /**
  * Our second little dummy PlugIn
  * 
  * 
  */
-class _Container extends AbstractStoryObject {
+class _Container extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -30,16 +33,17 @@ class _Container extends AbstractStoryObject {
         super();
 
         this.name = "Container";
-        this.role = "container";
+        this.role = "internal.container.container";
         this.isContentNode = false;
-        this.childNetwork = makeObservable(new StoryGraph(this), {
-            nodes: observable,
-            edges: observable,
-            addNode: action,
-            connect: action,
-            disconnect: action,
-            removeNode: action
-        });
+        // this.childNetwork = makeObservable(new StoryGraph(this), {
+        //     nodes: observable,
+        //     edges: observable,
+        //     addNode: action,
+        //     connect: action,
+        //     disconnect: action,
+        //     removeNode: action
+        // });
+        this.childNetwork = new ObservableStoryGraph(this);
         // this.childNetwork = makeAutoObservable(new StoryGraph(this));
         this.connectors = new Map<string, IConnectorPort>();
         this.makeFlowInAndOut();
@@ -157,49 +161,12 @@ class _Container extends AbstractStoryObject {
         ...connectionField(this),
         // ...addConnectionPortField(this)
     ]
-
-    // addConnector(type: ConnectorType, dir: ConnectorDirection) {
-    //     console.log("new connector", type, dir);
-    //     this.connectors.push(
-    //         new ConnectorPort(type, dir)
-    //     );
-    // }
-
-    // removeConnector() {
-
-    // }
-    // public menuTemplate(): IMenuTemplate[] {
-
-    //     return [
-    //         //...super.menuTemplate()
-    //         {
-    //             label: "Test",
-    //             type: "text",
-    //             value: () => {return this.name},
-    //             valueReference: (name: string) => this.name = name
-    //         }
-    //     ]
-    // }
 }
-
-/**
- * Define the metadata
- */
-// export const plugInExport: IPlugInRegistryEntry<AbstractStoryObject> = makeObservable({
-//     name: "Container",
-//     id: "internal.container.container",
-//     shortId: "container",
-//     author: "NGWebS-Core",
-//     version: "1.0.0",
-//     class: _Container
-// }, {
-//     name: false,
-//     id: false,
-//     shortId: false,
-//     author: false,
-//     version: false,
-//     class: false
-// });
+createModelSchema(_Container, {
+    childNetwork: object(ObservableStoryGraphSchema)
+});
+// _ContainerSchema.extends = AbstractStoryObjectSchema;
+console.log("I'm run!");
 
 export const plugInExport = exportClass(
     _Container,

@@ -1,7 +1,9 @@
 import { remote } from 'electron/renderer';
 import { reaction, IReactionDisposer } from 'mobx';
-import { Component, h } from 'preact';
+import { Component, Context, h } from 'preact';
+import { useContext } from 'preact/hooks';
 import { StoryGraph, IConnectorPort, IEdge } from 'storygraph';
+import { Store } from '../..';
 import { RootStore } from '../../store/rootStore';
 import { IMenuTemplate } from '../../utils/PlugInClassRegistry';
 
@@ -15,12 +17,16 @@ export class ConnectionTableView extends Component<IItemView> {
         super(props);
 
         this.reactionDisposer = reaction(
-            () => [props.item.value().connections.length, props.item.value().connectors.length],
+            () => {
+                const obj = props.item.value();
+                [obj.connections.length, obj.connectors.length, ...obj.connections]
+            },
             () => this.setState({})
         );
     }
 
-    render({ store, item }: IItemView): h.JSX.Element {
+    render({ item }: IItemView): h.JSX.Element {
+        const store = useContext(Store);
         const myId: string = item.value().id;
         const connections = (item.value().connections as IEdge[]);
 

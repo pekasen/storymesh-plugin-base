@@ -29,7 +29,6 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                 {
                     Array.from(object.connectors).map(a => {
                         const [, obj] = a;
-                        console.log(obj.type);
                         return <ConnectorView class={obj.type + " " + obj.direction} id={object.id + "." + obj.name}></ConnectorView>
                     })                    
                 }
@@ -57,12 +56,10 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                             {children}
                             <div onClick={(e) => {
                                 e.preventDefault();
-                                console.log('Hello!!!');
                                 const toggle = document.getElementById('toggle-content');
                                 const contentArea = document.getElementById('area-content');
                                 toggle?.classList.toggle('minimized');
                                 contentArea?.classList.toggle('hidden');
-
                             }}
                             class="toggle-content" id="toggle-content">
                                 <span class="span-top"></span>

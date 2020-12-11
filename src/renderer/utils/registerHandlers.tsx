@@ -11,18 +11,21 @@ import { ValueRegistry } from './registry';
  */
 export function registerHandlers(): void {
     ipcRenderer.on('save', (e, { file }) => {
-        rootStore.root.uistate.setFile(file);
+        // rootStore.root.uistate.setFile(file);
         const json = serialize(RootStoreSchema, rootStore.root);
         console.log(json)
 
         writeFile(
-            (file !== undefined) ? file : rootStore.root.uistate.file,
+            file || rootStore.root.uistate.file,
             JSON.stringify(json),
             (err) => {
                 if (err) throw(err); // if the selected file does not exist, raise hell!
                 else {
                     if (file !== undefined) {
                         rootStore.root.uistate.setFile(file)
+                    } else {
+                        const { root } = rootStore;
+                        root.notifications.postNotification("Saved", null, "normal", 5);
                     }
                 }
             }

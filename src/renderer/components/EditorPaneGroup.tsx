@@ -19,7 +19,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
 
     useEffect(() => {
         const disposer = reaction(
-            () => [store.uistate.loadedItem],
+            () => [store.storyContentObjectRegistry.registry.size, store.uistate.loadedItem],
             () => setState({})
         );
 
@@ -28,11 +28,9 @@ export const EditorPaneGroup: FunctionalComponent = () => {
         };
     });
 
-    const loadedItem = store.storyContentObjectRegistry.getValue(
-        store.uistate.loadedItem
-    ) as AbstractStoryObject;
+    const loadedItem = store.storyContentObjectRegistry.getValue(store.uistate.loadedItem);
 
-    return <HorizontalPaneGroup>
+    if (loadedItem) return <HorizontalPaneGroup>
         <ResizablePane paneState={store.uistate.windowProperties.sidebarPane} resizable="right" classes={["sidebar"]}>
             <ItemPropertiesView
                 store={store}>
@@ -70,4 +68,5 @@ export const EditorPaneGroup: FunctionalComponent = () => {
             </Preview>
         </ResizablePane>
     </HorizontalPaneGroup>;
+    else return <div>Loading</div>
 };

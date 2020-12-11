@@ -110,9 +110,7 @@ class _Scene extends StoryObject {
         if (file) this.content.file = file;
     }
 }
-createModelSchema(_Scene, {
-    content: object(ContentSchema)
-})
+createModelSchema(_Scene, {})
 export const plugInExport = exportClass(
     _Scene,
     "Scene",

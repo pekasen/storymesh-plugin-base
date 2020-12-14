@@ -1,7 +1,7 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { patchMenu } from './menus';
 
-const windows: Electron.BrowserWindow[] = [];
+export const windows: Electron.BrowserWindow[] = [];
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -38,4 +38,10 @@ app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
+});
+
+ipcMain.on("preferences", () => {
+    windows.forEach((window) => {
+        window.webContents.send("reload-preferences", {});
+    });
 });

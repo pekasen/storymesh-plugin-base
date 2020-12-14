@@ -1,10 +1,9 @@
 import { ipcRenderer } from 'electron/renderer';
 import { readFile, writeFile } from "fs";
 import { deserialize, serialize } from 'serializr';
-import { StoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { windows } from '../../main';
 import { rootStore } from '../index';
 import { RootStoreSchema } from "../store/rootStore";
-import { ValueRegistry } from './registry';
 
 /**
  * registers file-event handlers
@@ -14,19 +13,17 @@ export function registerHandlers(): void {
         // rootStore.root.uistate.setFile(file);
         const json = serialize(RootStoreSchema, rootStore.root);
         console.log(json)
-
+        if (file !== undefined) {
+            rootStore.root.uistate.setFile(file)
+        }
         writeFile(
             file || rootStore.root.uistate.file,
             JSON.stringify(json),
             (err) => {
                 if (err) throw(err); // if the selected file does not exist, raise hell!
                 else {
-                    if (file !== undefined) {
-                        rootStore.root.uistate.setFile(file)
-                    } else {
-                        const { root } = rootStore;
-                        root.notifications.postNotification("Saved", null, "normal", 5);
-                    }
+                    const { root } = rootStore;
+                    root.notifications.postNotification("Saved", null, "normal", 5);
                 }
             }
         );

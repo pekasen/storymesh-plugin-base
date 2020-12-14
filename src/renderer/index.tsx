@@ -16,6 +16,7 @@ export const Store = createContext(rootStore.root);
 registerHandlers();
 
 const root = document.getElementById("preact-root") as HTMLElement;
+rootStore.root.notifications.postNotification("Hello from NWebSCore!", this);
 render(
     <Store.Provider value={rootStore.root}>
         <App />

@@ -10,6 +10,11 @@ import { exportClass } from './helpers/exportClass';
 import { Store } from '../renderer';
 import { ObservableStoryGraph, ObservableStoryGraphSchema } from './helpers/ObservableStoryGraph';
 import { createModelSchema, object } from 'serializr';
+import { MoveableItem } from "../renderer/store/MoveableItem";
+import { InputConnectorView } from "./InputConnectorView";
+import { OutputConnectorView } from "./OutputConnectorView";
+import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
+import { UIStore } from "../renderer/store/UIStore";
 // import { makeSchemas } from '../renderer/store/schemas/AbstractStoryObjectSchema';
 // import { ConnectorDirection, ConnectorPort, ConnectorType } from '../renderer/utils/ConnectorPort';
 // const { StoryGraphSchema } = makeSchemas(rootStore.root.storyContentTemplatesRegistry);
@@ -44,6 +49,7 @@ class _Container extends StoryObject {
         //     removeNode: action
         // });
         this.childNetwork = new ObservableStoryGraph(this);
+        
         // this.childNetwork = makeAutoObservable(new StoryGraph(this));
         this.connectors = new Map<string, IConnectorPort>();
         this.makeFlowInAndOut();
@@ -140,6 +146,20 @@ class _Container extends StoryObject {
                 coords.map(item => <div style={`position: absolute; left: ${item?.x}; top: ${item?.y}; background: dark-grey;`}></div>)
             }
         </div>
+    }
+
+    public setup(registry: IRegistry, uistate: UIStore) {
+        const start = new InputConnectorView();
+        const end = new OutputConnectorView();
+        if (start && end) {
+            this.childNetwork.addNode(registry, start);
+            uistate.moveableItems.register(new MoveableItem(start.id, 50, 50));
+            this.childNetwork.addNode(registry, end);
+            uistate.moveableItems.register(new MoveableItem(end.id, 50, 350));
+
+            start.setup(registry);
+            end.setup(registry);
+        }
     }
 
     menuTemplate: IMenuTemplate[] = [

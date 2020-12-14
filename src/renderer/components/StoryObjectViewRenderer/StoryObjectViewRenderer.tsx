@@ -125,20 +125,20 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
         if (instance) {
             loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
-            
-            if (instance.role === "container" && instance.childNetwork) {
-                const start = store.storyContentTemplatesRegistry.getNewInstance("internal.container.inputconnectorview") as InputConnectorView;
-                const end = store.storyContentTemplatesRegistry.getNewInstance("internal.container.outputconnectorview") as OutputConnectorView;
-                if (start && end) {
-                    instance.childNetwork.addNode(store.storyContentObjectRegistry, start);
-                    store.uistate.moveableItems.register(new MoveableItem(start.id, 50, 50));
-                    instance.childNetwork.addNode(store.storyContentObjectRegistry, end);
-                    store.uistate.moveableItems.register(new MoveableItem(end.id, 50, 350));
+            if (instance.role === "internal.container.container") (instance.setup(store.storyContentObjectRegistry, store.uistate));
+            // if (instance.role === "container" && instance.childNetwork) {
+            //     const start = store.storyContentTemplatesRegistry.getNewInstance("internal.container.inputconnectorview") as InputConnectorView;
+            //     const end = store.storyContentTemplatesRegistry.getNewInstance("internal.container.outputconnectorview") as OutputConnectorView;
+            //     if (start && end) {
+            //         instance.childNetwork.addNode(store.storyContentObjectRegistry, start);
+            //         store.uistate.moveableItems.register(new MoveableItem(start.id, 50, 50));
+            //         instance.childNetwork.addNode(store.storyContentObjectRegistry, end);
+            //         store.uistate.moveableItems.register(new MoveableItem(end.id, 50, 350));
 
-                    start.setup(store.storyContentObjectRegistry);
-                    end.setup(store.storyContentObjectRegistry);
-                }
-            }
+            //         start.setup(store.storyContentObjectRegistry);
+            //         end.setup(store.storyContentObjectRegistry);
+            //     }
+            // }
             
             store.uistate.selectedItems.setSelectedItems([instance.id]);
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));

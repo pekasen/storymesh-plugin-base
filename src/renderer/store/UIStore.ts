@@ -30,6 +30,14 @@ export class UIStore {
 
     setFile(file: string): void {
         this.file = file;
+        const titleRG = /\w+(?=\.(json))/gm;
+        const title = titleRG.exec(file);
+        console.log("Saved as", title);
+        if(title && title[0]) {
+            this.windowProperties.setTitle(
+                String(title[0])
+            );
+        }
     }
 
     replace({ windowProperties, moveableItems, file, selectedItems, loadedItem, topLevelObjectID }: UIStore) : void {

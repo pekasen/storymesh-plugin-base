@@ -1,5 +1,5 @@
 import { createModelSchema, deserialize, object, serialize } from "serializr";
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, observe, spy } from 'mobx';
 
 import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
@@ -10,10 +10,11 @@ import { plugInLoader } from './PlugInStore';
 import { UIStore } from './UIStore';
 import { rootStore } from "..";
 import { Preferences } from "../../preferences";
-import { readFileSync } from "original-fs";
+import { existsSync, readFileSync } from "original-fs";
 import { __prefPath } from "../../constants";
 import { ipcRenderer } from "electron";
 import { Container } from "../../plugins/Container";
+import { deepObserve } from "mobx-utils";
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -28,6 +29,12 @@ type Partial<T> = {
 export interface IState {
     uistate: Partial<UIStore>
     storyContentObjectRegistry: Partial<ClassRegistry<IStoryObject>>;
+}
+
+export interface IProtocolEntry {
+    description: string
+    createdAt: Date
+    author: string
 }
 
 export class Procotol {
@@ -109,6 +116,10 @@ export class RootStore {
         makeAutoObservable(this, {
             protocol: false
         });
+
+        // observe(this, (change) => console.log("changed state", change));
+        // spy((change) => console.log("changed state", change));
+        deepObserve(this, (change) => console.log("changed state", change))
     }
 
     reset(): void {
@@ -121,14 +132,16 @@ export class RootStore {
     }
 
     readPreferences(): void {
-        const data = readFileSync(
-            __prefPath,
-            {encoding: "UTF8"}
-        );
-        const _d = JSON.parse(data);
-        const _e  = deserialize(Preferences, _d);
-
-        if (_e) this.userPreferences = _e;
+        if (existsSync(__prefPath)) {
+            const data = readFileSync(
+                __prefPath,
+                {encoding: "UTF8"}
+            );
+            const _d = JSON.parse(data);
+            const _e  = deserialize(Preferences, _d);
+    
+            if (_e) this.userPreferences = _e;
+        }
     }
 }
 

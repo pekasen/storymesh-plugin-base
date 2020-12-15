@@ -63,7 +63,7 @@
         right: -300px;
         border: 1px solid transparent;
         border-radius: 50%;
-        background: #87c1ff;
+        background-image: linear-gradient(90deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
         width: 500px;
         height: 500;
         z-index: 99;
@@ -77,7 +77,7 @@
         right: -200px;
         border: 1px solid transparent;
         border-radius: 50%;
-        background: #0d5aa5;
+        background-image: linear-gradient(90deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
         width: 1000px;
         height: 500px;
         animation: fadeup 1s forwards;

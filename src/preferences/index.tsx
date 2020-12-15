@@ -102,8 +102,8 @@ class PreferencesView extends Component<unknown, Preferences> {
             <form>
                 <ThemePicker options={Preferences.availableThemes} />
                 <AuthorField />
-                <button class="btn btn-default" onClick={() => window.close()}>Cancel</button>
-                <button class="btn btn-default" onClick={() => {
+                <button class="cancel" onClick={() => window.close()}>Cancel</button>
+                <button class="confirm" onClick={() => {
                     this.writePrefDict();
                     window.close();
                 }}>OK</button>

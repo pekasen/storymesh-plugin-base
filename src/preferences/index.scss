@@ -1,0 +1,103 @@
+.window-contents.preferences {
+    margin: 20px;
+    min-width: 210px;
+    height: 100%;
+
+    p {
+        font-size: .8rem;
+    }
+
+    .form-group-item {
+        margin: 15px 0;
+
+        label {
+            font-weight: 600;
+        }
+
+        input[type=text] {
+            display: block;
+            width: 100%;
+            max-width: 250px;
+            min-height: 25px;
+            padding: 5px 10px;
+            font-size: 13px;
+            line-height: 1.6;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+    }
+
+    button { 
+        width: auto;
+        height: auto;
+        padding: 5px 25px;
+        box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034), 0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06), 0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086), 0 100px 80px rgba(0, 0, 0, 0.12);
+        border-radius: 50px;
+        font-size: .8rem;
+        color: #fff;
+        border-color: transparent;
+        margin: 20px 20px 0 0;
+        cursor: pointer;
+        transition: all .1s ease-in;
+
+        &.confirm {
+            background: hsl(120deg, 90%, 40%);
+        }
+
+        &.cancel {
+            background: rgb(85, 87, 86); 
+        }
+
+        &:hover {
+            color: rgb(235, 235, 235);
+            box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.044), 0 6.7px 5.3px rgba(0, 0, 0, 0.058), 0 12.5px 10px rgba(0, 0, 0, 0.16), 0 22.3px 17.9px rgba(0, 0, 0, 0.079), 0 41.8px 33.4px rgba(0, 0, 0, 0.089), 0 100px 80px rgba(0, 0, 0, 0.22);
+        }
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: -450;
+        right: -300px;
+        border: 1px solid transparent;
+        border-radius: 50%;
+        background: #87c1ff;
+        width: 500px;
+        height: 500;
+        z-index: 99;
+        animation: fadedown 1.5s forwards;
+    }
+    
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: -380px;
+        right: -200px;
+        border: 1px solid transparent;
+        border-radius: 50%;
+        background: #0d5aa5;
+        width: 1000px;
+        height: 500px;
+        animation: fadeup 1s forwards;
+    }
+}
+
+@keyframes fadeup {
+    0% {
+        bottom: -600px;
+    }
+    100% {
+        bottom: -380px;
+    }
+}
+
+@keyframes fadedown {
+    0% {
+        top: -600px;
+    }
+    100% {
+        top: -450px;
+    }
+}

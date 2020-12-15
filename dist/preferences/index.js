@@ -25,11 +25,13 @@ class PreferencesView extends preact_1.Component {
         this.readPrefDict();
     }
     readPrefDict() {
-        const data = fs_1.readFileSync(constants_1.__prefPath, { encoding: "UTF8" });
-        const _d = JSON.parse(data);
-        const _e = serializr_1.deserialize(Preferences, _d);
-        if (_e)
-            this.setState(_e);
+        if (fs_1.existsSync(constants_1.__prefPath)) {
+            const data = fs_1.readFileSync(constants_1.__prefPath, { encoding: "UTF8" });
+            const _d = JSON.parse(data);
+            const _e = serializr_1.deserialize(Preferences, _d);
+            if (_e)
+                this.setState(_e);
+        }
     }
     writePrefDict() {
         const _d = serializr_1.serialize(Preferences, this.state);
@@ -63,8 +65,8 @@ class PreferencesView extends preact_1.Component {
             preact_1.h("form", null,
                 preact_1.h(ThemePicker, { options: Preferences.availableThemes }),
                 preact_1.h(AuthorField, null),
-                preact_1.h("button", { class: "btn btn-default", onClick: () => window.close() }, "Cancel"),
-                preact_1.h("button", { class: "btn btn-default", onClick: () => {
+                preact_1.h("button", { class: "cancel", onClick: () => window.close() }, "Cancel"),
+                preact_1.h("button", { class: "confirm", onClick: () => {
                         this.writePrefDict();
                         window.close();
                     } }, "OK")));

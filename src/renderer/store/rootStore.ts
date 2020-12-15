@@ -13,6 +13,7 @@ import { Preferences } from "../../preferences";
 import { readFileSync } from "original-fs";
 import { __prefPath } from "../../constants";
 import { ipcRenderer } from "electron";
+import { Container } from "../../plugins/Container";
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -89,7 +90,7 @@ export class RootStore {
                 this.storyContentObjectRegistry.register(
                     emptyStory
                 );
-                emptyStory.setup(this.storyContentObjectRegistry, this.uistate);
+                (emptyStory as Container).setup(this.storyContentObjectRegistry, this.uistate);
                 emptyStory.name = "My Story";
                 // this.topLevelObject = emptyStory;
                 this.uistate.setLoadedItem(emptyStory.id);

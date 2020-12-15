@@ -1,29 +1,27 @@
-import { FunctionComponent, h } from "preact";
-import { useContext, useEffect, useState } from "preact/hooks";
-import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
-import { StoryGraph } from 'storygraph';
-import { IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
-import { StoryObject } from "./helpers/AbstractStoryObject";
-import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { exportClass } from './helpers/exportClass';
-import { Store } from '../renderer';
-import { ObservableStoryGraph, ObservableStoryGraphSchema } from './helpers/ObservableStoryGraph';
 import { createModelSchema, object } from 'serializr';
-import { MoveableItem } from "../renderer/store/MoveableItem";
+import { exportClass } from './helpers/exportClass';
+import { FunctionComponent, h } from "preact";
+import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { InputConnectorView } from "./InputConnectorView";
-import { OutputConnectorView } from "./OutputConnectorView";
+import { IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
 import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
+import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
+import { MoveableItem } from "../renderer/store/MoveableItem";
+import { ObservableStoryGraph, ObservableStoryGraphSchema } from './helpers/ObservableStoryGraph';
+import { OutputConnectorView } from "./OutputConnectorView";
+import { Store } from '../renderer';
+import { StoryGraph } from 'storygraph';
+import { StoryObject } from "./helpers/AbstractStoryObject";
 import { UIStore } from "../renderer/store/UIStore";
-// import { makeSchemas } from '../renderer/store/schemas/AbstractStoryObjectSchema';
-// import { ConnectorDirection, ConnectorPort, ConnectorType } from '../renderer/utils/ConnectorPort';
-// const { StoryGraphSchema } = makeSchemas(rootStore.root.storyContentTemplatesRegistry);
+import { useContext, useEffect, useState } from "preact/hooks";
+
 /**
  * Our second little dummy PlugIn
  * 
  * 
  */
-class _Container extends StoryObject {
+export class Container extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -40,22 +38,12 @@ class _Container extends StoryObject {
         this.name = "Container";
         this.role = "internal.container.container";
         this.isContentNode = false;
-        // this.childNetwork = makeObservable(new StoryGraph(this), {
-        //     nodes: observable,
-        //     edges: observable,
-        //     addNode: action,
-        //     connect: action,
-        //     disconnect: action,
-        //     removeNode: action
-        // });
         this.childNetwork = new ObservableStoryGraph(this);
-        
-        // this.childNetwork = makeAutoObservable(new StoryGraph(this));
         this.connectors = new Map<string, IConnectorPort>();
         this.makeFlowInAndOut();
 
         this.userDefinedProperties = {};
-        this.icon = _Container.defaultIcon;
+        this.icon = Container.defaultIcon;
 
         makeObservable(this, {
             role: false,
@@ -64,12 +52,11 @@ class _Container extends StoryObject {
             userDefinedProperties: observable,
             childNetwork: observable.deep,
             connectors: observable.shallow,
-            updateName: action,
-            // addConnector: action
+            updateName: action
         });
     }
 
-    public getComponent() {
+    public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph}) => {
             const [, setState] = useState({});
             let disposer: IReactionDisposer;
@@ -148,7 +135,7 @@ class _Container extends StoryObject {
         </div>
     }
 
-    public setup(registry: IRegistry, uistate: UIStore) {
+    public setup(registry: IRegistry, uistate: UIStore): void {
         const start = new InputConnectorView();
         const end = new OutputConnectorView();
         if (start && end) {
@@ -182,16 +169,14 @@ class _Container extends StoryObject {
         // ...addConnectionPortField(this)
     ]
 }
-createModelSchema(_Container, {
+createModelSchema(Container, {
     childNetwork: object(ObservableStoryGraphSchema)
 });
-// _ContainerSchema.extends = AbstractStoryObjectSchema;
-console.log("I'm run!");
 
 export const plugInExport = exportClass(
-    _Container,
+    Container,
     "Container",
     "internal.container.container",
-    _Container.defaultIcon,
+    Container.defaultIcon,
     true
 );

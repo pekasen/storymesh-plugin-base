@@ -3,9 +3,8 @@ import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { Store } from '../..';
+import { Container } from '../../../plugins/Container';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
-import { InputConnectorView } from '../../../plugins/InputConnectorView';
-import { OutputConnectorView } from '../../../plugins/OutputConnectorView';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
@@ -64,8 +63,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
             if (input) {
                 const [loc, type, id] = input.split(".");
-            
-                console.log("Hello");
+
                 if (id) {
                     switch(loc) {
                         case "internal": {
@@ -104,8 +102,6 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 <EdgeRenderer></EdgeRenderer>
                 {
                     loadedObject.childNetwork?.nodes
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    // TODO: declare icon in IStoryObject
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
                             <StoryObjectView store={store} object={object as AbstractStoryObject}>
@@ -125,21 +121,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
         if (instance) {
             loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
-            if (instance.role === "internal.container.container") (instance.setup(store.storyContentObjectRegistry, store.uistate));
-            // if (instance.role === "container" && instance.childNetwork) {
-            //     const start = store.storyContentTemplatesRegistry.getNewInstance("internal.container.inputconnectorview") as InputConnectorView;
-            //     const end = store.storyContentTemplatesRegistry.getNewInstance("internal.container.outputconnectorview") as OutputConnectorView;
-            //     if (start && end) {
-            //         instance.childNetwork.addNode(store.storyContentObjectRegistry, start);
-            //         store.uistate.moveableItems.register(new MoveableItem(start.id, 50, 50));
-            //         instance.childNetwork.addNode(store.storyContentObjectRegistry, end);
-            //         store.uistate.moveableItems.register(new MoveableItem(end.id, 50, 350));
-
-            //         start.setup(store.storyContentObjectRegistry);
-            //         end.setup(store.storyContentObjectRegistry);
-            //     }
-            // }
-            
+            if (instance.role === "internal.container.container") ((instance as Container).setup(store.storyContentObjectRegistry, store.uistate));           
             store.uistate.selectedItems.setSelectedItems([instance.id]);
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
         }

@@ -6,26 +6,29 @@
     h3 {
         opacity: 0;
         transform: translateX(-25px);
-        animation: fadein-left .5s ease-in-out forwards; 
-        animation-iteration-count: 1; 
+        animation: fadein-left .5s ease forwards; 
+        animation-iteration-count: 1;
     }
 
     p {
         font-size: .8rem;
         transform: translateX(-25px);
         opacity: 0;
-        animation: fadein-left .5s ease-in-out forwards;
+        animation: fadein-left .5s ease forwards;
         animation-delay: .1s;
         animation-iteration-count: 1;
     }
 
-    .form-group-item {
-        margin: 15px 0;
+    form {
         transform: translateX(-25px);
         opacity: 0;
-        animation: fadein-left .5s ease-in-out forwards;
+        animation: fadein-left .5s ease forwards;
         animation-delay: .2s;
-        animation-iteration-count: 1;
+        animation-iteration-count: 1;  
+    }
+
+    .form-group-item {
+        margin: 15px 0;
 
         label {
             font-weight: 600;
@@ -60,7 +63,7 @@
         opacity: 0;
         transition: all .1s ease-in;
         transform: translateX(-25px);
-        animation: fadein-left .5s ease-in-out forwards;
+        animation: fadein-left .5s ease forwards;
         animation-iteration-count: 1;
 
         &.cancel {

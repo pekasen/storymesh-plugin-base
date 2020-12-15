@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { Component, FunctionalComponent, h, JSX, render } from "preact";
 import { createModelSchema, deserialize, primitive, serialize } from "serializr";
 import { __prefPath } from "../constants";
@@ -33,13 +33,15 @@ class PreferencesView extends Component<unknown, Preferences> {
 
 
     public readPrefDict() {
-        const data = readFileSync(
-            __prefPath,
-            {encoding: "UTF8"}
-        );
-        const _d = JSON.parse(data);
-        const _e  = deserialize(Preferences, _d);
-        if (_e) this.setState(_e);
+        if (existsSync(__prefPath)) {
+            const data = readFileSync(
+                __prefPath,
+                {encoding: "UTF8"}
+            );
+            const _d = JSON.parse(data);
+            const _e  = deserialize(Preferences, _d);
+            if (_e) this.setState(_e);
+        }
     }
 
     public writePrefDict() {

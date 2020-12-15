@@ -1,7 +1,7 @@
 import { action, makeObservable, observable } from 'mobx';
 import { h, FunctionComponent } from "preact";
 import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
-import { IPlugInRegistryEntry, IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
+import { IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
 import { StoryObject } from './helpers/AbstractStoryObject';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 
@@ -21,7 +21,7 @@ class _Scene extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode = true;
-    public userDefinedProperties: any;
+    public userDefinedProperties: unknown;
     public connectors: Map<string, IConnectorPort>;
     public menuTemplate: IMenuTemplate[];
     public icon: string;
@@ -84,18 +84,12 @@ class _Scene extends StoryObject {
     public getScene(engine: BABYLON.Engine) : Promise<BABYLON.Scene> | undefined {
  
         const file = this.content.file;
+        if (file) return BABYLON.SceneLoader.LoadAsync(
+            file,
+            "",
+            engine
+        );
 
-        if (file) { // && scene
-            // const rootURL = /(\w*\/)/gm.exec(file)?.join("");
-            // const filename = /\w+\.\w+/gm.exec(file)?.join("");
-            console.log(file);
-
-            if (file) return BABYLON.SceneLoader.LoadAsync(
-                file,
-                "",
-                engine
-            );
-        }
     }
 
         // const scene = new BABYLON.Scene(

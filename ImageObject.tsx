@@ -8,8 +8,7 @@ import { StoryObject } from './helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
-import { createModelSchema, object, primitive } from 'serializr';
-import { ContentSchema } from '../renderer/store/schemas/ContentSchema';
+import { createModelSchema } from 'serializr';
 
 /**
  * Our first little dummy PlugIn
@@ -21,7 +20,7 @@ class _ImageObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: any;
+    public userDefinedProperties: unknown;
     public childNetwork?: StoryGraph;
     public connectors: Map<string, IConnectorPort>;
     public content: IContent;

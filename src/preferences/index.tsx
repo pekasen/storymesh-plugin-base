@@ -84,14 +84,16 @@ class PreferencesView extends Component<unknown, Preferences> {
         );
         
         const AuthorField: FunctionalComponent = () => (
-            <div class="form-group-item">
-                <label>Author</label>
-                <input type="text" value={author} onChange={(ev: Event) => {
+            <div class="form-group-item text">
+                <input name="author" id="author" required type="text" value={author} onChange={(ev: Event) => {
                     const value = (ev.target as HTMLInputElement).value;
                     this.setState({author: value});
                 }}>
                     NGWebS Default User
                 </input>
+                <label class="label-name" for="author">
+                    <span class="content-name">Author</span>
+                </label>
             </div>
         );
         

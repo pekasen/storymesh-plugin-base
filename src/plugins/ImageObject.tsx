@@ -4,10 +4,11 @@ import { INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegist
 
 import { action, IReactionDisposer, makeObservable, observable, reaction } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
-import { AbstractStoryObject } from './helpers/AbstractStoryObject';
+import { StoryObject } from './helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
+import { createModelSchema } from 'serializr';
 
 /**
  * Our first little dummy PlugIn
@@ -15,11 +16,11 @@ import { exportClass } from './helpers/exportClass';
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
-class _ImageObject extends AbstractStoryObject {
+class _ImageObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: any;
+    public userDefinedProperties: unknown;
     public childNetwork?: StoryGraph;
     public connectors: Map<string, IConnectorPort>;
     public content: IContent;
@@ -32,7 +33,7 @@ class _ImageObject extends AbstractStoryObject {
         super();
 
         this.name = "Image";
-        this.role = "content";
+        this.role = "internal.content.image";
         this.isContentNode = true;
         this.userDefinedProperties = {};
         this.connectors =new Map<string, IConnectorPort>();
@@ -88,6 +89,8 @@ class _ImageObject extends AbstractStoryObject {
         return () => <div class="editor-component"></div>
     }
 }
+
+createModelSchema(_ImageObject, {})
 
 export const plugInExport = exportClass(
     _ImageObject,

@@ -86,6 +86,8 @@ dist/main
 dist/renderer
 dist/css/ngwebs.css
 dist/plugins
+dist/preferences
+dist/constants*
 
 # Gatsby files
 .cache/

@@ -1,4 +1,4 @@
-import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
+import { StoryObject } from "./helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from './helpers/exportClass';
 import { IConnectorPort, IEdge } from 'storygraph';
@@ -7,9 +7,9 @@ import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from './helpers/plugInHelpers';
 import { action, makeObservable, observable } from 'mobx';
-import { stringify } from 'uuid';
+import { createModelSchema } from 'serializr';
 
-export class InputConnectorView extends AbstractStoryObject {
+export class InputConnectorView extends StoryObject {
     public name: string;
     public role: string;
     public icon: string;
@@ -46,7 +46,7 @@ export class InputConnectorView extends AbstractStoryObject {
 
     setup(registry: IRegistry): void {
         if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
-        const parentNode = registry.getValue(this.parent) as AbstractStoryObject;
+        const parentNode = registry.getValue(this.parent) as StoryObject;
         if (!parentNode) throw("No, no, no, that'S not possible!");
         // this.menuTemplate = parentNode.menuTemplate;
 
@@ -74,7 +74,7 @@ export class InputConnectorView extends AbstractStoryObject {
         this.name = name;
     }
 }
-
+createModelSchema(InputConnectorView, {});
 export const plugInExport = exportClass(
     InputConnectorView,
     "InputConnectorView",

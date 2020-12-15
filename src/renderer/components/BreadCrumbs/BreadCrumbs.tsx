@@ -29,7 +29,7 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
             const res: IStoryObject[] = [];
             res.push(obj);
    
-            if (obj.parent) {
+            if (obj && obj.parent) {
                 const rObj = store.storyContentObjectRegistry.getValue(obj.parent);
                 if (rObj) {
                     const r = recursePath(rObj);

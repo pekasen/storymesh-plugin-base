@@ -1,5 +1,6 @@
 import { app, Menu } from "electron";
-import { MenuItemConstructorOptions } from "electron/main";
+import { BrowserWindow, MenuItemConstructorOptions } from "electron/main";
+import { windows } from "./index";
 import { 
     handleSaveEvent, 
     handleLoadEvent,
@@ -14,6 +15,27 @@ export function patchMenu(): void {
         submenu: [
 
             { role: "about" },
+            { type: "separator" },
+            { label: "Preferences",
+                click: () => {
+                    const child = new BrowserWindow({
+                        width: 350,
+                        parent: windows[0],
+                        modal: true,
+                        show: false,
+                        webPreferences: {
+                            nodeIntegration: true,
+                            worldSafeExecuteJavaScript: true,
+                            enableRemoteModule: true
+                    }});
+                    child.loadFile("./dist/prefs.html");
+                    
+                    child.once('ready-to-show', () => {
+                        child.show();
+                    });
+                },
+                accelerator: "CommandOrControl+,"
+            },
             { type: "separator" },
             { role: "services" },
             { type: "separator" },

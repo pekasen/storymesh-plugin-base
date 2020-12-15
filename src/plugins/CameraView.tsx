@@ -1,5 +1,5 @@
 import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
-import { AbstractStoryObject } from "./helpers/AbstractStoryObject";
+import { StoryObject } from "./helpers/AbstractStoryObject";
 import { h } from "preact";
 import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
@@ -10,9 +10,10 @@ import { Store } from '../renderer';
 // import { webGLEngine } from "../renderer/index";
 import * as BABYLON from 'babylonjs';
 import "babylonjs-loaders";
+import { createModelSchema } from 'serializr';
 // import "babylonjs-inspector";
 
-class _CameraView extends AbstractStoryObject {
+class _CameraView extends StoryObject {
     public content: any;
     public childNetwork: undefined;
     public name: string;
@@ -161,7 +162,7 @@ class _CameraView extends AbstractStoryObject {
         } else return;
     }
 }
-
+createModelSchema(_CameraView, {});
 export const plugInExport = exportClass(
     _CameraView,
     "Camera View",

@@ -27,6 +27,7 @@
   "dependencies": {
     "mobx": "^6.0.1",
     "preact": "^10.5.4",
+    "serializr": "^2.0.3",
     "storygraph": "github:pekasen/storygraph",
     "tslib": "^2.0.1",
     "uuid": "^8.3.1"

@@ -5,11 +5,18 @@ import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingP
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
+import { createModelSchema, identifier, object, optional, primitive, reference, setDefaultModelSchema } from 'serializr';
+import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
+import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
+import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
+import { rootStore } from '../../renderer';
+// import { makeSchemas } from '../../renderer/store/schemas/AbstractStoryObjectSchema';
 /**
  * Our second little dummy PlugIn
  * 
  * 
  */
+// @
 export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public id: string;
     public metaData: IMetaData;
@@ -61,7 +68,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
      * @param theirport their port
      * @param direction which direction does the edge point? 
      */
-    updateConnections(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in"): void {
+    public updateConnections(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in"): void {
         if (this.parent) {
             const isIncoming = direction === "in";
 
@@ -103,3 +110,39 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         });
     }
 }
+
+export class StoryObject extends AbstractStoryObject {
+    public name!: string;
+    public role!: string;
+    public isContentNode!: boolean;
+    public userDefinedProperties: any;
+    public childNetwork?: StoryGraph | undefined;
+    public connectors!: Map<string, IConnectorPort>;
+    public menuTemplate!: IMenuTemplate[];
+    public icon!: string;
+    public content?: any;
+    public getComponent(): FunctionComponent<INGWebSProps> {
+        throw new Error('Method not implemented.');
+    }
+    public getEditorComponent(): FunctionComponent<INGWebSProps> {
+        throw new Error('Method not implemented.');
+    }
+}
+export const StoryObjectSchema = createModelSchema(StoryObject, {
+    id: identifier(
+        (id: string, obj, context) => {
+            const reg = rootStore._loadingCache;
+            console.log("registering @valuecache", obj,reg.set(id, obj))
+            
+        }
+    ),
+    name: primitive(),
+    role: primitive(),
+    isContentNode: primitive(),
+    userDefinedProperties: object(UserDefinedPropertiesSchema),
+    metaData: object(MetaDataSchema),
+    content: optional(object(ContentSchema)),
+    parent: optional(primitive())
+});
+// StoryObjectSchema.props.parent = reference(StoryObject);
+// setDefaultModelSchema(StoryObject, AbstractStoryObjectSchema)

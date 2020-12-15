@@ -30,37 +30,37 @@ export const SideBar: FunctionalComponent = ({ children }) => (
     <div class="pane pane-sm sidebar">{children}<div class="drag-handle-horizontal"></div></div>
 );
 
-export interface IHideable {
-    // hidden: boolean
-    uistate: UIStore
-    children: h.JSX.Element
-}
+// export interface IHideable {
+//     // hidden: boolean
+//     uistate: UIStore
+//     children: h.JSX.Element
+// }
 
-export class HiddeableSideBar extends Component<IHideable> {
+// export class HiddeableSideBar extends Component<IHideable> {
 
-    reactionDisposer: IReactionDisposer
+//     reactionDisposer: IReactionDisposer
 
-    constructor(props: IHideable) {
-        super(props);
+//     constructor(props: IHideable) {
+//         super(props);
 
-        this.reactionDisposer = reaction(
-            () => (props.uistate.hideLeftSidebar),
-            () => {
-                this.setState({});
-            }
-        )
-    }
+//         this.reactionDisposer = reaction(
+//             () => (props.uistate.hideLeftSidebar),
+//             () => {
+//                 this.setState({});
+//             }
+//         )
+//     }
 
-    render({uistate, children}: IHideable): h.JSX.Element {
-        return <div class={"pane pane-sm sidebar" + ((uistate.hideLeftSidebar) ? " hidden" : "")}>
-            {children}
-        </div>
-    }
+//     render({uistate, children}: IHideable): h.JSX.Element {
+//         return <div class={"pane pane-sm sidebar" + ((uistate.hideLeftSidebar) ? " hidden" : "")}>
+//             {children}
+//         </div>
+//     }
 
-    componentWillUnmount(): void {
-        this.reactionDisposer();
-    }
-}
+//     componentWillUnmount(): void {
+//         this.reactionDisposer();
+//     }
+// }
 
 export interface IResizablePaneProps {
     children: ComponentChildren

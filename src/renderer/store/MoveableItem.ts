@@ -1,4 +1,5 @@
 import { observable, makeObservable, action } from "mobx";
+import { createModelSchema, primitive, setDefaultModelSchema, identifier } from 'serializr';
 
 export class MoveableItem { //<T extends IValue>
 
@@ -26,3 +27,11 @@ export class MoveableItem { //<T extends IValue>
         this.y += y;
     }
 }
+
+export const MoveableItemSchema = createModelSchema(MoveableItem, {
+    id: identifier(),
+    x: primitive(),
+    y: primitive()
+});
+
+setDefaultModelSchema(MoveableItem, MoveableItemSchema);

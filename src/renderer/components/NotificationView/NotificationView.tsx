@@ -9,7 +9,7 @@ export const NotificationView = () => {
     
     useEffect(() => {
         const disposer = reaction(
-            () => (notifications.buffer.length),
+            () => ([notifications, notifications.buffer.length]),
             () => {
                 setState({});
             }

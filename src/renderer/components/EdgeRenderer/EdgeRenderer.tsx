@@ -139,9 +139,9 @@ export class EdgeRenderer extends Component {
                     const posFrom = connFrom.getBoundingClientRect();
                     const posTo = connTo.getBoundingClientRect();
                     if (twoPath) {                                    
-                        this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        this.redrawEdgeCurve(twoPath, posFrom.x + posFrom.width/2, posFrom.y + posFrom.height/2, posTo.x + posTo.width/2, posTo.y + posTo.height/2);
                     } else {
-                        twoPath = this.drawEdgeCurve(posFrom.x, posFrom.y, posTo.x, posTo.y);
+                        twoPath = this.drawEdgeCurve(posFrom.x + posFrom.width/2, posFrom.y + posFrom.height/2, posTo.x + posTo.width/2, posTo.y + posTo.height/2);
                         this.edges.set(edge.id, twoPath);
                         if (twoPath) {
                             const elem = document.getElementById(twoPath.id);

@@ -4,10 +4,11 @@ import { INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegist
 
 import { action, IReactionDisposer, makeObservable, observable, reaction } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
-import { AbstractStoryObject } from './helpers/AbstractStoryObject';
+import { StoryObject } from './helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField } from './helpers/plugInHelpers';
 import { exportClass } from './helpers/exportClass';
+import { createModelSchema } from 'serializr';
 
 /**
  * Our first little dummy PlugIn
@@ -15,13 +16,13 @@ import { exportClass } from './helpers/exportClass';
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
-class _ImageObject extends AbstractStoryObject {
+class _ImageObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: any;
+    public userDefinedProperties: unknown;
     public childNetwork?: StoryGraph;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public content: IContent;
     public menuTemplate: IMenuTemplate[];
     public icon: string;
@@ -32,21 +33,12 @@ class _ImageObject extends AbstractStoryObject {
         super();
 
         this.name = "Image";
-        this.role = "content";
+        this.role = "internal.content.image";
         this.isContentNode = true;
         this.userDefinedProperties = {};
-        this.connectors = [
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            }
-        ];
+        this.connectors =new Map<string, IConnectorPort>();
+        this.makeFlowInAndOut();
+        
         this.content = {
             resource: "new URL",
             contentType: "url",
@@ -58,7 +50,7 @@ class _ImageObject extends AbstractStoryObject {
         makeObservable(this,{
             name:       observable,
             userDefinedProperties: observable,
-            connectors: observable,
+            connectors: observable.shallow,
             content: observable,
             updateName: action,
             updateImageURL: action
@@ -94,13 +86,16 @@ class _ImageObject extends AbstractStoryObject {
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
+        return () => <div class="editor-component"></div>
     }
 }
+
+createModelSchema(_ImageObject, {})
 
 export const plugInExport = exportClass(
     _ImageObject,
     "Image",
     "internal.content.image",
-    _ImageObject.defaultIcon
+    _ImageObject.defaultIcon,
+    true
 );

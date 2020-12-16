@@ -3,7 +3,7 @@ import { IItem } from './IItem';
 
 export interface IDragDropReceiver {
     onDrop: (e: DragEvent) => void
-    onDragStart: (e: DragEvent) => void
+    onDragStart: () => void
 }
 
 export const DraggableDropReceiver: FunctionComponent<IItem & IDragDropReceiver> = ({ children, id, onDrop, onDragStart }) => {
@@ -15,7 +15,7 @@ export const DraggableDropReceiver: FunctionComponent<IItem & IDragDropReceiver>
             e.dataTransfer?.setData("text", id);
             e.dataTransfer?.setDragImage(new Image(0, 0), 0 ,0);
             console.log("dragging from", id);
-            onDragStart(e);
+            onDragStart();
         }
     };
     _children.props['onDragOver'] = (e: DragEvent) => {

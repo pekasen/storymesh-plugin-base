@@ -1,6 +1,6 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { RootStore } from '../../store/rootStore';
 import { ConnectorView } from '../Connector/ConnectorView';
 import { Draggable } from '../Draggable';
@@ -23,15 +23,12 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
     }
 
     render({ store, object, children }: StoryObjectViewProperties): h.JSX.Element {
-
-        
-
-
+        // const EditorComponent: FunctionComponent<INGWebSProps> = object.getEditorComponent();
         return <Draggable id={object.id}>
             <div class="outer">
                 {
-                    object.connectors.map(obj => {
-                        console.log(obj.type);
+                    Array.from(object.connectors).map(a => {
+                        const [, obj] = a;
                         return <ConnectorView class={obj.type + " " + obj.direction} id={object.id + "." + obj.name}></ConnectorView>
                     })                    
                 }
@@ -48,7 +45,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                     }}
                     onDblClick={(e) => {
                         e.preventDefault();
-                        if (object.role === "container") {
+                        if (object.role === "internal.container.container") {
                             store.uistate.setLoadedItem(object.id);
                         }
                     }}
@@ -57,9 +54,20 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                     <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
                         <div class={`area-meta`}>
                             {children}
+                            <div onClick={(e) => {
+                                e.preventDefault();
+                                const toggle = document.getElementById('toggle-content');
+                                const contentArea = document.getElementById('area-content');
+                                toggle?.classList.toggle('minimized');
+                                contentArea?.classList.toggle('hidden');
+                            }}
+                            class="toggle-content" id="toggle-content">
+                                <span class="span-top"></span>
+                                <span class="span-bottom"></span>
+                            </div>
                         </div>
                     </MoveSender>
-                    <div class="area-content">
+                    <div class="area-content" id="area-content">
                             <span>{object.content?.resource}</span>
                     </div>
                 </div>
@@ -73,6 +81,6 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
 }
 interface StoryObjectViewProperties {
     store: RootStore;
-    object: IStoryObject;
+    object: AbstractStoryObject;
     children: h.JSX.Element;
 }

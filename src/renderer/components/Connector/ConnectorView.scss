@@ -7,3 +7,57 @@
   border-radius: 50%;
   display: inline-block;
 }
+
+.outer {
+  .data {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    position: absolute;
+    z-index: 99;
+    border-radius: 50%;
+    @include customize(theme){
+      background: getValue(data);
+    }
+    border: 2px solid;
+    @include customize(theme){
+      border-color: getValue(menu-background);
+    }
+
+    &.in {
+      top: 50%;
+      left: -9px;
+    }
+
+    &.out {
+      top: 50%;
+      right: -9px;
+    }
+  }
+
+  .flow {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    position: absolute;
+    z-index: 99;
+    border-radius: 50%;
+    @include customize(theme){
+      background: getValue(flow);
+    }
+    border: 2px solid;
+    @include customize(theme){
+      border-color: getValue(menu-background);
+    }
+
+    &.in {
+      left: 50%;
+      top: -9px;
+    }
+
+    &.out {
+      left: 50%;
+      bottom: -9px;
+    }
+  }
+}

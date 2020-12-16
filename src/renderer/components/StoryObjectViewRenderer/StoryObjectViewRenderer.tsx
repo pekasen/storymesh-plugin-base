@@ -3,15 +3,17 @@ import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { Store } from '../..';
+import { Container } from '../../../plugins/Container';
+import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
-import { EdgeRenderer } from '../EdgeRenderer';
+import { EdgeRenderer } from '../EdgeRenderer/EdgeRenderer';
 import { MoveReceiver } from '../Moveable';
 import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
 
 export interface IStoryObjectViewRendererProperties {
-    loadedObject: IStoryObject
+    loadedObject: AbstractStoryObject
     store: RootStore
 }
 
@@ -61,8 +63,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
             if (input) {
                 const [loc, type, id] = input.split(".");
-            
-                console.log("Hello");
+
                 if (id) {
                     switch(loc) {
                         case "internal": {
@@ -101,11 +102,9 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 <EdgeRenderer></EdgeRenderer>
                 {
                     loadedObject.childNetwork?.nodes
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    // TODO: declare icon in IStoryObject
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <StoryObjectView store={store} object={object}>
+                            <StoryObjectView store={store} object={object as AbstractStoryObject}>
                                 <span class={`icon ${object.icon}`}>
                                     <p>{object.name}</p>
                                 </span> 
@@ -119,9 +118,10 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
     private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
         const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-        console.log(instance);
+
         if (instance) {
             loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
+            if (instance.role === "internal.container.container") ((instance as Container).setup(store.storyContentObjectRegistry, store.uistate));           
             store.uistate.selectedItems.setSelectedItems([instance.id]);
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
         }

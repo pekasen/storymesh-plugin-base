@@ -6,15 +6,16 @@ import { action, makeObservable, observable } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { AbstractStoryObject } from './helpers/AbstractStoryObject';
+import { StoryObject } from './helpers/AbstractStoryObject';
 import { exportClass } from './helpers/exportClass';
+import { createModelSchema } from 'serializr';
 
 /**
  * Our first little dummy PlugIn
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
-class _TextObject extends AbstractStoryObject {
+class _TextObject extends StoryObject {
     
     public name: string;
     public role: string;
@@ -22,7 +23,7 @@ class _TextObject extends AbstractStoryObject {
     public userDefinedProperties: any;
     public content: IContent;
     public childNetwork?: StoryGraph | undefined;
-    public connectors: IConnectorPort[];
+    public connectors: Map<string, IConnectorPort>;
     public menuTemplate: IMenuTemplate[];
     public icon: string;
     public static defaultIcon = "icon-newspaper";
@@ -30,30 +31,22 @@ class _TextObject extends AbstractStoryObject {
 
         super();
         this.isContentNode = true;
-        this.role = "content"
+        this.role = "internal.content.text"
         this.name = "Text" // [this.role, this.id].join("_");
         this.renderingProperties = {
             width: 100,
             order: 1,
             collapsable: false
         };
-        this.connectors = [
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            },
+        this.connectors = new Map<string, IConnectorPort>();
+        [
             {
                 name: "enterView",
                 type: "reaction",
                 direction: "out"
             }
-        ];
+        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        this.makeFlowInAndOut();
         this.content = {
             resource: "Type here...",
             altText: "empty",
@@ -68,7 +61,14 @@ class _TextObject extends AbstractStoryObject {
                 value: () => this.content.resource,
                 valueReference: (text: string) => {this.updateText(text)}
             },
-            ...dropDownField(this),
+            ...dropDownField(
+                this,
+                () => ["h1", "h2", "h3", "b", "p"],
+                () => "h1",
+                (selection: string) => {
+                    console.log(selection);
+                }
+            ),
             ...connectionField(this)
         ];
         this.icon = _TextObject.defaultIcon;
@@ -78,13 +78,16 @@ class _TextObject extends AbstractStoryObject {
             name:                   observable,
             userDefinedProperties:  observable,
             content:                observable,
+            connectors:             observable.shallow,
             updateName:             action,
             updateText:             action
         });
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
+        return () => <div class="editor-component">
+            <p>{this.content.resource}</p>
+        </div>
     }
 
     public updateName(newValue: string): void {
@@ -122,9 +125,14 @@ class _TextObject extends AbstractStoryObject {
     }
 }
 
+createModelSchema(_TextObject,{
+    
+})
+
 export const plugInExport = exportClass(
     _TextObject,
     "Text",
     "internal.content.text",
-    _TextObject.defaultIcon
+    _TextObject.defaultIcon,
+    true
 );

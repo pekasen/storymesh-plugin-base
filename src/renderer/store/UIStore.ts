@@ -1,97 +1,66 @@
-import { makeAutoObservable, reaction } from "mobx";
-import { MoveableItem } from "./MoveableItem";
-import { IStoreableObject } from './StoreableObject';
+import { makeAutoObservable } from "mobx";
+import { MoveableItem, MoveableItemSchema } from "./MoveableItem";
 import { WindowProperties } from './WindowProperties';
-import { ValueRegistry } from '../utils/registry';
-import { RootStore } from './rootStore';
-import { EdgeItem } from "./EdgeItem";
-import { SelectedItemStore } from './SelectedItemStore';
+import { ValueRegistry, ValueRegistrySchema } from '../utils/registry';
+import { SelectedItemStore, SelectedItemStoreSchema } from './SelectedItemStore';
+import { createModelSchema, list, object, primitive, setDefaultModelSchema } from 'serializr';
 
 
-interface IUIStoreProperties {
+export class UIStore {
     windowProperties: WindowProperties
     moveableItems: ValueRegistry<MoveableItem>
-    term: string
     file: string
-}
-
-export class UIStore implements IStoreableObject<IUIStoreProperties> {
-    windowProperties: WindowProperties
-    moveableItems: ValueRegistry<MoveableItem>
-    edges: EdgeItem[]
-    term: string
-    file: string
-    hideLeftSidebar: boolean
-    hideRightSidebar: boolean
     selectedItems: SelectedItemStore
     loadedItem: string
     topLevelObjectID: string
-    private _parent: RootStore
 
-    constructor(parent: RootStore) {
-        this._parent = parent;
+    constructor() {
         this.loadedItem = "";
-        this.edges = []
         this.selectedItems = new SelectedItemStore();
         this.topLevelObjectID = "";
-
-        // TODO: make stuff move again!!1
         this.moveableItems = new ValueRegistry<MoveableItem>();
         this.file = "";
-        // TODO: actually use the WindowProperties!
         this.windowProperties = new WindowProperties();
-        
-        this.term = "";
-        this.hideLeftSidebar = false;
-        this.hideRightSidebar = false;
-
         makeAutoObservable(this);
-
-        reaction(
-            () => (this.loadedItem),
-            (id: string) => console.log("loaded item:", id)
-        )
-    }
-
-    appendEdgeItem(edge: EdgeItem): void {
-        this.edges = [...this.edges, edge];
-    }
-
-    removeEdgeItem(edge: EdgeItem): void {
-        const index = this.edges.indexOf(edge);
-        if (index !== -1) {
-            this.edges.splice(index, 1);
-        }
     }
 
     setLoadedItem(id: string): void {
-        const obj = this._parent.storyContentObjectRegistry.getValue(id);
-        if (obj) {
-            this.loadedItem = obj.id;
-        }
+        this.loadedItem = id;
     }
 
     setFile(file: string): void {
         this.file = file;
-    }
-  
-    loadFromPersistance(from: IUIStoreProperties): void {
-        this.file = from.file;
-        this.term = from.term;
-        // this.windowProperties.loadFromPersistance(from.windowProperties);
-    }
-
-    writeToPersistance(): void {    
-        // TODO: implement
-        null
+        const titleRG = /\w+(?=\.(json))/gm;
+        const title = titleRG.exec(file);
+        console.log("Saved as", title);
+        if(title && title[0]) {
+            this.windowProperties.setTitle(
+                String(title[0])
+            );
+        }
     }
 
-    toggleSidebar(which: "left" | "right"): void {
-        if (which === "left") this.hideLeftSidebar = !this.hideLeftSidebar
-        if (which === "right") this.hideRightSidebar = !this.hideRightSidebar
+    replace({ windowProperties, moveableItems, file, selectedItems, loadedItem, topLevelObjectID }: UIStore) : void {
+        this.windowProperties = windowProperties;
+        this.moveableItems = moveableItems;
+        this.file = file;
+        this.selectedItems = selectedItems;
+        this.loadedItem = loadedItem;
+        this.topLevelObjectID = topLevelObjectID;
     }
 
     get untitledDocument (): boolean {
         return this.file === "";
     }
 }
+
+const UIStoreSchema = createModelSchema(UIStore, {
+    windowProperties: object(WindowProperties),
+    selectedItems: object(SelectedItemStoreSchema),
+    file: primitive(),
+    loadedItem: primitive(),
+    topLevelObjectID: primitive(),
+    moveableItems: object(ValueRegistrySchema(MoveableItemSchema))
+});
+
+setDefaultModelSchema(UIStore, UIStoreSchema);

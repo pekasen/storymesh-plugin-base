@@ -1,15 +1,19 @@
-import * as fs from "fs";
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import { IPlugIn, IPlugInRegistryEntry } from '../utils/PlugInClassRegistry';
+import { readdirSync } from "fs";
 
-export const  plugInLoader = () : IPlugInRegistryEntry<IStoryObject & IPlugIn>[] => {
+export const  plugInLoader = () => { //Promise<IPlugInRegistryEntry<AbstractStoryObject>[]> 
     const regex = /\.js/gm;
-    const localPath = __dirname + "/../../plugins/";
-    const plugs = fs.readdirSync(localPath)
-    .filter(e => regex.test(e));
-    
-    console.log(plugs);
-    
+    const localPath = __dirname + "/../../plugins/"; 
+    const plugs = readdirSync(localPath).
+        filter(e => regex.test(e))
+
+    // const _res = await Promise.all(
+    //     fs.readdirSync(localPath).
+    //     filter(e => regex.test(e)).map(file => (
+    //     import(localPath + file)
+    // )));
+
+    // return _res;
+
     return  plugs
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     .map(plug => require(localPath + plug).plugInExport)

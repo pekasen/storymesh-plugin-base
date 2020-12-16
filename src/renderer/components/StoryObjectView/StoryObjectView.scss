@@ -2,93 +2,144 @@
 
 .story-object-view {
     position: relative;
-    width: 300px;
+    width: auto;
+    min-width: 200px;
     height: auto;
-//  border: 1px solid #616161;
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
     z-index: 1;
 
     .area-meta {
         width: auto;
-        height: 2em;
-        background: #616161;
-        line-height: 25px;
+        height: 1.8em;
+        @include customize(theme) {
+            background: getValue(menu-background);
+           }
+        line-height: 18px;
         font-size: 1.25em;
         font-weight: bold;
         vertical-align: middle;
         padding: 5px;
-        color: #fff;
+        @include customize(theme) {
+            color: getValue(border-color);
+           }
         position: relative;
-        transition: background .1s ease-in-out;
+        cursor: pointer;
+        transition: background .2s ease-in-out;
 
-        button.toggle-content {
+        p {
+            display: inline;
+            margin-left: 10px;
+        }
+
+        .toggle-content {
             position: absolute;
-            right: 5px;
-            top: 5px;
+            top: 0;
+            right: 0;
+            height: auto;
+            width: auto;
+            padding: 10px;
+            cursor: pointer;
+            @include customize(theme) {
+                border-color: getValue(border-color);
+               }
 
-            span:first-of-type::after {
-              border-top: 4px solid;
-              @include customize(theme) {
-               border-color: getValue(border-color);
-              }
+            &:hover + span {
+                border-color: #c9c9c9;                
+            }   
+
+            &.minimized {
+                .span-top {
+                    transition: transform .3s ease-in-out;
+                    -webkit-transition: transform .3s ease-in-out;
+                    transform: rotate(90deg);
+                    transform-origin: 5.5px 4px;
+                }
+            }   
+
+            span {
+                border-top: 4px solid;
+                width: 15px;
+                border-radius: 50px;
                 display: block;
+                transition: all .3s ease-in-out;
+                -webkit-transition: all .3s ease-in-out;
+                cursor: pointer;
+            }
+
+            .span-top {
+                transform: translateY(4px);
+                transform-origin: 5.5px 4px;
             }
         }
     }
 
     .area-content{
+        transition: all 3.3s ease-in-out;
+        -webkit-transition: all 3.3s ease-in-out;
         position: relative;
         width: auto;
-        height: 200px;
+        min-height: 60px;
+        max-height: 500px;
         padding: 5px;
         font-size: .9em;
-        line-break: anywhere;
+        line-break: auto;
         overflow: hidden;
+        min-width: 150px;
+        max-width: 200px;
        @include customize(theme) {
-        background: getValue(node-object-background); 
-      }
+        background: getValue(node-object-background);
+        }
+        &.hidden {
+            max-height: 0;
+        }
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(0deg, rgba(255,255,255,1), rgba(255,255,255,.7), rgba(255,255,255,.2));
+        }    
     }
-    .area-content::after {
+
+    &::after {
         content: "";
         position: absolute;
-        bottom: 0;
-        left: 0;
+        z-index: -1;
         width: 100%;
-        height: 50px;
-        background: linear-gradient(0deg, rgba(255,255,255,1), rgba(255,255,255,.7), rgba(255,255,255,.2));
+        height: 100%;
+        top: 0;
+        box-shadow:   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                      0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                      0 12.5px 10px rgba(0, 0, 0, 0.06),
+                      0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+                      0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+                      0 100px 80px rgba(0, 0, 0, 0.12);
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
     }
-}
 
-.story-object-view::after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    box-shadow:   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-                  0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-                  0 12.5px 10px rgba(0, 0, 0, 0.06),
-                  0 22.3px 17.9px rgba(0, 0, 0, 0.072),
-                  0 41.8px 33.4px rgba(0, 0, 0, 0.086),
-                  0 100px 80px rgba(0, 0, 0, 0.12);
-    opacity: 0;
-    transition: opacity 0.15s ease-in-out;
-}
+    &:hover::after {
+        opacity: .44;
+    }
 
-.story-object-view.active {   
-    z-index: 10;
-    .area-meta {
-        @include customize(theme) {
-            background: getValue(highlight-color); 
-          }
-    }            
-}
+    &.active {
+        z-index: 10;
+        .area-meta {
+            @include customize(theme) {
+                background: getValue(highlight-color); 
+              }
+            @include customize(theme) {
+                color: getValue(menu-background); 
+              }  
+        }
+        &::after {
+            opacity: 1;
+        }   
+    }
 
-.story-object-view.active::after {
-    opacity: 1;
-}
-
-.story-object-view.inactive {
-    z-index: 5;
+    &.inactive {
+        z-index: 5;
+    }
 }

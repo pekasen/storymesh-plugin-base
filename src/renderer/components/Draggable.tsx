@@ -14,6 +14,7 @@ export const Draggable: FunctionComponent<IItem> = ({ children, id }) => {
         if (e.target) {
             e.dataTransfer?.setData("text", id);
             e.dataTransfer?.setDragImage(new Image(0, 0), 0 ,0);
+            console.log("dragging from", id);
         }
     }
 

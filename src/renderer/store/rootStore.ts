@@ -1,9 +1,20 @@
-import { IStoreableObject } from './StoreableObject';
-import { UIStore } from './UIStore';
-import { ClassRegistry, ValueRegistry } from '../utils/registry';
+import { createModelSchema, deserialize, object, serialize } from "serializr";
+import { makeAutoObservable, observe, spy } from 'mobx';
+
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import { IPlugIn, PlugInClassRegistry } from '../utils/PlugInClassRegistry';
+import { NotificationStore } from './Notification';
+import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
 import { plugInLoader } from './PlugInStore';
+import { UIStore } from './UIStore';
+import { rootStore } from "..";
+import { Preferences } from "../../preferences";
+import { existsSync, readFileSync } from "original-fs";
+import { __prefPath } from "../../constants";
+import { ipcRenderer } from "electron";
+import { Container } from "../../plugins/Container";
+import { deepObserve } from "mobx-utils";
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -11,60 +22,138 @@ export interface IRootStoreProperties {
     storyContentTemplatesRegistry: ClassRegistry<IStoryObject>
 }
 
-export class RootStore implements IStoreableObject<IRootStoreProperties> {
+type Partial<T> = {
+    [P in keyof T]?: T[P];
+};
+
+export interface IState {
+    uistate: Partial<UIStore>
+    storyContentObjectRegistry: Partial<ClassRegistry<IStoryObject>>;
+}
+
+export interface IProtocolEntry {
+    description: string
+    createdAt: Date
+    author: string
+}
+
+export class Procotol {
+    buffer: IState[] = [];
+
+    public burry(): void {
+        const zombie = serialize(RootStoreSchema, rootStore.root) as IState;
+        this.buffer.push(zombie);
+    }
+
+    public revive(): void {
+        const zombie = this.buffer.pop()
+        if (zombie) deserialize(RootStoreSchema, zombie, (err, res) => {
+            rootStore.root.replace(res);
+        });
+    }
+}
+
+export class RootStore {
     uistate: UIStore
-    storyContentObjectRegistry: ValueRegistry<IStoryObject & IPlugIn>
-    storyContentTemplatesRegistry: PlugInClassRegistry<IStoryObject & IPlugIn>
+    storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
+    storyContentTemplatesRegistry: PlugInClassRegistry<AbstractStoryObject>
+    notifications: NotificationStore;
+    protocol: IState[];
+    userPreferences: Preferences;
+    // topLevelObject: AbstractStoryObject;
 
     constructor(uistate?: UIStore) {
         /**
+         * load'dem user perferencenses
+         */
+        this.userPreferences = new Preferences();
+        this.readPreferences();
+        ipcRenderer.on('reload-preferences', () => {
+            this.readPreferences();
+        });
+        /**
          * initialize the template store
          */
-        this.uistate = uistate || new UIStore(this);
-
+        this.uistate = uistate || new UIStore();
         /**
          * In this registry we store our instantiated StoryObjects
          */
-        this.storyContentObjectRegistry = new ValueRegistry<IStoryObject & IPlugIn>()
-
+        this.storyContentObjectRegistry = new ValueRegistry<AbstractStoryObject>();
         /**
          * In this registry we store our templates and plugin classes
          */
-        this.storyContentTemplatesRegistry = new PlugInClassRegistry<IStoryObject & IPlugIn>()
+        this.storyContentTemplatesRegistry = new PlugInClassRegistry<AbstractStoryObject>();
         /**
          * Read the plugins and register them in the template store
          */
-        this.storyContentTemplatesRegistry.register(
-            plugInLoader()
-        );
-
+        const plugins = plugInLoader();
+        this.storyContentTemplatesRegistry.register(plugins);
         /**
          * If we are in a empty and untitled document, make a root storyobject
          */
         if (this.uistate.untitledDocument) {
             const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
             if (emptyStory) {
-                emptyStory.name = "MyStory";
                 this.storyContentObjectRegistry.register(
                     emptyStory
                 );
+                (emptyStory as Container).setup(this.storyContentObjectRegistry, this.uistate);
+                emptyStory.name = "My Story";
+                // this.topLevelObject = emptyStory;
                 this.uistate.setLoadedItem(emptyStory.id);
                 this.uistate.topLevelObjectID = emptyStory.id;
             }
         }
-    }
+        /**
+         * Initialize notification buffer
+         */
+        this.notifications = new NotificationStore();
+        /**
+         * Initialize protocol buffer
+         */
+        this.protocol = [];
 
-    loadFromPersistance(from: IRootStoreProperties): void {
-        // this.model.loadFromPersistance(from.model);
-        this.uistate.loadFromPersistance(from.uistate);
-    }
+        makeAutoObservable(this, {
+            protocol: false
+        });
 
-    writeToPersistance(): void {
-        null
+        // observe(this, (change) => console.log("changed state", change));
+        // spy((change) => console.log("changed state", change));
+        deepObserve(this, (change) => console.log("changed state", change))
     }
 
     reset(): void {
-        // this.model = new List();
-        this.uistate = new UIStore(this);
+        this.uistate = new UIStore();
+    }
+
+    replace(root: RootStore): void {
+        this.storyContentObjectRegistry = root.storyContentObjectRegistry;
+        this.uistate = root.uistate;
+    }
+
+    readPreferences(): void {
+        if (existsSync(__prefPath)) {
+            const data = readFileSync(
+                __prefPath,
+                {encoding: "UTF8"}
+            );
+            const _d = JSON.parse(data);
+            const _e  = deserialize(Preferences, _d);
+    
+            if (_e) this.userPreferences = _e;
+        }
     }
 }
+
+/**
+ * Initialize model schema
+ */
+export const RootStoreSchema = createModelSchema(
+    RootStore,
+    {
+        uistate: object(UIStore),
+        // topLevelObject: object(StoryObject)
+        storyContentObjectRegistry: object(AutoValueRegistrySchema()),
+        // protocol: list(object())
+    }
+);

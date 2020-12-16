@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { createModelSchema, primitive, setDefaultModelSchema } from 'serializr';
 
 export class PaneProperties implements IPaneProperties {
 
@@ -24,3 +25,10 @@ export interface IPaneProperties {
     width: number;
     hidden: boolean;
 }
+
+export const PanePropertiesSchema = createModelSchema(PaneProperties, {
+    width: primitive(),
+    hidden: primitive()
+});
+
+setDefaultModelSchema(PaneProperties, PanePropertiesSchema);

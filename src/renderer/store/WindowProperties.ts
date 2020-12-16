@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
+import { createModelSchema, object, primitive, setDefaultModelSchema } from 'serializr';
 import { PaneProperties } from './PaneProperties';
-import { IStoreableObject } from './StoreableObject';
 
 export interface IWindowProperties {
     width: number;
@@ -10,7 +10,7 @@ export interface IWindowProperties {
     title: string;
 }
 
-export class WindowProperties implements IStoreableObject<IWindowProperties> {
+export class WindowProperties implements IWindowProperties {
     width: number;
     height: number;
     title: string;
@@ -37,15 +37,14 @@ export class WindowProperties implements IStoreableObject<IWindowProperties> {
     setTitle(title?: string): void {
         this.title = title || "Untitled Document";
     }
-
-    loadFromPersistance({ height, width, title }: IWindowProperties): void {
-        this.height = height;
-        this.width = width;
-        this.title = title;
-    }
-
-    // TODO: implement
-    writeToPersistance(): void {
-        null
-    }
 }
+
+export const WindowPropertiesSchema = createModelSchema(WindowProperties, {
+    width: primitive(),
+    height: primitive(),
+    title: primitive(),
+    sidebarPane: object(PaneProperties),
+    previewPane: object(PaneProperties)
+});
+
+setDefaultModelSchema(WindowProperties, WindowPropertiesSchema);

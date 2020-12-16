@@ -1,3 +1,7 @@
+path {
+    transition: all .195s ease;
+}
+
 path.selected {
     @include customize(theme) {
         stroke: getValue(menu-background);

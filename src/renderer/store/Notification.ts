@@ -30,10 +30,14 @@ export class NotificationStore {
         });
     }
 
-    postNotification(message: string, origin: unknown, type?: NotificationType): void {
-        this.buffer.push(
-            new Notification(message, origin, type)
-        );
+    postNotification(message: string, origin: unknown, type?: NotificationType, autodestruct?: number): void {
+        const _n = new Notification(message, origin, type);
+        this.buffer.push(_n);
+        if (autodestruct && typeof autodestruct === "number") {
+            setTimeout(() => {
+                this.destroyNotification(_n.id);
+            }, autodestruct * 1000);
+        }
     }
 
     destroyNotification(id: string): void {

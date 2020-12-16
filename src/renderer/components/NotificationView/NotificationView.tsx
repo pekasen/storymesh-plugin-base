@@ -9,7 +9,7 @@ export const NotificationView = () => {
     
     useEffect(() => {
         const disposer = reaction(
-            () => (notifications.buffer.length),
+            () => ([notifications, notifications.buffer.length]),
             () => {
                 setState({});
             }
@@ -24,7 +24,8 @@ export const NotificationView = () => {
         {
             notifications.buffer.map(e => (
                 <div id={e.id} class={`notification ${e.type}`} onClick={() => notifications.destroyNotification(e.id)}>
-                    <p>{e.message} in</p>
+                    <p>{e.message}</p>
+                    <span class="icon icon-megaphone"></span>
                 </div>
             ))
         }

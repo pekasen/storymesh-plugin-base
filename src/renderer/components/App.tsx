@@ -1,16 +1,29 @@
 import { h } from "preact";
 
 import { Header } from './Header';
-import { Window, WindowContent } from "./Window";
+import { ThemedWindowContent, Window } from "./Window";
 import { Store } from '..';
-import { useContext } from 'preact/hooks';
+import { useContext, useEffect, useState } from 'preact/hooks';
 import { EditorPaneGroup } from './EditorPaneGroup';
 import { NotificationView } from './NotificationView/NotificationView';
+import { reaction } from 'mobx';
 
 export const App = (): h.JSX.Element => {
-
+    const [, setState] = useState({});
     const store = useContext(Store);
-    store.notifications.postNotification("Hello from NWebSCore!", this);
+    useEffect(() => {
+        const disposer = reaction(
+            () => [store, store.uistate.windowProperties.title, store.userPreferences.theme],
+            (root) => {
+                console.log("changed@root", root);
+                setState({})
+            }
+        )
+
+        return () => {
+            disposer();
+        }
+    });
 
     return <Window>
             <Header
@@ -32,9 +45,9 @@ export const App = (): h.JSX.Element => {
                 </button>
                 ]}
             ></Header>
-            <WindowContent>
+            <ThemedWindowContent>
                 <NotificationView />
                 <EditorPaneGroup></EditorPaneGroup>
-            </WindowContent>             
+            </ThemedWindowContent>             
     </Window>
 }

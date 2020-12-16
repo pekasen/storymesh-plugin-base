@@ -1,5 +1,5 @@
 import { IReactionDisposer, reaction } from 'mobx';
-import { Component, FunctionComponent, h } from 'preact';
+import { Component, h } from 'preact';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { RootStore } from '../../store/rootStore';
 import { ConnectorView } from '../Connector/ConnectorView';
@@ -45,7 +45,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                     }}
                     onDblClick={(e) => {
                         e.preventDefault();
-                        if (object.role === "container") {
+                        if (object.role === "internal.container.container") {
                             store.uistate.setLoadedItem(object.id);
                         }
                     }}

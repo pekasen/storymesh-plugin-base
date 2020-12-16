@@ -84,16 +84,34 @@ class PreferencesView extends Component<unknown, Preferences> {
         );
         
         const AuthorField: FunctionalComponent = () => (
-            <div class="form-group-item">
-                <label>Author</label>
-                <input type="text" value={author} onChange={(ev: Event) => {
+            <div class="form-group-item text">
+                <input name="author" id="author" required type="text" value={author} onChange={(ev: Event) => {
                     const value = (ev.target as HTMLInputElement).value;
                     this.setState({author: value});
                 }}>
                     NGWebS Default User
                 </input>
+                <label class="label-name" for="author">
+                    <span class="content-name">Author</span>
+                </label>
             </div>
         );
+
+        window.addEventListener("keydown", (e) => {
+            switch(e.key) {
+                case "Enter": {
+                    const elem = document.getElementById("pref-cancel-btn");
+                    elem?.click();
+                    break;
+                }
+                case "Escape": {
+                    const elem = document.getElementById("pref-ok-btn");
+                    elem?.click();
+                    break;
+                }
+                default: break;
+            }
+        });
         
         return <div class="window-contents preferences">
             <h3>Preferences</h3>
@@ -102,15 +120,20 @@ class PreferencesView extends Component<unknown, Preferences> {
             <form>
                 <ThemePicker options={Preferences.availableThemes} />
                 <AuthorField />
-                <button class="cancel" onClick={() => window.close()}>Cancel</button>
-                <button class="confirm" onClick={() => {
-                    this.writePrefDict();
-                    window.close();
-                }}>OK</button>
+                <button class="cancel" id="pref-cancel-btn" onClick={() => this.exit()}>Cancel</button>
+                <button class="confirm" id="pref-ok-btn" onClick={() => this.saveAndExit()}>OK</button>
             </form>
         </div>
     }
-}
 
+    private saveAndExit() {
+            this.writePrefDict();
+            this.exit();
+    }
+    
+    private exit() {
+        window.close();
+    }
+}
 const root = document.getElementById("preact-root");
 if (root) render(<PreferencesView />, root);

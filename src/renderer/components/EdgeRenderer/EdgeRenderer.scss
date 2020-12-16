@@ -1,6 +1,6 @@
 path.selected {
     @include customize(theme) {
-        stroke: getValue(highlight-color);
+        stroke: getValue(menu-background);
        }
     stroke-width: 3;
     stroke-dasharray: 4;

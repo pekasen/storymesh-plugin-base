@@ -1,0 +1,22 @@
+path.selected {
+    @include customize(theme) {
+        stroke: getValue(menu-background);
+       }
+    stroke-width: 3;
+    stroke-dasharray: 4;
+    stroke-dashoffset: 100;
+    stroke-linecap: revert;
+    animation: move-path 30s linear infinite;
+}
+
+@keyframes move-path {
+    0% {
+        stroke-dashoffset: 100;
+    }
+    50% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -100;
+    }
+}

@@ -1,0 +1,48 @@
+#notification-view {
+
+    p {
+        font-size: 1em;
+        display: inline-block;
+    }
+
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    margin: 20px;
+    z-index: 1337;
+
+    .notification {
+
+        width: auto;
+        height: auto;
+        padding: 1px 25px;
+        box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034), 0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06), 0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086), 0 100px 80px rgba(0, 0, 0, 0.12);
+        border-radius: 50px;
+        font-size: 1.1em;
+        color: #fff;
+        transform: translateX(150%);
+
+        &.normal {
+            background: hsl(210deg, 90%, 40%);
+        }
+
+        &.success {
+            background: hsl(120deg, 90%, 40%);  
+        }
+
+        &.warn {
+            background-color: hsl(44deg, 100%, 46%);
+        }
+
+        &.error {
+            background: hsl(0deg, 90%, 40%);
+        }
+
+        span {
+            margin: 0 0 0 10px;
+            display: inline-block;
+            font-size: 1.6em;
+            line-height: 1.6;
+        }
+    }
+}

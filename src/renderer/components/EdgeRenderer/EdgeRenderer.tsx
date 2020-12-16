@@ -89,16 +89,6 @@ export class EdgeRenderer extends Component {
                 
                 // Callback function to execute when mutations are observed
                 const callback = (() => {
-                    //(mutationsList: MutationRecord[]) => {
-                    // Use traditional 'for loops' for IE 11
-                    /*   for(const mutation of mutationsList) {
-                        if (mutation.type === 'childList') {
-                            console.log('hello-world: A child node has been added or removed.');
-                        }
-                        else if (mutation.type === 'attributes') {
-                            console.log('hello-world: The ' + mutation.attributeName + ' attribute was modified.');
-                        }
-                    } */
                     this.executeChangesToEdges(loadedObject);
                 });
 
@@ -116,7 +106,7 @@ export class EdgeRenderer extends Component {
             const mouseMove = (ev: MouseEvent) => 
             { 
                 this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY);
-                console.log("drag mousemove");
+                //console.log("drag mousemove");
             }
             window.addEventListener("drag", mouseMove);
             
@@ -146,8 +136,8 @@ export class EdgeRenderer extends Component {
                 const connFrom = document.getElementById(edge.from);
                 const connTo = document.getElementById(edge.to);             
                 if (connFrom && connTo) {
-                    const posFrom = this.getChildOffset(connFrom);
-                    const posTo = this.getChildOffset(connTo);
+                    const posFrom = connFrom.getBoundingClientRect();
+                    const posTo = connTo.getBoundingClientRect();
                     if (twoPath) {                                    
                         this.redrawEdgeCurve(twoPath, posFrom.x, posFrom.y, posTo.x, posTo.y);
                     } else {

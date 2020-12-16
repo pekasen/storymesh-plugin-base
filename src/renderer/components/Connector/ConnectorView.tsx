@@ -91,13 +91,4 @@ export class ConnectorView extends Component<IConnectorViewProps> {
     componentWillUnmount(): void {
         this.reactionDisposer();
     }
-
-    onDrag(id: string): void {   
-        console.log("drag", id);
-    }
-
-    // shouldn't we use a big arrow function? That would allow us to capture _this_ and use it in the callback.
-    onDrop(ev: DragEvent): void {
-       return
-    }
 }

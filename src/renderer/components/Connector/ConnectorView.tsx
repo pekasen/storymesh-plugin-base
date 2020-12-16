@@ -36,32 +36,8 @@ export class ConnectorView extends Component<IConnectorViewProps> {
         const { storyContentObjectRegistry } = useContext(Store);
         const [fromId, fromPort] = StoryGraph.parseNodeId(id);
         const obj = storyContentObjectRegistry.getValue(fromId);
-        
-        
 
-        return <DraggableDropReceiver id={id} onDragStart={(ev: DragEvent) => 
-            {
-                const spanRef = document.getElementById(id);
-                const rect = spanRef?.getBoundingClientRect();
-                let xSpan = 0;
-                let ySpan = 0;
-                if (rect) {
-                    xSpan = rect.top - rect.height / 2;
-                    ySpan = rect.left - rect.width / 2;
-                } else {
-                    xSpan = 0;
-                    ySpan = 0;
-                }
-                // create and dispatch the event
-                const event = new CustomEvent("ConnectorDragStart", {
-                    detail: {
-                    x: xSpan,
-                    y: ySpan
-                    }
-                });
-                document.dispatchEvent(event);
-            }   
-        } onDrop={(ev: DragEvent) => {
+        return <DraggableDropReceiver id={id} onDrop={(ev: DragEvent) => {
             ev.preventDefault();
 
             const _id = ev.dataTransfer?.getData("text");
@@ -82,8 +58,32 @@ export class ConnectorView extends Component<IConnectorViewProps> {
             //         to: _id,
             //         id: ["edge-",id,"-",_id].join("")
             //     }])
+                    }
+                }
             }
-        }}> 
+            onDragStart={() => {
+                    const spanRef = document.getElementById(id);
+                    const rect = spanRef?.getBoundingClientRect();
+                    console.log("Connector position: ", rect);
+                    let xSpan = 0;
+                    let ySpan = 0;
+                    if (rect) {
+                        xSpan = rect.left + (rect.width / 2);
+                        ySpan = rect.top + (rect.height / 2);
+                    } else {
+                        xSpan = 0;
+                        ySpan = 0;
+                    }
+                    // create and dispatch the event
+                    const event = new CustomEvent("ConnectorDragStart", {
+                        detail: {
+                            x: xSpan,
+                            y: ySpan
+                        }
+                    });
+                    document.dispatchEvent(event);
+                }   
+            }>
             <span id={id} class={this.class}>{children}</span>
         </DraggableDropReceiver>
     }

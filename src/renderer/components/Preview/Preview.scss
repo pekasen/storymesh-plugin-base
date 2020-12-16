@@ -11,7 +11,6 @@
         position: fixed;
         width: 100%;
     }
-}
 
 .header-preview {
   @include customize(theme) {
@@ -30,31 +29,38 @@
 
 /*================== STORY WRAPPER =================*/
 
+.storywrapper {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 /* ============ MIXINS ============ */
 
 @mixin for-mobile {
-    @media (max-width: 599px) { 
-        // Todo: Add rulesets for default resize
+    .storywrapper.xsm {
+        // Todo: Add rulesets for default resize, Add configuration < 599px 
         @content; }
   }
   @mixin for-tablet-portrait {
-    @media (min-width: 600px) { 
-        // Todo: Add rulesets for default resize
+    .storywrapper.sm { 
+        // Todo: Add rulesets for default resize, Add configuration min-width 600px
         @content; }
   }
   @mixin for-tablet-landscape {
-    @media (min-width: 900px) { 
-        // Todo: Add rulesets for default resize
+    .storywrapper.md { 
+        // Todo: Add rulesets for default resize, Add configuration min-width: 900px
         @content; }
   }
   @mixin for-desktop {
-    @media (min-width: 1200px) { 
-        // Todo: Add rulesets for default resize
+    .storywrapper.lg { 
+        // Todo: Add rulesets for default resize, Add configuration min-width: 1200px
         @content; }
   }
   @mixin for-desktop-large {
-    @media (min-width: 1800px) { 
-        // Todo: Add rulesets for default resize
+    .storywrapper.xlg { 
+        // Todo: Add rulesets for default resize, Add configuration min-width: 1800px
         @content; }
   }
 
@@ -150,3 +156,6 @@ img {
 // TABLE
 
 // CTA
+
+
+}

@@ -37,18 +37,20 @@ export class Preview extends Component<IPreviewProps> {
                         </div>
                     </VerticalMiniPane>
                 </VerticalPaneGroup>
-            <div class={"ngwebs-story "} id={topLevelObjectId}>{
-            children?.map(node => {
-                const _node = node as unknown as IPlugIn;
+            <div class="storywrapper">
+                <div class={"ngwebs-story "} id={topLevelObjectId}>{
+                children?.map(node => {
+                    const _node = node as unknown as IPlugIn;
 
-                return _node.getComponent()({
-                    graph: node.childNetwork,
-                    registry: registry,
-                    id: node.id,
-                    content: node.content
+                    return _node.getComponent()({
+                        graph: node.childNetwork,
+                        registry: registry,
+                        id: node.id,
+                        content: node.content
+                    })
                 })
-            })
-        }</div>
+            }</div>
+        </div>
         </div>
     }
 }

@@ -1,5 +1,7 @@
 table.connection-table {
 
+    transition: color .4s ease;
+
     &, tbody, thead {
         background: transparent;
     }

@@ -12,10 +12,12 @@
   .preview-container .vertical-pane-mini {
     position: fixed;
     width: 100%; }
-  .preview-container .header-preview span {
-    display: inline-block;
-    font-size: .85rem;
-    margin: 5px 0 5px 10px; }
+  .preview-container .header-preview {
+    transition: background .4s ease-in, color .4s ease-in; }
+    .preview-container .header-preview span {
+      display: inline-block;
+      font-size: .85rem;
+      margin: 5px 0 5px 10px; }
   .preview-container .storywrapper {
     width: 100%;
     height: 100%;

@@ -42,6 +42,7 @@
     position: absolute;
     z-index: 99;
     border-radius: 50%;
+    transition: background .4s ease-in, border-color .4s ease-in;
     @include customize(theme){
       background: getValue(flow);
     }

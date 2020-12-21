@@ -7,6 +7,7 @@
     height: auto;
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
     z-index: 1;
+    transition: background .4s ease-in, color .4s ease-in, border-color .4s ease-in;
 
     .area-meta {
         width: auto;

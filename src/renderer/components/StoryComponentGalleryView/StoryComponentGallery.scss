@@ -8,6 +8,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  transition: background .4s ease-in, color .4s ease-in;
   @include customize(theme) {
     background: getValue(menu-background);
     border-left: 3px dashed getValue(border-color); 

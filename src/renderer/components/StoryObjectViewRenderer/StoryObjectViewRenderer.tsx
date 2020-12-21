@@ -105,16 +105,16 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 {
                     loadedObject.childNetwork?.nodes
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    .map(id => store.storyContentObjectRegistry.getValue(id)!)
-                    .map((object) => (
-                        <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
+                    .map(id => store.storyContentObjectRegistry.getValue(id))
+                    .map((object) => {
+                        if (object) return <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
                             <StoryObjectView store={store} object={object as AbstractStoryObject}>
                                 <span class={`icon ${object.icon}`}>
                                     <p>{object.name}</p>
                                 </span> 
                             </StoryObjectView>
                         </MoveReceiver>
-                        ))
+                        })
                     }
             </div>
         </DragReceiver>

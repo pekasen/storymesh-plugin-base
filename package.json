@@ -26,6 +26,7 @@
   "homepage": "https://github.com/pekasen/ngwebs-editor#readme",
   "dependencies": {
     "mobx": "^6.0.1",
+    "mobx-utils": "^6.0.3",
     "preact": "^10.5.4",
     "serializr": "^2.0.3",
     "storygraph": "github:pekasen/storygraph#dev-20200930",

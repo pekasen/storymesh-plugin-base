@@ -30,6 +30,12 @@ export class SelectedItemStore {
         )
     }
 
+    removeAllEdgesFromSelectedItems(): void {
+        this.selectedItemIds.splice(
+            this.selectedItemIds.findIndex(e => e.startsWith("edge."))
+        )
+    }
+
     isSelected(id: string): boolean {
         return this.selectedItemIds.find(value => value === id) !== undefined
     }

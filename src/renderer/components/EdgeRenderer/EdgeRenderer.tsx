@@ -3,9 +3,9 @@ import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph';
 import Two from 'twojs-ts';
-import { Store } from '..';
-import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
-import { MoveableItem } from '../store/MoveableItem';
+import { Store } from '../..';
+import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { MoveableItem } from '../../store/MoveableItem';
 
 export interface IEdgeRendererProperties {
     loadedObject: IStoryObject

@@ -10,7 +10,7 @@ import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObjec
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
-import { EdgeRenderer } from '../EdgeRenderer';
+import { EdgeRenderer } from '../EdgeRenderer/EdgeRenderer';
 import { MoveReceiver } from '../Moveable';
 import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
 

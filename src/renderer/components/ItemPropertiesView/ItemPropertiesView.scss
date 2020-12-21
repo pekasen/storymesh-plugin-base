@@ -2,6 +2,7 @@
 
 .sidebar {
     padding: 10px;
+    transition: background .4s ease-in, color .4s ease-in;
     @include customize(theme) {
     background: getValue(menu-background); 
     color: getValue(menu-font);

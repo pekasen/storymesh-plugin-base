@@ -38,7 +38,7 @@ export class Container extends StoryObject {
         this.name = "Container";
         this.role = "internal.container.container";
         this.isContentNode = false;
-        this.childNetwork = new ObservableStoryGraph(this);
+        this.childNetwork = new ObservableStoryGraph(this.id);
         this.connectors = new Map<string, IConnectorPort>();
         this.makeFlowInAndOut();
 
@@ -75,15 +75,15 @@ export class Container extends StoryObject {
             return <div id={id}>
                 {
                     graph?.nodes.map(e => {
-                        const Comp = (e as unknown as IPlugIn).getComponent();
-        
-                        return <Comp
+                        const node = registry.getValue(e);
+                        const Comp = (node as unknown as IPlugIn).getComponent();
+                        if(node) return <Comp
                             registry={registry}
-                            id={e.id}
-                            renderingProperties={e.renderingProperties}
-                            content={e.content}
-                            modifiers={e.modifiers}
-                            graph={e.childNetwork}
+                            id={node.id}
+                            renderingProperties={node.renderingProperties}
+                            content={node.content}
+                            modifiers={node.modifiers}
+                            graph={node.childNetwork}
                         ></Comp>
                     }) || null
                 }
@@ -105,11 +105,15 @@ export class Container extends StoryObject {
         useEffect(
             () => {
                 const disposer = reaction(
-                    () => this.
-                    childNetwork.
-                    nodes.
-                    map(e => store.uistate.moveableItems.getValue(e.id)).
-                    map(e => [e?.x, e?.y]),
+                    () => {
+                        this.
+                        childNetwork.
+                        nodes.
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        map(e => store.storyContentObjectRegistry.getValue(e)!).
+                        map(e => store.uistate.moveableItems.getValue(e.id)).
+                        map(e => [e?.x, e?.y])
+                    },
                     () => setState({})
                 )
 
@@ -119,8 +123,9 @@ export class Container extends StoryObject {
             }
         );
 
-        const coords = this.childNetwork.nodes.map(node => {
-            const mitem = store.uistate.moveableItems.getValue(node.id);
+        const coords = this.childNetwork.nodes.map(id => {
+            // const node = store.storyContentObjectRegistry.getValue(id);
+            const mitem = store.uistate.moveableItems.getValue(id);
             if (!mitem) throw("Item is not defined!");
             return {
                 x: mitem.x,

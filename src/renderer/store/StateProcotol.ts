@@ -188,7 +188,8 @@ export class StateProcotol {
                 }
             });
         };
-        action("executing", executer);
+        runInAction(executer);
+        
         this._executing = false;
     }
 

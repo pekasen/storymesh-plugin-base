@@ -78,7 +78,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
                     id: (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
                     from: ((isIncoming) ? `${id}.${theirport}` : `${this.id}.${myport}`),
                     to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
-                    parent: parentNetwork
+                    // parent: parentNetwork
                 };
                 console.log("new Edge", newEdge);
                 parentNetwork.connect(registry, [newEdge]);

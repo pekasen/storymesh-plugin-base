@@ -7,6 +7,7 @@ import {
     handleNewDocumentEvent,
     handleDeleteEvent
 } from "./event-handlers/save-handler";
+import { handleRedo, handleUndo } from "./event-handlers/stateHandlers";
 
 export function patchMenu(): void {
     const isMac = process.platform === "darwin"
@@ -84,8 +85,8 @@ export function patchMenu(): void {
     const editMenu: MenuItemConstructorOptions = {
         label: "Edit",
         submenu: [
-            { role: "undo" },
-            { role: "redo" },
+            { label: "Undo", click: handleUndo, accelerator: "CmdOrCtrl+Z" },
+            { label: "Redo", click: handleRedo, accelerator: "CmdOrCtrl+Shift+Z" },
             { type: "separator" },
             { role: "cut" },
             { role: "copy" },

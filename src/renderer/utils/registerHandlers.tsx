@@ -1,7 +1,6 @@
 import { ipcRenderer } from 'electron/renderer';
 import { readFile, writeFile } from "fs";
 import { deserialize, serialize } from 'serializr';
-import { windows } from '../../main';
 import { rootStore } from '../index';
 import { RootStoreSchema } from "../store/rootStore";
 
@@ -70,9 +69,17 @@ export function registerHandlers(): void {
                 // remove ties
                 parentItem?.childNetwork?.disconnect(reg, selectedItem.connections);
                 // and die
-                parentItem?.childNetwork?.removeNode(reg, selectedItem);
+                parentItem?.childNetwork?.removeNode(reg, selectedItem.id);
                 rootStore.root.uistate.moveableItems.deregister(selectedItemID);
             }
         });
+    });
+
+    ipcRenderer.on("undo", () => {
+        rootStore.root.protocol.undo();
+    });
+    
+    ipcRenderer.on("redo", () => {
+        rootStore.root.protocol.redo();
     });
 }

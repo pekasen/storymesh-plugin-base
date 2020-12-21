@@ -1,4 +1,6 @@
+import { StickValues } from 'babylonjs';
 import { IReactionDisposer, reaction } from 'mobx';
+import { stringifyKey } from 'mobx/dist/internal';
 import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
@@ -33,7 +35,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 if (!network) throw("network ist not defined!");
             return {
                 id: id,
-                names: network.nodes.map(e => e.name),
+                names: network.nodes.map(id => store.storyContentObjectRegistry.getValue(id)?.name),
                 edges: network.edges.map(e => e.id)
             }},
             (i) => {
@@ -102,6 +104,8 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 <EdgeRenderer></EdgeRenderer>
                 {
                     loadedObject.childNetwork?.nodes
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    .map(id => store.storyContentObjectRegistry.getValue(id)!)
                     .map((object) => (
                         <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
                             <StoryObjectView store={store} object={object as AbstractStoryObject}>

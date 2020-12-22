@@ -9,6 +9,7 @@ path {
   }
 
   &.selected {
+    transition: stroke .4s ease-in;
     @include customize(theme) {
       stroke: getValue(menu-background);
     }

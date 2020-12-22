@@ -4,6 +4,7 @@
     display: inline-block;
     height: auto;
     width: 100%;
+    transition: background .4s ease-in;
     @include customize(theme) {
         background: getValue(menu-background);
         border-left: 3px dashed getValue(border-color); 
@@ -18,6 +19,7 @@
         display: inline;
         list-style: none;
         font-size: .85rem;
+        transition: color .4s ease-in;
       @include customize(theme) {
        color: getValue(menu-font);
       }

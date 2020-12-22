@@ -1,20 +1,21 @@
-import { createModelSchema, deserialize, object, serialize } from "serializr";
-import { makeAutoObservable, observe, spy } from 'mobx';
-
-import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
-import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
-import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
-import { NotificationStore } from './Notification';
-import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
-import { plugInLoader } from './PlugInStore';
-import { UIStore } from './UIStore';
-import { rootStore } from "..";
-import { Preferences } from "../../preferences";
-import { existsSync, readFileSync } from "original-fs";
-import { __prefPath } from "../../constants";
 import { ipcRenderer } from "electron";
-import { Container } from "../../plugins/Container";
+import { makeAutoObservable, reaction, spy } from 'mobx';
 import { deepObserve } from "mobx-utils";
+import { existsSync, readFileSync } from "original-fs";
+import { createModelSchema, deserialize, object } from "serializr";
+import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
+import { __prefPath } from "../../constants";
+import { Container } from "../../plugins/Container";
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { Preferences } from "../../preferences";
+import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
+import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
+import { MoveableItem } from "./MoveableItem";
+import { NotificationStore } from './Notification';
+import { plugInLoader } from './PlugInStore';
+import { StateProcotol } from "./StateProcotol";
+import { UIStore } from './UIStore';
+
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -22,43 +23,12 @@ export interface IRootStoreProperties {
     storyContentTemplatesRegistry: ClassRegistry<IStoryObject>
 }
 
-type Partial<T> = {
-    [P in keyof T]?: T[P];
-};
-
-export interface IState {
-    uistate: Partial<UIStore>
-    storyContentObjectRegistry: Partial<ClassRegistry<IStoryObject>>;
-}
-
-export interface IProtocolEntry {
-    description: string
-    createdAt: Date
-    author: string
-}
-
-export class Procotol {
-    buffer: IState[] = [];
-
-    public burry(): void {
-        const zombie = serialize(RootStoreSchema, rootStore.root) as IState;
-        this.buffer.push(zombie);
-    }
-
-    public revive(): void {
-        const zombie = this.buffer.pop()
-        if (zombie) deserialize(RootStoreSchema, zombie, (err, res) => {
-            rootStore.root.replace(res);
-        });
-    }
-}
-
 export class RootStore {
     uistate: UIStore
     storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
     storyContentTemplatesRegistry: PlugInClassRegistry<AbstractStoryObject>
     notifications: NotificationStore;
-    protocol: IState[];
+    protocol: StateProcotol;
     userPreferences: Preferences;
     // topLevelObject: AbstractStoryObject;
 
@@ -111,15 +81,54 @@ export class RootStore {
         /**
          * Initialize protocol buffer
          */
-        this.protocol = [];
+        this.protocol = new StateProcotol();
 
         makeAutoObservable(this, {
             protocol: false
         });
 
         // observe(this, (change) => console.log("changed state", change));
-        // spy((change) => console.log("changed state", change));
-        deepObserve(this, (change) => console.log("changed state", change))
+        // spy((change) => {
+        //     // console.log("changed state", change)
+        //     if (change.type == "add" ||
+        //         change.type == "splice" ||
+        //         change.type == "update" ||
+        //         change.type == "remove") {
+        //             this.protocol.persist(change);
+        //         }
+        // });
+        // reaction(
+        //     () => {
+                
+
+        //         // eslint-disable-next-line @typescript-eslint/ban-types
+        //         const traverse = (o: object) => {
+        //             const _ret: unknown[] = [];
+        //             Object.entries(o).forEach(value => {
+        //                 const [key, val] = value;
+        //                 console.log(key);
+
+        //                 if (val && typeof val === "object") {
+        //                     _ret.push(...traverse(val));
+        //                 } else if (val) {
+        //                     _ret.push(val)
+        //                 }
+        //             })
+        //             return _ret;
+        //         }
+                
+        //         const _r = traverse(this.storyContentObjectRegistry);
+        //         console.log(_r);
+
+        //     },
+        //     (arg, prev, r) => {
+        //         console.log("state", r);
+        //     }
+        // )
+        deepObserve(this, (change, path, root): void => {
+            // console.log("changed state", path);
+            this.protocol.persist(change);
+        })
     }
 
     reset(): void {

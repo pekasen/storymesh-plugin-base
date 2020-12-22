@@ -46,7 +46,7 @@ export class EdgeRenderer extends Component {
                 if (nestedDisposeReaction) {
                     nestedDisposeReaction();
                 }
-                
+                console.log("REACTION");
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
                     throw ("Undefined loaded object");
@@ -105,8 +105,7 @@ export class EdgeRenderer extends Component {
             const e = customEvent as CustomEvent;
             const mouseMove = (ev: MouseEvent) => 
             { 
-                this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY);
-                //console.log("drag mousemove");
+                this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY);               
             }
             window.addEventListener("drag", mouseMove);
             
@@ -125,6 +124,7 @@ export class EdgeRenderer extends Component {
         if (this.looseNoodle) {                                    
             this.redrawEdgeCurveFixedEnd(this.looseNoodle, mouseX, mouseY);
         } else {
+            //console.log("drag mousemove", x, y, mouseX, mouseY);
             this.looseNoodle = this.drawEdgeCurve(x, y, mouseX, mouseY);            
         }
     }
@@ -170,35 +170,37 @@ export class EdgeRenderer extends Component {
         });
     }
 
-    getOffset(el: HTMLElement): {x: number, y: number} {
-        const rect = el.getBoundingClientRect(),
-        scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-        scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        return { x: rect.left + scrollLeft, y: rect.top + scrollTop }
+    getOffset(x: number, y: number): {x: number, y: number} {
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+            scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        return { x: x + scrollLeft, y: y + scrollTop }
     }
 
     getAbsPosOffset(x: number, y: number): {x: number, y: number} {
+        
         if (this.mutationTargetNode) {
-           // console.log("SVG location: ", this.getOffset(this.mutationTargetNode));
-           // console.log("Connector location: ", x - this.getOffset(this.mutationTargetNode).x, y - this.getOffset(this.mutationTargetNode).y);
-            return {x: x - this.getOffset(this.mutationTargetNode).x, y: y - this.getOffset(this.mutationTargetNode).y}; 
+            const rendererRect = this.mutationTargetNode.getBoundingClientRect();
+            const scrollLeft = this.mutationTargetNode?.scrollLeft || 0,
+            scrollTop = this.mutationTargetNode?.scrollTop || 0;
+            console.log("SCROLL: ", scrollLeft, scrollTop)
+            return {x: x - rendererRect.x + scrollLeft, y: y - rendererRect.y + scrollTop}; 
         } else return {x: x, y: y};        
     }
 
-    getChildOffset(el: HTMLElement): {x: number, y: number} {
-        const rect = el.getBoundingClientRect();
-        const parentRect = document.getElementById(this.edgeRendererID)?.getBoundingClientRect();
-        if (parentRect)
-            return {x: rect.left - parentRect.left + rect.width/2, y: rect.top - parentRect.top + rect.height/2}; 
-        else 
-            return {x: rect.left + rect.width/2, y:rect.top + rect.height/2};
+    getAbsolutePositionInRenderer(elem: HTMLElement): {x: number, y: number} {
+        const elemRect = elem.getBoundingClientRect();
+        if (this.mutationTargetNode) {
+            const rendererRect = this.mutationTargetNode.getBoundingClientRect();            
+            const scrollLeft = this.mutationTargetNode?.scrollLeft || 0,
+            scrollTop = this.mutationTargetNode?.scrollTop || 0;
+            return {x: elemRect.x - rendererRect.x + scrollLeft, y: elemRect.y - rendererRect.y + scrollTop};
+        } else return {x: elemRect.x, y: elemRect.y}
     }
 
     componentDidMount(): void {
         const obj = document.getElementById(this.edgeRendererID);
-        
-                // Select the node that will be observed for mutations
-                this.mutationTargetNode = document.getElementById('hello-world') as HTMLElement;
+        // Select the node that will be observed for mutations
+        this.mutationTargetNode = document.getElementById('hello-world') as HTMLElement;
         if (obj)
             this.two.appendTo(obj);
     }
@@ -208,9 +210,12 @@ export class EdgeRenderer extends Component {
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {
+        console.log("mutationTargetNode: ", this.mutationTargetNode);
         //const c = this.two.makeCurve(x1, y1, x1 - 50, y1 + 50, x2 + 50, y2 - 50, x2, y2, true);
-        const c = this.two.makeCurve(this.getAbsPosOffset(x1, y1).x, this.getAbsPosOffset(x1, y1).y, 
-            this.getAbsPosOffset(x2, y2).x, this.getAbsPosOffset(x2, y2).y, true);
+        const coords1 = this.getAbsPosOffset(x1, y1);
+        const coords2 = this.getAbsPosOffset(x2, y2);
+      //  console.log("drag mousemove", coords1, coords2);
+        const c = this.two.makeCurve(coords1.x, coords1.y, coords2.x, coords2.y, true);
         c.linewidth = 1;
         c.cap = "round";
         c.noFill();
@@ -221,10 +226,12 @@ export class EdgeRenderer extends Component {
 
     redrawEdgeCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void {      
         c.translation.set(0, 0);
-        c.vertices[0].x = this.getAbsPosOffset(x1, y1).x;
-        c.vertices[0].y = this.getAbsPosOffset(x1, y1).y;
-        c.vertices[1].x = this.getAbsPosOffset(x2, y2).x;
-        c.vertices[1].y = this.getAbsPosOffset(x2, y2).y;
+        const coords1 = this.getAbsPosOffset(x1, y1);
+        const coords2 = this.getAbsPosOffset(x2, y2);
+        c.vertices[0].x = coords1.x;
+        c.vertices[0].y = coords1.y;
+        c.vertices[1].x = coords2.x;
+        c.vertices[1].y = coords2.y;
         /*
         c.vertices[1].x = x1 + 50;
         c.vertices[1].y = y1;
@@ -237,8 +244,9 @@ export class EdgeRenderer extends Component {
 
     redrawEdgeCurveFixedEnd(c: Two.Path, x: number, y: number): void {      
         c.translation.set(0, 0);
-        c.vertices[1].x = this.getAbsPosOffset(x, y).x;
-        c.vertices[1].y = this.getAbsPosOffset(x, y).y;
+        const coords = this.getAbsPosOffset(x, y);
+        c.vertices[1].x = coords.x;
+        c.vertices[1].y = coords.y;
         /*c.vertices[3].x = x;
         c.vertices[3].y = y;*/
     }

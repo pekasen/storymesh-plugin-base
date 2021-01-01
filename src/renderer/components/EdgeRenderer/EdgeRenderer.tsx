@@ -15,14 +15,14 @@ export class EdgeRenderer extends Component {
     edgeRendererID!: "edge-renderer";
     disposeReaction: IReactionDisposer;
     two: Two;
-    edges: Map<string, Two.Path>;
+    edges: Map<string, Two.Path[]>;
     store = useContext(Store);
     disposeReaction2: IReactionDisposer;
     // disposeReaction3: IReactionDisposer;
     mutationObserver: MutationObserver | undefined;
     mutationTargetNode: HTMLElement | undefined;
     mutationsConfig: MutationObserverInit;            
-    looseNoodle?: Two.Path;
+    looseNoodle?: Two.Path[];
 
     constructor() {
         super();
@@ -110,10 +110,13 @@ export class EdgeRenderer extends Component {
             window.addEventListener("drag", mouseMove);
             
             const dragEnd =  (ev: MouseEvent) => {
-                this.looseNoodle?.remove();
-                console.log("dragend");
-                document.removeEventListener("drag", mouseMove);
-                document.removeEventListener("dragend", dragEnd);
+                if (this.looseNoodle) {
+                    this.looseNoodle[0].remove();
+                    this.looseNoodle[1].remove();
+                    console.log("dragend");
+                    document.removeEventListener("drag", mouseMove);
+                    document.removeEventListener("dragend", dragEnd);
+                }
             }
 
             document.addEventListener("dragend", dragEnd);
@@ -144,14 +147,26 @@ export class EdgeRenderer extends Component {
                         twoPath = this.drawEdgeCurve(posFrom.x + posFrom.width/2, posFrom.y + posFrom.height/2, posTo.x + posTo.width/2, posTo.y + posTo.height/2);
                         this.edges.set(edge.id, twoPath);
                         if (twoPath) {
-                            const elem = document.getElementById(twoPath.id);
+                            const elem = document.getElementById(twoPath[0].id);
+                            const elem2 = document.getElementById(twoPath[1].id);
+
                             elem?.addEventListener('click', () => {
                                 this.removeClassFromAllEdges(loadedObject, "selected");
                                 elem.classList.add("selected");
+                               // elem2?.classList.add("selected");
                                 this.store.uistate.selectedItems.removeAllEdgesFromSelectedItems();
                                 this.store.uistate.selectedItems.addToSelectedItems(edge.id);
                                 console.log("Clicked on", this.store.uistate.selectedItems);
-                            })
+                            });
+                            
+                            elem2?.addEventListener('click', () => {
+                                this.removeClassFromAllEdges(loadedObject, "selected");
+                                elem?.classList.add("selected");
+                            //    elem2.classList.add("selected");
+                                console.log("Clicked on", this.store.uistate.selectedItems);
+                            }
+                            )
+                            
                         }
                     }
                 }                                               
@@ -164,7 +179,8 @@ export class EdgeRenderer extends Component {
             if (edge && edge.from && edge.to) {
                 const twoPath2 = this.edges.get(edge.id);    
                 if (twoPath2) {
-                    document.getElementById(twoPath2.id)?.classList.remove(className);
+                    document.getElementById(twoPath2[0].id)?.classList.remove(className);
+                    //document.getElementById(twoPath2[1].id)?.classList.remove(className);
                 }         
             }
         });
@@ -182,7 +198,6 @@ export class EdgeRenderer extends Component {
             const rendererRect = this.mutationTargetNode.getBoundingClientRect();
             const scrollLeft = this.mutationTargetNode?.scrollLeft || 0,
             scrollTop = this.mutationTargetNode?.scrollTop || 0;
-            console.log("SCROLL: ", scrollLeft, scrollTop)
             return {x: x - rendererRect.x + scrollLeft, y: y - rendererRect.y + scrollTop}; 
         } else return {x: x, y: y};        
     }
@@ -209,29 +224,40 @@ export class EdgeRenderer extends Component {
         this.mutationObserver?.disconnect();
     }
 
-    drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path {
+    drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path[] {
         console.log("mutationTargetNode: ", this.mutationTargetNode);
         //const c = this.two.makeCurve(x1, y1, x1 - 50, y1 + 50, x2 + 50, y2 - 50, x2, y2, true);
         const coords1 = this.getAbsPosOffset(x1, y1);
         const coords2 = this.getAbsPosOffset(x2, y2);
       //  console.log("drag mousemove", coords1, coords2);
         const c = this.two.makeCurve(coords1.x, coords1.y, coords2.x, coords2.y, true);
-        c.linewidth = 1;
+        c.linewidth = 2;
+        c.stroke = '#353535';
         c.cap = "round";
         c.noFill();
+        const c2 = this.two.makeCurve(coords1.x, coords1.y, coords2.x, coords2.y, true);
+        c2.linewidth = 20;
+        c2.cap = "round";
+        c2.stroke = "transparent";
+        c2.noFill();
         // c.translation.set(0, 0);
         this.two.update();
-        return c;
+        return [c, c2];
     }
 
-    redrawEdgeCurve(c: Two.Path, x1: number, y1: number, x2: number, y2: number): void {      
-        c.translation.set(0, 0);
+    redrawEdgeCurve(paths: Two.Path[], x1: number, y1: number, x2: number, y2: number): void {      
+        paths[0].translation.set(0, 0);
         const coords1 = this.getAbsPosOffset(x1, y1);
         const coords2 = this.getAbsPosOffset(x2, y2);
-        c.vertices[0].x = coords1.x;
-        c.vertices[0].y = coords1.y;
-        c.vertices[1].x = coords2.x;
-        c.vertices[1].y = coords2.y;
+        paths[0].vertices[0].x = coords1.x;
+        paths[0].vertices[0].y = coords1.y;
+        paths[0].vertices[1].x = coords2.x;
+        paths[0].vertices[1].y = coords2.y;
+        paths[1].translation.set(0, 0);
+        paths[1].vertices[0].x = coords1.x;
+        paths[1].vertices[0].y = coords1.y;
+        paths[1].vertices[1].x = coords2.x;
+        paths[1].vertices[1].y = coords2.y;
         /*
         c.vertices[1].x = x1 + 50;
         c.vertices[1].y = y1;
@@ -242,11 +268,14 @@ export class EdgeRenderer extends Component {
         */
     }
 
-    redrawEdgeCurveFixedEnd(c: Two.Path, x: number, y: number): void {      
-        c.translation.set(0, 0);
+    redrawEdgeCurveFixedEnd(paths: Two.Path[], x: number, y: number): void {      
+        paths[0].translation.set(0, 0);
         const coords = this.getAbsPosOffset(x, y);
-        c.vertices[1].x = coords.x;
-        c.vertices[1].y = coords.y;
+        paths[0].vertices[1].x = coords.x;
+        paths[0].vertices[1].y = coords.y;
+        paths[1].translation.set(0, 0);
+        paths[1].vertices[1].x = coords.x;
+        paths[1].vertices[1].y = coords.y;
         /*c.vertices[3].x = x;
         c.vertices[3].y = y;*/
     }

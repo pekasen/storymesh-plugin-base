@@ -18,7 +18,6 @@ export class EdgeRenderer extends Component {
     edges: Map<string, Two.Path[]>;
     store = useContext(Store);
     disposeReaction2: IReactionDisposer;
-    // disposeReaction3: IReactionDisposer;
     mutationObserver: MutationObserver | undefined;
     mutationTargetNode: HTMLElement | undefined;
     mutationsConfig: MutationObserverInit;            
@@ -46,7 +45,6 @@ export class EdgeRenderer extends Component {
                 if (nestedDisposeReaction) {
                     nestedDisposeReaction();
                 }
-                console.log("REACTION");
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
                     throw ("Undefined loaded object");
@@ -72,7 +70,7 @@ export class EdgeRenderer extends Component {
                 if (!loadedObject)
                     throw ("Undefined loaded object");
                 this.setState({});                
-                this.executeChangesToEdges(loadedObject); 
+                this.executeChangesToEdges(loadedObject);
             }
         )
         
@@ -110,13 +108,9 @@ export class EdgeRenderer extends Component {
             window.addEventListener("drag", mouseMove);
             
             const dragEnd =  (ev: MouseEvent) => {
-                if (this.looseNoodle) {
-                    this.looseNoodle[0].remove();
-                    this.looseNoodle[1].remove();
-                    console.log("dragend");
-                    document.removeEventListener("drag", mouseMove);
-                    document.removeEventListener("dragend", dragEnd);
-                }
+                this.deleteLooseNoodle();
+                document.removeEventListener("drag", mouseMove);
+                document.removeEventListener("dragend", dragEnd);
             }
 
             document.addEventListener("dragend", dragEnd);
@@ -125,19 +119,31 @@ export class EdgeRenderer extends Component {
 
     drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number): void {
         if (this.looseNoodle) {                                    
-            this.redrawEdgeCurveFixedEnd(this.looseNoodle, mouseX, mouseY);
+            this.redrawEdgeCurve(this.looseNoodle, x, y, mouseX, mouseY);
         } else {
-            //console.log("drag mousemove", x, y, mouseX, mouseY);
-            this.looseNoodle = this.drawEdgeCurve(x, y, mouseX, mouseY);            
+            this.looseNoodle = this.drawEdgeCurve(x, y, mouseX, mouseY);           
         }
+    }
+
+    deleteLooseNoodle(): void {
+        if (this.looseNoodle) {
+            const elem = document.getElementById(this.looseNoodle[0].id);
+            const elem2 = document.getElementById(this.looseNoodle[1].id);
+            elem?.remove();
+            elem2?.remove();
+            this.looseNoodle[0].remove();
+            this.looseNoodle[1].remove();
+            this.looseNoodle = undefined;
+        }        
     }
 
     executeChangesToEdges(loadedObject: AbstractStoryObject): void {        
         loadedObject.childNetwork?.edges.forEach(edge => {
             if (edge && edge.from && edge.to) {
+                console.log("EDGE", edge.id);
                 let twoPath = this.edges.get(edge.id);               
                 const connFrom = document.getElementById(edge.from);
-                const connTo = document.getElementById(edge.to);             
+                const connTo = document.getElementById(edge.to);
                 if (connFrom && connTo) {
                     const posFrom = connFrom.getBoundingClientRect();
                     const posTo = connTo.getBoundingClientRect();
@@ -149,28 +155,49 @@ export class EdgeRenderer extends Component {
                         if (twoPath) {
                             const elem = document.getElementById(twoPath[0].id);
                             const elem2 = document.getElementById(twoPath[1].id);
+                            const selectedItems = this.store.uistate.selectedItems;
 
-                            elem?.addEventListener('click', () => {
-                                this.removeClassFromAllEdges(loadedObject, "selected");
+                            elem?.addEventListener('click', (e) => {                               
+                                if (e.shiftKey) {
+                                   selectedItems.addToSelectedItems(edge.id);
+                                } else {
+                                   this.removeClassFromAllEdges(loadedObject, "selected");                                   
+                                   selectedItems.setSelectedItems([edge.id]);
+                                }
                                 elem.classList.add("selected");
-                               // elem2?.classList.add("selected");
-                                this.store.uistate.selectedItems.removeAllEdgesFromSelectedItems();
-                                this.store.uistate.selectedItems.addToSelectedItems(edge.id);
                                 console.log("Clicked on", this.store.uistate.selectedItems);
                             });
                             
-                            elem2?.addEventListener('click', () => {
-                                this.removeClassFromAllEdges(loadedObject, "selected");
+                            elem2?.addEventListener('click', (e) => {
+                                if (e.shiftKey) {
+                                selectedItems.addToSelectedItems(edge.id);
+                                } else {
+                                    this.removeClassFromAllEdges(loadedObject, "selected");                                   
+                                    selectedItems.setSelectedItems([edge.id]);
+                                }
                                 elem?.classList.add("selected");
-                            //    elem2.classList.add("selected");
+                                //    elem2.classList.add("selected");
                                 console.log("Clicked on", this.store.uistate.selectedItems);
                             }
-                            )
-                            
+                            )                            
                         }
                     }
-                }                                               
+                }  else {       
+                               
+                    if (twoPath) {
+                        console.log(twoPath[0].id); 
+                        const elem = document.getElementById(twoPath[0].id);
+                        const elem2 = document.getElementById(twoPath[1].id);
+                        elem?.remove();
+                        elem2?.remove();
+                        twoPath[0].remove();
+                        twoPath[1].remove();               
+                    }
+                    this.edges.delete(edge.id);
+                }                                             
             }
+            
+            this.two.update();
         });
     }
 
@@ -192,8 +219,7 @@ export class EdgeRenderer extends Component {
         return { x: x + scrollLeft, y: y + scrollTop }
     }
 
-    getAbsPosOffset(x: number, y: number): {x: number, y: number} {
-        
+    getAbsPosOffset(x: number, y: number): {x: number, y: number} {        
         if (this.mutationTargetNode) {
             const rendererRect = this.mutationTargetNode.getBoundingClientRect();
             const scrollLeft = this.mutationTargetNode?.scrollLeft || 0,
@@ -226,10 +252,9 @@ export class EdgeRenderer extends Component {
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path[] {
         console.log("mutationTargetNode: ", this.mutationTargetNode);
-        //const c = this.two.makeCurve(x1, y1, x1 - 50, y1 + 50, x2 + 50, y2 - 50, x2, y2, true);
         const coords1 = this.getAbsPosOffset(x1, y1);
         const coords2 = this.getAbsPosOffset(x2, y2);
-      //  console.log("drag mousemove", coords1, coords2);
+        //  console.log("drag mousemove", coords1, coords2);
         const c = this.two.makeCurve(coords1.x, coords1.y, coords2.x, coords2.y, true);
         c.linewidth = 2;
         c.stroke = '#353535';
@@ -268,6 +293,7 @@ export class EdgeRenderer extends Component {
         */
     }
 
+    /*
     redrawEdgeCurveFixedEnd(paths: Two.Path[], x: number, y: number): void {      
         paths[0].translation.set(0, 0);
         const coords = this.getAbsPosOffset(x, y);
@@ -275,9 +301,7 @@ export class EdgeRenderer extends Component {
         paths[0].vertices[1].y = coords.y;
         paths[1].translation.set(0, 0);
         paths[1].vertices[1].x = coords.x;
-        paths[1].vertices[1].y = coords.y;
-        /*c.vertices[3].x = x;
-        c.vertices[3].y = y;*/
+        paths[1].vertices[1].y = coords.y;        
     }
 
     /*
@@ -306,8 +330,6 @@ export class EdgeRenderer extends Component {
       }
     }
     */
-
-
 
     render(): h.JSX.Element {
         return <div id={this.edgeRendererID}></div>

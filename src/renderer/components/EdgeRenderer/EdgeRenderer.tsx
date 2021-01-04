@@ -108,7 +108,9 @@ export class EdgeRenderer extends Component {
             window.addEventListener("drag", mouseMove);
             
             const dragEnd =  (ev: MouseEvent) => {
-                this.deleteLooseNoodle();
+                if (this.looseNoodle) {
+                    this.deleteNoodle(this.looseNoodle);
+                }
                 document.removeEventListener("drag", mouseMove);
                 document.removeEventListener("dragend", dragEnd);
             }
@@ -118,29 +120,29 @@ export class EdgeRenderer extends Component {
     }
 
     drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number): void {
-        if (this.looseNoodle) {                                    
+        if (this.looseNoodle && this.looseNoodle.length > 0) {                                    
             this.redrawEdgeCurve(this.looseNoodle, x, y, mouseX, mouseY);
         } else {
             this.looseNoodle = this.drawEdgeCurve(x, y, mouseX, mouseY);           
         }
     }
 
-    deleteLooseNoodle(): void {
-        if (this.looseNoodle) {
-            const elem = document.getElementById(this.looseNoodle[0].id);
-            const elem2 = document.getElementById(this.looseNoodle[1].id);
+    deleteNoodle(noodle: Two.Path[] | undefined): void {
+        console.log("tryna delete", noodle);
+        if (noodle) {            
+            const elem = document.getElementById(noodle[0].id);
+            const elem2 = document.getElementById(noodle[1].id);
             elem?.remove();
             elem2?.remove();
-            this.looseNoodle[0].remove();
-            this.looseNoodle[1].remove();
-            this.looseNoodle = undefined;
+            noodle[0].remove();
+            noodle[1].remove();
+            noodle.length = 0;
         }        
     }
 
     executeChangesToEdges(loadedObject: AbstractStoryObject): void {        
         loadedObject.childNetwork?.edges.forEach(edge => {
             if (edge && edge.from && edge.to) {
-                console.log("EDGE", edge.id);
                 let twoPath = this.edges.get(edge.id);               
                 const connFrom = document.getElementById(edge.from);
                 const connTo = document.getElementById(edge.to);
@@ -182,17 +184,8 @@ export class EdgeRenderer extends Component {
                             )                            
                         }
                     }
-                }  else {       
-                               
-                    if (twoPath) {
-                        console.log(twoPath[0].id); 
-                        const elem = document.getElementById(twoPath[0].id);
-                        const elem2 = document.getElementById(twoPath[1].id);
-                        elem?.remove();
-                        elem2?.remove();
-                        twoPath[0].remove();
-                        twoPath[1].remove();               
-                    }
+                }  else {                               
+                    this.deleteNoodle(twoPath);
                     this.edges.delete(edge.id);
                 }                                             
             }
@@ -251,7 +244,7 @@ export class EdgeRenderer extends Component {
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Two.Path[] {
-        console.log("mutationTargetNode: ", this.mutationTargetNode);
+        // console.log("mutationTargetNode: ", this.mutationTargetNode);
         const coords1 = this.getAbsPosOffset(x1, y1);
         const coords2 = this.getAbsPosOffset(x2, y2);
         //  console.log("drag mousemove", coords1, coords2);

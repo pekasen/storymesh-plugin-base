@@ -84,7 +84,7 @@ export class StateProcotol {
     private _index = -1;
     private _busy = false;
     private _executing = false;
-    private _timeout = 150;
+    private _timeout = 150; // time in ms, sets the time out to close an incoming batch
     private _scratch: IDelta[] = [];
     private _timer: NodeJS.Timeout = setTimeout(() => void 0, 0);
 
@@ -135,9 +135,13 @@ export class StateProcotol {
             console.log(this._index);
         }
     }
+
     private _execute(direction: "undo" | "redo"): void {
+        // guard against current change
         if (this._index === -1) return;
+        // stop listening to changes from mobx
         this._executing = true;
+        // define our sequence
         const reducer = (com: DeltaObject[], val: IDelta): DeltaObject[] => {
             let _c: DeltaObject;
 
@@ -167,6 +171,7 @@ export class StateProcotol {
             return com;
         };
 
+        // create the buffer
         let _changes: DeltaObject[];
         const _batch = this._buffer[this._index];
         // process each element into a array of Change
@@ -189,7 +194,8 @@ export class StateProcotol {
             });
         };
         runInAction(executer);
-        
+
+        // start listening again.
         this._executing = false;
     }
 

@@ -46,7 +46,7 @@
     "babylonjs-loaders": "^4.2.0",
     "chai": "^4.2.0",
     "cssnano": "^4.1.10",
-    "electron": "^10.1.6",
+    "electron": "^10.2.0",
     "eslint": "^7.12.1",
     "eslint-plugin-jsdoc": "^30.7.3",
     "gulp": "^4.0.2",

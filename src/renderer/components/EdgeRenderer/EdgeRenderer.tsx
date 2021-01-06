@@ -105,7 +105,7 @@ export class EdgeRenderer extends Component {
             { 
                 this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY);               
             }
-            window.addEventListener("drag", mouseMove);
+            document.addEventListener("drag", mouseMove);
             
             const dragEnd =  (ev: MouseEvent) => {
                 if (this.looseNoodle) {

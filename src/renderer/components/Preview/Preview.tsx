@@ -27,7 +27,8 @@ export class Preview extends Component<IPreviewProps> {
 
     render({topLevelObjectId, registry, graph}: IPreviewProps): h.JSX.Element {
         // const g = graph?.traverse(registry, (topLevelObjectId  + ".start"))
-        const children = graph?.nodes
+        const children = graph?.nodes.map(id => registry.getValue(id)).filter(node => node !== undefined);
+
         console.log("children", children);
         return <div class="preview-container">
                 <VerticalPaneGroup>
@@ -38,18 +39,20 @@ export class Preview extends Component<IPreviewProps> {
                     </VerticalMiniPane>
                 </VerticalPaneGroup>
             <div class="storywrapper">
-                <div class={"ngwebs-story "} id={topLevelObjectId}>{
-                children?.map(node => {
-                    const _node = node as unknown as IPlugIn;
+                <div class={"ngwebs-story "} id={topLevelObjectId}>
+                {
+                    children?.map(node => {
+                        const _node = node as unknown as IPlugIn;
 
-                    return _node.getComponent()({
-                        graph: node.childNetwork,
-                        registry: registry,
-                        id: node.id,
-                        content: node.content
+                        if (node) return _node.getComponent()({
+                            graph: node.childNetwork,
+                            registry: registry,
+                            id: node.id,
+                            content: node.content
+                        })
                     })
-                })
-            }</div>
+                }
+            </div>
         </div>
         </div>
     }

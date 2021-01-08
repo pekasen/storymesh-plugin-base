@@ -1,21 +1,18 @@
 path {
   transition: all 0.195s ease;
-  stroke-width: 2;
+ // stroke-width: 2;
   cursor: pointer;
   @include customize(theme) {
     stroke: getValue(menu-background);
   }
 
-  &:hover {
-      stroke-width: 3;
-  }
 
   &.selected {
     transition: stroke .4s ease-in;
     @include customize(theme) {
       stroke: getValue(highlight-color);
     }
-    stroke-width: 3;
+    //stroke-width: 3;
     stroke-dasharray: 4;
     stroke-dashoffset: 100;
     stroke-linecap: revert;

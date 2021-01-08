@@ -6,17 +6,17 @@ import { EdgeSchema } from '../../renderer/store/schemas/EdgeSchema';
 import {  StoryObject } from './AbstractStoryObject';
 
 export class ObservableStoryGraph extends StoryGraph {
-    constructor(parent: IStoryObject, nodes?: IStoryObject[], edges?: IEdge[]) {
+    constructor(parent: string, nodes?: string[], edges?: IEdge[]) {
         super(parent, nodes, edges);
 
-        makeObservable(new StoryGraph(parent), {
+        makeObservable(this, {
             nodes: observable,
             edges: observable,
             addNode: action,
             connect: action,
             disconnect: action,
             removeNode: action
-        })
+        });
     }
 }
 // RefLookupFunction
@@ -36,12 +36,4 @@ export const ObservableStoryGraphSchema = createModelSchema(ObservableStoryGraph
     nodes: list(reference(StoryObject, lookUpNode)), // lookUpNode
     edges: list(object(EdgeSchema)),
     parent: reference(StoryObject, lookUpNode), // lookUpNode
-    // addNode: false,
-    // connect: false,
-    // disconnect: false,
-    // removeNode: false,
-    // willDeregister: false,
-    // traverse: false,
-    // filterNodes: false,
-    // filterEdges: false
 });

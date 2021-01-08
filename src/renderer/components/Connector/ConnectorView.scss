@@ -48,7 +48,7 @@
     }
     border: 2px solid;
     @include customize(theme){
-      border-color: getValue(menu-background);
+      border-color: getValue(border-color);
     }
 
     &.in {

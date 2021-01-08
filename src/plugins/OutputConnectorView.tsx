@@ -40,7 +40,7 @@ export class OutputConnectorView extends StoryObject {
         makeObservable(this,{
             name: observable,
             updateName: action,
-            updateConnections: action
+            addConnection: action
         });
     }
 

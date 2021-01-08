@@ -13,7 +13,7 @@
     border-right: 3px solid;
     transition: border-color .4s ease-in;
     @include customize(color) {
-        border-color: getValue(menu-font); 
+        border-color: getValue(menu-background); 
       }
 }
 

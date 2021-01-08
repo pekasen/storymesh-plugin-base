@@ -4,7 +4,7 @@ import { AbstractStoryObject } from './AbstractStoryObject';
 import { ConnectorDirection, ConnectorPort, ConnectorType } from '../../renderer/utils/ConnectorPort';
 
 interface IDefaultFieldsMethods {
-    updateConnections: (registry: IRegistry, ids: string,  myport: string, theirport: string, direction: "in" | "out") => void
+    addConnection: (registry: IRegistry, ids: string,  myport: string, theirport: string, direction: "in" | "out") => void
 }
 
 interface INameFieldMethods {
@@ -26,7 +26,7 @@ export function connectionField(target: AbstractStoryObject & IDefaultFieldsMeth
                 connectors: target.connectors,
                 id: target.id
             }),
-            valueReference: (registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out") => {target.updateConnections(registry, id, myport, theirport, direction)}
+            valueReference: (registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out") => {target.addConnection(registry, id, myport, theirport, direction)}
         }
     ]
 }

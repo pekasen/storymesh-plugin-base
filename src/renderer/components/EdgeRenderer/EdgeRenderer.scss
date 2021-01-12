@@ -11,7 +11,7 @@ path {
   }
 
   &.selected {
-    transition: stroke .195s ease-in;
+    transition: stroke .1s ease-in;
     @include customize(theme) {
       stroke: getValue(highlight-color);
     }

@@ -2,13 +2,15 @@ path {
   transition: all 0.195s ease;
  // stroke-width: 2;
   cursor: pointer;
-  //stroke: #353535;
+  @include customize(theme) {
+    stroke: getValue(menu-background);
+  }
 
 
   &.selected {
     transition: stroke .4s ease-in;
     @include customize(theme) {
-      stroke: getValue(menu-background);
+      stroke: getValue(highlight-color);
     }
     //stroke-width: 3;
     stroke-dasharray: 4;

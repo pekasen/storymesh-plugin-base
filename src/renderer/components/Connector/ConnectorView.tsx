@@ -44,7 +44,7 @@ export class ConnectorView extends Component<IConnectorViewProps> {
             console.log("received drop from", _id);
             if (_id && obj) {
                 const [toId, toPort] = StoryGraph.parseNodeId(_id);
-                obj.updateConnections(
+                obj.addConnection(
                     storyContentObjectRegistry,
                     toId,
                     fromPort,

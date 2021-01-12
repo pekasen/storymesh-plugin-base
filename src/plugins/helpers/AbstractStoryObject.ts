@@ -5,7 +5,7 @@ import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingP
 import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { createModelSchema, identifier, object, optional, primitive, reference, setDefaultModelSchema } from 'serializr';
+import { createModelSchema, identifier, object, optional, primitive } from 'serializr';
 import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
 import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
@@ -20,6 +20,9 @@ import { rootStore } from '../../renderer';
 export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public id: string;
     public metaData: IMetaData;
+    // public get connections(): IEdge[] {
+    //     return []
+    // }
     public connections: IEdge[];
     public parent?: string;
     public renderingProperties: IRenderingProperties;
@@ -56,7 +59,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             metaData:               observable,
             connections:            observable,
             modifiers:              observable,
-            updateConnections:      action,
+            addConnection:          action,
         });
     }
 
@@ -68,7 +71,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
      * @param theirport their port
      * @param direction which direction does the edge point? 
      */
-    public updateConnections(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in"): void {
+    public addConnection(registry: IRegistry, id: string, myport: string, theirport: string, direction: "in" | "out" = "in"): void {
         if (this.parent) {
             const isIncoming = direction === "in";
 
@@ -84,6 +87,17 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
                 parentNetwork.connect(registry, [newEdge]);
             }
         }
+    }
+    
+    public removeConnections(edges: IEdge[]): void {
+        edges.forEach((edge) => {
+            const _index = this.connections.findIndex((_edge) => (_edge.id === edge.id));
+            if (_index !== -1) {
+                if (this.connections.splice(_index, 1)[0].id === edge.id) {
+                    console.log(`edge removed from node ${this.id}`);
+                } else console.warn(`edge not removed in node ${this.id}`);
+            } else console.warn(`edge not found in node ${this.id}`);  
+        });
     }
 
     public abstract getComponent(): FunctionComponent<INGWebSProps> 
@@ -121,6 +135,16 @@ export class StoryObject extends AbstractStoryObject {
     public menuTemplate!: IMenuTemplate[];
     public icon!: string;
     public content?: any;
+    
+    // public get connections(): IEdge[] {
+    //     if (this.parent) {
+    //         const parent = reg.getValue(this.parent);
+    //         const _res = parent?.childNetwork?.filterEdges((e) => e.id.search(this.id) !== 0);
+    //         if (_res) return _res 
+    //         else return []
+    //     } else return []
+    // }
+
     public getComponent(): FunctionComponent<INGWebSProps> {
         throw new Error('Method not implemented.');
     }
@@ -130,10 +154,9 @@ export class StoryObject extends AbstractStoryObject {
 }
 export const StoryObjectSchema = createModelSchema(StoryObject, {
     id: identifier(
-        (id: string, obj, context) => {
+        (id: string, obj) => {
             const reg = rootStore._loadingCache;
             console.log("registering @valuecache", obj,reg.set(id, obj))
-            
         }
     ),
     name: primitive(),

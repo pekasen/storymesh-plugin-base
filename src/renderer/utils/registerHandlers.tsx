@@ -67,10 +67,11 @@ export function registerHandlers(): void {
             if ( selectedItem && selectedItem.parent && selectedItem.deletable) {
                 const parentItem = reg.getValue(selectedItem.parent)
                 // remove ties
-                parentItem?.childNetwork?.disconnect(reg, selectedItem.connections);
+                // parentItem?.childNetwork?.disconnect(reg, selectedItem.connections); // this is already handled in the removenode method
                 // and die
                 parentItem?.childNetwork?.removeNode(reg, selectedItem.id);
                 rootStore.root.uistate.moveableItems.deregister(selectedItemID);
+                rootStore.root.storyContentObjectRegistry.deregister(selectedItemID);
             }
         });
     });

@@ -64,7 +64,6 @@ export class ConnectorView extends Component<IConnectorViewProps> {
             onDragStart={() => {
                     const spanRef = document.getElementById(id);
                     const rect = spanRef?.getBoundingClientRect();
-                    console.log("Connector position: ", rect);
                     let xSpan = 0;
                     let ySpan = 0;
                     if (rect) {

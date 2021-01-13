@@ -14,7 +14,7 @@ export const DraggableDropReceiver: FunctionComponent<IItem & IDragDropReceiver>
             e.stopPropagation();
             e.dataTransfer?.setData("text", id);
             e.dataTransfer?.setDragImage(new Image(0, 0), 0 ,0);
-            console.log("dragging from", id);
+            console.log("dragging from DraggableDropReceiver ", id);
             onDragStart();
         }
     };

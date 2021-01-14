@@ -48,7 +48,7 @@
     }
     border: 2px solid;
     @include customize(theme){
-      border-color: getValue(border-color);
+      border-color: getValue(node-editor-background);
     }
 
     &.in {

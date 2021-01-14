@@ -6,9 +6,12 @@ path {
     stroke: getValue(menu-background);
   }
 
+  &:nth-of-type(even) {
+    stroke: rgba(0,0,0,0);
+  }
 
   &.selected {
-    transition: stroke .4s ease-in;
+    transition: stroke .1s ease-in;
     @include customize(theme) {
       stroke: getValue(highlight-color);
     }

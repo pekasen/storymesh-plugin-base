@@ -10,7 +10,8 @@ interface IPreviewProps extends INGWebSProps{
 export class Preview extends Component<IPreviewProps> {
 
     private reactionDisposer: IReactionDisposer
-    private ref = createRef();
+    private ref = createRef<HTMLDivElement>();
+    private sizeObserver: ResizeObserver;
 
     constructor(props: IPreviewProps) {
         super(props);
@@ -24,12 +25,11 @@ export class Preview extends Component<IPreviewProps> {
                 this.setState({});
             }
         );
+        this.sizeObserver = new ResizeObserver((entries) => console.log("Resized", entries));
     }
 
     componentDidMount(): void {
-        const resizeObs = new ResizeObserver((entries) => console.log("Resized", entries));
-        
-        if (this.ref.current) resizeObs.observe(this.ref.current);
+        if (this.ref.current) this.sizeObserver.observe(this.ref.current);
     }
 
     render({topLevelObjectId, registry, graph}: IPreviewProps): h.JSX.Element {
@@ -66,5 +66,6 @@ export class Preview extends Component<IPreviewProps> {
 
     componentWillUnmount(): void {
         this.reactionDisposer();
+        this.sizeObserver.disconnect();
     }
 }

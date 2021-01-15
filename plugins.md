@@ -94,7 +94,25 @@ In this method we will set the name property to whatever the user sets it to.
     }
 ```
 
-There are few more helper functions to choose from: `dropDownField`, `connectionField`.
+There are few more helper functions to choose from: `dropDownField`, `connectionField`. But it is still very likely we are going to roll our own custom menu items, e.g. for changing the ImageObject's image URL. For this, we need to create an object with the specifications of this item and plug it into the beforehand defined array.
+
+```typescript
+public menuTemplate: IMenuTemplate[] = [
+        ...nameField(this),
+        {
+            label: "Image URL",
+            type: "text",
+            value: () => this.content.resource,
+            valueReference: (url: string) => this.updateImageURL(url)
+        },
+        ...connectionField(this),
+    ];
+```
+
+Where, label is of course the label in the sidebar, type is the UI type to use. `value` is a function that returns the value to display in the menu item and `valuereference` is a function that calls a method in our object to update the stored value.
+
+> **Note**: The reason we need to call a method is that we employ MobX for observability and during this process these methods are marked as *actions*. Actions alter observable values and MobX complains when values are altered from *not within* an action, as it is harder to keep track of those. Although the `runInAction()` function can be used to circumvent this issue: `valueReference: (url: string) => runInAction(() => {this.content.resource = url})`. But, since we have full control over our classes it is a cleaner solution to do this via methods and we can see on first glance which mutation are possible for a given class.
+
 
 ### Connectors
 

@@ -1,8 +1,7 @@
-import { Component, createRef, Fragment, h, Ref } from 'preact';
+import { Component, createRef, h } from 'preact';
 import { INGWebSProps, IPlugIn } from '../../utils/PlugInClassRegistry';
-import { VerticalPane, VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPane';
+import { VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPane';
 import { IReactionDisposer, reaction } from "mobx"
-import { useRef } from 'preact/hooks';
 
 interface IPreviewProps extends INGWebSProps{
     topLevelObjectId: string
@@ -10,8 +9,8 @@ interface IPreviewProps extends INGWebSProps{
 
 export class Preview extends Component<IPreviewProps> {
 
-    reactionDisposer: IReactionDisposer
-    ref: Ref<HTMLDivElement>;
+    private reactionDisposer: IReactionDisposer
+    private ref = createRef();
 
     constructor(props: IPreviewProps) {
         super(props);
@@ -25,7 +24,6 @@ export class Preview extends Component<IPreviewProps> {
                 this.setState({});
             }
         );
-        this.ref = createRef();
     }
 
     componentDidMount(): void {
@@ -64,5 +62,9 @@ export class Preview extends Component<IPreviewProps> {
             </div>
         </div>
         </div>
+    }
+
+    componentWillUnmount(): void {
+        this.reactionDisposer();
     }
 }

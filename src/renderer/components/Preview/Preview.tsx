@@ -1,6 +1,6 @@
-import { Component, Fragment, h } from 'preact';
+import { Component, createRef, h } from 'preact';
 import { INGWebSProps, IPlugIn } from '../../utils/PlugInClassRegistry';
-import { VerticalPane, VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPane';
+import { VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPane';
 import { IReactionDisposer, reaction } from "mobx"
 
 interface IPreviewProps extends INGWebSProps{
@@ -9,7 +9,8 @@ interface IPreviewProps extends INGWebSProps{
 
 export class Preview extends Component<IPreviewProps> {
 
-    reactionDisposer: IReactionDisposer
+    private reactionDisposer: IReactionDisposer
+    private ref = createRef();
 
     constructor(props: IPreviewProps) {
         super(props);
@@ -22,7 +23,13 @@ export class Preview extends Component<IPreviewProps> {
                 console.log(o);
                 this.setState({});
             }
-        )
+        );
+    }
+
+    componentDidMount(): void {
+        const resizeObs = new ResizeObserver((entries) => console.log("Resized", entries));
+        
+        if (this.ref.current) resizeObs.observe(this.ref.current);
     }
 
     render({topLevelObjectId, registry, graph}: IPreviewProps): h.JSX.Element {
@@ -30,7 +37,7 @@ export class Preview extends Component<IPreviewProps> {
         const children = graph?.nodes.map(id => registry.getValue(id)).filter(node => node !== undefined);
 
         console.log("children", children);
-        return <div class="preview-container">
+        return <div class="preview-container" ref={this.ref}>
                 <VerticalPaneGroup>
                     <VerticalMiniPane>
                         <div class="header-preview">
@@ -55,5 +62,9 @@ export class Preview extends Component<IPreviewProps> {
             </div>
         </div>
         </div>
+    }
+
+    componentWillUnmount(): void {
+        this.reactionDisposer();
     }
 }

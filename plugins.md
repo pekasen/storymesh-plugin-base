@@ -70,6 +70,31 @@ export type MenuItemSpecification = "table" |
     "color";
 ```
 
+> **Note**: As of now the rendering of the above mentioned types lives in the `ItemPropertiesView.tsx` and are not completely fleshed out. Currently `text`, `textarea`, `table` and `fileselector` are implemented. Defining these follows this pattern:
+
+```typescript
+case "text": {
+    return <div class="form-group-item">
+        <label>{item.label}</label>
+        <input
+            class="form-control"
+            type="text"
+            placeholder="Insert text here…"
+            value={item.value()}
+            onInput={(e: Event) => {
+                const target = e.target as HTMLInputElement
+                
+                if (item.valueReference && target.value && target.value !== item.value().length) {
+                    item.valueReference(target.value);
+                }
+            }}
+            ></input>
+    </div>
+}
+```
+
+> It is possible, that we further increase extensibility of oour framework by pushing the declaration of these UI elements to plugins as well. Requirement is that we store the elements not in the switch statement in `ItemPropertiesView` but rather in a another registry.
+
 There are already a few helper functions to achieve this for the standard fields in basically no time: for instance calling the `nameField` function from the pluginhelpers creates a menu item which accesses the object's name field and changes it accordingly.
 
 ```typescript

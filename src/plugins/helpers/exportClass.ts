@@ -13,13 +13,13 @@ import { AbstractStoryObject } from './AbstractStoryObject';
  * @param {boolean} isPublic Is this Plugin public?
  * @returns {IPlugInRegistryEntry<AbstractStoryObject>} PlugIn to register
  */
-export function exportClass(
-        target: Class<AbstractStoryObject>,
+export function exportClass<T>(
+        target: Class<T>,
         name: string,
         id: string,
         icon: string,
         isPublic?: boolean
-    ): IPlugInRegistryEntry<AbstractStoryObject> {
+    ): IPlugInRegistryEntry<T> {
     return makeObservable({
         name: name,
         id: id,

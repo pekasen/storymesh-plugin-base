@@ -1,13 +1,13 @@
 import { FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
 import { action, IReactionDisposer, makeObservable, observable, reaction } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
-import { StoryObject } from './helpers/AbstractStoryObject';
+import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField } from './helpers/plugInHelpers';
-import { exportClass } from './helpers/exportClass';
+import { connectionField } from '../helpers/plugInHelpers';
+import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 
 /**
@@ -24,7 +24,6 @@ class _ImageObject extends StoryObject {
     public childNetwork?: StoryGraph;
     public connectors: Map<string, IConnectorPort>;
     public content: IContent;
-    public menuTemplate: IMenuTemplate[];
     public icon: string;
 
     public static defaultIcon = "icon-picture"
@@ -44,7 +43,7 @@ class _ImageObject extends StoryObject {
             contentType: "url",
             altText: "This is an image"
         }
-        this.menuTemplate = connectionField(this);
+        // this.menuTemplate = connectionField(this);
         this.icon = _ImageObject.defaultIcon;
 
         makeObservable(this,{
@@ -56,6 +55,14 @@ class _ImageObject extends StoryObject {
             updateImageURL: action
         });
     }
+
+    public get menuTemplate(): IMenuTemplate[] {
+        return [
+            ...super.menuTemplate,
+            ...connectionField(this)
+        ]
+    }
+
     public updateImageURL(newURL: string) {
         this.content.resource = newURL;
     }

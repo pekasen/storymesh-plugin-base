@@ -4,6 +4,7 @@ import { Component, h } from 'preact';
 import { RootStore } from '../../store/rootStore';
 import { ConnectionTableView } from '../ConnectionTableView/ConnectionTableView';
 import { remote } from "electron";
+import { IMenuItemRenderer } from '../../../plugins/panes/TextArea';
 
 const { Menu, MenuItem } = remote;
 
@@ -37,6 +38,11 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
         let menuItems: h.JSX.Element[] = [];
         if (template) {
             menuItems = template.map(item => {
+
+                const ret = store.pluginStore.getNewInstance(`internal.pane.${item.type}`);
+                if (ret) return (ret as IMenuItemRenderer).render(item)
+                else return <p>NUILLL</p>
+
                 switch(item.type) {
                     case "text": {
                         return <div class="form-group-item">

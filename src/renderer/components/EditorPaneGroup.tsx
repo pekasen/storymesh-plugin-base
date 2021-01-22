@@ -47,9 +47,9 @@ export const EditorPaneGroup: FunctionalComponent = () => {
                 </VerticalPane>
                 <VerticalSmallPane>
                     <StoryComponentGallery>
-                        {Array.from(store.storyContentTemplatesRegistry.registry).
-                        filter(([_, val]) => (val.public)).
-                        map(([, item]) => (
+                        {store.pluginStore.registry.
+                        filter((val) => (val.public)).
+                        map((item) => (
                             <GalleryItemView item={item}>
                                 <span>{item.name}</span>
                             </GalleryItemView>

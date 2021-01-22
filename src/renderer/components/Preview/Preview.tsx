@@ -1,7 +1,9 @@
 import { Component, createRef, h } from 'preact';
 import { INGWebSProps, IPlugIn } from '../../utils/PlugInClassRegistry';
 import { VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPane';
-import { IReactionDisposer, reaction } from "mobx"
+import { deepObserve, IDisposer } from 'mobx-utils';
+import { useContext } from 'preact/hooks';
+import { Store } from '../..';
 
 interface IPreviewProps extends INGWebSProps{
     topLevelObjectId: string
@@ -9,22 +11,26 @@ interface IPreviewProps extends INGWebSProps{
 
 export class Preview extends Component<IPreviewProps> {
 
-    private reactionDisposer: IReactionDisposer
+    private reactionDisposer: IDisposer
     private ref = createRef<HTMLDivElement>();
     private sizeObserver: ResizeObserver;
 
     constructor(props: IPreviewProps) {
         super(props);
-
-        this.reactionDisposer = reaction(
-            () => (
-                props.graph?.nodes.length
-            ),
-            (o) => {
-                console.log(o);
-                this.setState({});
-            }
-        );
+        const store = useContext(Store);
+        this.reactionDisposer = deepObserve(store.storyContentObjectRegistry, () => {
+            console.log("Updated")
+            this.setState({});
+        });
+        // reaction(
+        //     () => (
+        //         props.graph?.nodes.length
+        //     ),
+        //     (o) => {
+        //         console.log(o);
+        //         this.setState({});
+        //     }
+        // );
         this.sizeObserver = new ResizeObserver((entries) => console.log("Resized", entries));
     }
 
@@ -51,11 +57,12 @@ export class Preview extends Component<IPreviewProps> {
                     children?.map(node => {
                         const _node = node as unknown as IPlugIn;
 
-                        if (node) return _node.getComponent()({
+                        if (node && _node.getComponent) return _node.getComponent()({
                             graph: node.childNetwork,
                             registry: registry,
                             id: node.id,
-                            content: node.content
+                            content: node.content,
+                            modifiers: node.modifiers
                         })
                     })
                 }

@@ -20,7 +20,7 @@ export function connectionField(target: AbstractStoryObject & IDefaultFieldsMeth
     return [
         {
             label: "Connections",
-            type: "table",
+            type: "connectiontable",
             value: () => ({
                 connections: target.connections,
                 connectors: target.connectors,

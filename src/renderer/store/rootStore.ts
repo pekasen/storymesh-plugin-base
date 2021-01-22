@@ -1,21 +1,20 @@
 import { ipcRenderer } from "electron";
-import { makeAutoObservable, reaction, spy } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { deepObserve } from "mobx-utils";
 import { existsSync, readFileSync } from "original-fs";
 import { createModelSchema, deserialize, object } from "serializr";
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { __prefPath } from "../../constants";
-import { Container } from "../../plugins/Container";
+import { Container } from "../../plugins/content/Container";
 import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { AbstractStoryModifier } from "../../plugins/helpers/AbstractModifier";
+import { IMenuItemRenderer } from "../../plugins/panes/TextArea";
 import { Preferences } from "../../preferences";
-import { PlugInClassRegistry } from '../utils/PlugInClassRegistry';
 import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
-import { MoveableItem } from "./MoveableItem";
 import { NotificationStore } from './Notification';
-import { plugInLoader } from './PlugInStore';
+import { PlugIn, plugInLoader2, PlugInStore } from './PlugInStore';
 import { StateProcotol } from "./StateProcotol";
 import { UIStore } from './UIStore';
-
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -26,11 +25,10 @@ export interface IRootStoreProperties {
 export class RootStore {
     uistate: UIStore
     storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
-    storyContentTemplatesRegistry: PlugInClassRegistry<AbstractStoryObject>
+    pluginStore: PlugInStore<AbstractStoryObject | AbstractStoryModifier | IMenuItemRenderer>;
     notifications: NotificationStore;
     protocol: StateProcotol;
     userPreferences: Preferences;
-    // topLevelObject: AbstractStoryObject;
 
     constructor(uistate?: UIStore) {
         /**
@@ -52,17 +50,23 @@ export class RootStore {
         /**
          * In this registry we store our templates and plugin classes
          */
-        this.storyContentTemplatesRegistry = new PlugInClassRegistry<AbstractStoryObject>();
+        this.pluginStore = new PlugInStore();
         /**
          * Read the plugins and register them in the template store
          */
-        const plugins = plugInLoader();
-        this.storyContentTemplatesRegistry.register(plugins);
+        const plugins = plugInLoader2("plugins/content");
+        const panes = plugInLoader2("plugins/panes");
+        const modifiers = plugInLoader2("plugins/modifiers");
+
+        plugins.forEach(plug => this.pluginStore.setPlugIn(plug.id, new PlugIn(plug.name, plug.id, plug.id, plug.class, plug.public)));
+        panes.forEach(plug => this.pluginStore.setPlugIn(plug.id, new PlugIn(plug.name, plug.id, plug.id, plug.class, plug.public)));
+        modifiers.forEach(plug => this.pluginStore.setPlugIn(plug.id, new PlugIn(plug.name, plug.id, plug.id, plug.class, plug.public)));
+    
         /**
          * If we are in a empty and untitled document, make a root storyobject
          */
         if (this.uistate.untitledDocument) {
-            const emptyStory = this.storyContentTemplatesRegistry.getNewInstance("internal.container.container");
+            const emptyStory = this.pluginStore.getNewInstance("internal.content.container") as AbstractStoryObject;
             if (emptyStory) {
                 this.storyContentObjectRegistry.register(
                     emptyStory
@@ -87,7 +91,47 @@ export class RootStore {
             protocol: false
         });
 
-        // observe(this, (change) => console.log("changed state", change));
+        deepObserve(this, (change): void => {
+            // console.log("changed state", path);
+            this.protocol.persist(change);
+        });
+    }
+
+    reset(): void {
+        this.uistate = new UIStore();
+    }
+
+    replace(root: RootStore): void {
+        this.storyContentObjectRegistry = root.storyContentObjectRegistry;
+        this.uistate = root.uistate;
+    }
+
+    readPreferences(): void {
+        if (existsSync(__prefPath)) {
+            const data = readFileSync(
+                __prefPath,
+                {encoding: "UTF8"}
+            );
+            const _d = JSON.parse(data);
+            const _e  = deserialize(Preferences, _d);
+    
+            if (_e) this.userPreferences = _e;
+        }
+    }
+}
+
+/**
+ * Initialize model schema
+ */
+export const RootStoreSchema = createModelSchema(
+    RootStore,
+    {
+        uistate: object(UIStore),
+        storyContentObjectRegistry: object(AutoValueRegistrySchema()),
+    }
+);
+
+// observe(this, (change) => console.log("changed state", change));
         // spy((change) => {
         //     // console.log("changed state", change)
         //     if (change.type == "add" ||
@@ -125,44 +169,3 @@ export class RootStore {
         //         console.log("state", r);
         //     }
         // )
-        deepObserve(this, (change, path, root): void => {
-            // console.log("changed state", path);
-            this.protocol.persist(change);
-        })
-    }
-
-    reset(): void {
-        this.uistate = new UIStore();
-    }
-
-    replace(root: RootStore): void {
-        this.storyContentObjectRegistry = root.storyContentObjectRegistry;
-        this.uistate = root.uistate;
-    }
-
-    readPreferences(): void {
-        if (existsSync(__prefPath)) {
-            const data = readFileSync(
-                __prefPath,
-                {encoding: "UTF8"}
-            );
-            const _d = JSON.parse(data);
-            const _e  = deserialize(Preferences, _d);
-    
-            if (_e) this.userPreferences = _e;
-        }
-    }
-}
-
-/**
- * Initialize model schema
- */
-export const RootStoreSchema = createModelSchema(
-    RootStore,
-    {
-        uistate: object(UIStore),
-        // topLevelObject: object(StoryObject)
-        storyContentObjectRegistry: object(AutoValueRegistrySchema()),
-        // protocol: list(object())
-    }
-);

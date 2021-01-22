@@ -1,11 +1,9 @@
-import { StickValues } from 'babylonjs';
 import { IReactionDisposer, reaction } from 'mobx';
-import { stringifyKey } from 'mobx/dist/internal';
 import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { Store } from '../..';
-import { Container } from '../../../plugins/Container';
+import { Container } from '../../../plugins/content/Container';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
@@ -121,11 +119,11 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
     }
 
     private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
-        const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
+        const instance = store.pluginStore.getNewInstance(input) as AbstractStoryObject;
 
         if (instance) {
             loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
-            if (instance.role === "internal.container.container") ((instance as Container).setup(store.storyContentObjectRegistry, store.uistate));           
+            if (instance.role === "internal.content.container") ((instance as Container).setup(store.storyContentObjectRegistry, store.uistate));           
             store.uistate.selectedItems.setSelectedItems([instance.id]);
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
         }

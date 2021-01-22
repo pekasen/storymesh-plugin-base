@@ -1,6 +1,7 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { AbstractStoryModifier } from '../../../plugins/helpers/AbstractModifier';
 import { RootStore } from '../../store/rootStore';
 import { ConnectorView } from '../Connector/ConnectorView';
 import { Draggable } from '../Draggable';
@@ -25,7 +26,16 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
     render({ store, object, children }: StoryObjectViewProperties): h.JSX.Element {
         // const EditorComponent: FunctionComponent<INGWebSProps> = object.getEditorComponent();
         return <Draggable id={object.id}>
-            <div class="outer">
+            <div class="outer" onDrop={(event) => {
+                const data = event.dataTransfer?.getData("text");
+                if (data) {
+                    const path = data.split(".");
+                    if (path[1] === "modifier") {
+                        const modifier = store.pluginStore.getNewInstance(data) as AbstractStoryModifier;
+                        object.addModifier(modifier);
+                    }
+                }
+            }}>
                 {
                     Array.from(object.connectors).map(a => {
                         const [, obj] = a;

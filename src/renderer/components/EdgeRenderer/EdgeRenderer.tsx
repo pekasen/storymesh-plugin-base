@@ -125,7 +125,7 @@ export class EdgeRenderer extends Component {
             
             const mouseUp = () => {
                 this.store.uistate.selectedItems.clearSelectedItems();                
-                document.removeEventListener("mousemove", mouseMove);
+                
 
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
@@ -148,6 +148,8 @@ export class EdgeRenderer extends Component {
                 });
                 this.deleteRectangle(this.selectionRectangle);
                 // document.removeEventListener("dragend", dragEnd);
+                document.removeEventListener("mousemove", mouseMove);
+                document.removeEventListener("mouseup", mouseUp);
             }
 
             document.addEventListener("mouseup", mouseUp);

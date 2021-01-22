@@ -2,15 +2,15 @@ import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
-import { IStoryModifier } from 'storygraph/dist/StoryGraph/IStoryModifier';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { createModelSchema, identifier, object, optional, primitive } from 'serializr';
+import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, object, optional, primitive, serialize } from 'serializr';
 import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
 import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 import { rootStore } from '../../renderer';
-// import { makeSchemas } from '../../renderer/store/schemas/AbstractStoryObjectSchema';
+import { AbstractStoryModifier } from "./AbstractModifier";
+
 /**
  * Our second little dummy PlugIn
  * 
@@ -18,6 +18,7 @@ import { rootStore } from '../../renderer';
  */
 // @
 export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
+
     public id: string;
     public metaData: IMetaData;
     // public get connections(): IEdge[] {
@@ -26,7 +27,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public connections: IEdge[];
     public parent?: string;
     public renderingProperties: IRenderingProperties;
-    public modifiers: IStoryModifier[];
+    public modifiers: AbstractStoryModifier[];
     public deletable: boolean;
     public abstract name: string;
     public abstract role: string;
@@ -34,7 +35,6 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public abstract userDefinedProperties: any;
     public abstract childNetwork?: StoryGraph;
     public abstract connectors: Map<string, IConnectorPort>
-    public abstract menuTemplate: IMenuTemplate[]
     public abstract icon: string
     public abstract content?: any;
     
@@ -58,8 +58,9 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             id: false,
             metaData:               observable,
             connections:            observable,
-            modifiers:              observable,
+            modifiers:              observable.deep,
             addConnection:          action,
+            addModifier:            action
         });
     }
 
@@ -88,6 +89,18 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             }
         }
     }
+
+    public get menuTemplate(): IMenuTemplate[] {
+        const ret: IMenuTemplate[] = [];
+        if (this.modifiers.length !== 0) {
+            ret.push(
+                ...this.modifiers.
+                map(e => e.menuTemplate).
+                reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => ([...e]))
+            );
+        }
+        return ret;
+    }
     
     public removeConnections(edges: IEdge[]): void {
         edges.forEach((edge) => {
@@ -100,7 +113,17 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         });
     }
 
-    public abstract getComponent(): FunctionComponent<INGWebSProps> 
+    public addModifier(modifier: AbstractStoryModifier): void {
+        this.modifiers.push(modifier);
+    }
+
+    public removeModifier(modifier: AbstractStoryModifier): void {
+        this.modifiers.splice(
+            this.modifiers.indexOf(modifier), 1
+        );
+    }
+
+    public abstract getComponent?(): FunctionComponent<INGWebSProps>
 
     public abstract getEditorComponent(): FunctionComponent<INGWebSProps> 
 
@@ -132,18 +155,8 @@ export class StoryObject extends AbstractStoryObject {
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph | undefined;
     public connectors!: Map<string, IConnectorPort>;
-    public menuTemplate!: IMenuTemplate[];
     public icon!: string;
     public content?: any;
-    
-    // public get connections(): IEdge[] {
-    //     if (this.parent) {
-    //         const parent = reg.getValue(this.parent);
-    //         const _res = parent?.childNetwork?.filterEdges((e) => e.id.search(this.id) !== 0);
-    //         if (_res) return _res 
-    //         else return []
-    //     } else return []
-    // }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         throw new Error('Method not implemented.');
@@ -152,6 +165,7 @@ export class StoryObject extends AbstractStoryObject {
         throw new Error('Method not implemented.');
     }
 }
+
 export const StoryObjectSchema = createModelSchema(StoryObject, {
     id: identifier(
         (id: string, obj) => {
@@ -165,7 +179,20 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
     userDefinedProperties: object(UserDefinedPropertiesSchema),
     metaData: object(MetaDataSchema),
     content: optional(object(ContentSchema)),
-    parent: optional(primitive())
+    parent: optional(primitive()),
+    modifiers: list(custom(
+        (value: Record<string, unknown>) => {
+            const schema = getDefaultModelSchema(value.constructor);
+            if (!schema) throw("could not get schema for " + value.constructor.name);
+            return serialize(schema, value);
+        },
+        (jsonValue, context, callback) => {
+            const instance = rootStore.root.pluginStore.getNewInstance(jsonValue.role);
+            if (!instance) throw("Big time failure !!11 while fetching schema for" + jsonValue.role);
+            console.log("getting schema for", instance.constructor.name);
+            const _schema = getDefaultModelSchema(instance.constructor);
+            if (!_schema) throw("no schema present during deserialization for " + context.target.constructor.name);
+            return deserialize(_schema, jsonValue, callback);
+        }
+    ))
 });
-// StoryObjectSchema.props.parent = reference(StoryObject);
-// setDefaultModelSchema(StoryObject, AbstractStoryObjectSchema)

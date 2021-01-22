@@ -1,20 +1,21 @@
-import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
+import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { createModelSchema, object } from 'serializr';
-import { exportClass } from './helpers/exportClass';
+import { exportClass } from '../helpers/exportClass';
 import { FunctionComponent, h } from "preact";
 import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { InputConnectorView } from "./InputConnectorView";
-import { IPlugIn, INGWebSProps, IMenuTemplate } from "../renderer/utils/PlugInClassRegistry";
+import { IPlugIn, INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
 import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
-import { MoveableItem } from "../renderer/store/MoveableItem";
-import { ObservableStoryGraph, ObservableStoryGraphSchema } from './helpers/ObservableStoryGraph';
+import { MoveableItem } from "../../renderer/store/MoveableItem";
+import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
 import { OutputConnectorView } from "./OutputConnectorView";
-import { Store } from '../renderer';
+import { Store } from '../../renderer';
 import { StoryGraph } from 'storygraph';
-import { StoryObject } from "./helpers/AbstractStoryObject";
-import { UIStore } from "../renderer/store/UIStore";
+import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
+import { UIStore } from "../../renderer/store/UIStore";
 import { useContext, useEffect, useState } from "preact/hooks";
+import { CSSGridContainerModifier } from '../modifiers/GridContainer';
 
 /**
  * Our second little dummy PlugIn
@@ -36,7 +37,7 @@ export class Container extends StoryObject {
         super();
 
         this.name = "Container";
-        this.role = "internal.container.container";
+        this.role = "internal.content.container";
         this.isContentNode = false;
         this.childNetwork = new ObservableStoryGraph(this.id);
         this.connectors = new Map<string, IConnectorPort>();
@@ -57,9 +58,10 @@ export class Container extends StoryObject {
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph}) => {
+        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph, modifiers}) => {
             const [, setState] = useState({});
             let disposer: IReactionDisposer;
+            
             useEffect(() => {
                 disposer = reaction(
                     () => (graph?.nodes.length),
@@ -72,22 +74,47 @@ export class Container extends StoryObject {
                     disposer();
                 }
             });
-            return <div id={id}>
+
+            const cssInline = modifiers?.
+                filter(modifier => modifier.type === "css-inline").
+                map(modifier => {
+                    const m = modifier as CSSGridContainerModifier;
+                    const data = m.data;
+                    return Object.keys(data).map(key => `${key}: ${data[key]};`).join(" ");
+                }).
+                join(" ");
+            const cssClasses = modifiers?.
+                filter(modifier => modifier.type === "css-class").
+                map(modifier => {
+                    const m = modifier as CSSGridContainerModifier;
+                    const data = m.data;
+                    return Object.keys(data).map(key => data[key] as string)
+                }).
+                join(" ");
+
+            const div = <div id={id}>
                 {
                     graph?.nodes.map(e => {
-                        const node = registry.getValue(e);
-                        const Comp = (node as unknown as IPlugIn).getComponent();
-                        if(node) return <Comp
-                            registry={registry}
-                            id={node.id}
-                            renderingProperties={node.renderingProperties}
-                            content={node.content}
-                            modifiers={node.modifiers}
-                            graph={node.childNetwork}
-                        ></Comp>
+                        const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
+                        if (node.getComponent) {
+                            const Comp = node.getComponent();
+                            if (node) return <Comp
+                                registry={registry}
+                                id={node.id}
+                                renderingProperties={node.renderingProperties}
+                                content={node.content}
+                                modifiers={node.modifiers}
+                                graph={node.childNetwork}
+                            ></Comp>
+                        }
                     }) || null
                 }
             </div>
+            console.log("found following css statements", cssInline, cssClasses);
+
+            if (cssInline) div.props.style = cssInline;
+            if (cssClasses) div.props.style = cssClasses;
+            return div;
         }
         return Comp
     }
@@ -154,25 +181,43 @@ export class Container extends StoryObject {
         }
     }
 
-    menuTemplate: IMenuTemplate[] = [
-        ...nameField(this),
-        ...dropDownField(
-            this,
-            () => ["h1", "h2", "h3", "b", "p"],
-            () => "h1",
-            (selection: string) => {
-                this.userDefinedProperties.class = selection
-            }
-        ),
-        {
-            label: "Test",
-            type: "text",
-            value: () => this.name,
-            valueReference: (name: string) => {this.updateName(name)}
-        },
-        ...connectionField(this),
-        // ...addConnectionPortField(this)
-    ]
+    public get menuTemplate(): IMenuTemplate[] {
+        const ret: IMenuTemplate[] = [
+            ...nameField(this),
+            ...dropDownField(
+                this,
+                () => ["h1", "h2", "h3", "b", "p"],
+                () => "h1",
+                (selection: string) => {
+                    this.userDefinedProperties.class = selection
+                }
+            ),
+            ...connectionField(this),
+        ];
+        if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
+        return ret;
+
+        // return [
+        //     ...super.menuTemplate,
+        //     ...nameField(this),
+        //     ...dropDownField(
+        //         this,
+        //         () => ["h1", "h2", "h3", "b", "p"],
+        //         () => "h1",
+        //         (selection: string) => {
+        //             this.userDefinedProperties.class = selection
+        //         }
+        //     ),
+        //     {
+        //         label: "Test",
+        //         type: "text",
+        //         value: () => this.name,
+        //         valueReference: (name: string) => {this.updateName(name)}
+        //     },
+        //     ...connectionField(this),
+        //     // ...addConnectionPortField(this)
+        // ]
+    }
 }
 createModelSchema(Container, {
     childNetwork: object(ObservableStoryGraphSchema)
@@ -181,7 +226,7 @@ createModelSchema(Container, {
 export const plugInExport = exportClass(
     Container,
     "Container",
-    "internal.container.container",
+    "internal.content.container",
     Container.defaultIcon,
     true
 );

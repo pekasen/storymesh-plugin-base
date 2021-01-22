@@ -9,7 +9,13 @@ interface IPreviewProps extends INGWebSProps{
     topLevelObjectId: string
 }
 
-export class Preview extends Component<IPreviewProps> {
+type WidthClass = "XS" | "SM" | "MD" | "LG" | "XL";
+
+interface IPreviewState {
+    classes: WidthClass[]
+}
+
+export class Preview extends Component<IPreviewProps, IPreviewState> {
 
     private reactionDisposer: IDisposer
     private ref = createRef<HTMLDivElement>();
@@ -22,28 +28,51 @@ export class Preview extends Component<IPreviewProps> {
             console.log("Updated")
             this.setState({});
         });
-        // reaction(
-        //     () => (
-        //         props.graph?.nodes.length
-        //     ),
-        //     (o) => {
-        //         console.log(o);
-        //         this.setState({});
-        //     }
-        // );
-        this.sizeObserver = new ResizeObserver((entries) => console.log("Resized", entries));
+    
+        this.state = {
+            classes: ["XS"]
+        };
+     
+        this.sizeObserver = new ResizeObserver((entries) => {
+            const storyDivWidth = entries[0].contentRect.width;
+            const classString: WidthClass[] = this.getCurrentWidthClass(storyDivWidth);
+            
+            this.setState({
+                classes: classString
+            });
+        });
+    }
+
+    private getCurrentWidthClass(width: number) {
+        const classes = [
+            {class: "XS", condition: (x: number) => x >= 0},
+            {class: "SM", condition: (x: number) => x >= 576},
+            {class: "MD", condition: (x: number) => x >= 768},
+            {class: "LG", condition: (x: number) => x >= 960},
+            {class: "XL", condition: (x: number) => x >= 1200},
+        ];
+
+        return classes.filter(e => e.condition(width)).map(e => e.class as WidthClass);
     }
 
     componentDidMount(): void {
-        if (this.ref.current) this.sizeObserver.observe(this.ref.current);
+        if (this.ref.current) {
+            this.sizeObserver.observe(this.ref.current);
+            const width = this.ref.current.offsetWidth;
+            const classString: WidthClass[] = this.getCurrentWidthClass(width);
+            
+            this.setState({
+                classes: classString
+            });
+        }
     }
 
-    render({topLevelObjectId, registry, graph}: IPreviewProps): h.JSX.Element {
+    render({topLevelObjectId, registry, graph}: IPreviewProps, { classes }: IPreviewState): h.JSX.Element {
         // const g = graph?.traverse(registry, (topLevelObjectId  + ".start"))
         const children = graph?.nodes.map(id => registry.getValue(id)).filter(node => node !== undefined);
 
         console.log("children", children);
-        return <div class="preview-container" ref={this.ref}>
+        return <div class="preview-container" >
                 <VerticalPaneGroup>
                     <VerticalMiniPane>
                         <div class="header-preview">
@@ -51,7 +80,7 @@ export class Preview extends Component<IPreviewProps> {
                         </div>
                     </VerticalMiniPane>
                 </VerticalPaneGroup>
-            <div class="storywrapper">
+            <div class={`storywrapper ${classes.join(" ")}`} ref={this.ref}>
                 <div class={"ngwebs-story "} id={topLevelObjectId}>
                 {
                     children?.map(node => {

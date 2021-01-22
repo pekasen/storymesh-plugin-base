@@ -20,6 +20,10 @@ export class SelectedItemStore {
         this.selectedItemIds = ids;
     }
 
+    clearSelectedItems(): void {
+        this.selectedItemIds.length = 0;
+    }
+
     addToSelectedItems(id: string): void {
         if (!this.isSelected(id)) this.selectedItemIds.push(id)
     }

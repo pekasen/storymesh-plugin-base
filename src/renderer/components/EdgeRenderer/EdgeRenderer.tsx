@@ -6,8 +6,6 @@ import { Store } from '../..';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { Line, Rect, Svg, SVG } from '@svgdotjs/svg.js';
-import { Rectangle } from 'electron/renderer';
-import { unwatchFile } from 'fs';
 
 export interface IEdgeRendererProperties {
     loadedObject: IStoryObject
@@ -107,7 +105,6 @@ export class EdgeRenderer extends Component {
                     this.deleteNoodle(this.looseNoodle);
                 }
                 document.removeEventListener("drag", mouseMove);
-                // document.removeEventListener("dragend", dragEnd);
             }
 
             document.addEventListener("dragend", dragEnd);
@@ -124,8 +121,8 @@ export class EdgeRenderer extends Component {
             document.addEventListener("mousemove", mouseMove);
             
             const mouseUp = () => {
-                this.store.uistate.selectedItems.clearSelectedItems();                
                 document.removeEventListener("mousemove", mouseMove);
+                this.store.uistate.selectedItems.clearSelectedItems();          
 
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
@@ -134,24 +131,30 @@ export class EdgeRenderer extends Component {
                     return this.store.uistate.moveableItems.getValue(id);
                 }).filter(e => e != undefined) as MoveableItem[];  
                 
-                moveableItems.map( (movItem: MoveableItem) =>  {       
+                moveableItems.map((movItem: MoveableItem) => {       
                     let item;
                     if (movItem && movItem.id) {
                         item = document.getElementById(movItem?.id);
-                       // console.log(item);
-                       // console.log("selectedItems", this.store.uistate.selectedItems);
                         if (item && this.selectionRectangle && this.selectorIsOverlapping(item, this.selectionRectangle))
                         {
                             this.store.uistate.selectedItems.addToSelectedItems(movItem.id);
                         }
                     }
                 });
-                this.deleteRectangle(this.selectionRectangle);
-                // document.removeEventListener("dragend", dragEnd);
+               
+                // TODO: why is this timeout here necessary? Map above is not async
+                setTimeout(() => {
+                    this.deleteRect();
+                }, 100);                
             }
 
             document.addEventListener("mouseup", mouseUp);
         });
+    }
+
+    deleteRect(): void {
+        this.selectionRectangle?.remove();
+        this.selectionRectangle = undefined;
     }
 
     drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number): void {
@@ -163,12 +166,7 @@ export class EdgeRenderer extends Component {
     }    
 
     deleteNoodle(noodle: Line[] | undefined): void {
-        console.log("tryna delete", noodle);
-        if (noodle) {            
-            //const elem = noodle[0].element;
-            //const elem2 = document.getElementById(noodle[1].id);
-           // elem?.remove();
-            //elem2?.remove();
+        if (noodle) {
             noodle[0].remove();
             noodle[1].remove();
             noodle.length = 0;
@@ -268,10 +266,8 @@ export class EdgeRenderer extends Component {
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Line[] {
-        // console.log("mutationTargetNode: ", this.mutationTargetNode);
         const coords1 = this.getAbsPosOffset(x1, y1);
         const coords2 = this.getAbsPosOffset(x2, y2);
-        //  console.log("drag mousemove", coords1, coords2);
         const c = this.svg.line(coords1.x, coords1.y, coords2.x, coords2.y);
         c.stroke({ color: '#f06', width: 10, linecap: 'round' });   
         const c2 = this.svg.line(coords1.x, coords1.y, coords2.x, coords2.y);
@@ -280,8 +276,7 @@ export class EdgeRenderer extends Component {
         return [c, c2];
     }
 
-    drawSelectionRectangle(x1: number, y1: number, x2: number, y2: number): void {
-        //console.log(x1, y1, x2, y2);
+    drawSelectionRectangle(x1: number, y1: number, x2: number, y2: number): void {  
         if (this.selectionRectangle) {
             this.redrawRectangle(this.selectionRectangle, x1, y1, x2, y2);
         } else {
@@ -290,24 +285,20 @@ export class EdgeRenderer extends Component {
     }
 
     drawRectangle(x1: number, y1: number, x2: number, y2: number): Rect {
-        //console.log("mutationTargetNode: ", this.mutationTargetNode);
         const coords1 = this.getAbsPosOffset(x1, y1);
         const coords2 = this.getAbsPosOffset(x2, y2);
-       // console.log("drawRectangle", this.selectionRectangle);
         const width = Math.abs(coords2.x - coords1.x);
         const height = Math.abs(coords2.y - coords1.y);
         const posX = Math.min(coords1.x, coords2.x);
         const posY = Math.min(coords1.y, coords2.y);
         const rect = this.svg.rect(width, height);
-        rect.fill('#f06').move(posX, posY);
-        
+        rect.fill('#f06').move(posX, posY);        
         return rect;
     }
 
     redrawRectangle(rect: Rect, x1: number, y1: number, x2: number, y2: number): void { 
         const coords1 = this.getAbsPosOffset(x1, y1);
-        const coords2 = this.getAbsPosOffset(x2, y2);
-        //console.log("redrawRectangle", this.selectionRectangle); 
+        const coords2 = this.getAbsPosOffset(x2, y2); 
         const width = Math.abs(coords2.x - coords1.x);
         const height = Math.abs(coords2.y - coords1.y);     
         const posX = Math.min(coords1.x, coords2.x);
@@ -315,14 +306,6 @@ export class EdgeRenderer extends Component {
         rect.width(width);
         rect.height(height);
         rect.move(posX, posY);
-    }
-
-    deleteRectangle(rect: Rect | undefined): void {
-        if (rect) {
-            rect.remove();
-            rect = undefined;
-            console.log("tryna delete", rect);
-        }        
     }
 
     redrawEdgeCurve(paths: Line[], x1: number, y1: number, x2: number, y2: number): void {      
@@ -333,29 +316,24 @@ export class EdgeRenderer extends Component {
     }
 
     selectorIsOverlapping( elem: HTMLElement, selectionRect: Rect ) : boolean {
-        // Div 1 data
         const d1_offset             = this.getAbsPosOffset(elem.getBoundingClientRect().x, elem.getBoundingClientRect().y);
         const d1_height             = elem.getBoundingClientRect().height;
         const d1_width              = elem.getBoundingClientRect().width;
         const d1_distance_from_top  = d1_offset.y + d1_height;
         const d1_distance_from_left = d1_offset.x + d1_width;
     
-        // Div 2 data
         const d2_offset_x             = selectionRect.x();
         const d2_offset_y             = selectionRect.y();
         const d2_height             = selectionRect.height();
         const d2_width              = selectionRect.width();
         const d2_distance_from_top  = d2_offset_y + d2_height;
         const d2_distance_from_left = d2_offset_x + d2_width;
-    
-       // console.log(d1_distance_from_left, d1_distance_from_top, d2_distance_from_left, d2_distance_from_left);
         
         const not_colliding = ( d1_distance_from_top < d2_offset_y 
             || d1_offset.y > d2_distance_from_top 
             || d1_distance_from_left < d2_offset_x 
             || d1_offset.x > d2_distance_from_left );
     
-        // Return whether it IS colliding
         return !not_colliding;
     }
     

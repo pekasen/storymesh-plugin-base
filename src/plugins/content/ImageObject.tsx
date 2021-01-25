@@ -6,9 +6,11 @@ import { action, IReactionDisposer, makeObservable, observable, reaction } from 
 import { IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField } from '../helpers/plugInHelpers';
+import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+import { CSSModifier } from "../helpers/CSSModifier";
+import { TouchBarSegmentedControl } from "electron";
 
 /**
  * Our first little dummy PlugIn
@@ -39,7 +41,7 @@ class _ImageObject extends StoryObject {
         this.makeFlowInAndOut();
         
         this.content = {
-            resource: "new URL",
+            resource: "https://www.dafont.com/img/illustration/s/o/something.jpg",
             contentType: "url",
             altText: "This is an image"
         }
@@ -57,10 +59,18 @@ class _ImageObject extends StoryObject {
     }
 
     public get menuTemplate(): IMenuTemplate[] {
-        return [
-            ...super.menuTemplate,
-            ...connectionField(this)
-        ]
+        const ret: IMenuTemplate[] = [
+            ...nameField(this),
+            {
+                label: "url",
+                value: () => this.content.resource,
+                valueReference: (url: string) => this.updateImageURL(url),
+                type: "text"
+            },
+            ...connectionField(this),
+        ];
+        if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
+        return ret;
     }
 
     public updateImageURL(newURL: string) {
@@ -73,22 +83,12 @@ class _ImageObject extends StoryObject {
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            const [, setState] = useState({});
-            let disposer: IReactionDisposer;
-            useEffect(() => {
-                disposer = reaction(
-                    () => (content?.resource),
-                    () => {
-                        setState({});
-                    }
-                )
-
-                return () => {
-                    disposer();
-                }
-            })
-                return <img src={content?.resource}></img>
-            }
+            const img = <img src={content?.resource}></img>;
+            this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (
+                (v as CSSModifier).modifyCSS(p)
+            ), img);
+            return img
+        }
         return Comp
     }
 

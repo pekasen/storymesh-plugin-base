@@ -16,6 +16,7 @@ import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject
 import { UIStore } from "../../renderer/store/UIStore";
 import { useContext, useEffect, useState } from "preact/hooks";
 import { CSSGridContainerModifier } from '../modifiers/GridContainer';
+import { CSSModifier, CSSModifierData } from '../helpers/CSSModifier';
 
 /**
  * Our second little dummy PlugIn
@@ -59,38 +60,38 @@ export class Container extends StoryObject {
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph, modifiers}) => {
-            const [, setState] = useState({});
-            let disposer: IReactionDisposer;
+            // const [, setState] = useState({});
+            // let disposer: IReactionDisposer;
             
-            useEffect(() => {
-                disposer = reaction(
-                    () => (graph?.nodes.length),
-                    () => {
-                        setState({});
-                    }
-                )
+            // useEffect(() => {
+            //     disposer = reaction(
+            //         () => (graph?.nodes.length),
+            //         () => {
+            //             setState({});
+            //         }
+            //     )
     
-                return () => {
-                    disposer();
-                }
-            });
+            //     return () => {
+            //         disposer();
+            //     }
+            // });
 
-            const cssInline = modifiers?.
-                filter(modifier => modifier.type === "css-inline").
-                map(modifier => {
-                    const m = modifier as CSSGridContainerModifier;
-                    const data = m.data;
-                    return Object.keys(data).map(key => `${key}: ${data[key]};`).join(" ");
-                }).
-                join(" ");
-            const cssClasses = modifiers?.
-                filter(modifier => modifier.type === "css-class").
-                map(modifier => {
-                    const m = modifier as CSSGridContainerModifier;
-                    const data = m.data;
-                    return Object.keys(data).map(key => data[key] as string)
-                }).
-                join(" ");
+            // const cssInline = modifiers?.
+            //     filter(modifier => modifier.type === "css-inline").
+            //     map(modifier => {
+            //         const m = modifier as CSSGridContainerModifier;
+            //         const data = m.data;
+            //         return Object.keys(data).map(key => `${key}: ${data[key]};`).join(" ");
+            //     }).
+            //     join(" ");
+            // const cssClasses = modifiers?.
+            //     filter(modifier => modifier.type === "css-class").
+            //     map(modifier => {
+            //         const m = modifier as CSSGridContainerModifier;
+            //         const data = m.data;
+            //         return Object.keys(data).map(key => data[key] as string)
+            //     }).
+            //     join(" ");
 
             const div = <div id={id}>
                 {
@@ -110,11 +111,14 @@ export class Container extends StoryObject {
                     }) || null
                 }
             </div>
-            console.log("found following css statements", cssInline, cssClasses);
+            // console.log("found following css statements", cssInline, cssClasses);
 
-            if (cssInline) div.props.style = cssInline;
-            if (cssClasses) div.props.style = cssClasses;
-            return div;
+            // if (cssInline) div.props.style = cssInline;
+            // if (cssClasses) div.props.style = cssClasses;
+            return this.modifiers.filter(e => e.type === "css-hybrid").reduce((p, v) => {
+                return (v as CSSModifier).modifyCSS(p);
+            }, div)
+            // return div;
         }
         return Comp
     }
@@ -193,6 +197,9 @@ export class Container extends StoryObject {
                 }
             ),
             ...connectionField(this),
+            {
+                type: "divider"
+            }
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
         return ret;

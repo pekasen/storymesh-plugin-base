@@ -1,10 +1,7 @@
 import { h } from "preact";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
-
-interface IMenuItemRenderer {
-    render(item: IMenuTemplate): preact.JSX.Element
-}
+import { IMenuItemRenderer } from "../helpers/IMenuItemRenderer";
 
 export class TextMenuItem implements IMenuItemRenderer {
     render(item: IMenuTemplate) {

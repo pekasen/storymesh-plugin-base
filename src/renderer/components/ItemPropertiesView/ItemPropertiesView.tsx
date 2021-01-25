@@ -4,7 +4,7 @@ import { Component, h } from 'preact';
 import { RootStore } from '../../store/rootStore';
 import { ConnectionTableView } from '../ConnectionTableView/ConnectionTableView';
 import { remote } from "electron";
-import { IMenuItemRenderer } from '../../../plugins/panes/TextArea';
+import { IMenuItemRenderer } from "../../../plugins/helpers/IMenuItemRenderer";
 
 const { Menu, MenuItem } = remote;
 

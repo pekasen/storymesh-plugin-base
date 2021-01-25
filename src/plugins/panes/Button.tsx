@@ -3,10 +3,7 @@ const { Menu, MenuItem } = remote;
 import { h, JSX } from "preact";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
-
-interface IMenuItemRenderer {
-    render(item: IMenuTemplate): preact.JSX.Element
-}
+import { IMenuItemRenderer } from "../helpers/IMenuItemRenderer";
 
 export class ButtonMenuItem implements IMenuItemRenderer {
     render(item: IMenuTemplate): JSX.Element {

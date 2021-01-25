@@ -6,10 +6,11 @@ import { StoryGraph, IConnectorPort, IEdge } from 'storygraph';
 import { Store } from '../../renderer';
 import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
 import { exportClass } from '../helpers/exportClass';
+import { IMenuItemRenderer } from '../helpers/IMenuItemRenderer';
 
 const { Menu, MenuItem } = remote;
 
-export class ConnectionTableMenuItem {
+export class ConnectionTableMenuItem implements IMenuItemRenderer {
     render(item: IMenuTemplate): h.JSX.Element {
         const store = useContext(Store);
         const myId: string = item.value().id;

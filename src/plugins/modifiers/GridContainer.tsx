@@ -1,67 +1,46 @@
 import { makeObservable, observable, runInAction } from "mobx";
-import { createModelSchema, object } from "serializr";
-import { ModifierType } from "storygraph";
+import { createModelSchema, list, object, primitive } from "serializr";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
-import { ObservableStoryModifier } from "../helpers/AbstractModifier";
+import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
 
-interface IGridContainer {
-    "display": "grid" | "inline-grid";
-    "grid-template-columns": string;
-    "grid-template-rows": string;
+interface IGridContainerInlineStatements extends CSSStatement {
     "grid-gap": string;
-    "grid-row-gap"?: string;
-    "grid-column-gap"?: string;
-    "justify-items"?: string;
-    "align-items"?: string;
 }
 
-interface IStringIndexable {
-    [key: string]: string | undefined;
+interface IGridContainerModifierData extends CSSModifierData {
+    inline: IGridContainerInlineStatements;
 }
 
-export class GridContainer implements IGridContainer, IStringIndexable {
-    [key: string]: string | undefined;
-    
-    public "display": "grid" | "inline-grid";
-    public "grid-template-columns": string;
-    public "grid-template-rows": string;
-    public "grid-gap": string;
-    public "grid-row-gap"?: string | undefined;
-    public "grid-column-gap"?: string | undefined;
-    public "justify-items"?: string | undefined;
-    public "align-items"?: string | undefined;
+class GridContainerInlineStatements implements IGridContainerInlineStatements {
+    public "grid-gap" = "15px";
 
-    constructor(
-        display: "grid" | "inline-grid",
-        gridTemplateColumns: string,
-        gridTemplateRows: string,
-        gridGap: string
-    ) {
-        this["display"] = display;
-        this["grid-template-columns"] = gridTemplateColumns;
-        this["grid-template-rows"] = gridTemplateRows;
-        this["grid-gap"] = gridGap;
-
+    constructor() {
         makeObservable(this, {
-            "display": true,
-            "grid-template-columns": true,
-            "grid-template-rows": true,
             "grid-gap": true
+        });
+    }
+
+    [key: string]: string
+}
+
+export class GridContainer implements IGridContainerModifierData {
+    
+    public classes = ["grid-container", "grid-12"];
+    public inline = new GridContainerInlineStatements();
+
+    constructor() {
+        makeObservable(this, {
+            classes: true,
+            inline: true
         });
     }
 }
 
-export class CSSGridContainerModifier extends ObservableStoryModifier<IGridContainer> {
-    public readonly type: ModifierType = "css-inline";
+export class CSSGridContainerModifier extends CSSModifier {
     public name = "Grid Container"
     public role = "internal.modifier.gridcontainer";
-    public data: GridContainer = new GridContainer(
-        "grid",
-        "1fr 1fr 1fr 1fr",
-        "",
-        "1px"
-    );
+    public data: GridContainer = new GridContainer();
 
     constructor() {
         super();
@@ -74,25 +53,31 @@ export class CSSGridContainerModifier extends ObservableStoryModifier<IGridConta
     public get menuTemplate(): IMenuTemplate[] {
         return [
             ...super.menuTemplate,
+            // {
+            //     label: "Display",
+            //     type: "dropdown",
+            //     value: () => this.data.display,
+            //     valueReference: (value: string) => runInAction(() => this.data.display = (value === "grid") ? value : "inline-grid"),
+            //     options: ["grid", "inline-grid"]
+            // },
             {
-                label: "Display",
-                type: "dropdown",
-                value: () => this.data.display,
-                valueReference: (value: string) => runInAction(() => this.data.display = (value === "grid") ? value : "inline-grid"),
-                options: ["grid", "inline-grid"]
-            },
-            {
-                label: "Columns",
+                label: "Gap",
                 type: "text",
-                value: () => this.data["grid-template-columns"],
-                valueReference: (value: string) => runInAction(() => this.data["grid-template-columns"] = value)
+                value: () => this.data.inline["grid-gap"],
+                valueReference: (value: string) => {
+                    // validate user input
+                    const test = /\d+px/gm;
+                    if (test.test(value)) {
+                        runInAction(() => this.data.inline["grid-gap"] = value)
+                    }
+                }
             },
-            {
-                label: "Rows",
-                type: "text",
-                value: () => this.data["grid-template-rows"],
-                valueReference: (value: string) => runInAction(() => this.data["grid-template-rows"] = value)
-            },
+            // {
+            //     label: "Rows",
+            //     type: "text",
+            //     value: () => this.data["grid-template-rows"],
+            //     valueReference: (value: string) => runInAction(() => this.data["grid-template-rows"] = value)
+            // },
         ];
     }
 
@@ -101,9 +86,13 @@ export class CSSGridContainerModifier extends ObservableStoryModifier<IGridConta
     }
 }
 
+export const GridContainerInlineStatementsSchema = createModelSchema(GridContainerInlineStatements, {
+    "grid-gap": true
+});
+
 export const CSSGridContainerModifierDataSchema = createModelSchema(GridContainer, {
-    "display": true,
-    "grid-template-columns": true
+    classes: list(primitive()),
+    inline: object(GridContainerInlineStatements)
 });
 
 export const CSSGridContainerModifierSchema = createModelSchema(CSSGridContainerModifier, {

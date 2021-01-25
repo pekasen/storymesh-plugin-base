@@ -8,7 +8,7 @@ import { __prefPath } from "../../constants";
 import { Container } from "../../plugins/content/Container";
 import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 import { AbstractStoryModifier } from "../../plugins/helpers/AbstractModifier";
-import { IMenuItemRenderer } from "../../plugins/panes/TextArea";
+import { IMenuItemRenderer } from "../../plugins/helpers/IMenuItemRenderer";
 import { Preferences } from "../../preferences";
 import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
 import { NotificationStore } from './Notification';

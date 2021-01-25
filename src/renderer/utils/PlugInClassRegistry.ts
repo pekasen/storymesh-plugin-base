@@ -52,6 +52,7 @@ export interface IPlugIn {
 export type MenuItemSpecification = "table" |
     "radio" |
     "button" |
+    "divider" |
     "textarea" |
     "text" |
     "hslider" |

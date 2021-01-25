@@ -25,8 +25,8 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
 
     render({ store, object, children }: StoryObjectViewProperties): h.JSX.Element {
         // const EditorComponent: FunctionComponent<INGWebSProps> = object.getEditorComponent();
-        return <Draggable id={object.id}>
-            <div class="outer" onDrop={(event) => {
+        // <Draggable id={object.id}>
+        return <div class="outer" onDrop={(event) => {
                 const data = event.dataTransfer?.getData("text");
                 if (data) {
                     const path = data.split(".");
@@ -55,7 +55,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                     }}
                     onDblClick={(e) => {
                         e.preventDefault();
-                        if (object.role === "internal.container.container") {
+                        if (object.role === "internal.content.container") {
                             store.uistate.setLoadedItem(object.id);
                         }
                     }}
@@ -81,8 +81,8 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                             <span>{object.content?.resource}</span>
                     </div>
                 </div>
-            </div>
-        </Draggable>;
+            </div>;
+        // </Draggable>;
     }
 
     componentWillUnmount(): void {

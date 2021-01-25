@@ -146,7 +146,8 @@ export class EdgeRenderer extends Component {
                 // TODO: why is this timeout here necessary? Map above is not async
                 setTimeout(() => {
                     this.deleteRect();
-                }, 100);                
+                }, 100);
+                document.removeEventListener("mouseup", mouseUp);
             }
 
             document.addEventListener("mouseup", mouseUp);
@@ -168,8 +169,9 @@ export class EdgeRenderer extends Component {
 
     deleteNoodle(noodle: Line[] | undefined): void {
         if (noodle) {
-            noodle[0].remove();
-            noodle[1].remove();
+            // noodle[0].remove();
+            // noodle[1].remove();
+            noodle.forEach(e => e.remove());
             noodle.length = 0;
         }        
     }

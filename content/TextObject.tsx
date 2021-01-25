@@ -9,6 +9,7 @@ import { connectionField, dropDownField, nameField } from '../helpers/plugInHelp
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+import { CSSModifier } from "../helpers/CSSModifier";
 
 /**
  * Our first little dummy PlugIn
@@ -124,25 +125,13 @@ class _TextObject extends StoryObject {
 
     public getComponent() {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            const [, setState] = useState({});
-            let disposer: IReactionDisposer;
-            useEffect(() => {
-                disposer = reaction(
-                    () => (content?.resource),
-                    () => {
-                        setState({});
-                    }
-                )
-    
-                return () => {
-                    disposer();
-                }
-            });
-            return <p>
+            const p = <p>
                 {
                     content?.resource
                 }
-            </p>
+            </p>;
+            
+            return this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (v as CSSModifier).modifyCSS(p), p);
         }
         return Comp
     }

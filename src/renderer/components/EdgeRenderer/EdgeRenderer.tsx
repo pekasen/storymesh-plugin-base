@@ -6,8 +6,6 @@ import { Store } from '../..';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { Line, Rect, Svg, SVG } from '@svgdotjs/svg.js';
-import { Rectangle } from 'electron/renderer';
-import { unwatchFile } from 'fs';
 
 export interface IEdgeRendererProperties {
     loadedObject: IStoryObject
@@ -73,6 +71,7 @@ export class EdgeRenderer extends Component {
         this.disposeReactionLoadedItem = reaction(
             () => (this.store.uistate.loadedItem),
             () => {
+                this.edges.forEach(e => e.forEach(f => f.remove()));
                 this.edges.clear();
                 this.setState({});
                 
@@ -171,8 +170,9 @@ export class EdgeRenderer extends Component {
             //const elem2 = document.getElementById(noodle[1].id);
            // elem?.remove();
             //elem2?.remove();
-            noodle[0].remove();
-            noodle[1].remove();
+            noodle.forEach(e => e.remove());
+            // noodle[0].remove();
+            
             noodle.length = 0;
         }        
     }
@@ -201,7 +201,7 @@ export class EdgeRenderer extends Component {
                                    this.removeClassFromAllEdges(loadedObject, "selected");                                   
                                    selectedItems.setSelectedItems([edge.id]);
                                 }
-                                edgeLine[0].addClass("selected");
+                                if (edgeLine) edgeLine[0].addClass("selected");
                             });
                             
                             edgeLine[1].click((e: MouseEvent) => {
@@ -211,7 +211,7 @@ export class EdgeRenderer extends Component {
                                     this.removeClassFromAllEdges(loadedObject, "selected");                                   
                                     selectedItems.setSelectedItems([edge.id]);
                                 }
-                                edgeLine[0].addClass("selected");
+                                if (edgeLine) edgeLine[0].addClass("selected");
                             })                            
                         }
                     }

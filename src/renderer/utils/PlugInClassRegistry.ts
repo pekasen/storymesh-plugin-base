@@ -46,12 +46,13 @@ export interface INGWebSProps {
 
 export interface IPlugIn {
     menuTemplate: IMenuTemplate[];
-    getComponent(): FunctionalComponent<INGWebSProps>;
+    getComponent?(): FunctionalComponent<INGWebSProps>;
 }
 
 export type MenuItemSpecification = "table" |
     "radio" |
     "button" |
+    "divider" |
     "textarea" |
     "text" |
     "hslider" |
@@ -60,7 +61,8 @@ export type MenuItemSpecification = "table" |
     "check" |
     "file-selector" |
     "url" |
-    "color";
+    "color" |
+    "connectiontable";
 
 export interface IMenuTemplate {
     label: string;

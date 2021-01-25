@@ -1,7 +1,9 @@
 import { Component, createRef, h } from 'preact';
 import { INGWebSProps, IPlugIn } from '../../utils/PlugInClassRegistry';
 import { VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPane';
-import { IReactionDisposer, reaction } from "mobx"
+import { deepObserve, IDisposer } from 'mobx-utils';
+import { useContext } from 'preact/hooks';
+import { Store } from '../..';
 
 interface IPreviewProps extends INGWebSProps{
     topLevelObjectId: string
@@ -15,27 +17,23 @@ interface IPreviewState {
 
 export class Preview extends Component<IPreviewProps, IPreviewState> {
 
-    private reactionDisposer: IReactionDisposer
+    private reactionDisposer: IDisposer
     private ref = createRef<HTMLDivElement>();
     private sizeObserver: ResizeObserver;
 
     constructor(props: IPreviewProps) {
         super(props);
+        const store = useContext(Store);
+        this.reactionDisposer = deepObserve(store.storyContentObjectRegistry, () => {
+            console.log("Updated")
+            this.setState({});
+        });
+    
         this.state = {
             classes: ["XS"]
         };
-        this.reactionDisposer = reaction(
-            () => (
-                props.graph?.nodes.length
-            ),
-            (o) => {
-                console.log(o);
-                this.setState({});
-            }
-        );
+     
         this.sizeObserver = new ResizeObserver((entries) => {
-            // <576px = XS, 576 = SM, 768 = MD, 960 = LG, 1200 = XL?
-            
             const storyDivWidth = entries[0].contentRect.width;
             const classString: WidthClass[] = this.getCurrentWidthClass(storyDivWidth);
             
@@ -88,11 +86,12 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
                     children?.map(node => {
                         const _node = node as unknown as IPlugIn;
 
-                        if (node) return _node.getComponent()({
+                        if (node && _node.getComponent) return _node.getComponent()({
                             graph: node.childNetwork,
                             registry: registry,
                             id: node.id,
-                            content: node.content
+                            content: node.content,
+                            modifiers: node.modifiers
                         })
                     })
                 }

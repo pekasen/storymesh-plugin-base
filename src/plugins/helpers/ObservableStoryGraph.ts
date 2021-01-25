@@ -1,9 +1,7 @@
 import { makeObservable, observable, action } from 'mobx';
-import { createModelSchema, list, object, reference, RefLookupFunction } from 'serializr';
-import { IEdge, IStoryObject, StoryGraph } from 'storygraph';
-import { rootStore } from '../../renderer';
+import { createModelSchema, list, object, primitive } from 'serializr';
+import { IEdge, StoryGraph } from 'storygraph';
 import { EdgeSchema } from '../../renderer/store/schemas/EdgeSchema';
-import {  StoryObject } from './AbstractStoryObject';
 
 export class ObservableStoryGraph extends StoryGraph {
     constructor(parent: string, nodes?: string[], edges?: IEdge[]) {
@@ -19,21 +17,8 @@ export class ObservableStoryGraph extends StoryGraph {
         });
     }
 }
-// RefLookupFunction
-export const lookUpNode: RefLookupFunction = (
-        id,
-        callback,
-        context
-    ) => {
-        const reg = rootStore._loadingCache;
-        console.log("fetching", id, "from", reg);
-        const instance = reg.get(id);
-        if (!instance) setTimeout(() => lookUpNode(id, callback, context), 1)
-        else callback(null, instance);
-}
 
 export const ObservableStoryGraphSchema = createModelSchema(ObservableStoryGraph,{
-    nodes: list(reference(StoryObject, lookUpNode)), // lookUpNode
+    nodes: list(primitive()),
     edges: list(object(EdgeSchema)),
-    parent: reference(StoryObject, lookUpNode), // lookUpNode
 });

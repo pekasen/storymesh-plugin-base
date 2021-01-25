@@ -1,15 +1,15 @@
 import { action, makeObservable, observable } from 'mobx';
 import { h, FunctionComponent } from "preact";
 import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
-import { IMenuTemplate, INGWebSProps } from '../renderer/utils/PlugInClassRegistry';
-import { StoryObject } from './helpers/AbstractStoryObject';
-import { connectionField, nameField } from './helpers/plugInHelpers';
+import { IMenuTemplate, INGWebSProps } from '../../renderer/utils/PlugInClassRegistry';
+import { StoryObject } from '../helpers/AbstractStoryObject';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
 
 // import * as Three from "three";
 // import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-import { exportClass } from './helpers/exportClass';
+import { exportClass } from '../helpers/exportClass';
 import { createModelSchema, object } from 'serializr';
-import { ContentSchema } from '../renderer/store/schemas/ContentSchema';
+import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 
 export interface ISceneContent {
     file: string
@@ -23,7 +23,7 @@ class _Scene extends StoryObject {
     public isContentNode = true;
     public userDefinedProperties: unknown;
     public connectors: Map<string, IConnectorPort>;
-    public menuTemplate: IMenuTemplate[];
+    // public menuTemplate: IMenuTemplate[];
     public icon: string;
 
     constructor() {
@@ -44,16 +44,16 @@ class _Scene extends StoryObject {
                 () => this.content.file
             )
         ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
-        this.menuTemplate = [
-            ...nameField(this),
-            {
-                label: "Scene Location",
-                type: "file-selector",
-                value: () => this.content.file,
-                valueReference: (file: string) => this.updateContent(file)
-            },
-            ...connectionField(this)
-        ]
+        // this.menuTemplate = [
+        //     ...nameField(this),
+        //     {
+        //         label: "Scene Location",
+        //         type: "file-selector",
+        //         value: () => this.content.file,
+        //         valueReference: (file: string) => this.updateContent(file)
+        //     },
+        //     ...connectionField(this)
+        // ]
         this.icon = "icon-box";
         this.content = {
             file: ""
@@ -67,6 +67,21 @@ class _Scene extends StoryObject {
             content: observable,
             updateContent: action
         });
+    }
+
+    public get menuTemplate(): IMenuTemplate[] {
+        const ret: IMenuTemplate[] = [
+            ...nameField(this),
+            {
+                label: "Scene Location",
+                type: "file-selector",
+                value: () => this.content.file,
+                valueReference: (file: string) => this.updateContent(file)
+            },
+            ...connectionField(this)
+        ];
+        if (super.menuTemplate) ret.push(...super.menuTemplate);
+        return ret;
     }
 
     public updateName(name: string): void {

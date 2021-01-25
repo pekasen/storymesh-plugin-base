@@ -1,11 +1,11 @@
-import { AbstractStoryObject, StoryObject } from "./helpers/AbstractStoryObject";
+import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
-import { exportClass } from './helpers/exportClass';
+import { exportClass } from '../helpers/exportClass';
 import { IConnectorPort, IEdge } from 'storygraph';
-import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
+import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
-import { connectionField, nameField } from './helpers/plugInHelpers';
-import { ConnectorPort } from '../renderer/utils/ConnectorPort';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
+import { ConnectorPort } from '../../renderer/utils/ConnectorPort';
 import { makeObservable, observable, action } from 'mobx';
 import { createModelSchema } from 'serializr';
 
@@ -18,7 +18,6 @@ export class OutputConnectorView extends StoryObject {
     public content: undefined;
     public childNetwork: undefined;
     public userDefinedProperties: undefined;
-    public menuTemplate: IMenuTemplate[];
     public isContentNode = false;
     public deletable = false;
 
@@ -28,12 +27,12 @@ export class OutputConnectorView extends StoryObject {
         super();
         
         this.name = "Outputs";
-        this.role = "internal.container.outputconnectorview";
+        this.role = "internal.content.outputconnectorview";
         this.icon = OutputConnectorView.defaultIcon;
-        this.menuTemplate = [
-            ...nameField(this),
-            ...connectionField(this)
-        ];
+        // this.menuTemplate = [
+        //     ...nameField(this),
+        //     ...connectionField(this)
+        // ];
         this.connections = [];
         this.connectors = new Map<string, IConnectorPort>();
         
@@ -61,8 +60,17 @@ export class OutputConnectorView extends StoryObject {
         });
     }
 
+    public get menuTemplate(): IMenuTemplate[] {
+        const ret: IMenuTemplate[] = [
+            ...nameField(this),
+            ...connectionField(this)
+        ];
+        if (super.menuTemplate) ret.push(...super.menuTemplate);
+        return ret;
+    }
+
     getComponent() {
-        return () => <div></div>
+        return () => null
     }
 
     getEditorComponent() {
@@ -78,7 +86,7 @@ createModelSchema(OutputConnectorView, {});
 export const plugInExport = exportClass(
     OutputConnectorView,
     "OutputConnectorView",
-    "internal.container.outputconnectorview",
+    "internal.content.outputconnectorview",
     OutputConnectorView.defaultIcon,
     false
 );

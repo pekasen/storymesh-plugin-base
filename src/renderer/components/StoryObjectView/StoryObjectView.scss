@@ -13,7 +13,7 @@
   .area-meta {
     width: auto;
     height: 1.8em;
-    border-radius: 5px 5px 0 0;
+    border-radius: 3px 3px 0 0;
     @include customize(theme) {
       background: getValue(menu-background);
     }
@@ -89,7 +89,7 @@
     overflow: hidden;
     min-width: 130px;
     max-width: 150px;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 3px 3px;
     @include customize(theme) {
       background: getValue(node-object-background);
     }

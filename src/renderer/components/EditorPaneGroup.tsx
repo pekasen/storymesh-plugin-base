@@ -1,7 +1,7 @@
 import { reaction } from 'mobx';
 import { FunctionalComponent, h } from "preact";
 import { Pane, HorizontalPaneGroup, ResizablePane } from './Pane/Pane';
-import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane } from './VerticalPane/VerticalPane';
+import { VerticalPane, VerticalPaneGroup, VerticalSmallPane, VerticalMiniPane, VerticalFlexPane } from './VerticalPane/VerticalPane';
 import { ItemPropertiesView } from './ItemPropertiesView/ItemPropertiesView';
 import { StoryObjectViewRenderer } from "./StoryObjectViewRenderer/StoryObjectViewRenderer";
 import { BreadCrumb } from "./BreadCrumbs/BreadCrumbs";
@@ -45,7 +45,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
                     <StoryObjectViewRenderer loadedObject={loadedItem} store={store}>
                     </StoryObjectViewRenderer>
                 </VerticalPane>
-                <VerticalSmallPane>
+                <VerticalFlexPane>
                     <StoryComponentGallery>
                         {store.pluginStore.registry.
                         filter((val) => (val.public)).
@@ -55,7 +55,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
                             </GalleryItemView>
                         ))}
                     </StoryComponentGallery>
-                </VerticalSmallPane>
+                </VerticalFlexPane>
             </VerticalPaneGroup>
         </Pane>
         <ResizablePane paneState={store.uistate.windowProperties.previewPane} resizable="left">

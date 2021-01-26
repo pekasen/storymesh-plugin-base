@@ -121,6 +121,7 @@
   }
   &.expanded {
     height: 300px;
+    overflow-y: scroll;
     .expander {
       z-index: 99;
       .icon {

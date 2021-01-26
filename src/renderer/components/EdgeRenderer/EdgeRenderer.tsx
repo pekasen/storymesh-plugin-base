@@ -272,7 +272,7 @@ export class EdgeRenderer extends Component {
         const coords1 = this.getAbsPosOffset(x1, y1);
         const coords2 = this.getAbsPosOffset(x2, y2);
         const c = this.svg.line(coords1.x, coords1.y, coords2.x, coords2.y);
-        c.stroke({ color: '#f06', width: 2, linecap: 'round' });   
+        c.stroke({ color: '#f06', linecap: 'round' });   
         const c2 = this.svg.line(coords1.x, coords1.y, coords2.x, coords2.y);
         c2.stroke({ color: 'transparent', width: 30, linecap: 'round' });
 

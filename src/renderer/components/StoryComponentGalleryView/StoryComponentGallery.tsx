@@ -3,7 +3,7 @@ import { FunctionComponent, h } from 'preact';
 
 const expandGallery = () => {
     const gallery = document.getElementById('item-gallery');
-    gallery?.classList.add('expanded');
+    gallery?.classList.toggle('expanded');
 }
 
 export const Gallery: FunctionComponent = ({ children, }) => (

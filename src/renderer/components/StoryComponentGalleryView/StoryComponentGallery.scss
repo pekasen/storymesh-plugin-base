@@ -46,6 +46,7 @@
     @include customize(theme) {
       background: getValue(menu-background);
     }
+    z-index: 99;
     & .icon {
       transition: transform .2s ease;
       transition-delay: .25s;

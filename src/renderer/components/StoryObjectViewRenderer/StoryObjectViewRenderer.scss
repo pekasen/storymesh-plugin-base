@@ -7,6 +7,6 @@
     overflow: scroll;  
     transition: background .4s ease-in;  
     @include customize(theme) {
-        background: getValue(text-background);
+        background: getValue(node-area-background);
        }
 }

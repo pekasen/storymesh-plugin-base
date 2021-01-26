@@ -1,8 +1,19 @@
 import { FunctionComponent, h } from 'preact';
 // import "./StoryComponentGallery.css";
 
-export const Gallery: FunctionComponent = ({ children }) => (
-    <ul class="gallery-container">{children}</ul>
+const expandGallery = () => {
+    const gallery = document.getElementById('item-gallery');
+    gallery?.classList.add('expanded');
+}
+
+export const Gallery: FunctionComponent = ({ children, }) => (
+    <div class="item-gallery-container" id="item-gallery">
+        <div class="expander" id="gallery-expander" onClick={expandGallery}>
+            <span class="icon icon-up-open"></span>
+        </div>
+        <h3 class="header expanded-visible">Story Components</h3>
+        <ul class="gallery-list">{children}</ul>
+    </div>
 );
 
 export const StoryComponentGallery: FunctionComponent = ({ children }) => (

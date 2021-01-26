@@ -35,7 +35,7 @@
 
     .toggle-content {
       position: absolute;
-      top: 0;
+      top: -2px;
       right: 0;
       height: auto;
       width: auto;
@@ -59,7 +59,7 @@
       }
 
       span {
-        border-top: 4px solid;
+        border-top: 2px solid;
         width: 15px;
         border-radius: 50px;
         display: block;

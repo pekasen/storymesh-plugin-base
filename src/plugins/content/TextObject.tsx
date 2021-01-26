@@ -1,14 +1,15 @@
 import { FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { reaction, IReactionDisposer } from "mobx";
-import { IMenuTemplate, INGWebSProps } from "../renderer/utils/PlugInClassRegistry";
+import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { StoryObject } from './helpers/AbstractStoryObject';
-import { exportClass } from './helpers/exportClass';
+import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { StoryObject } from '../helpers/AbstractStoryObject';
+import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+import { CSSModifier } from "../helpers/CSSModifier";
 
 /**
  * Our first little dummy PlugIn
@@ -24,7 +25,7 @@ class _TextObject extends StoryObject {
     public content: IContent;
     public childNetwork?: StoryGraph | undefined;
     public connectors: Map<string, IConnectorPort>;
-    public menuTemplate: IMenuTemplate[];
+    // public menuTemplate: IMenuTemplate[];
     public icon: string;
     public static defaultIcon = "icon-newspaper";
     constructor() {
@@ -53,7 +54,39 @@ class _TextObject extends StoryObject {
             contentType: "text"
         };
         this.userDefinedProperties = {};
-        this.menuTemplate = [
+        // this.menuTemplate = [
+        //     ...nameField(this),
+        //     {
+        //         label: "Content",
+        //         type: "textarea",
+        //         value: () => this.content.resource,
+        //         valueReference: (text: string) => {this.updateText(text)}
+        //     },
+        //     ...dropDownField(
+        //         this,
+        //         () => ["h1", "h2", "h3", "b", "p"],
+        //         () => "h1",
+        //         (selection: string) => {
+        //             console.log(selection);
+        //         }
+        //     ),
+        //     ...connectionField(this)
+        // ];
+        this.icon = _TextObject.defaultIcon;
+
+        makeObservable(this, {
+            id: false,
+            name:                   observable,
+            userDefinedProperties:  observable,
+            content:                observable,
+            connectors:             observable.shallow,
+            updateName:             action,
+            updateText:             action
+        });
+    }
+
+    public get menuTemplate(): IMenuTemplate[] {
+        const ret: IMenuTemplate[] = [
             ...nameField(this),
             {
                 label: "Content",
@@ -71,17 +104,8 @@ class _TextObject extends StoryObject {
             ),
             ...connectionField(this)
         ];
-        this.icon = _TextObject.defaultIcon;
-
-        makeObservable(this, {
-            id: false,
-            name:                   observable,
-            userDefinedProperties:  observable,
-            content:                observable,
-            connectors:             observable.shallow,
-            updateName:             action,
-            updateText:             action
-        });
+        if (super.menuTemplate) ret.push(...super.menuTemplate);
+        return ret;
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
@@ -101,25 +125,13 @@ class _TextObject extends StoryObject {
 
     public getComponent() {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            const [, setState] = useState({});
-            let disposer: IReactionDisposer;
-            useEffect(() => {
-                disposer = reaction(
-                    () => (content?.resource),
-                    () => {
-                        setState({});
-                    }
-                )
-    
-                return () => {
-                    disposer();
-                }
-            });
-            return <p>
+            const p = <p>
                 {
                     content?.resource
                 }
-            </p>
+            </p>;
+            
+            return this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (v as CSSModifier).modifyCSS(p), p);
         }
         return Comp
     }

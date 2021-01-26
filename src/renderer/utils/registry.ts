@@ -163,7 +163,7 @@ export function AutoValueRegistrySchema<T extends IValue<T>> () : ModelSchema<Va
             return serialize(_schema, v);
         },
         (jsonVal, context, callback) => {
-            const instance = rootStore.root.storyContentTemplatesRegistry.getNewInstance(jsonVal.role);
+            const instance = rootStore.root.pluginStore.getNewInstance(jsonVal.role);
             if (!instance) throw("Big time failure !!11 while fetching schema for" + jsonVal.role);
             console.log("getting schema for", instance.constructor.name);
             const _schema = getDefaultModelSchema(instance.constructor);
@@ -172,7 +172,7 @@ export function AutoValueRegistrySchema<T extends IValue<T>> () : ModelSchema<Va
             // return deserializeObjectWithSchema(context, _schema, jsonVal, callback, null);
         }), "id", {
             beforeDeserialize: (cb, value) => {
-                if(Array.isArray(value)) {
+                if (Array.isArray(value)) {
                     value.sort((a: IStoryObject, b: IStoryObject) => {
                         const _aLength = a.childNetwork?.nodes.length
                         const _bLength = b.childNetwork?.nodes.length

@@ -1,12 +1,12 @@
 import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
-import { StoryObject } from "./helpers/AbstractStoryObject";
+import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
-import { IMenuTemplate } from '../renderer/utils/PlugInClassRegistry';
-import { connectionField, dropDownField, nameField } from './helpers/plugInHelpers';
-import { exportClass } from './helpers/exportClass';
+import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
+import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { exportClass } from '../helpers/exportClass';
 import { action, makeObservable, observable } from 'mobx';
 import { useContext, useRef } from 'preact/hooks';
-import { Store } from '../renderer';
+import { Store } from '../../renderer';
 // import { webGLEngine } from "../renderer/index";
 import * as BABYLON from 'babylonjs';
 import "babylonjs-loaders";
@@ -22,7 +22,7 @@ class _CameraView extends StoryObject {
     public userDefinedProperties: any;
     public connectors: Map<string, IConnectorPort>;
     public icon: string;
-    public menuTemplate: IMenuTemplate[];
+    // public menuTemplate: IMenuTemplate[];
     
     static defaultIcon = "icon-camera";
     
@@ -42,16 +42,16 @@ class _CameraView extends StoryObject {
             }
         ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         this.makeFlowInAndOut();
-        this.menuTemplate = [
-           ...nameField(this),
-           ...connectionField(this),
-           ...dropDownField(
-               this,
-               () => this.cameraIds as string[],
-               () => this.activeCamera,
-               (selection) => this.updateActiveCamera(selection)
-            )
-        ];
+        // this.menuTemplate = [
+        //    ...nameField(this),
+        //    ...connectionField(this),
+        //    ...dropDownField(
+        //        this,
+        //        () => this.cameraIds as string[],
+        //        () => this.activeCamera,
+        //        (selection) => this.updateActiveCamera(selection)
+        //     )
+        // ];
         this.content = {};
         this.activeCamera = "";
         this.cameraIds = [];
@@ -67,6 +67,21 @@ class _CameraView extends StoryObject {
             getComponent: false
         });
 
+    }
+
+    public get menuTemplate(): IMenuTemplate[] {
+        const ret: IMenuTemplate[] = [
+            ...nameField(this),
+            ...dropDownField(
+                this,
+                () => this.cameraIds as string[],
+                () => this.activeCamera,
+                (selection) => this.updateActiveCamera(selection)
+            ),
+            ...connectionField(this),
+         ];
+        if (super.menuTemplate) ret.push(...super.menuTemplate);
+        return ret;
     }
 
     public pullData(): any {

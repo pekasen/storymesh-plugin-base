@@ -72,6 +72,7 @@ export class EdgeRenderer extends Component {
         this.disposeReactionLoadedItem = reaction(
             () => (this.store.uistate.loadedItem),
             () => {
+                this.clearEdges();
                 this.setState({});
                 
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
@@ -145,7 +146,8 @@ export class EdgeRenderer extends Component {
                 // TODO: why is this timeout here necessary? Map above is not async
                 setTimeout(() => {
                     this.deleteRect();
-                }, 100);                
+                }, 100);
+                document.removeEventListener("mouseup", mouseUp);
             }
 
             document.addEventListener("mouseup", mouseUp);
@@ -167,8 +169,7 @@ export class EdgeRenderer extends Component {
 
     deleteNoodle(noodle: Line[] | undefined): void {
         if (noodle) {
-            noodle[0].remove();
-            noodle[1].remove();
+            noodle.forEach(e => e.remove());
             noodle.length = 0;
         }        
     }
@@ -196,7 +197,7 @@ export class EdgeRenderer extends Component {
                                    this.removeClassFromAllEdges(loadedObject, "selected");                                   
                                    this.store.uistate.selectedItems.setSelectedItems([edge.id]);
                                 }
-                                edgeLine[0].addClass("selected");
+                                if (edgeLine) edgeLine[0].addClass("selected");
                             });
                             
                             edgeLine[1].click((e: MouseEvent) => {
@@ -206,9 +207,9 @@ export class EdgeRenderer extends Component {
                                     this.removeClassFromAllEdges(loadedObject, "selected");                                   
                                     this.store.uistate.selectedItems.setSelectedItems([edge.id]);
                                 }
-                                edgeLine[0].addClass("selected");   
+
+                                if (edgeLine) edgeLine[0].addClass("selected");
                             });
-                                                     
                         }
                     }
                 }                                
@@ -230,11 +231,7 @@ export class EdgeRenderer extends Component {
     }
 
     clearEdges(): void {
-        this.edges.forEach(edge => {
-            edge[0].remove();
-            edge[1].remove();
-            edge.length = 0;
-        });
+        this.edges.forEach(e => e.forEach(f => f.remove()));
         this.edges.clear();
     }
 

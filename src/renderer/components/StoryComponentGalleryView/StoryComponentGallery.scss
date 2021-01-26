@@ -89,7 +89,7 @@
         margin: 0 0 0 5px;
       }
       padding: 10px;
-      transition: 0.2s;
+      transition: 0.4s;
       background: transparent;
       @include customize(theme) {
         color: getValue(menu-font);

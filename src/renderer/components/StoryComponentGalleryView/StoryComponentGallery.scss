@@ -138,6 +138,10 @@
     .gallery-list {
       height: auto;
       min-height: 80px;
+      flex-wrap: wrap;
+      .gallery-item {
+        margin: 10px;
+      }
     }
   }
 }

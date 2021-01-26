@@ -5,7 +5,7 @@
   transition: background 0.4s ease-in, color 0.4s ease-in;
   @include customize(theme) {
     background: getValue(menu-background);
-    color: getValue(menu-font);
+    color: getValue(text);
   }
   /* for testing */
   max-width: 300px;
@@ -13,13 +13,13 @@
     display: flex;
     flex-direction: column;
     @include customize(theme) {
-      color: getValue(menu-font);
+      color: getValue(text);
     }
 
     .form-control {
       @include customize(theme) {
         color: getValue(menu-font);
-        background: getValue(node-editor-background);
+        background: getValue(text-background);
       }
       border: 0;
     }
@@ -48,7 +48,7 @@
     }
     .table-striped tr {
       @include customize(theme) {
-        color: getValue(menu-font);
+        color: getValue(text);
       }
       background: transparent;
     }

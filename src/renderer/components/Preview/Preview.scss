@@ -18,7 +18,7 @@
    background: getValue(menu-background);
   }
   @include customize(theme) {
-    color: getValue(menu-font);
+    color: getValue(text);
    }
 
     span {
@@ -40,27 +40,27 @@
 /* ============ MIXINS ============ */
 
 @mixin for-mobile {
-    .storywrapper.xsm {
+    .storywrapper.XS {
         // Todo: Add rulesets for default resize, Add configuration < 599px 
         @content; }
   }
   @mixin for-tablet-portrait {
-    .storywrapper.sm { 
+    .storywrapper.SM { 
         // Todo: Add rulesets for default resize, Add configuration min-width 600px
         @content; }
   }
   @mixin for-tablet-landscape {
-    .storywrapper.md { 
+    .storywrapper.MD { 
         // Todo: Add rulesets for default resize, Add configuration min-width: 900px
         @content; }
   }
   @mixin for-desktop {
-    .storywrapper.lg { 
+    .storywrapper.LG { 
         // Todo: Add rulesets for default resize, Add configuration min-width: 1200px
         @content; }
   }
   @mixin for-desktop-large {
-    .storywrapper.xlg { 
+    .storywrapper.XL { 
         // Todo: Add rulesets for default resize, Add configuration min-width: 1800px
         @content; }
   }
@@ -70,7 +70,7 @@
 
 .ngwebs-story {
     margin: 0 auto;
-    max-width: 768px;
+    max-width: 768px; // ?
     padding: 0 15px;
 
 }
@@ -78,6 +78,8 @@
 // UTILITIES
 
 // TEMPLATE GRID
+
+//TODO: remove or refactor to actually make sense
 
 .container {
     display: grid;

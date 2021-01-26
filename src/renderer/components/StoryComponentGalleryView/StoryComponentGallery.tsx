@@ -18,6 +18,6 @@ export const Gallery: FunctionComponent = ({ children, }) => (
 
 export const StoryComponentGallery: FunctionComponent = ({ children }) => (
     <Gallery>
-            {children}
+        {children}
     </Gallery>
 )

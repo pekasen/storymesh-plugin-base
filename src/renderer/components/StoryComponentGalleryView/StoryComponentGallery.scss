@@ -6,14 +6,14 @@
     background: getValue(menu-background);
     border-left: 3px dashed getValue(border-color);
   }
-  transition: height .3s ease;
+  transition: height 0.3s ease;
 
   .expanded-visible {
     height: 0px;
     transform: translateY(20px);
     opacity: 0;
-    transition: transform .6s, opacity .4s;
-    transition-delay: .2s;
+    transition: transform 0.6s, opacity 0.4s;
+    transition-delay: 0.2s;
   }
 
   .header {
@@ -22,21 +22,21 @@
     @include customize(theme) {
       color: getValue(menu-font);
     }
-  &::after {
-    content: " ";
-    width: 35px;
-    height: 4px;
-    display: inline-block;
-    border-radius: 7px;
-    margin-left: 10px;
-    @include customize(theme) {
-      background: getValue(highlight-color);
+    &::after {
+      content: " ";
+      width: 35px;
+      height: 4px;
+      display: inline-block;
+      border-radius: 7px;
+      margin-left: 10px;
+      @include customize(theme) {
+        background: getValue(highlight-color);
+      }
     }
   }
-}
 
   .expander {
-    transition: color .195s ease;
+    transition: color 0.195s ease;
     position: absolute;
     width: 40px;
     height: 40px;
@@ -47,8 +47,8 @@
       background: getValue(menu-background);
     }
     & .icon {
-      transition: transform .2s ease;
-      transition-delay: .25s;
+      transition: transform 0.2s ease;
+      transition-delay: 0.25s;
       cursor: pointer;
       width: 20px;
       height: auto;
@@ -133,7 +133,7 @@
       opacity: 1;
       padding: 20px 0 0 0;
       transform: translateY(0px);
-      transition: transform .6s, opacity .4s;
+      transition: transform 0.6s, opacity 0.4s;
     }
     .gallery-list {
       height: auto;

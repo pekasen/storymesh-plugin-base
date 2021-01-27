@@ -31,6 +31,16 @@ export const VerticalSmallPane: FunctionalComponent = ({children}) => (
 )
 
 /**
+ * Creates a vertical pane with variable height and visible overflow
+ * 
+ * @param {ComponentProps} props Props passed to the component
+ * @returns {Element} Preact Element
+ */
+export const VerticalFlexPane: FunctionalComponent = ({children}) => (
+    <div class="vertical-pane vertical-pane-flex">{children}</div>
+)
+
+/**
  * Creates a minituare flexible vertical pane
  * 
  * @param {ComponentProps} props Props passed to the component

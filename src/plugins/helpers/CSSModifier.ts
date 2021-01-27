@@ -1,5 +1,4 @@
 import { h } from "preact";
-import { ModifierType } from "storygraph";
 import { ObservableStoryModifier } from "./AbstractModifier";
 
 export interface CSSStatement {
@@ -13,8 +12,7 @@ export interface CSSModifierData {
 
 export abstract class CSSModifier extends ObservableStoryModifier<CSSModifierData> {
     public abstract data: CSSModifierData;
-    public type: ModifierType = "css-hybrid";
-    public modifyCSS(element: h.JSX.Element): h.JSX.Element {
+    public modify(element: h.JSX.Element): h.JSX.Element {
         const inline: string = Object.
         keys(this.data?.inline).
         map((key) => (`${key}: ${this.data.inline[key]}`)).
@@ -25,8 +23,8 @@ export abstract class CSSModifier extends ObservableStoryModifier<CSSModifierDat
             else return string + string2
         }
 
-        element.props["class"] = concatSafely(element.props["class"], this.data?.classes.join(" "))
-        element.props["style"] = concatSafely(element.props["style"], inline);
+        if (this.type === "css-class" || this.type === "css-hybrid") element.props["class"] = concatSafely(element.props["class"], this.data?.classes.join(" "));
+        if (this.type === "css-inline" || this.type === "css-hybrid") element.props["style"] = concatSafely(element.props["style"], inline);
         
         return element;
     }

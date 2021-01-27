@@ -4,6 +4,7 @@ import { VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPan
 import { deepObserve, IDisposer } from 'mobx-utils';
 import { useContext } from 'preact/hooks';
 import { Store } from '../..';
+import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 
 interface IPreviewProps extends INGWebSProps {
     topLevelObjectId: string
@@ -69,9 +70,14 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
 
     render({ topLevelObjectId, registry, graph }: IPreviewProps, { classes }: IPreviewState): h.JSX.Element {
         // const g = graph?.traverse(registry, (topLevelObjectId  + ".start"))
-        const children = graph?.nodes.map(id => registry.getValue(id)).filter(node => node !== undefined);
+        // const children = graph?.nodes.map(id => registry.getValue(id)).filter(node => node !== undefined);
+        const topLevelObject = registry.getValue(topLevelObjectId) as AbstractStoryObject | undefined;
+        if (!topLevelObject ) throw("BIGGY!");
+        if (!topLevelObject.getComponent) throw("BIGGY!2");
+        const Elem = topLevelObject.getComponent();
+        if (!Elem) throw("BIGGY!3");
 
-        console.log("children", children);
+        // console.log("children", children);
         return <div class="preview-container" >
             <VerticalPaneGroup>
                 <VerticalMiniPane>
@@ -92,18 +98,29 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
             </VerticalPaneGroup>
             <div class={`storywrapper ${classes.join(" ")}`} ref={this.ref}>
                 <div class={"ngwebs-story "} id={topLevelObjectId}>
+                    <Elem 
+                        registry={registry}
+                        id={topLevelObjectId}
+                        renderingProperties={topLevelObject.renderingProperties}
+                        content={topLevelObject.content}
+                        modifiers={topLevelObject.modifiers}
+                        graph={topLevelObject.childNetwork}
+                        userDefinedProperties={topLevelObject.userDefinedProperties}
+                    />
+                    
                     {
-                        children?.map(node => {
-                            const _node = node as unknown as IPlugIn;
+                        // elem
+                        // children?.map(node => {
+                        //     const _node = node as unknown as IPlugIn;
 
-                            if (node && _node.getComponent) return _node.getComponent()({
-                                graph: node.childNetwork,
-                                registry: registry,
-                                id: node.id,
-                                content: node.content,
-                                modifiers: node.modifiers
-                            })
-                        })
+                        //     if (node && _node.getComponent) return _node.getComponent()({
+                        //         graph: node.childNetwork,
+                        //         registry: registry,
+                        //         id: node.id,
+                        //         content: node.content,
+                        //         modifiers: node.modifiers
+                        //     })
+                        // })
                     }
                 </div>
             </div>

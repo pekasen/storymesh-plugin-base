@@ -1,4 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
+import { h } from "preact";
 import { createModelSchema } from "serializr";
 import { IStoryModifier, ModifierType } from "storygraph";
 import { v4 } from "uuid";
@@ -13,12 +14,13 @@ function isStoryModifierType(type: string): boolean {
 export abstract class AbstractStoryModifier implements IStoryModifier {
     public id = v4();
 
-    abstract name: string;
-    abstract type: ModifierType;
-    abstract role: string;
-    abstract parent?: string;
-    abstract get menuTemplate(): IMenuTemplate[];
-    abstract get getRenderingProperties(): any;
+    public abstract name: string;
+    public abstract type: ModifierType;
+    public abstract role: string;
+    public abstract parent?: string;
+    public abstract get menuTemplate(): IMenuTemplate[];
+    public abstract get getRenderingProperties(): any;
+    public abstract modify(element: h.JSX.Element): h.JSX.Element;
 
     public updateParent(id: string): void {
         this.parent = id;
@@ -115,6 +117,10 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
         }
     }
 
+    public modify(element: h.JSX.Element): h.JSX.Element {
+        throw("Method cannot be called directly");
+    }
+
     public constructor() {
         super();
 
@@ -129,6 +135,7 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
         });
     }
 }
+
 
 export const ObservableStoryModifierSchema = createModelSchema(ObservableStoryModifier, {
     name: true,

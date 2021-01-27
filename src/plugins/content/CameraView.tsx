@@ -136,11 +136,7 @@ class _CameraView extends StoryObject {
                 });
             }
 
-            return elem2;
-
-            // return <div class="content canvas-content" id={this.id}>
-            //     {elem}
-            // </div>;
+            return this.modifiers.reduce((p, v) => (v.modify(p)), elem2);
         };
     }
 

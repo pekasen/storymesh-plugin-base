@@ -6,5 +6,5 @@ export interface HTMLModifierData {
 }
 
 export abstract class HMTLModifier extends ObservableStoryModifier<HTMLModifierData> {
-    public abstract modifyHTML(element: h.JSX.Element): h.JSX.Element
+    public abstract modify(element: h.JSX.Element): h.JSX.Element
 }

@@ -6,7 +6,7 @@ import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { InputConnectorView } from "./InputConnectorView";
 import { IPlugIn, INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
-import { makeObservable, observable, reaction, action } from 'mobx';
+import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
 import { MoveableItem } from "../../renderer/store/MoveableItem";
 import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
 import { OutputConnectorView } from "./OutputConnectorView";
@@ -15,7 +15,8 @@ import { StoryGraph } from 'storygraph';
 import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { UIStore } from "../../renderer/store/UIStore";
 import { useContext, useEffect, useState } from "preact/hooks";
-import { CSSModifier } from '../helpers/CSSModifier';
+import { CSSGridContainerModifier } from '../modifiers/GridContainer';
+import { CSSModifier, CSSModifierData } from '../helpers/CSSModifier';
 
 /**
  * Our second little dummy PlugIn
@@ -58,7 +59,7 @@ export class Container extends StoryObject {
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph}) => {
+        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph, modifiers}) => {
             // const [, setState] = useState({});
             // let disposer: IReactionDisposer;
             
@@ -105,7 +106,6 @@ export class Container extends StoryObject {
                                 content={node.content}
                                 modifiers={node.modifiers}
                                 graph={node.childNetwork}
-                                userDefinedProperties={node.userDefinedProperties}
                             ></Comp>
                         }
                     }) || null

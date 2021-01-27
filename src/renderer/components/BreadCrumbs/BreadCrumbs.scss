@@ -21,7 +21,7 @@
         font-size: .85rem;
         transition: color .4s ease-in;
       @include customize(theme) {
-       color: getValue(menu-font);
+       color: getValue(text);
       }
         padding: 0 0 0 10px;
         cursor: pointer;
@@ -52,7 +52,7 @@
         display: inline-block;
         transform: translateY(1px);
         @include customize(theme) {
-            color: getValue(menu-font); 
+            color: getValue(text); 
           }
     }
 

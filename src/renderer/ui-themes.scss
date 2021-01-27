@@ -2,45 +2,51 @@
 
 $themes: (
   light: (
-    menu-background: #d1d1d1,
-    menu-font: #191919,
-    content-font: #000,
-    node-object-background: #e5e5e5,
-    node-editor-background: #808080,
-    highlight-color: rgb(35, 90, 94),
-    //TODO: Replace and also add colors for "warning", "success", ...
-    flow: #FFC12F,
-    data: #409BFF,
-    reaction-color: royalblue,
-    highlight-color-font: #fff,
-    border-color: #252525,
-  ),
-  dark: (
-    menu-background: #262626,
-    menu-font: #fff,
-    content-font: #262626,
-    node-object-background: rgb(222, 222, 222),
-    node-editor-background: #4d4d4d,
+    menu-background: #d9d9d9,
+    text-background: #efefef,
+    text: #262626,
+    node-area-background: #919191,
+    node-object-background: #efefef,
     highlight-color: #009485,
+    highlight-color-font: #efefef,
+    border-color: #262626,
+
+
     //TODO: Replace and also add colors for "warning", "success", ...
     flow: #009485,
     data: #409BFF,
     reaction-color: royalblue,
-    highlight-color-font: #fff,
+  ),
+  dark: (
+    menu-background: #262626,
+    text-background: #4d4d4d,
+    text: #efefef,
+    node-area-background: #4d4d4d,
+    node-object-background: #3b3b3b,
+    highlight-color: #009485,
+    highlight-color-font: #262626,
     border-color: #fff,
+
+
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow: #009485,
+    data: #409BFF,
+    reaction-color: royalblue,
   ),
   eggplant: (
     menu-background: #1F253A,
-    menu-font: #fff,
-    content-font: #1F253A,
+    text-background: #A0A5B9,
+    text: #fff,
+    node-area-background: #A0A5B9,
     node-object-background: #fff,
-    node-editor-background: #A0A5B9,
     highlight-color: #33D69F,
-    flow: #FFC12F,
-    data: #409BFF,
-    reaction-color: #A0A5B9,
     highlight-color-font: #1F253A,
     border-color: #A0A5B9,
+
+    //TODO: Replace and also add colors for "warning", "success", ...    
+    flow: #009485,
+    data: #409BFF,
+    reaction-color: royalblue,
   ),
 );
 

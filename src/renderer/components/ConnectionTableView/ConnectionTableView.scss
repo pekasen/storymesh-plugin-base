@@ -10,7 +10,7 @@ table.connection-table {
         border: none;
         font-weight: bold;
         @include customize(theme) {
-            color: getValue(menu-font);
+            color: getValue(text);
            }
 
         &.flow {
@@ -35,7 +35,7 @@ table.connection-table {
     td {
         border: none;
         @include customize(theme) {
-            color: getValue(menu-font);
+            color: getValue(text);
         }
     }
 }

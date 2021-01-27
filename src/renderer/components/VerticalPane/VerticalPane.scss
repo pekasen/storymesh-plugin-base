@@ -49,3 +49,10 @@
     flex: none;
     max-height: 150px;
 }
+
+.vertical-pane-flex {
+    flex: none;
+    height: fit-content;
+    overflow: visible;
+    border: none;
+}

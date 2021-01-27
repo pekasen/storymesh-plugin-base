@@ -26,6 +26,8 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
     render({ store, object, children }: StoryObjectViewProperties): h.JSX.Element {
         // const EditorComponent: FunctionComponent<INGWebSProps> = object.getEditorComponent();
         // <Draggable id={object.id}>
+        const item = store.uistate.moveableItems.getValue(object.id);
+
         return <div class="outer" onDrop={(event) => {
                 const data = event.dataTransfer?.getData("text");
                 if (data) {
@@ -66,18 +68,19 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                             {children}
                             <div onClick={(e) => {
                                 e.preventDefault();
-                                const toggle = document.getElementById('toggle-content');
-                                const contentArea = document.getElementById('area-content');
-                                toggle?.classList.toggle('minimized');
-                                contentArea?.classList.toggle('hidden');
+                                item?.toggleCollapse()
+                                // const toggle = document.getElementById('toggle-content');
+                                // const contentArea = document.getElementById('area-content');
+                                // toggle?.classList.toggle('minimized');
+                                // contentArea?.classList.toggle('hidden');
                             }}
-                            class="toggle-content" id="toggle-content">
+                            class={`toggle-content ${(item?.collapsed) ? "minimized" : ""}`} id="toggle-content">
                                 <span class="span-top"></span>
                                 <span class="span-bottom"></span>
                             </div>
                         </div>
                     </MoveSender>
-                    <div class="area-content" id="area-content">
+                    <div class={`area-content ${(item?.collapsed) ? "hidden" : ""}`} id="area-content">
                             <span>{object.content?.resource}</span>
                     </div>
                 </div>

@@ -1,8 +1,6 @@
-import { FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
-import { reaction, IReactionDisposer } from "mobx";
+import { FunctionalComponent, FunctionComponent, h } from "preact";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
@@ -10,6 +8,7 @@ import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { CSSModifier } from "../helpers/CSSModifier";
+import preact from "preact";
 
 /**
  * Our first little dummy PlugIn
@@ -40,20 +39,22 @@ class _TextObject extends StoryObject {
             collapsable: false
         };
         this.connectors = new Map<string, IConnectorPort>();
-        [
-            {
-                name: "enterView",
-                type: "reaction",
-                direction: "out"
-            }
-        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        // [
+        //     {
+        //         name: "enterView",
+        //         type: "reaction",
+        //         direction: "out"
+        //     }
+        // ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         this.makeFlowInAndOut();
         this.content = {
             resource: "Type here...",
             altText: "empty",
             contentType: "text"
         };
-        this.userDefinedProperties = {};
+        this.userDefinedProperties = {
+            tag: "p"
+        };
         // this.menuTemplate = [
         //     ...nameField(this),
         //     {
@@ -97,9 +98,10 @@ class _TextObject extends StoryObject {
             ...dropDownField(
                 this,
                 () => ["h1", "h2", "h3", "b", "p"],
-                () => "h1",
+                () => this.userDefinedProperties.tag,
                 (selection: string) => {
                     console.log(selection);
+                    runInAction(() => this.userDefinedProperties.tag = selection);
                 }
             ),
             ...connectionField(this)
@@ -124,14 +126,25 @@ class _TextObject extends StoryObject {
     }
 
     public getComponent() {
-        const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            const p = <p>
+        const Comp: FunctionComponent<INGWebSProps> = ({content, userDefinedProperties}) => {
+            const elemMap = new Map([
+                ["h1", ({children}) => (<h1>{children}</h1>)],
+                ["h2", ({children}) => (<h2>{children}</h2>)],
+                ["h3", ({children}) => (<h3>{children}</h3>)],
+                ["b", ({children}) => (<b>{children}</b>)],
+                ["p", ({children}) => (<p>{children}</p>)],
+            ]);
+
+            const Elem = elemMap.get(userDefinedProperties.tag);
+            if (Elem) {
+                const p = <Elem>
                 {
                     content?.resource
                 }
-            </p>;
+                </Elem>;
             
-            return this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (v as CSSModifier).modifyCSS(p), p);
+                return this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (v as CSSModifier).modifyCSS(p), p);
+            } else return <div ></div>
         }
         return Comp
     }

@@ -1,11 +1,11 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
-import { AbstractStoryModifier } from '../../../plugins/helpers/AbstractModifier';
+import { AbstractStoryModifier, ObservableStoryModifier } from '../../../plugins/helpers/AbstractModifier';
 import { RootStore } from '../../store/rootStore';
 import { ConnectorView } from '../Connector/ConnectorView';
-import { Draggable } from '../Draggable';
 import { MoveSender } from '../Moveable';
+import { CSSModifierData } from '../../../plugins/helpers/CSSModifier';
 
 
 export class StoryObjectView extends Component<StoryObjectViewProperties> {

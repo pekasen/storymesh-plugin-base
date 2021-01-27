@@ -30,7 +30,7 @@ export class FileSelectorMenuItem implements IMenuItemRenderer {
 export const plugInExport = exportClass(
     FileSelectorMenuItem,
     "",
-    "internal.pane.fileselector",
+    "internal.pane.file-selector",
     "",
     true
 );

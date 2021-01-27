@@ -51,6 +51,7 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
+                        this.clearEdges();
                         this.executeChangesToEdges(loadedObject);
                     }
                 );
@@ -71,8 +72,7 @@ export class EdgeRenderer extends Component {
         this.disposeReactionLoadedItem = reaction(
             () => (this.store.uistate.loadedItem),
             () => {
-                this.edges.forEach(e => e.forEach(f => f.remove()));
-                this.edges.clear();
+                this.clearEdges();
                 this.setState({});
                 
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
@@ -169,17 +169,16 @@ export class EdgeRenderer extends Component {
 
     deleteNoodle(noodle: Line[] | undefined): void {
         if (noodle) {
-            // noodle[0].remove();
-            // noodle[1].remove();
             noodle.forEach(e => e.remove());
             noodle.length = 0;
         }        
     }
 
     executeChangesToEdges(loadedObject: AbstractStoryObject): void {        
+        this.clearEdges();     
         loadedObject.childNetwork?.edges.forEach(edge => {
             if (edge && edge.from && edge.to) {
-                let edgeLine = this.edges.get(edge.id);               
+                let edgeLine = this.edges.get(edge.id);  
                 const connFrom = document.getElementById(edge.from);
                 const connTo = document.getElementById(edge.to);
                 if (connFrom && connTo) {
@@ -190,32 +189,33 @@ export class EdgeRenderer extends Component {
                     } else {
                         edgeLine = this.drawEdgeCurve(posFrom.x + posFrom.width/2, posFrom.y + posFrom.height/2, posTo.x + posTo.width/2, posTo.y + posTo.height/2);
                         this.edges.set(edge.id, edgeLine);
-                        if (edgeLine && edgeLine.length > 1) {                             
-                            const selectedItems = this.store.uistate.selectedItems;
-
+                        if (edgeLine && edgeLine.length > 1) { 
                             edgeLine[0].click((e: MouseEvent) => {                               
                                 if (e.shiftKey) {
-                                   selectedItems.addToSelectedItems(edge.id);
+                                    this.store.uistate.selectedItems.addToSelectedItems(edge.id);
                                 } else {
                                    this.removeClassFromAllEdges(loadedObject, "selected");                                   
-                                   selectedItems.setSelectedItems([edge.id]);
+                                   this.store.uistate.selectedItems.setSelectedItems([edge.id]);
                                 }
                                 if (edgeLine) edgeLine[0].addClass("selected");
                             });
                             
                             edgeLine[1].click((e: MouseEvent) => {
                                 if (e.shiftKey) {
-                                selectedItems.addToSelectedItems(edge.id);
+                                    this.store.uistate.selectedItems.addToSelectedItems(edge.id);
                                 } else {
                                     this.removeClassFromAllEdges(loadedObject, "selected");                                   
-                                    selectedItems.setSelectedItems([edge.id]);
+                                    this.store.uistate.selectedItems.setSelectedItems([edge.id]);
                                 }
+
                                 if (edgeLine) edgeLine[0].addClass("selected");
-                            })                            
+                            });
                         }
                     }
-                }                                            
-            }
+                }                                
+            } 
+                    
+            
         });
     }
 
@@ -228,6 +228,11 @@ export class EdgeRenderer extends Component {
                 }         
             }
         });
+    }
+
+    clearEdges(): void {
+        this.edges.forEach(e => e.forEach(f => f.remove()));
+        this.edges.clear();
     }
 
     getOffset(x: number, y: number): {x: number, y: number} {

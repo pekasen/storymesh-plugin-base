@@ -96,9 +96,10 @@ export class Container extends StoryObject {
                 {
                     graph?.nodes.map(e => {
                         const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
+
                         if (node.getComponent) {
                             const Comp = node.getComponent();
-                            if (node) return <Comp
+                            return <Comp
                                 registry={registry}
                                 id={node.id}
                                 renderingProperties={node.renderingProperties}
@@ -115,8 +116,8 @@ export class Container extends StoryObject {
 
             // if (cssInline) div.props.style = cssInline;
             // if (cssClasses) div.props.style = cssClasses;
-            return this.modifiers.filter(e => e.type === "css-hybrid").reduce((p, v) => {
-                return (v as CSSModifier).modifyCSS(p);
+            return this.modifiers.reduce((p, v) => {
+                return v.modify(p);
             }, div)
             // return div;
         }
@@ -197,9 +198,9 @@ export class Container extends StoryObject {
                 }
             ),
             ...connectionField(this),
-            {
-                type: "divider"
-            }
+            // {
+            //     type: "divider"
+            // }
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
         return ret;

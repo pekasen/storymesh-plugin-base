@@ -4,12 +4,8 @@ import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { IMenuTemplate, INGWebSProps } from '../../renderer/utils/PlugInClassRegistry';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
-
-// import * as Three from "three";
-// import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema, object } from 'serializr';
-import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
+import { createModelSchema } from 'serializr';
 
 export interface ISceneContent {
     file: string
@@ -89,7 +85,7 @@ class _Scene extends StoryObject {
     }
 
     public getComponent() {
-        return () => (<p style="display: none;"></p>)
+        return () => null;
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {

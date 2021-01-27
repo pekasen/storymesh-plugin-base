@@ -7,8 +7,6 @@ import { connectionField, dropDownField, nameField } from '../helpers/plugInHelp
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { CSSModifier } from "../helpers/CSSModifier";
-import preact from "preact";
 
 /**
  * Our first little dummy PlugIn
@@ -24,11 +22,10 @@ class _TextObject extends StoryObject {
     public content: IContent;
     public childNetwork?: StoryGraph | undefined;
     public connectors: Map<string, IConnectorPort>;
-    // public menuTemplate: IMenuTemplate[];
     public icon: string;
     public static defaultIcon = "icon-newspaper";
+    
     constructor() {
-
         super();
         this.isContentNode = true;
         this.role = "internal.content.text"
@@ -78,7 +75,7 @@ class _TextObject extends StoryObject {
         makeObservable(this, {
             id: false,
             name:                   observable,
-            userDefinedProperties:  observable,
+            userDefinedProperties:  observable.deep,
             content:                observable,
             connectors:             observable.shallow,
             updateName:             action,
@@ -126,26 +123,34 @@ class _TextObject extends StoryObject {
     }
 
     public getComponent() {
-        const Comp: FunctionComponent<INGWebSProps> = ({content, userDefinedProperties}) => {
-            const elemMap = new Map([
+        const Comp: FunctionComponent<INGWebSProps> = (args => {
+            console.log("rendering", args);
+
+            const elemMap = new Map<string, FunctionalComponent>([
                 ["h1", ({children}) => (<h1>{children}</h1>)],
                 ["h2", ({children}) => (<h2>{children}</h2>)],
                 ["h3", ({children}) => (<h3>{children}</h3>)],
                 ["b", ({children}) => (<b>{children}</b>)],
                 ["p", ({children}) => (<p>{children}</p>)],
             ]);
+            let Elem: FunctionalComponent | undefined;
 
-            const Elem = elemMap.get(userDefinedProperties.tag);
-            if (Elem) {
-                const p = <Elem>
-                {
-                    content?.resource
-                }
-                </Elem>;
+            if (args.userDefinedProperties && args.userDefinedProperties.tag) {
+                Elem = elemMap.get(args.userDefinedProperties.tag);
+            }
+            if (!Elem) {
+                Elem = ({children}) => (<p>{children}</p>)
+            }
+            const p = <Elem>{args.content?.resource}</Elem>;
             
-                return this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (v as CSSModifier).modifyCSS(p), p);
-            } else return <div ></div>
-        }
+            const a = this.modifiers.reduce((p,v) => {
+                const s = (v.modify(p));
+                console.log("modifying", s);
+                return s;
+            }, p);
+            console.log("modified", a);
+            return a;
+        });
         return Comp
     }
 }

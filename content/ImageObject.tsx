@@ -1,16 +1,14 @@
 import { FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
 import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
-import { action, IReactionDisposer, makeObservable, observable, reaction } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { CSSModifier } from "../helpers/CSSModifier";
-import { TouchBarSegmentedControl } from "electron";
 
 /**
  * Our first little dummy PlugIn
@@ -49,12 +47,12 @@ class _ImageObject extends StoryObject {
         this.icon = _ImageObject.defaultIcon;
 
         makeObservable(this,{
-            name:       observable,
-            userDefinedProperties: observable,
-            connectors: observable.shallow,
-            content: observable,
-            updateName: action,
-            updateImageURL: action
+            name:                   observable,
+            userDefinedProperties:  observable,
+            connectors:             observable.shallow,
+            content:                observable,
+            updateName:             action,
+            updateImageURL:         action
         });
     }
 
@@ -85,7 +83,7 @@ class _ImageObject extends StoryObject {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
             const img = <img src={content?.resource}></img>;
             this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (
-                (v as CSSModifier).modifyCSS(p)
+                v.modify(p)
             ), img);
             return img
         }

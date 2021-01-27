@@ -95,7 +95,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 onClick={(e) => {
                     const target = e.target as HTMLElement;
                     if (target.id === "hello-world"){
-                        store.uistate.selectedItems.setSelectedItems([]);
+                        store.uistate.selectedItems.clearSelectedItems();
                     }
                 }
             }>

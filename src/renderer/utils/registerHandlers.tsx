@@ -61,18 +61,21 @@ export function registerHandlers(): void {
         const selectedItemIds = rootStore.root.uistate.selectedItems.ids;
         const reg = rootStore.root.storyContentObjectRegistry;
         console.log("delete", selectedItemIds);
-        
+        const loadedObject = rootStore.root.storyContentObjectRegistry.getValue(rootStore.root.uistate.loadedItem);
+
         selectedItemIds.forEach(selectedItemID => {
             const selectedItem = reg.getValue(selectedItemID);
             if ( selectedItem && selectedItem.parent && selectedItem.deletable) {
                 const parentItem = reg.getValue(selectedItem.parent)
-                // remove ties
-                // parentItem?.childNetwork?.disconnect(reg, selectedItem.connections); // this is already handled in the removenode method
-                // and die
+                // remove ties and die
                 parentItem?.childNetwork?.removeNode(reg, selectedItem.id);
                 rootStore.root.uistate.moveableItems.deregister(selectedItemID);
                 rootStore.root.storyContentObjectRegistry.deregister(selectedItemID);
-            }
+            } else if (selectedItemID.startsWith("edge.")) { // disconnect edges                
+                const selectedEdges = loadedObject?.childNetwork?.edges.filter((edge) => edge.id == selectedItemID);
+                if (selectedEdges)
+                    loadedObject?.childNetwork?.disconnect(rootStore.root.storyContentObjectRegistry, selectedEdges);
+            }            
         });
     });
 

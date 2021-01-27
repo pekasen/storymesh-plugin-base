@@ -17,6 +17,7 @@ export class EdgeRenderer extends Component {
     edges: Map<string, Line[]>;
     store = useContext(Store);
     disposeReactionLoadedItem: IReactionDisposer;
+    disposeReactionSelectedEdges: IReactionDisposer;
     mutationObserver: MutationObserver | undefined;
     mutationTargetNode: HTMLElement | undefined;
     mutationsConfig: MutationObserverInit;            
@@ -51,7 +52,7 @@ export class EdgeRenderer extends Component {
                     ...moveableItems.map(e => e.y)]),
                     () => {
                         this.setState({});
-                        this.clearEdges();
+                        //this.clearEdges();
                         this.executeChangesToEdges(loadedObject);
                     }
                 );
@@ -72,7 +73,7 @@ export class EdgeRenderer extends Component {
         this.disposeReactionLoadedItem = reaction(
             () => (this.store.uistate.loadedItem),
             () => {
-                this.clearEdges();
+                //this.clearEdges();
                 this.setState({});
                 
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
@@ -89,6 +90,30 @@ export class EdgeRenderer extends Component {
 
                 // Start observing the target node for configured mutations
                 this.mutationObserver.observe(this.mutationTargetNode as Node, this.mutationsConfig);                
+            }
+        );
+
+        this.disposeReactionSelectedEdges = reaction(
+            () => ([this.store.uistate.selectedItems.ids, this.store.uistate.selectedItems.ids.length]),
+            () => {
+                this.setState({});
+                console.log("selected items changed", this.store.uistate.selectedItems.ids.length);
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
+
+                this.removeClassFromAllEdges(loadedObject, "selected");    
+                loadedObject.childNetwork?.edges.forEach(edge => {
+                    if (edge && edge.from && edge.to) {
+                        const edgeLine = this.edges.get(edge.id);  
+                        const edgeFound = this.store.uistate.selectedItems.ids.find((id) => id == edge.id);
+                        console.log(edgeFound);
+                        if (edgeFound && edgeLine)  {
+                            edgeLine[0].addClass("selected");
+                            console.log("edge selected");
+                        }
+                    }
+                });
             }
         );
 
@@ -123,7 +148,7 @@ export class EdgeRenderer extends Component {
             
             const mouseUp = () => {
                 document.removeEventListener("mousemove", mouseMove);
-                this.store.uistate.selectedItems.clearSelectedItems();          
+                this.store.uistate.selectedItems.clearSelectedItems();
 
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
@@ -142,11 +167,11 @@ export class EdgeRenderer extends Component {
                         }
                     }
                 });
-               
+                this.deleteRect();
                 // TODO: why is this timeout here necessary? Map above is not async
-                setTimeout(() => {
+                /*setTimeout(() => {
                     this.deleteRect();
-                }, 100);
+                }, 100);*/
                 document.removeEventListener("mouseup", mouseUp);
             }
 
@@ -190,32 +215,25 @@ export class EdgeRenderer extends Component {
                         edgeLine = this.drawEdgeCurve(posFrom.x + posFrom.width/2, posFrom.y + posFrom.height/2, posTo.x + posTo.width/2, posTo.y + posTo.height/2);
                         this.edges.set(edge.id, edgeLine);
                         if (edgeLine && edgeLine.length > 1) { 
-                            edgeLine[0].click((e: MouseEvent) => {                               
+                             edgeLine[0].click((e: MouseEvent) => {
                                 if (e.shiftKey) {
                                     this.store.uistate.selectedItems.addToSelectedItems(edge.id);
                                 } else {
-                                   this.removeClassFromAllEdges(loadedObject, "selected");                                   
-                                   this.store.uistate.selectedItems.setSelectedItems([edge.id]);
+                                    this.store.uistate.selectedItems.setSelectedItems([edge.id]);
                                 }
-                                if (edgeLine) edgeLine[0].addClass("selected");
-                            });
+                            }); 
                             
                             edgeLine[1].click((e: MouseEvent) => {
                                 if (e.shiftKey) {
                                     this.store.uistate.selectedItems.addToSelectedItems(edge.id);
-                                } else {
-                                    this.removeClassFromAllEdges(loadedObject, "selected");                                   
+                                } else {                              
                                     this.store.uistate.selectedItems.setSelectedItems([edge.id]);
                                 }
-
-                                if (edgeLine) edgeLine[0].addClass("selected");
                             });
                         }
                     }
                 }                                
-            } 
-                    
-            
+            }
         });
     }
 

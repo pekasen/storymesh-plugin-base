@@ -60,8 +60,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             connections:            observable,
             modifiers:              observable.deep,
             addConnection:          action,
-            addModifier:            action,
-            removeModifier:         action
+            addModifier:            action
         });
     }
 
@@ -115,7 +114,6 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     }
 
     public addModifier(modifier: AbstractStoryModifier): void {
-        modifier.updateParent(this.id);
         this.modifiers.push(modifier);
     }
 

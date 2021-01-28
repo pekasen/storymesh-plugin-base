@@ -1,6 +1,6 @@
 import { FunctionalComponent, FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { reaction, IReactionDisposer } from "mobx";
+import { reaction, IReactionDisposer, runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';

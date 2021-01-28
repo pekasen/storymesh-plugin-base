@@ -64,6 +64,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
                 id={"g"}
                 graph={store.storyContentObjectRegistry.getValue(store.uistate.topLevelObjectID)?.childNetwork}
                 registry={store.storyContentObjectRegistry}
+                userDefinedProperties={{}}
             >
             </Preview>
         </ResizablePane>

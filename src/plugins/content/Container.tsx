@@ -17,6 +17,7 @@ import { UIStore } from "../../renderer/store/UIStore";
 import { useContext, useEffect, useState } from "preact/hooks";
 import { CSSGridContainerModifier } from '../modifiers/GridContainer';
 import { CSSModifier, CSSModifierData } from '../helpers/CSSModifier';
+import { AbstractStoryModifier } from '../helpers/AbstractModifier';
 
 /**
  * Our second little dummy PlugIn
@@ -116,9 +117,10 @@ export class Container extends StoryObject {
 
             // if (cssInline) div.props.style = cssInline;
             // if (cssClasses) div.props.style = cssClasses;
-            return this.modifiers.reduce((p, v) => {
-                return v.modify(p);
+           if (modifiers)  return modifiers.reduce((p, v) => {
+                return (v as AbstractStoryModifier).modify(p);
             }, div)
+            else return div
             // return div;
         }
         return Comp

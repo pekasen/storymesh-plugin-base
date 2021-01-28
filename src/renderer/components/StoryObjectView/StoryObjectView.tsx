@@ -38,7 +38,6 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                 }
             }
         }}>
-
             <div
                 onClick={(e) => {
                     e.preventDefault();
@@ -83,47 +82,8 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                         return <ConnectorView class={obj.type + " " + obj.direction} id={object.id + "." + obj.name}></ConnectorView>
                     })
                 }
-                
-                <div
-                    onClick={(e) => {
-                        e.preventDefault();
-                        const selectedItems = store.uistate.selectedItems;
-                        if (e.shiftKey) {
-                            selectedItems.addToSelectedItems(object.id);
-                        } else {
-                            selectedItems.setSelectedItems([object.id]);
-                        }
-                    }}
-                    onDblClick={(e) => {
-                        e.preventDefault();
-                        if (object.role === "internal.content.container") {
-                            store.uistate.setLoadedItem(object.id);
-                        }
-                    }}
-                    class={`story-object-view ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}
-                >
-                    <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
-                        <div class={`area-meta`}>
-                            {children}
-                            <div onClick={(e) => {
-                                e.preventDefault();
-                                item?.toggleCollapse()
-                                // const toggle = document.getElementById('toggle-content');
-                                // const contentArea = document.getElementById('area-content');
-                                // toggle?.classList.toggle('minimized');
-                                // contentArea?.classList.toggle('hidden');
-                            }}
-                            class={`toggle-content ${(item?.collapsed) ? "minimized" : ""}`} id="toggle-content">
-                                <span class="span-top"></span>
-                                <span class="span-bottom"></span>
-                            </div>
-                        </div>
-                    </MoveSender>
-                    <div class={`area-content ${(item?.collapsed) ? "hidden" : ""}`} id="area-content">
-                            <span>{object.content?.resource}</span>
-                    </div>
-                </div>
-            </div>;
+            </div>
+        </div>;
         // </Draggable>;
     }
 

@@ -51,7 +51,9 @@ class _TextObject extends StoryObject {
             altText: "empty",
             contentType: "text"
         };
-        this.userDefinedProperties = {};
+        this.userDefinedProperties = {
+            tag: "p"
+        };
         // this.menuTemplate = [
         //     ...nameField(this),
         //     {
@@ -95,9 +97,10 @@ class _TextObject extends StoryObject {
             ...dropDownField(
                 this,
                 () => ["h1", "h2", "h3", "b", "p"],
-                () => "h1",
+                () => this.userDefinedProperties.tag,
                 (selection: string) => {
                     console.log(selection);
+                    runInAction(() => this.userDefinedProperties.tag = selection);
                 }
             ),
             ...connectionField(this)

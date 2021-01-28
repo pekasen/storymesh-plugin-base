@@ -39,6 +39,7 @@ export interface INGWebSProps {
     id: string
     registry: ValueRegistry<IStoryObject>
     renderingProperties?: IRenderingProperties
+    userDefinedProperties?: any;
     content?: IContent
     modifiers?: IStoryModifier[]
     graph?: StoryGraph
@@ -62,12 +63,19 @@ export type MenuItemSpecification = "table" |
     "file-selector" |
     "url" |
     "color" |
-    "connectiontable";
+    "connectiontable" |
+    "display";
 
 export interface IMenuTemplate {
     label: string;
     type: MenuItemSpecification;
     valueReference: (...args: any[]) => void;
     value: (() => any);
-    options?: string[];
+    // TODO: make it type-safe!!!
+    options?: any;
+}
+
+export interface IMenuTemplate2<U, V> extends IMenuTemplate{
+    valueReference: (...args: any[]) => U;
+    value: () => V
 }

@@ -3,7 +3,7 @@ import { createModelSchema, list, object, primitive } from "serializr";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
-import { arrayExtensions } from "mobx/dist/internal";
+import { ModifierType } from "storygraph";
 
 interface IGridItemInlineStatements extends CSSStatement {
     "grid-row": string;
@@ -44,6 +44,7 @@ export class GridItem implements IGridItemModifierData {
 export class CSSGriditemModifier extends CSSModifier {
     public name = "Grid item"
     public role = "internal.modifier.griditem";
+    public type: ModifierType = "css-class";
     public data: GridItem = new GridItem();
 
     constructor() {

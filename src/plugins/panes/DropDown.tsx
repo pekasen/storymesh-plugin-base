@@ -23,8 +23,8 @@ export class DropDownMenuItem implements IMenuItemRenderer {
                                 }}
                             >
                             {
-                                item.options?.map(e => (
-                                    <option value={e}>{e}</option>
+                                item.options?.map((e: string[]) => (
+                                    <option value={e} selected={(item.value() === e)}>{e}</option>
                                 ))
                             }
                             </select>

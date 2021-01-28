@@ -108,6 +108,7 @@ export class Container extends StoryObject {
                                 content={node.content}
                                 modifiers={node.modifiers}
                                 graph={node.childNetwork}
+                                userDefinedProperties={node.userDefinedProperties}
                             ></Comp>
                         }
                     }) || null

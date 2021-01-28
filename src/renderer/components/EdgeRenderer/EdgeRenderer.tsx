@@ -318,7 +318,7 @@ export class EdgeRenderer extends Component {
         const posX = Math.min(coords1.x, coords2.x);
         const posY = Math.min(coords1.y, coords2.y);
         const rect = this.svg.rect(width, height);
-        rect.fill('#f06').move(posX, posY);        
+        rect.fill('rgba(255,255,255,0.3)').stroke('#efefef').move(posX, posY);        
         return rect;
     }
 

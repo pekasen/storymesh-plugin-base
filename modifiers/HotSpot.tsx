@@ -17,7 +17,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
         })
     }
 
-    public modifyHTML(element: h.JSX.Element): h.JSX.Element {
+    public modify(element: h.JSX.Element): h.JSX.Element {
         element.props.usemap = `#${this.id}`;
 
 

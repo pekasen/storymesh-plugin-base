@@ -1,6 +1,8 @@
 import { FunctionalComponent, FunctionComponent, h } from "preact";
+import { useEffect, useState } from "preact/hooks";
+import { reaction, IReactionDisposer, runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { action, makeObservable, observable, runInAction } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
@@ -36,13 +38,13 @@ class _TextObject extends StoryObject {
             collapsable: false
         };
         this.connectors = new Map<string, IConnectorPort>();
-        // [
-        //     {
-        //         name: "enterView",
-        //         type: "reaction",
-        //         direction: "out"
-        //     }
-        // ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        [
+            {
+                name: "enterView",
+                type: "reaction",
+                direction: "out"
+            }
+        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         this.makeFlowInAndOut();
         this.content = {
             resource: "Type here...",

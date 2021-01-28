@@ -35,7 +35,7 @@
 
     .toggle-content {
       position: absolute;
-      top: -2px;
+      top: 0;
       right: 0;
       height: auto;
       width: auto;
@@ -54,7 +54,7 @@
           transition: transform 0.3s ease-in-out;
           -webkit-transition: transform 0.3s ease-in-out;
           transform: rotate(90deg);
-          transform-origin: 5.5px 4px;
+          transform-origin: 6px 2.5px;
         }
       }
 
@@ -69,7 +69,7 @@
       }
 
       .span-top {
-        transform: translateY(4px);
+        transform: translateY(3px);
         transform-origin: 5.5px 4px;
       }
     }

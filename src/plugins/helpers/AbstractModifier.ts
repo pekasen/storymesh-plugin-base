@@ -41,16 +41,40 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
     public type: ModifierType;
     public data: T | undefined;
     public role = "";
-    public parent?: string | undefined;
+    public parent: string | undefined;
     
     public get menuTemplate(): IMenuTemplate[] {
         return [
             {
                 label: "Name",
-                type: "text",
+                type: "display",
                 value: () => this.name,
                 valueReference: (name: string) => this.updateName(name)
             },
+            {
+                label: "delete",
+                type: "button",
+                value: () => undefined,
+                valueReference: () => {
+                    this.deleteMe();
+                }
+            },
+            {
+                label: "up",
+                type: "button",
+                value: () => undefined,
+                valueReference: () => {
+                    // this.deleteMe();
+                }
+            },
+            {
+                label: "down",
+                type: "button",
+                value: () => undefined,
+                valueReference: () => {
+                    // this.deleteMe();
+                }
+            }
             // {
             //     label: "Type",
             //     type: "dropdown",
@@ -75,8 +99,22 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
         }
     }
 
-    public deleteMe(): void {
-        throw("");
+    public arrayPosUp(): void {
+        if (this.parent) {
+            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            if (_parent) {
+                _parent.removeModifier(this);
+            }
+        }
+    }
+    
+    public arrayPosDown(): void {
+        if (this.parent) {
+            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            if (_parent) {
+                _parent.removeModifier(this);
+            }
+        }
     }
 
     public modify(element: h.JSX.Element): h.JSX.Element {
@@ -102,7 +140,8 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
 export const ObservableStoryModifierSchema = createModelSchema(ObservableStoryModifier, {
     name: true,
     type: true,
-    role: true
+    role: true,
+    parent: true
 });
 
 export type CSSUnit = "px" | "fr" | "em" | "rem" | "%" | "vh" | "vw";

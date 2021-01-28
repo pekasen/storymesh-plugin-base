@@ -1,5 +1,5 @@
 import { h, JSX } from "preact";
-import { useRef, useState } from "preact/hooks";
+import { useRef } from "preact/hooks";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { IMenuItemRenderer } from "../helpers/IMenuItemRenderer";

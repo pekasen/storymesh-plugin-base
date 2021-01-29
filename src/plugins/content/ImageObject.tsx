@@ -82,10 +82,9 @@ class _ImageObject extends StoryObject {
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
             const img = <img src={content?.resource}></img>;
-            this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (
+            return this.modifiers.reduce((p,v) => (
                 v.modify(p)
             ), img);
-            return img
         }
         return Comp
     }

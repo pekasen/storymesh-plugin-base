@@ -144,13 +144,9 @@ class _TextObject extends StoryObject {
             }
             const p = <Elem>{args.content?.resource}</Elem>;
             
-            const a = this.modifiers.reduce((p,v) => {
-                const s = (v.modify(p));
-                console.log("modifying", s);
-                return s;
+            return this.modifiers.reduce((p,v) => {
+                return (v.modify(p));
             }, p);
-            console.log("modified", a);
-            return a;
         });
         return Comp
     }

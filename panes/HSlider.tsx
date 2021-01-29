@@ -8,7 +8,7 @@ export class HSliderMenuItem implements IMenuItemRenderer {
     render(item: IMenuTemplate): JSX.Element {
         const pRef = useRef<HTMLParagraphElement>(undefined);
 
-        return <div class="form-group-item">
+        return <div class="form-group-item slider-item">
             <label>{item.label}</label>
             <input
                 type="range"

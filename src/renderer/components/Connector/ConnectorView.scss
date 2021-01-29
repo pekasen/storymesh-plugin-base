@@ -10,8 +10,8 @@
 
 .outer {
   .data {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     display: inline-block;
     position: absolute;
     z-index: 99;
@@ -26,18 +26,18 @@
 
     &.in {
       top: 50%;
-      left: -9px;
+      left: -8px;
     }
 
     &.out {
       top: 50%;
-      right: -9px;
+      right: -8px;
     }
   }
 
   .flow {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     display: inline-block;
     position: absolute;
     z-index: 99;
@@ -53,12 +53,12 @@
 
     &.in {
       left: 50%;
-      top: -9px;
+      top: -8px;
     }
 
     &.out {
       left: 50%;
-      bottom: -9px;
+      bottom: -8px;
     }
   }
 }

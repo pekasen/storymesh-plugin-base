@@ -29,62 +29,61 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
         const item = store.uistate.moveableItems.getValue(object.id);
 
         return <div class="outer" onDrop={(event) => {
-                const data = event.dataTransfer?.getData("text");
-                if (data) {
-                    const path = data.split(".");
-                    if (path[1] === "modifier") {
-                        const modifier = store.pluginStore.getNewInstance(data) as AbstractStoryModifier;
-                        object.addModifier(modifier);
-                    }
+            const data = event.dataTransfer?.getData("text");
+            if (data) {
+                const path = data.split(".");
+                if (path[1] === "modifier") {
+                    const modifier = store.pluginStore.getNewInstance(data) as AbstractStoryModifier;
+                    object.addModifier(modifier);
                 }
-            }}>
+            }
+        }}>
+            <div
+                onClick={(e) => {
+                    e.preventDefault();
+                    const selectedItems = store.uistate.selectedItems;
+                    if (e.shiftKey) {
+                        selectedItems.addToSelectedItems(object.id);
+                    } else {
+                        selectedItems.setSelectedItems([object.id]);
+                    }
+                }}
+                onDblClick={(e) => {
+                    e.preventDefault();
+                    if (object.role === "internal.content.container") {
+                        store.uistate.setLoadedItem(object.id);
+                    }
+                }}
+                class={`story-object-view ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}
+            >
+                <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
+                    <div class={`area-meta`}>
+                        {children}
+                        <div onClick={(e) => {
+                            e.preventDefault();
+                            item?.toggleCollapse()
+                            // const toggle = document.getElementById('toggle-content');
+                            // const contentArea = document.getElementById('area-content');
+                            // toggle?.classList.toggle('minimized');
+                            // contentArea?.classList.toggle('hidden');
+                        }}
+                            class={`toggle-content ${(item?.collapsed) ? "minimized" : ""}`} id="toggle-content">
+                            <span class="span-top"></span>
+                            <span class="span-bottom"></span>
+                        </div>
+                    </div>
+                </MoveSender>
+                <div class={`area-content ${(item?.collapsed) ? "hidden" : ""}`} id="area-content">
+                    <span>{object.content?.resource}</span>
+                </div>
                 {
                     Array.from(object.connectors).map(a => {
                         const [, obj] = a;
                         return <ConnectorView class={obj.type + " " + obj.direction} id={object.id + "." + obj.name}></ConnectorView>
-                    })                    
+                    })
                 }
-                
-                <div
-                    onClick={(e) => {
-                        e.preventDefault();
-                        const selectedItems = store.uistate.selectedItems;
-                        if (e.shiftKey) {
-                            selectedItems.addToSelectedItems(object.id);
-                        } else {
-                            selectedItems.setSelectedItems([object.id]);
-                        }
-                    }}
-                    onDblClick={(e) => {
-                        e.preventDefault();
-                        if (object.role === "internal.content.container") {
-                            store.uistate.setLoadedItem(object.id);
-                        }
-                    }}
-                    class={`story-object-view ${(store.uistate.selectedItems.isSelected(object.id)) ? "active" : "inactive"}`}
-                >
-                    <MoveSender registry={store.uistate.moveableItems} selectedItems={store.uistate.selectedItems} id={object.id}>
-                        <div class={`area-meta`}>
-                            {children}
-                            <div onClick={(e) => {
-                                e.preventDefault();
-                                item?.toggleCollapse()
-                                // const toggle = document.getElementById('toggle-content');
-                                // const contentArea = document.getElementById('area-content');
-                                // toggle?.classList.toggle('minimized');
-                                // contentArea?.classList.toggle('hidden');
-                            }}
-                            class={`toggle-content ${(item?.collapsed) ? "minimized" : ""}`} id="toggle-content">
-                                <span class="span-top"></span>
-                                <span class="span-bottom"></span>
-                            </div>
-                        </div>
-                    </MoveSender>
-                    <div class={`area-content ${(item?.collapsed) ? "hidden" : ""}`} id="area-content">
-                            <span>{object.content?.resource}</span>
-                    </div>
-                </div>
-            </div>;
+            </div>
+        </div>;
         // </Draggable>;
     }
 

@@ -1,6 +1,5 @@
 import { FunctionalComponent, FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
-import { reaction, IReactionDisposer, runInAction } from "mobx";
+import { runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
 import { IConnectorPort, StoryGraph } from 'storygraph';
@@ -129,11 +128,11 @@ class _TextObject extends StoryObject {
             console.log("rendering", args);
 
             const elemMap = new Map<string, FunctionalComponent>([
-                ["h1", ({children}) => (<h1>{children}</h1>)],
-                ["h2", ({children}) => (<h2>{children}</h2>)],
-                ["h3", ({children}) => (<h3>{children}</h3>)],
-                ["b", ({children}) => (<b>{children}</b>)],
-                ["p", ({children}) => (<p>{children}</p>)],
+                ["h1", ({children, ...props}) => (<h1 {...props}>{children}</h1>)],
+                ["h2", ({children, ...props}) => (<h2 {...props}>{children}</h2>)],
+                ["h3", ({children, ...props}) => (<h3 {...props}>{children}</h3>)],
+                ["b", ({children, ...props}) => (<b {...props}>{children}</b>)],
+                ["p", ({children, ...props}) => (<p {...props}>{children}</p>)],
             ]);
             let Elem: FunctionalComponent | undefined;
 
@@ -141,17 +140,13 @@ class _TextObject extends StoryObject {
                 Elem = elemMap.get(args.userDefinedProperties.tag);
             }
             if (!Elem) {
-                Elem = ({children}) => (<p>{children}</p>)
+                Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
             }
             const p = <Elem>{args.content?.resource}</Elem>;
             
-            const a = this.modifiers.reduce((p,v) => {
-                const s = (v.modify(p));
-                console.log("modifying", s);
-                return s;
+            return this.modifiers.reduce((p,v) => {
+                return (v.modify(p));
             }, p);
-            console.log("modified", a);
-            return a;
         });
         return Comp
     }

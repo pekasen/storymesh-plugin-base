@@ -1,9 +1,8 @@
 import { makeObservable, observable, runInAction } from "mobx";
-import { createModelSchema, list, map, mapAsArray, object, primitive } from "serializr";
+import { createModelSchema, list, map, object, primitive } from "serializr";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
-import { serializeAsMeshReference } from "babylonjs";
 import { ModifierType } from "storygraph";
 
 interface IGridItemInlineStatements extends CSSStatement {

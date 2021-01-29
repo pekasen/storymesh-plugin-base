@@ -35,6 +35,82 @@
     height: 100%;
     margin: 0;
     padding: 0;
+
+    .ngwebs-story {
+        margin: 0 auto;
+        max-width: 768px; // ?
+        padding: 0 15px;
+    
+    }
+    
+    // UTILITIES
+    
+    // FONT SIZES
+    
+    p, a, span {
+        font-size: 1rem;
+    }
+    
+    h1, h2, h3, h4, h5, h6, strong, b {
+        font-weight: bold;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        white-space: normal;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    h2 {
+        font-size: 2rem;
+    }
+    
+    h3 {
+        font-size: 1.8rem;
+    }
+    
+    h4 {
+        font-size: 1.6rem;
+    }
+    
+    h5 {
+        font-size: 1.4rem;
+    }
+    
+    h6 {
+        font-size: 1.2rem;
+    }
+    
+    // QUOTES
+    
+    blockquote {
+        font-size: 2.3rem;
+        max-width: 440px;
+        margin: 0 auto;
+        opacity: .9;
+        @include customize(storytheme){
+            color: getValue(blockquote-color);
+        }
+    }
+    
+    // IMAGE
+    
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 20px 0;
+    }
+    
+    // LIST
+    
+    
+    
+    // TABLE
+    
+    // CTA
 }
 
 /* ============ MIXINS ============ */
@@ -67,98 +143,4 @@
 
 
 /* =============  BASE =========== */
-
-.ngwebs-story {
-    margin: 0 auto;
-    max-width: 768px; // ?
-    padding: 0 15px;
-
-}
-
-// UTILITIES
-
-// TEMPLATE GRID
-
-//TODO: remove or refactor to actually make sense
-
-.container {
-    display: grid;
-    grid-template-columns: 12fr;
-    grid-row-gap: 20px;
-}
-
-.row {
-    display: grid;
-    grid-template-columns: 12fr;
-    grid-gap: 1rem;
-}
-
-.content {
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 12fr))
-}
-
-// FONT SIZES
-
-p, a, span {
-    font-size: 1rem;
-}
-
-h1, h2, h3, h4, h5, h6, strong, b {
-    font-weight: bold;
-}
-
-h1 {
-    font-size: 2.5rem;
-}
-
-h2 {
-    font-size: 2rem;
-}
-
-h3 {
-    font-size: 1.8rem;
-}
-
-h4 {
-    font-size: 1.6rem;
-}
-
-h5 {
-    font-size: 1.4rem;
-}
-
-h6 {
-    font-size: 1.2rem;
-}
-
-// QUOTES
-
-blockquote {
-    font-size: 2.3rem;
-    max-width: 440px;
-    margin: 0 auto;
-    opacity: .9;
-    @include customize(storytheme){
-        color: getValue(blockquote-color);
-    }
-}
-
-// IMAGE
-
-img {
-    display: block;
-    width: 100%;
-    height: auto;
-    margin: 20px 0;
-}
-
-// LIST
-
-
-
-// TABLE
-
-// CTA
-
-
 }

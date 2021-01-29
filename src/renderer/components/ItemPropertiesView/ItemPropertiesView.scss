@@ -1,7 +1,7 @@
 /* ==================== ITEM PROPERTIES ===================== */
 
 .sidebar {
-  padding: 10px;
+  padding: 25px;
   transition: background 0.4s ease-in, color 0.4s ease-in;
   @include customize(theme) {
     background: getValue(menu-background);
@@ -32,7 +32,12 @@
       &.slider-item {
         label {
           line-height: 47px;
+          margin: 1px 5px 5px 0;
+          transform: translateY(1px);
         }
+      > p {
+        margin-top: 16px;
+      }  
       }
     }
 
@@ -40,8 +45,8 @@
       display: inline-flex;
       flex-grow: 0;
       flex-shrink: 0;
-      margin: 0 10px 0 0;
-      line-height: 2.5em;
+      margin: 0 10px 5px 0;
+      line-height: 2em;
       min-width: 50px;
     }
     input.form-control {
@@ -50,6 +55,10 @@
       /* make resizeable */
       flex-grow: 1;
       flex-shrink: 1;
+      height: 25px;
+      padding: 0 5px;
+      font-size: 12px;
+      line-height: 25px;
     }
     .table-striped tr {
       @include customize(theme) {
@@ -58,10 +67,12 @@
       background: transparent;
     }
     textarea {
-      min-width: 280px;
+      min-width: 250px;
+      min-height: 100px;
     }
-    input[type=range]{
+    input[type="range"] {
       margin: 5.8px 4px;
+      max-width: 95px;
       background-color: transparent;
       -webkit-appearance: none;
 
@@ -75,13 +86,13 @@
         border: 0;
         border-radius: 10px;
         width: 100%;
-        height: 8.4px;
+        height: 4px;
         cursor: pointer;
       }
       &::-webkit-slider-thumb {
         margin-top: -5.8px;
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
         border: 1px solid;
         @include customize(theme) {
           border-color: getValue(node-object-background);
@@ -102,5 +113,16 @@
         }
       }
     }
+  }
+  .btn-default {
+    border: 2px solid #efefef;
+    background: transparent;
+    color: #efefef;
+    padding: 5px 20px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 120px;
+    margin: 0 auto;
+    font-size: 1em;
   }
 }

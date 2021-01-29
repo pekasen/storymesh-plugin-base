@@ -129,7 +129,8 @@ export class CSSGriditemModifier extends CSSModifier {
             type: "hslider",
             options: {
                 min: 1,
-                max: 12
+                max: 12,
+                formatter: (val: number) => `${val} Column${(val === 1) ? "" : "s"}`
             }
         }
     }

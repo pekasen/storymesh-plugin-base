@@ -33,7 +33,7 @@ export class EdgeRenderer extends Component {
         this.edgeRendererID = "edge-renderer";
         let nestedDisposeReaction: IReactionDisposer;
         // Options for the observer (which mutations to observe)
-        this.mutationsConfig = { childList: true, subtree: true };
+        this.mutationsConfig = { subtree: true, attributeFilter: [ "id" ]  };
 
         this.disposeReaction = reaction(
             () => {
@@ -168,10 +168,6 @@ export class EdgeRenderer extends Component {
                     }
                 });
                 this.deleteRect();
-                // TODO: why is this timeout here necessary? Map above is not async
-                /*setTimeout(() => {
-                    this.deleteRect();
-                }, 100);*/
                 document.removeEventListener("mouseup", mouseUp);
             }
 
@@ -281,7 +277,7 @@ export class EdgeRenderer extends Component {
     componentDidMount(): void {
         const obj = document.getElementById(this.edgeRendererID);
         // Select the node that will be observed for mutations
-        this.mutationTargetNode = document.getElementById('hello-world') as HTMLElement;
+        this.mutationTargetNode = document.getElementById('node-editor') as HTMLElement;
         if (obj) {
             this.svg = SVG().addTo(obj).size(1000, 1000);
         }

@@ -2,9 +2,9 @@ import { action, makeObservable, observable, runInAction } from "mobx";
 import { h } from "preact";
 import { useRef } from "preact/hooks";
 import { createModelSchema, list, map, object, primitive } from "serializr";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-import { exportClass } from "../helpers/exportClass";
-import { HMTLModifier } from "../helpers/HTMLModifier";
+import { IMenuTemplate } from "../../../renderer/utils/PlugInClassRegistry";
+import { exportClass } from "../../helpers/exportClass";
+import { HMTLModifier } from "../../helpers/HTMLModifier";
 
 class HotSpot {
     public x: number;
@@ -101,7 +101,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
         // element.props.usemap = `#${this.id}`;
         const svg = useRef<SVGSVGElement>();
         
-        return <div id={this.id}>
+        return <div id={this.id} class="hotspot-container">
         <svg ref={svg}>
             {this.data.hotspots.map(e => e.render(svg.current))}
         </svg>

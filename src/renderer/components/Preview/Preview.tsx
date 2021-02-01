@@ -1,6 +1,6 @@
 import { Component, createRef, h } from 'preact';
 import { INGWebSProps, IPlugIn } from '../../utils/PlugInClassRegistry';
-import { VerticalPaneGroup, VerticalMiniPane } from '../VerticalPane/VerticalPane';
+import { VerticalPaneGroup, VerticalMiniPane, VerticalPane } from '../VerticalPane/VerticalPane';
 import { deepObserve, IDisposer } from 'mobx-utils';
 import { useContext } from 'preact/hooks';
 import { Store } from '../..';
@@ -95,35 +95,22 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
                         </div>
                     </div>
                 </VerticalMiniPane>
+                <VerticalPane>
+                    <div class={`storywrapper ${classes.join(" ")}`} ref={this.ref}>
+                        <div class={"ngwebs-story "} id={topLevelObjectId}>
+                            <Elem 
+                                registry={registry}
+                                id={topLevelObjectId}
+                                renderingProperties={topLevelObject.renderingProperties}
+                                content={topLevelObject.content}
+                                modifiers={topLevelObject.modifiers}
+                                graph={topLevelObject.childNetwork}
+                                userDefinedProperties={topLevelObject.userDefinedProperties}
+                            />
+                        </div>
+                    </div>
+                </VerticalPane>
             </VerticalPaneGroup>
-            <div class={`storywrapper ${classes.join(" ")}`} ref={this.ref}>
-                <div class={"ngwebs-story "} id={topLevelObjectId}>
-                    <Elem 
-                        registry={registry}
-                        id={topLevelObjectId}
-                        renderingProperties={topLevelObject.renderingProperties}
-                        content={topLevelObject.content}
-                        modifiers={topLevelObject.modifiers}
-                        graph={topLevelObject.childNetwork}
-                        userDefinedProperties={topLevelObject.userDefinedProperties}
-                    />
-                    
-                    {
-                        // elem
-                        // children?.map(node => {
-                        //     const _node = node as unknown as IPlugIn;
-
-                        //     if (node && _node.getComponent) return _node.getComponent()({
-                        //         graph: node.childNetwork,
-                        //         registry: registry,
-                        //         id: node.id,
-                        //         content: node.content,
-                        //         modifiers: node.modifiers
-                        //     })
-                        // })
-                    }
-                </div>
-            </div>
         </div>
     }
 

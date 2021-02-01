@@ -91,10 +91,10 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
         }
         }>
             <div
-                id="hello-world"
+                id="node-editor"
                 onClick={(e) => {
                     const target = e.target as HTMLElement;
-                    if (target.id === "hello-world"){
+                    if (target.id === "node-editor"){
                         store.uistate.selectedItems.clearSelectedItems();
                     }
                 }

@@ -1,58 +1,60 @@
 /* ==================== VERTICAL PANE ===================== */
 
 .vertical-pane-group {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    border-right: 3px solid;
-    transition: border-color .4s ease-in;
-    @include customize(color) {
-        border-color: getValue(menu-background); 
-      }
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border-right: 3px solid;
+  transition: border-color 0.4s ease-in;
+  @include customize(color) {
+    border-color: getValue(menu-background);
+  }
 }
 
-.window-content .horizontal-pane-group .pane:nth-of-type(2){
-    border-left: 0;
+.horizontal-pane-group {
+  @include customize(color) {
+    background-color: getValue(node-area-background) !important;
+  }
 }
 
-.vertical-pane:first-child {
-    border-top: 0;
+.window-content .horizontal-pane-group .pane:nth-of-type(2) {
+  border-left: 0;
 }
 
 .vertical-pane {
-    position: relative;
-    overflow-x: scroll;
-    overflow-y: scroll;
-    flex: 4;
-    width: 100%;
-    border-top: 1px solid;
-    transition: background-color .4s ease-in;
-    @include customize(theme) {
-        background-color: getValue(menu-background); 
-      }
+  position: relative;
+  overflow-x: scroll;
+  overflow-y: scroll;
+  flex: 4;
+  width: 100%;
+  transition: background-color 0.4s ease-in;
+  @include customize(theme) {
+    background-color: getValue(node-area-background);
+  }
 }
 
 .vertical-pane-sm {
-    flex: none;
-    height: fit-content;
-    max-height: 250px;
+  flex: none;
+  height: fit-content;
+  max-height: 250px;
 }
 
 .vertical-pane-mini {
-    height: fit-content;
-    flex: none;
-    max-height: 150px;
+  height: fit-content;
+  flex: none;
+  max-height: 150px;
+  background: transparent;
 }
 
 .vertical-pane-flex {
-    flex: none;
-    height: fit-content;
-    overflow: visible;
-    border: none;
+  flex: none;
+  height: fit-content;
+  overflow: visible;
+  border: none;
 }

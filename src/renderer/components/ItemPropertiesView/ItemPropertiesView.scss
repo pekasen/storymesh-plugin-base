@@ -1,10 +1,12 @@
 /* ==================== ITEM PROPERTIES ===================== */
 
 .sidebar {
+  margin: 10px;
   padding: 25px;
+  border-radius: 7px;
   transition: background 0.4s ease-in, color 0.4s ease-in;
   @include customize(theme) {
-    background: getValue(menu-background);
+    background: getValue(node-object-background);
     color: getValue(text);
   }
   /* for testing */
@@ -35,9 +37,9 @@
           margin: 1px 5px 5px 0;
           transform: translateY(1px);
         }
-      > p {
-        margin-top: 16px;
-      }  
+        > p {
+          margin-top: 16px;
+        }
       }
     }
 
@@ -83,6 +85,7 @@
         @include customize(theme) {
           background: getValue(text-background);
         }
+        transition: background 0.2s ease;
         border: 0;
         border-radius: 10px;
         width: 100%;
@@ -104,12 +107,12 @@
       }
       &:hover::-webkit-slider-runnable-track {
         @include customize(theme) {
-          background: getValue(node-object-background);
+          background: getValue(text);
         }
       }
       &:focus::-webkit-slider-runnable-track {
         @include customize(theme) {
-          background: getValue(node-object-background);
+          background: getValue(text);
         }
       }
     }
@@ -124,5 +127,6 @@
     max-width: 120px;
     margin: 0 auto;
     font-size: 1em;
+    cursor: pointer;
   }
 }

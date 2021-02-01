@@ -1,146 +1,167 @@
 /* ==================== PREVIEW CONTAINER ===================== */
 
 .preview-container {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+
+  .vertical-pane-mini {
+    position: fixed;
     width: 100%;
-    height: 100%;
-    margin-top: 30px;
-
-    .vertical-pane-mini {
-        position: fixed;
-        width: 100%;
-    }
-
-.header-preview {
-    transition: background .4s ease-in, color .4s ease-in;
-  @include customize(theme) {
-   background: getValue(menu-background);
+    z-index: 99;
   }
-  @include customize(theme) {
-    color: getValue(text);
-   }
+
+  .vertical-pane-group {
+    > .vertical-pane:nth-of-type(even) {
+      background: #fff;
+    }
+  }
+
+  .header-preview {
+    transition: background 0.4s ease-in, color 0.4s ease-in;
+    @include customize(theme) {
+      background: getValue(node-area-background);
+      color: getValue(text);
+    }
+    margin: 10px;
 
     span {
-        display: inline-block;
-        font-size: .85rem;
-        margin: 5px 0 5px 10px;
+      display: inline-block;
+      font-size: 0.85rem;
+      margin: 5px 0 5px 10px;
     }
-}
+  }
 
-/*================== STORY WRAPPER =================*/
+  /*================== STORY WRAPPER =================*/
 
-.storywrapper {
+  .storywrapper {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
+    margin-top: 50px; //maybe move to container
 
     .ngwebs-story {
-        margin: 0 auto;
-        max-width: 768px; // ?
-        padding: 0 15px;
-    
+      margin: 0 auto;
+      max-width: 768px; // ?
+      padding: 0 15px;
     }
-    
+
     // UTILITIES
-    
+
     // FONT SIZES
-    
-    p, a, span {
-        font-size: 1rem;
-    }
-    
-    h1, h2, h3, h4, h5, h6, strong, b {
-        font-weight: bold;
+
+    p,
+    a,
+    span {
+      font-size: 1rem;
     }
 
-    h1, h2, h3, h4, h5, h6 {
-        white-space: normal;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      font-weight: bold;
     }
-    
-    h1 {
-        font-size: 2.5rem;
-    }
-    
-    h2 {
-        font-size: 2rem;
-    }
-    
-    h3 {
-        font-size: 1.8rem;
-    }
-    
-    h4 {
-        font-size: 1.6rem;
-    }
-    
-    h5 {
-        font-size: 1.4rem;
-    }
-    
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
     h6 {
-        font-size: 1.2rem;
+      white-space: normal;
     }
-    
+
+    h1 {
+      font-size: 2.5rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    h3 {
+      font-size: 1.8rem;
+    }
+
+    h4 {
+      font-size: 1.6rem;
+    }
+
+    h5 {
+      font-size: 1.4rem;
+    }
+
+    h6 {
+      font-size: 1.2rem;
+    }
+
     // QUOTES
-    
+
     blockquote {
-        font-size: 2.3rem;
-        max-width: 440px;
-        margin: 0 auto;
-        opacity: .9;
-        @include customize(storytheme){
-            color: getValue(blockquote-color);
-        }
+      font-size: 2.3rem;
+      max-width: 440px;
+      margin: 0 auto;
+      opacity: 0.9;
+      @include customize(storytheme) {
+        color: getValue(blockquote-color);
+      }
     }
-    
+
     // IMAGE
-    
+
     img {
-        display: block;
-        width: 100%;
-        height: auto;
-        margin: 20px 0;
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 20px 0;
     }
-    
+
     // LIST
-    
-    
-    
+
     // TABLE
-    
+
     // CTA
-}
+  }
 
-/* ============ MIXINS ============ */
+  /* ============ MIXINS ============ */
 
-@mixin for-mobile {
+  @mixin for-mobile {
     .storywrapper.XS {
-        // Todo: Add rulesets for default resize, Add configuration < 599px 
-        @content; }
+      // Todo: Add rulesets for default resize, Add configuration < 599px
+      @content;
+    }
   }
   @mixin for-tablet-portrait {
-    .storywrapper.SM { 
-        // Todo: Add rulesets for default resize, Add configuration min-width 600px
-        @content; }
+    .storywrapper.SM {
+      // Todo: Add rulesets for default resize, Add configuration min-width 600px
+      @content;
+    }
   }
   @mixin for-tablet-landscape {
-    .storywrapper.MD { 
-        // Todo: Add rulesets for default resize, Add configuration min-width: 900px
-        @content; }
+    .storywrapper.MD {
+      // Todo: Add rulesets for default resize, Add configuration min-width: 900px
+      @content;
+    }
   }
   @mixin for-desktop {
-    .storywrapper.LG { 
-        // Todo: Add rulesets for default resize, Add configuration min-width: 1200px
-        @content; }
+    .storywrapper.LG {
+      // Todo: Add rulesets for default resize, Add configuration min-width: 1200px
+      @content;
+    }
   }
   @mixin for-desktop-large {
-    .storywrapper.XL { 
-        // Todo: Add rulesets for default resize, Add configuration min-width: 1800px
-        @content; }
+    .storywrapper.XL {
+      // Todo: Add rulesets for default resize, Add configuration min-width: 1800px
+      @content;
+    }
   }
 
-
-/* =============  BASE =========== */
+  /* =============  BASE =========== */
 }

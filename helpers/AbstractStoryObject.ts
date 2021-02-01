@@ -97,7 +97,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             ret.push(
                 ...this.modifiers.
                 map(e => e.menuTemplate).
-                reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => ([...e]))
+                reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => (p.concat(...e)))
             );
         }
         return ret;

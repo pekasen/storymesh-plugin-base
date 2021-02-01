@@ -2,7 +2,7 @@ import { h } from "preact";
 import { ObservableStoryModifier } from "./AbstractModifier";
 
 export interface HTMLModifierData {
-    [key: string]: string
+    [key: string]: unknown
 }
 
 export abstract class HMTLModifier extends ObservableStoryModifier<HTMLModifierData> {

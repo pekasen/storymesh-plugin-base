@@ -120,7 +120,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
             hotspots: preact.JSX.Element[] = [];
             
             render() {
-                return <svg id={that.id} class={"hotspot-overlay"} ref={this.svgRef}>
+                return <svg id={that.id} ref={this.svgRef}>
                     {this.hotspots}
                 </svg>
             }
@@ -133,7 +133,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
             }
         }
 
-        return <div id={this.id} style="position: relative;">
+        return <div id={that.id} class="hotspot-container">
             {/* <svg id={this.id} class={"hotspot-overlay"}>
                 {this.data.hotspots.map(e => e.render(sizeRef.current))}
             </svg> */}

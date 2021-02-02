@@ -15,7 +15,18 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
     constructor(props: IItemPropertiesViewProperties) {
         super(props);
         reaction(
-            () => [...props.store.uistate.selectedItems.ids],
+            () => {
+                const res = props.store.
+                storyContentObjectRegistry.
+                getValue(props.store.uistate.selectedItems.first)?.modifiers;
+                
+                const thingsToWatch =[
+                    ...props.store.uistate.selectedItems.ids,
+                    res?.length
+                ];
+
+                return thingsToWatch;
+            },
             () => {
                 this.setState({});
             }
@@ -44,7 +55,6 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                 const instace = store.pluginStore.getNewInstance(data) as AbstractStoryModifier;
                 if (instace) res?.addModifier(instace);
             }
-    
         }
 
         return <form onSubmit={e => e.preventDefault()} onDrop={onDrop}>

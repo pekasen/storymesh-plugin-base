@@ -1,4 +1,4 @@
-import { StoryObject } from "../helpers/AbstractStoryObject";
+import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from '../helpers/exportClass';
 import { IConnectorPort, IEdge } from 'storygraph';
@@ -14,7 +14,7 @@ export class InputConnectorView extends StoryObject {
     public role: string;
     public icon: string;
     public connections: IEdge[];
-    public connectors: Map<string, IConnectorPort>;
+    // public connectors: Map<string, IConnectorPort>;
     public content: undefined;
     public childNetwork: undefined;
     public userDefinedProperties: undefined;
@@ -22,11 +22,12 @@ export class InputConnectorView extends StoryObject {
     public deletable = false;
 
     public static defaultIcon = "icon-down";
+    public registry?: IRegistry;
 
     constructor() {
         super();
         
-        this.name = "Inputs";
+        this.name = "Input";
         this.role = "internal.content.inputconnectorview";
         this.icon = InputConnectorView.defaultIcon;
         // this.menuTemplate = [
@@ -34,7 +35,7 @@ export class InputConnectorView extends StoryObject {
         //     ...connectionField(this)
         // ];
         this.connections = [];
-        this.connectors = new Map<string, IConnectorPort>();
+        // this.connectors = new Map<string, IConnectorPort>();
 
         makeObservable(this,{
             name: observable,
@@ -44,21 +45,22 @@ export class InputConnectorView extends StoryObject {
     }
 
     setup(registry: IRegistry): void {
-        if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
-        const parentNode = registry.getValue(this.parent) as StoryObject;
-        if (!parentNode) throw("No, no, no, that'S not possible!");
-        // this.menuTemplate = parentNode.menuTemplate;
+        this.registry = registry;
+        // if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
+        // const parentNode = registry.getValue(this.parent) as StoryObject;
+        // if (!parentNode) throw("No, no, no, that'S not possible!");
+        // // this.menuTemplate = parentNode.menuTemplate;
 
-        parentNode.
-        connectors.
-        forEach(e => {
-            const _new = new ConnectorPort(e.type, "out");
-            if (e.direction === "in") {
-                this.connectors.set(
-                    _new.name, _new
-                )
-            }
-        });
+        // parentNode.
+        // connectors.
+        // forEach(e => {
+        //     const _new = new ConnectorPort(e.type, "out");
+        //     if (e.direction === "in") {
+        //         this.connectors.set(
+        //             _new.name, _new
+        //         )
+        //     }
+        // });
     }
 
     public get menuTemplate(): IMenuTemplate[] {
@@ -68,6 +70,44 @@ export class InputConnectorView extends StoryObject {
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
         return ret;
+    }
+
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+
+        if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
+        const parentNode = this.registry?.getValue(this.parent) as AbstractStoryObject;
+        if (!parentNode) throw("No, no, no, that'S not possible!");
+
+        parentNode.
+        connectors.
+        forEach(e => {
+            if (e.direction === "in" && e.type === "flow") {
+                const _new = new ConnectorPort(e.type, "out");
+                map.set(
+                    _new.name, _new
+                )
+            }
+        });
+        
+        // [
+        //     {
+        //         name: "data-in",
+        //         type: "data",
+        //         direction: "in"
+        //     },
+        //     {
+        //         name: "flow-in",
+        //         type: "flow",
+        //         direction: "in"
+        //     },
+        //     {
+        //         name: "flow-out",
+        //         type: "flow",
+        //         direction: "out"
+        //     },
+        // ].forEach(e => map.set(e.name, e as IConnectorPort));
+        return map;
     }
 
     getComponent() {

@@ -14,7 +14,6 @@ export class OutputConnectorView extends StoryObject {
     public role: string;
     public icon: string;
     public connections: IEdge[];
-    public connectors: Map<string, IConnectorPort>;
     public content: undefined;
     public childNetwork: undefined;
     public userDefinedProperties: undefined;
@@ -22,11 +21,12 @@ export class OutputConnectorView extends StoryObject {
     public deletable = false;
 
     public static defaultIcon = "icon-down";
+    public registry?: IRegistry;
 
     constructor() {
         super();
         
-        this.name = "Outputs";
+        this.name = "Output";
         this.role = "internal.content.outputconnectorview";
         this.icon = OutputConnectorView.defaultIcon;
         // this.menuTemplate = [
@@ -34,7 +34,7 @@ export class OutputConnectorView extends StoryObject {
         //     ...connectionField(this)
         // ];
         this.connections = [];
-        this.connectors = new Map<string, IConnectorPort>();
+        // this.connectors = new Map<string, IConnectorPort>();
         
         makeObservable(this,{
             name: observable,
@@ -43,21 +43,22 @@ export class OutputConnectorView extends StoryObject {
         });
     }
 
-    setup(registry: IRegistry) {
-        if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
-        const parentNode = registry.getValue(this.parent) as AbstractStoryObject;
-        if (!parentNode) throw("No, no, no, that'S not possible!");
+    setup(registry: IRegistry): void {
+        this.registry = registry;
+        // if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
+        // const parentNode = registry.getValue(this.parent) as AbstractStoryObject;
+        // if (!parentNode) throw("No, no, no, that'S not possible!");
 
-        parentNode.
-        connectors.
-        forEach(e => {
-            const _new = new ConnectorPort(e.type, "in");
-            if (e.direction === "out") {
-                this.connectors.set(
-                    _new.name, _new
-                )
-            }
-        });
+        // parentNode.
+        // connectors.
+        // forEach(e => {
+        //     const _new = new ConnectorPort(e.type, "in");
+        //     if (e.direction === "out") {
+        //         this.connectors.set(
+        //             _new.name, _new
+        //         )
+        //     }
+        // });
     }
 
     public get menuTemplate(): IMenuTemplate[] {
@@ -67,6 +68,26 @@ export class OutputConnectorView extends StoryObject {
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
         return ret;
+    }
+
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+
+        if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
+        const parentNode = this.registry?.getValue(this.parent) as AbstractStoryObject;
+        if (!parentNode) throw("No, no, no, that'S not possible!");
+
+        parentNode.
+        connectors.
+        forEach(e => {
+            if (e.direction === "out" && e.type === "flow") {
+                const _new = new ConnectorPort(e.type, "in");
+                map.set(
+                    _new.name, _new
+                )
+            }
+        });
+        return map;
     }
 
     getComponent() {

@@ -16,13 +16,16 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
         super(props);
         reaction(
             () => {
-                const res = props.store.
+                const obj = props.store.
                 storyContentObjectRegistry.
-                getValue(props.store.uistate.selectedItems.first)?.modifiers;
-                
+                getValue(props.store.uistate.selectedItems.first);
+                const res = obj?.modifiers;
+                const conns = obj?.connections;
+
                 const thingsToWatch =[
                     ...props.store.uistate.selectedItems.ids,
-                    res?.length
+                    res?.length,
+                    conns?.length
                 ];
 
                 return thingsToWatch;

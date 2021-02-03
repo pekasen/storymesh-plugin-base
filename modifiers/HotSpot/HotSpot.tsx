@@ -1,18 +1,25 @@
 import { action, makeObservable, observable, runInAction } from "mobx";
-import { h } from "preact";
+import { Component, createRef, h } from "preact";
 import { useRef } from "preact/hooks";
 import { createModelSchema, list, map, object, primitive } from "serializr";
+<<<<<<< HEAD:src/plugins/modifiers/HotSpot/HotSpot.tsx
 import { IMenuTemplate } from "../../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../../helpers/exportClass";
 import { HMTLModifier } from "../../helpers/HTMLModifier";
+=======
+import { ConnectorPort, IConnectorPort } from "storygraph";
+import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { exportClass } from "../helpers/exportClass";
+import { HMTLModifier } from "../helpers/HTMLModifier";
+>>>>>>> origin/dev-20210127-pk-modifier2:src/plugins/modifiers/HotSpot.tsx
 
 class HotSpot {
     public x: number;
     public y: number;
 
-    constructor() {
-        this.x = 0.5;
-        this.y = 0.5;
+    constructor(x?: number, y?: number) {
+        this.x = x ?? 0.5;
+        this.y = y ?? 0.5;
 
         makeObservable(this, {
             x: true,
@@ -30,7 +37,7 @@ class HotSpot {
         }
     }
 
-    public render(svg: SVGSVGElement): h.JSX.Element | null {
+    public render(svg: Element): preact.JSX.Element {
         throw("This method should not be called");
     }
 
@@ -42,10 +49,10 @@ class HotSpot {
 class CircleHotSpot extends HotSpot {
     public radius: number;
 
-    constructor() {
-        super();
+    constructor(x?:number, y?: number, r?: number) {
+        super(x, y);
 
-        this.radius = 0.25;
+        this.radius = r ?? 0.25;
         makeObservable(this, {
             radius: true,
             updateRadius: action
@@ -56,16 +63,18 @@ class CircleHotSpot extends HotSpot {
         this.radius = this._clip(radius, 0, Math.PI);
     }
 
-    public render(svg: SVGSVGElement) {
+    public render(svg?: Element): preact.JSX.Element {
         if (svg) {
             const { width, height } = svg.getBoundingClientRect();
 
             const relX = width * this.x;
             const relY = height * this.y;
-            const relR = Math.sqrt(this.x^2 + this.y^2) * this.radius;
+            const relR = Math.sqrt(relX * relX + relY * relY) * this.radius;
+
+            console.log("circle dims", {x: relX, y: relY, r: relR});
             
-            return <circle cx={relX} cy={relY} r={relR}/>
-        } else return null
+            return <circle cx={relX} cy={relY} r={relR} onClick={() => console.log("Hello from Circle")}/>
+        } else return <circle />
     }
 }
 
@@ -74,7 +83,8 @@ class HotSpotModifierData {
 
     constructor() {
         this.hotspots = [
-            new CircleHotSpot()
+            new CircleHotSpot(),
+            new CircleHotSpot(0.9, 0.9, 0.1),
         ];
 
         makeObservable(this, {
@@ -98,15 +108,44 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     }
 
     public modify(element: h.JSX.Element): h.JSX.Element {
+        // TODO: svgOverlay should be the same size as the passed element
         // element.props.usemap = `#${this.id}`;
-        const svg = useRef<SVGSVGElement>();
+        const sizeRef = useRef();
+        element.props.ref = sizeRef;
         
-        return <div id={this.id} class="hotspot-container">
-        <svg ref={svg}>
-            {this.data.hotspots.map(e => e.render(svg.current))}
-        </svg>
-        {element}
-    </div>;
+        // if (svgRef.current) {
+        //     console.log("children", this.data.hotspots)
+        //     svg.props.children = this.data.hotspots.map(e => e.render(svgRef.current));
+        // }
+
+        // Hacky this/that trick
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const that = this;
+        class SVGOverlay extends Component {
+            svgRef = createRef();
+            hotspots: preact.JSX.Element[] = [];
+            
+            render() {
+                return <svg id={that.id} ref={this.svgRef}>
+                    {this.hotspots}
+                </svg>
+            }
+
+            componentDidMount(){
+                if (this.svgRef.current) {
+                    this.hotspots = that.data.hotspots.map(e => e.render(this.svgRef.current));
+                    this.forceUpdate();
+                }
+            }
+        }
+
+        return <div id={that.id} class="hotspot-container">
+            {/* <svg id={this.id} class={"hotspot-overlay"}>
+                {this.data.hotspots.map(e => e.render(sizeRef.current))}
+            </svg> */}
+            <SVGOverlay />
+            {element}
+        </div>;
     }
 
     public addHotSpot(hotspot: HotSpot): void {
@@ -127,6 +166,14 @@ export class HTMLHotSpotModifier extends HMTLModifier {
 
     public get getRenderingProperties(): any {
         return super.getRenderingProperties;
+    }
+    public requestConnectors(): [string, IConnectorPort][] {
+        return this.data.hotspots.map((value, index) => {
+                return [
+                    `reaction-out-${index}`,
+                    new ConnectorPort("reaction", "out")
+                ]
+        });
     }
 }
 

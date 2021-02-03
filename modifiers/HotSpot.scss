@@ -1,0 +1,11 @@
+.hotspot-container {
+  position: relative;
+  svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 20px 0;
+    width: 100%;
+    height: calc(100% - 40px);
+  }
+}

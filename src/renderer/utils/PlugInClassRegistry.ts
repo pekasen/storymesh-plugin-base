@@ -53,6 +53,7 @@ export interface IPlugIn {
 export type MenuItemSpecification = "table" |
     "radio" |
     "button" |
+    "buttongroup" |
     "divider" |
     "textarea" |
     "text" |
@@ -66,13 +67,13 @@ export type MenuItemSpecification = "table" |
     "connectiontable" |
     "display";
 
-export interface IMenuTemplate {
+export interface IMenuTemplate<Value = any, Options = any> {
     label: string;
     type: MenuItemSpecification;
-    valueReference: (...args: any[]) => void;
-    value: (() => any);
+    valueReference: (arg: Value) => void;
+    value: (() => Value);
     // TODO: make it type-safe!!!
-    options?: any;
+    options?: Options;
 }
 
 export interface IMenuTemplate2<U, V> extends IMenuTemplate{

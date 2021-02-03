@@ -117,16 +117,27 @@
       }
     }
   }
-  .btn-default {
-    border: 2px solid #efefef;
-    background: transparent;
-    color: #efefef;
-    padding: 5px 20px;
-    border-radius: 25px;
-    width: 100%;
-    max-width: 120px;
-    margin: 0 auto;
-    font-size: 1em;
-    cursor: pointer;
+  .btn-group {
+    .btn {
+      border: 2px solid #efefef;
+      background: transparent;
+      color: #efefef;
+      padding: 5px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        @include customize(theme) {
+          color: getValue(highlight-color);
+          border-color: getValue(highlight-color);
+        }
+      }
+      &:first-child {
+        &:hover {
+        color: hsl(0deg, 90%, 40%);;
+        border-color: hsl(0deg, 90%, 40%);;
+        }
+      }
+    }
   }
 }

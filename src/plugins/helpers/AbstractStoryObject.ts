@@ -34,9 +34,12 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public abstract isContentNode: boolean;
     public abstract userDefinedProperties: any;
     public abstract childNetwork?: StoryGraph;
-    public abstract connectors: Map<string, IConnectorPort>
     public abstract icon: string
     public abstract content?: any;
+    
+    public get connectors(): Map<string, IConnectorPort> {
+        return new Map<string, IConnectorPort>();
+    }
     
     constructor() {
         this.id = v4();
@@ -156,10 +159,18 @@ export class StoryObject extends AbstractStoryObject {
     public isContentNode!: boolean;
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph | undefined;
-    public connectors!: Map<string, IConnectorPort>;
     public icon!: string;
     public content?: any;
-
+    
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+        this.modifiers.forEach(modifier => {
+            modifier.requestConnectors().forEach(([label, connector]) => {
+                map.set(label, connector);
+            });
+        });
+        return map
+    }
     public getComponent(): FunctionComponent<INGWebSProps> {
         throw new Error('Method not implemented.');
     }

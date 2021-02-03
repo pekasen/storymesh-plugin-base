@@ -20,7 +20,7 @@ export abstract class CSSModifier extends ObservableStoryModifier<CSSModifierDat
 
         function concatSafely(string: string | undefined, string2: string) {
             if (!string) return string2
-            else return string + string2
+            else return string + " " + string2
         }
 
         if (this.type === "css-class" || this.type === "css-hybrid") element.props["class"] = concatSafely(element.props["class"], this.data?.classes.join(" "));

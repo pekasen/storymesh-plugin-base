@@ -65,12 +65,13 @@ export type MenuItemSpecification = "table" |
     "url" |
     "color" |
     "connectiontable" |
+    "hotspot-table" |
     "display";
 
 export interface IMenuTemplate<Value = any, Options = any> {
     label: string;
     type: MenuItemSpecification;
-    valueReference: (arg: Value) => void;
+    valueReference: (...args: Value[]) => void;
     value: (() => Value);
     // TODO: make it type-safe!!!
     options?: Options;

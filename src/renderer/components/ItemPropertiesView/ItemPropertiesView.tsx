@@ -4,6 +4,7 @@ import { Component, h } from 'preact';
 import { RootStore } from '../../store/rootStore';
 import { IMenuItemRenderer } from "../../../plugins/helpers/IMenuItemRenderer";
 import { AbstractStoryModifier } from '../../../plugins/helpers/AbstractModifier';
+import { deepObserve, IDisposer } from 'mobx-utils';
 
 export interface IItemPropertiesViewProperties {
     // template: IMenuTemplate[] | undefined
@@ -12,9 +13,17 @@ export interface IItemPropertiesViewProperties {
 
 export class ItemPropertiesView extends Component<IItemPropertiesViewProperties> {
 
+    private disposer: IDisposer;
+
     constructor(props: IItemPropertiesViewProperties) {
+
         super(props);
-        reaction(
+        const obj = props.store.
+                storyContentObjectRegistry.
+                getValue(props.store.uistate.selectedItems.first);
+        // this.disposer = deepObserve([obj, props.store.uistate.selectedItems], () => this.setState({}));
+
+        this.disposer = reaction(
             () => {
                 const obj = props.store.
                 storyContentObjectRegistry.
@@ -22,7 +31,7 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
                 const res = obj?.modifiers;
                 const conns = obj?.connections;
 
-                const thingsToWatch =[
+                const thingsToWatch = [
                     ...props.store.uistate.selectedItems.ids,
                     res?.length,
                     conns?.length
@@ -63,6 +72,10 @@ export class ItemPropertiesView extends Component<IItemPropertiesViewProperties>
         return <form onSubmit={e => e.preventDefault()} onDrop={onDrop}>
             { (menuItems.length !== 0) ? menuItems : null }
         </form>
+    }
+
+    componentWillUnmount(): void {
+        this.disposer();
     }
 }
 

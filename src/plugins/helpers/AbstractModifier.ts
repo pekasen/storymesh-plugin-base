@@ -1,7 +1,7 @@
 import { action, makeObservable, observable } from "mobx";
 import { h } from "preact";
 import { createModelSchema } from "serializr";
-import { IStoryModifier, ModifierType } from "storygraph";
+import { IConnectorPort, IStoryModifier, ModifierType } from "storygraph";
 import { v4 } from "uuid";
 import { rootStore } from "../../renderer";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
@@ -12,6 +12,7 @@ function isStoryModifierType(type: string): boolean {
 }
 
 export abstract class AbstractStoryModifier implements IStoryModifier {
+    
     public id = v4();
 
     public abstract name: string;
@@ -34,6 +35,10 @@ export abstract class AbstractStoryModifier implements IStoryModifier {
             }
         }
     }
+
+    public requestConnectors(): [string, IConnectorPort][] {
+        throw new Error("Method not implemented.");
+    }
 }
 
 export class ObservableStoryModifier<T> extends AbstractStoryModifier {
@@ -52,29 +57,58 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
                 valueReference: (name: string) => this.updateName(name)
             },
             {
-                label: "delete",
-                type: "button",
+                label: "",
+                type: "buttongroup",
                 value: () => undefined,
-                valueReference: () => {
-                    this.deleteMe();
-                }
-            },
-            {
-                label: "up",
-                type: "button",
-                value: () => undefined,
-                valueReference: () => {
-                    // this.deleteMe();
-                }
-            },
-            {
-                label: "down",
-                type: "button",
-                value: () => undefined,
-                valueReference: () => {
-                    // this.deleteMe();
+                valueReference: () => undefined,
+                options: {
+                    callbacks: [
+                        {
+                            label: "delete",
+                            valueReference: () => {
+                                this.deleteMe();
+                            }
+                        },
+                        {
+                            label: "up",
+    
+                            valueReference: () => {
+                                // this.deleteMe();
+                            }
+                        },
+                        {
+                            label: "down",
+                            valueReference: () => {
+                                // this.deleteMe();
+                            }
+                        }
+                    ]
                 }
             }
+            // {
+            //     label: "delete",
+            //     type: "button",
+            //     value: () => undefined,
+            //     valueReference: () => {
+            //         this.deleteMe();
+            //     }
+            // },
+            // {
+            //     label: "up",
+            //     type: "button",
+            //     value: () => undefined,
+            //     valueReference: () => {
+            //         // this.deleteMe();
+            //     }
+            // },
+            // {
+            //     label: "down",
+            //     type: "button",
+            //     value: () => undefined,
+            //     valueReference: () => {
+            //         // this.deleteMe();
+            //     }
+            // }
             // {
             //     label: "Type",
             //     type: "dropdown",

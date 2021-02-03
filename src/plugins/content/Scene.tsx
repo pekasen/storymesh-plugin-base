@@ -18,7 +18,6 @@ class _Scene extends StoryObject {
     public role: string;
     public isContentNode = true;
     public userDefinedProperties: unknown;
-    public connectors: Map<string, IConnectorPort>;
     // public menuTemplate: IMenuTemplate[];
     public icon: string;
 
@@ -27,19 +26,16 @@ class _Scene extends StoryObject {
 
         this.name = "Scene";
         this.role = "internal.content.scene";
-        this.connectors = new Map<string, IConnectorPort>();
-        [
-            // {
-            //     name: "data-out",
-            //     type: "data",
-            //     direction: "out",
-            //     call: () => this.content.file
-            // }
-            new DataConnectorOutPort(
-                "data-out",
-                () => this.content.file
-            )
-        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        // this.connectors = new Map<string, IConnectorPort>();
+        // [
+        //     // {
+        //     //     name: "data-out",
+        //     //     type: "data",
+        //     //     direction: "out",
+        //     //     call: () => this.content.file
+        //     // }
+
+        // ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
         // this.menuTemplate = [
         //     ...nameField(this),
         //     {
@@ -57,7 +53,7 @@ class _Scene extends StoryObject {
 
         makeObservable(
             this, {
-            connectors: observable,
+            // connectors: observable,
             name: observable,
             updateName: action,
             content: observable,
@@ -80,6 +76,27 @@ class _Scene extends StoryObject {
         return ret;
     }
 
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+        [
+            new DataConnectorOutPort(
+                "data-out",
+                () => this.content.file
+            ),
+            {
+                name: "flow-in",
+                type: "flow",
+                direction: "in"
+            },
+            {
+                name: "flow-out",
+                type: "flow",
+                direction: "out"
+            },
+        ].forEach(e => map.set(e.name, e as IConnectorPort));
+        return map;
+    }
+    
     public updateName(name: string): void {
         this.name = name;
     }

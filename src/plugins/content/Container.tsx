@@ -30,7 +30,7 @@ export class Container extends StoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork: StoryGraph;
-    public connectors: Map<string, IConnectorPort>;
+    // public connectors: Map<string, IConnectorPort>;
     public icon: string
     public content: undefined;
     public static defaultIcon = "icon-doc"
@@ -42,8 +42,8 @@ export class Container extends StoryObject {
         this.role = "internal.content.container";
         this.isContentNode = false;
         this.childNetwork = new ObservableStoryGraph(this.id);
-        this.connectors = new Map<string, IConnectorPort>();
-        this.makeFlowInAndOut();
+        // this.connectors = new Map<string, IConnectorPort>();
+        // this.makeFlowInAndOut();
 
         this.userDefinedProperties = {};
         this.icon = Container.defaultIcon;
@@ -54,7 +54,7 @@ export class Container extends StoryObject {
             name: observable,
             userDefinedProperties: observable,
             childNetwork: observable.deep,
-            connectors: observable.shallow,
+            // connectors: observable.shallow,
             updateName: action
         });
     }
@@ -229,7 +229,30 @@ export class Container extends StoryObject {
         //     // ...addConnectionPortField(this)
         // ]
     }
+
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+        [
+            {
+                name: "data-in",
+                type: "data",
+                direction: "in"
+            },
+            {
+                name: "flow-in",
+                type: "flow",
+                direction: "in"
+            },
+            {
+                name: "flow-out",
+                type: "flow",
+                direction: "out"
+            },
+        ].forEach(e => map.set(e.name, e as IConnectorPort));
+        return map;
+    }
 }
+
 createModelSchema(Container, {
     childNetwork: object(ObservableStoryGraphSchema)
 });

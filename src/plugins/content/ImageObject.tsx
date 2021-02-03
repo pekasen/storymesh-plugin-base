@@ -22,7 +22,6 @@ class _ImageObject extends StoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: unknown;
     public childNetwork?: StoryGraph;
-    public connectors: Map<string, IConnectorPort>;
     public content: IContent;
     public icon: string;
 
@@ -35,7 +34,6 @@ class _ImageObject extends StoryObject {
         this.role = "internal.content.image";
         this.isContentNode = true;
         this.userDefinedProperties = {};
-        this.connectors =new Map<string, IConnectorPort>();
         this.makeFlowInAndOut();
         
         this.content = {
@@ -49,7 +47,7 @@ class _ImageObject extends StoryObject {
         makeObservable(this,{
             name:                   observable,
             userDefinedProperties:  observable,
-            connectors:             observable.shallow,
+            // connectors:             observable.shallow,
             content:                observable,
             updateName:             action,
             updateImageURL:         action
@@ -69,6 +67,29 @@ class _ImageObject extends StoryObject {
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
         return ret;
+    }
+
+
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+        [
+            {
+                name: "data-in",
+                type: "data",
+                direction: "in"
+            },
+            {
+                name: "flow-in",
+                type: "flow",
+                direction: "in"
+            },
+            {
+                name: "flow-out",
+                type: "flow",
+                direction: "out"
+            },
+        ].forEach(e => map.set(e.name, e as IConnectorPort));
+        return map;
     }
 
     public updateImageURL(newURL: string) {

@@ -20,7 +20,6 @@ class _CameraView extends StoryObject {
     public role = "internal.content.cameraview";
     public isContentNode = true;
     public userDefinedProperties: any;
-    public connectors: Map<string, IConnectorPort>;
     public icon: string;
     // public menuTemplate: IMenuTemplate[];
     
@@ -33,15 +32,15 @@ class _CameraView extends StoryObject {
         super();
         this.name = "Camera View";
         this.icon = _CameraView.defaultIcon;
-        this.connectors = new Map<string, IConnectorPort>();
-        [
-            {
-                name: "data-in",
-                type: "data",
-                direction: "in"
-            }
-        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
-        this.makeFlowInAndOut();
+        // this.connectors = new Map<string, IConnectorPort>();
+        // [
+        //     {
+        //         name: "data-in",
+        //         type: "data",
+        //         direction: "in"
+        //     }
+        // ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        // this.makeFlowInAndOut();
         // this.menuTemplate = [
         //    ...nameField(this),
         //    ...connectionField(this),
@@ -61,12 +60,35 @@ class _CameraView extends StoryObject {
             content: observable.deep,
             cameraIds: observable,
             activeCamera: observable,
-            connectors: observable.shallow,
+            // connectors: observable.shallow,
             updateCameraIds: action,
             updateName: action,
             getComponent: false
         });
 
+    }
+
+
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+        [
+            {
+                name: "data-in",
+                type: "data",
+                direction: "in"
+            },
+            {
+                name: "flow-in",
+                type: "flow",
+                direction: "in"
+            },
+            {
+                name: "flow-out",
+                type: "flow",
+                direction: "out"
+            },
+        ].forEach(e => map.set(e.name, e as IConnectorPort));
+        return map;
     }
 
     public get menuTemplate(): IMenuTemplate[] {

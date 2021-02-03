@@ -3,7 +3,7 @@ import { createModelSchema, list, map, object, primitive } from "serializr";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
-import { ModifierType } from "storygraph";
+import { IConnectorPort, ModifierType } from "storygraph";
 
 interface IGridItemInlineStatements extends CSSStatement {
     "grid-row": string;
@@ -111,6 +111,10 @@ export class CSSGriditemModifier extends CSSModifier {
                 this.makeSlider(e as Size)
             )),
         ];
+    }
+
+    public requestConnectors(): [string, IConnectorPort][] {
+        return []
     }
 
     public get getRenderingProperties(): any {

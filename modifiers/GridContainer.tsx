@@ -3,7 +3,7 @@ import { createModelSchema, list, object, primitive } from "serializr";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
-import { ModifierType } from "storygraph";
+import { IConnectorPort, ModifierType } from "storygraph";
 
 interface IGridContainerInlineStatements extends CSSStatement {
     "grid-gap": string;
@@ -82,6 +82,10 @@ export class CSSGridContainerModifier extends CSSModifier {
         ];
     }
 
+    public requestConnectors(): [string, IConnectorPort][] {
+        return []
+    }
+    
     public get getRenderingProperties(): any {
         return super.getRenderingProperties;
     }

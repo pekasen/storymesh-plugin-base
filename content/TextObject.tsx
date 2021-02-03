@@ -22,7 +22,6 @@ class _TextObject extends StoryObject {
     public userDefinedProperties: any;
     public content: IContent;
     public childNetwork?: StoryGraph | undefined;
-    public connectors: Map<string, IConnectorPort>;
     public icon: string;
     public static defaultIcon = "icon-newspaper";
     
@@ -36,15 +35,15 @@ class _TextObject extends StoryObject {
             order: 1,
             collapsable: false
         };
-        this.connectors = new Map<string, IConnectorPort>();
-        [
-            {
-                name: "enterView",
-                type: "reaction",
-                direction: "out"
-            }
-        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
-        this.makeFlowInAndOut();
+        // this.connectors = new Map<string, IConnectorPort>();
+        // [
+        //     {
+        //         name: "enterView",
+        //         type: "reaction",
+        //         direction: "out"
+        //     }
+        // ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
+        // this.makeFlowInAndOut();
         this.content = {
             resource: "Type here...",
             altText: "empty",
@@ -78,7 +77,7 @@ class _TextObject extends StoryObject {
             name:                   observable,
             userDefinedProperties:  observable.deep,
             content:                observable,
-            connectors:             observable.shallow,
+            // connectors:             observable.shallow,
             updateName:             action,
             updateText:             action
         });
@@ -106,6 +105,28 @@ class _TextObject extends StoryObject {
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
         return ret;
+    }
+
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = super.connectors;
+        [
+            {
+                name: "data-in",
+                type: "data",
+                direction: "in"
+            },
+            {
+                name: "flow-in",
+                type: "flow",
+                direction: "in"
+            },
+            {
+                name: "flow-out",
+                type: "flow",
+                direction: "out"
+            },
+        ].forEach(e => map.set(e.name, e as IConnectorPort));
+        return map;
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {

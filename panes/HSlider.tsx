@@ -6,7 +6,7 @@ import { IMenuItemRenderer } from "../helpers/IMenuItemRenderer";
 
 export class HSliderMenuItem implements IMenuItemRenderer {
     render(item: IMenuTemplate): JSX.Element {
-        const pRef = useRef<HTMLParagraphElement>(undefined);
+        const pRef = useRef<HTMLParagraphElement>();
 
         return <div class="form-group-item slider-item">
             <label>{item.label}</label>

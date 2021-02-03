@@ -21,7 +21,7 @@ export class ConnectionTableMenuItem implements IMenuItemRenderer {
             const reactionDisposer = reaction(
                 () => {
                     const obj = item.value();
-                    [obj.connections.length, obj.connectors.length, ...obj.connections]
+                    [obj.connections.length, obj.connectors.size, ...obj.connections]
                 },
                 () => setState({})
             );

@@ -5,33 +5,51 @@
   padding: 0;
   width: 100%;
   height: 100%;
-  margin-top: 30px;
   /*================== STORY WRAPPER =================*/
   /* ============ MIXINS ============ */
   /* =============  BASE =========== */ }
   .preview-container .vertical-pane-mini {
     position: fixed;
-    width: 100%; }
+    width: 100%;
+    z-index: 99; }
+  .preview-container .vertical-pane-group > .vertical-pane:nth-of-type(even) {
+    background: #fff; }
   .preview-container .header-preview {
-    transition: background .4s ease-in, color .4s ease-in; }
+    transition: background 0.4s ease-in, color 0.4s ease-in;
+    margin: 10px; }
     .preview-container .header-preview span {
       display: inline-block;
-      font-size: .85rem;
+      font-size: 0.85rem;
       margin: 5px 0 5px 10px; }
   .preview-container .storywrapper {
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 0; }
+    padding: 0;
+    margin-top: 30px; }
     .preview-container .storywrapper .ngwebs-story {
       margin: 0 auto;
       max-width: 768px;
       padding: 0 15px; }
-    .preview-container .storywrapper p, .preview-container .storywrapper a, .preview-container .storywrapper span {
+    .preview-container .storywrapper p,
+    .preview-container .storywrapper a,
+    .preview-container .storywrapper span {
       font-size: 1rem; }
-    .preview-container .storywrapper h1, .preview-container .storywrapper h2, .preview-container .storywrapper h3, .preview-container .storywrapper h4, .preview-container .storywrapper h5, .preview-container .storywrapper h6, .preview-container .storywrapper strong, .preview-container .storywrapper b {
+    .preview-container .storywrapper h1,
+    .preview-container .storywrapper h2,
+    .preview-container .storywrapper h3,
+    .preview-container .storywrapper h4,
+    .preview-container .storywrapper h5,
+    .preview-container .storywrapper h6,
+    .preview-container .storywrapper strong,
+    .preview-container .storywrapper b {
       font-weight: bold; }
-    .preview-container .storywrapper h1, .preview-container .storywrapper h2, .preview-container .storywrapper h3, .preview-container .storywrapper h4, .preview-container .storywrapper h5, .preview-container .storywrapper h6 {
+    .preview-container .storywrapper h1,
+    .preview-container .storywrapper h2,
+    .preview-container .storywrapper h3,
+    .preview-container .storywrapper h4,
+    .preview-container .storywrapper h5,
+    .preview-container .storywrapper h6 {
       white-space: normal; }
     .preview-container .storywrapper h1 {
       font-size: 2.5rem; }
@@ -49,7 +67,7 @@
       font-size: 2.3rem;
       max-width: 440px;
       margin: 0 auto;
-      opacity: .9; }
+      opacity: 0.9; }
       .storytheme-basic .preview-container .storywrapper blockquote {
         color: lightblue; }
     .preview-container .storywrapper img {

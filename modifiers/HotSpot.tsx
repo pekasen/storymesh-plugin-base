@@ -121,15 +121,8 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     }
 
     public modify(element: h.JSX.Element): h.JSX.Element {
-        // TODO: svgOverlay should be the same size as the passed element
-        // element.props.usemap = `#${this.id}`;
         const sizeRef = useRef();
         element.props.ref = sizeRef;
-        
-        // if (svgRef.current) {
-        //     console.log("children", this.data.hotspots)
-        //     svg.props.children = this.data.hotspots.map(e => e.render(svgRef.current));
-        // }
 
         // Hacky this/that trick
         // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -236,20 +229,26 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     }
 }
 
-// export const GridItemInlineStatementsSchema = createModelSchema(GridItemInlineStatements, {
-//     "grid-row": true,
-//     "grid-column": true
-// })
 
-// export const CSSGriditemModifierDataSchema = createModelSchema(GridItem, {
-//     classes: list(primitive()),
-//     data: object(GridItemInlineStatements),
-//     classMap: map(primitive())
-// });
+export const HotSpotSchema = createModelSchema(HotSpot, {
+    x: true,
+    y: true,
+    name: true
+});
 
-// export const CSSGriditemModifierSchema = createModelSchema(CSSGriditemModifier, {
-//     data: object(CSSGriditemModifierDataSchema)
-// });
+export const CircleHotSpotSchema = createModelSchema(CircleHotSpot, {
+    radius: true
+});
+
+export const HotSpotModifierDataSchema = createModelSchema(HotSpotModifierData, {
+    hotspots: list(object(CircleHotSpotSchema))
+});
+
+export const HTMLHotSpotModifierSchema = createModelSchema(HTMLHotSpotModifier, {
+    data: object(HotSpotModifierData),
+    name: true,
+    role: true
+});
 
 export const plugInExport = exportClass(
     HTMLHotSpotModifier,

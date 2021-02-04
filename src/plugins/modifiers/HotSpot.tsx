@@ -2,10 +2,10 @@ import { action, makeObservable, observable, runInAction } from "mobx";
 import { Component, createRef, h } from "preact";
 import { useRef } from "preact/hooks";
 import { createModelSchema, list, map, object, primitive } from "serializr";
+import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
-import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
 
 export class HotSpot {
     public name: string;

@@ -15,19 +15,19 @@ table.connection-table {
 
         &.flow {
             @include customize(theme) {
-                color: getValue(flow-color);
+                color: getValue(flow);
             }
         }
 
         &.data {
             @include customize(theme) {
-                color: getValue(data-color);
+                color: getValue(data);
             }
         }
 
         &.reaction {
             @include customize(theme) {
-                color: getValue(reaction-color);
+                color: getValue(reaction);
             }
         }
     }

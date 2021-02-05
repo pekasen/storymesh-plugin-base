@@ -1,4 +1,4 @@
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { Component, createRef, h } from "preact";
 import { useRef } from "preact/hooks";
 import { createModelSchema, list, object } from "serializr";
@@ -12,6 +12,7 @@ export class HotSpot {
     public x: number;
     public y: number;
     protected static numOfInstances = 1;
+    public reactionPOut = new ReactionConnectorOutPort("heelo", () => undefined)
 
     constructor(x?: number, y?: number) {
         this.x = x ?? 0.5;
@@ -34,7 +35,7 @@ export class HotSpot {
         }
     }
 
-    public render(svg: Element): preact.JSX.Element {
+    public render(): preact.JSX.Element {
         throw("This method should not be called");
     }
 
@@ -155,7 +156,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
 
             componentDidMount(){
                 if (this.svgRef.current) {
-                    this.hotspots = that.data.hotspots.map(e => e.render(this.svgRef.current));
+                    this.hotspots = that.data.hotspots.map(e => e.render());
                     this.forceUpdate();
                 }
             }
@@ -234,14 +235,12 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     public get getRenderingProperties(): any {
         return super.getRenderingProperties;
     }
+
     public requestConnectors(): [string, IConnectorPort][] {
-        return this.data.hotspots.map((value, index) => {
-            const name = (value.name) ? value.name : `reaction-out-${index}`;
-            const obj = new ReactionConnectorOutPort(name, () => {})
-            return [
-                obj.id,
-                obj
-            ];
+        return this.data.hotspots.map((value) => {
+            const out = value.reactionPOut
+            out.name = value.name;
+            return [out.id, out];
         });
     }
 }

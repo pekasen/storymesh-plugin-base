@@ -1,4 +1,4 @@
-import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { DataConnectorInPort, DataConnectorOutPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
 import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
@@ -7,11 +7,9 @@ import { exportClass } from '../helpers/exportClass';
 import { action, makeObservable, observable } from 'mobx';
 import { useContext, useRef } from 'preact/hooks';
 import { Store } from '../../renderer';
-// import { webGLEngine } from "../renderer/index";
 import * as BABYLON from 'babylonjs';
 import "babylonjs-loaders";
 import { createModelSchema } from 'serializr';
-// import "babylonjs-inspector";
 
 class _CameraView extends StoryObject {
     public content: any;
@@ -21,7 +19,6 @@ class _CameraView extends StoryObject {
     public isContentNode = true;
     public userDefinedProperties: any;
     public icon: string;
-    // public menuTemplate: IMenuTemplate[];
     
     static defaultIcon = "icon-camera";
     
@@ -30,27 +27,10 @@ class _CameraView extends StoryObject {
 
     constructor() {
         super();
+        this.makeDefaultConnectors();
+
         this.name = "Camera View";
         this.icon = _CameraView.defaultIcon;
-        // this.connectors = new Map<string, IConnectorPort>();
-        // [
-        //     {
-        //         name: "data-in",
-        //         type: "data",
-        //         direction: "in"
-        //     }
-        // ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
-        // this.makeFlowInAndOut();
-        // this.menuTemplate = [
-        //    ...nameField(this),
-        //    ...connectionField(this),
-        //    ...dropDownField(
-        //        this,
-        //        () => this.cameraIds as string[],
-        //        () => this.activeCamera,
-        //        (selection) => this.updateActiveCamera(selection)
-        //     )
-        // ];
         this.content = {};
         this.activeCamera = "";
         this.cameraIds = [];
@@ -60,35 +40,11 @@ class _CameraView extends StoryObject {
             content: observable.deep,
             cameraIds: observable,
             activeCamera: observable,
-            // connectors: observable.shallow,
             updateCameraIds: action,
             updateName: action,
             getComponent: false
         });
 
-    }
-
-
-    public get connectors(): Map<string, IConnectorPort> {
-        const map = super.connectors;
-        [
-            {
-                name: "data-in",
-                type: "data",
-                direction: "in"
-            },
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            },
-        ].forEach(e => map.set(e.name, e as IConnectorPort));
-        return map;
     }
 
     public get menuTemplate(): IMenuTemplate[] {

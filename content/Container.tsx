@@ -6,17 +6,15 @@ import { IConnectorPort } from 'storygraph/dist/StoryGraph/IConnectorPort';
 import { InputConnectorView } from "./InputConnectorView";
 import { IPlugIn, INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
-import { makeObservable, observable, reaction, IReactionDisposer, action } from 'mobx';
+import { makeObservable, observable, reaction, action } from 'mobx';
 import { MoveableItem } from "../../renderer/store/MoveableItem";
 import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
 import { OutputConnectorView } from "./OutputConnectorView";
 import { Store } from '../../renderer';
-import { StoryGraph } from 'storygraph';
+import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, StoryGraph } from 'storygraph';
 import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { UIStore } from "../../renderer/store/UIStore";
 import { useContext, useEffect, useState } from "preact/hooks";
-import { CSSGridContainerModifier } from '../modifiers/GridContainer';
-import { CSSModifier, CSSModifierData } from '../helpers/CSSModifier';
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
 
 /**
@@ -30,7 +28,6 @@ export class Container extends StoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork: StoryGraph;
-    // public connectors: Map<string, IConnectorPort>;
     public icon: string
     public content: undefined;
     public static defaultIcon = "icon-doc"
@@ -42,8 +39,7 @@ export class Container extends StoryObject {
         this.role = "internal.content.container";
         this.isContentNode = false;
         this.childNetwork = new ObservableStoryGraph(this.id);
-        // this.connectors = new Map<string, IConnectorPort>();
-        // this.makeFlowInAndOut();
+        this.makeDefaultConnectors();
 
         this.userDefinedProperties = {};
         this.icon = Container.defaultIcon;
@@ -54,46 +50,12 @@ export class Container extends StoryObject {
             name: observable,
             userDefinedProperties: observable,
             childNetwork: observable.deep,
-            // connectors: observable.shallow,
             updateName: action
         });
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph, modifiers}) => {
-            // const [, setState] = useState({});
-            // let disposer: IReactionDisposer;
-            
-            // useEffect(() => {
-            //     disposer = reaction(
-            //         () => (graph?.nodes.length),
-            //         () => {
-            //             setState({});
-            //         }
-            //     )
-    
-            //     return () => {
-            //         disposer();
-            //     }
-            // });
-
-            // const cssInline = modifiers?.
-            //     filter(modifier => modifier.type === "css-inline").
-            //     map(modifier => {
-            //         const m = modifier as CSSGridContainerModifier;
-            //         const data = m.data;
-            //         return Object.keys(data).map(key => `${key}: ${data[key]};`).join(" ");
-            //     }).
-            //     join(" ");
-            // const cssClasses = modifiers?.
-            //     filter(modifier => modifier.type === "css-class").
-            //     map(modifier => {
-            //         const m = modifier as CSSGridContainerModifier;
-            //         const data = m.data;
-            //         return Object.keys(data).map(key => data[key] as string)
-            //     }).
-            //     join(" ");
-
             const div = <div id={id}>
                 {
                     graph?.nodes.map(e => {
@@ -114,15 +76,12 @@ export class Container extends StoryObject {
                     }) || null
                 }
             </div>
-            // console.log("found following css statements", cssInline, cssClasses);
 
-            // if (cssInline) div.props.style = cssInline;
-            // if (cssClasses) div.props.style = cssClasses;
            if (modifiers)  return modifiers.reduce((p, v) => {
                 return (v as AbstractStoryModifier).modify(p);
             }, div)
             else return div
-            // return div;
+
         }
         return Comp
     }
@@ -134,59 +93,57 @@ export class Container extends StoryObject {
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
         // TODO: implement mock-drawing of the containers content!
         // TODO: draw using SVGs!
-        const store = useContext(Store);
-        const [, setState] = useState({});
+        return () => <div></div>
+        // const store = useContext(Store);
+        // const [, setState] = useState({});
 
-        useEffect(
-            () => {
-                const disposer = reaction(
-                    () => {
-                        this.
-                        childNetwork.
-                        nodes.
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        map(e => store.storyContentObjectRegistry.getValue(e)!).
-                        map(e => store.uistate.moveableItems.getValue(e.id)).
-                        map(e => [e?.x, e?.y])
-                    },
-                    () => setState({})
-                )
+        // useEffect(
+        //     () => {
+        //         const disposer = reaction(
+        //             () => {
+        //                 this.
+        //                 childNetwork.
+        //                 nodes.
+        //                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        //                 map(e => store.storyContentObjectRegistry.getValue(e)!).
+        //                 map(e => store.uistate.moveableItems.getValue(e.id)).
+        //                 map(e => [e?.x, e?.y])
+        //             },
+        //             () => setState({})
+        //         )
 
-                return () => {
-                    disposer()
-                }
-            }
-        );
+        //         return () => {
+        //             disposer()
+        //         }
+        //     }
+        // );
 
-        const coords = this.childNetwork.nodes.map(id => {
-            // const node = store.storyContentObjectRegistry.getValue(id);
-            const mitem = store.uistate.moveableItems.getValue(id);
-            if (!mitem) throw("Item is not defined!");
-            return {
-                x: mitem.x,
-                y: mitem.y
-            }
-        });
+        // const coords = this.childNetwork.nodes.map(id => {
+        //     const mitem = store.uistate.moveableItems.getValue(id);
+        //     if (!mitem) throw("Item is not defined!");
+        //     return {
+        //         x: mitem.x,
+        //         y: mitem.y
+        //     }
+        // });
 
-        return () => <div class="editor-component">
-            {
-                coords.map(item => <div style={`position: absolute; left: ${item?.x}; top: ${item?.y}; background: dark-grey;`}></div>)
-            }
-        </div>
+        // return () => <div class="editor-component">
+        //     {
+        //         coords.map(item => <div style={`position: absolute; left: ${item?.x}; top: ${item?.y}; background: dark-grey;`}></div>)
+        //     }
+        // </div>
     }
 
     public setup(registry: IRegistry, uistate: UIStore): void {
         const start = new InputConnectorView();
         const end = new OutputConnectorView();
-        if (start && end) {
-            this.childNetwork.addNode(registry, start);
-            uistate.moveableItems.register(new MoveableItem(start.id, 50, 50));
-            this.childNetwork.addNode(registry, end);
-            uistate.moveableItems.register(new MoveableItem(end.id, 50, 350));
 
-            start.setup(registry);
-            end.setup(registry);
-        }
+        this.childNetwork.addNode(registry, start);
+        this.childNetwork.addNode(registry, end);
+        uistate.moveableItems.register(new MoveableItem(start.id, 50, 50));
+        uistate.moveableItems.register(new MoveableItem(end.id, 50, 350));
+        start.setup(this.id, registry);
+        end.setup(this.id, registry);
     }
 
     public get menuTemplate(): IMenuTemplate[] {
@@ -201,55 +158,9 @@ export class Container extends StoryObject {
                 }
             ),
             ...connectionField(this),
-            // {
-            //     type: "divider"
-            // }
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
         return ret;
-
-        // return [
-        //     ...super.menuTemplate,
-        //     ...nameField(this),
-        //     ...dropDownField(
-        //         this,
-        //         () => ["h1", "h2", "h3", "b", "p"],
-        //         () => "h1",
-        //         (selection: string) => {
-        //             this.userDefinedProperties.class = selection
-        //         }
-        //     ),
-        //     {
-        //         label: "Test",
-        //         type: "text",
-        //         value: () => this.name,
-        //         valueReference: (name: string) => {this.updateName(name)}
-        //     },
-        //     ...connectionField(this),
-        //     // ...addConnectionPortField(this)
-        // ]
-    }
-
-    public get connectors(): Map<string, IConnectorPort> {
-        const map = super.connectors;
-        [
-            {
-                name: "data-in",
-                type: "data",
-                direction: "in"
-            },
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            },
-        ].forEach(e => map.set(e.name, e as IConnectorPort));
-        return map;
     }
 }
 

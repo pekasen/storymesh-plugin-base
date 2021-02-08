@@ -2,13 +2,12 @@ import { FunctionComponent, h } from "preact";
 import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
 import { action, makeObservable, observable } from 'mobx';
-import { IConnectorPort, StoryGraph } from 'storygraph';
+import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { CSSModifier } from "../helpers/CSSModifier";
 
 /**
  * Our first little dummy PlugIn
@@ -34,7 +33,7 @@ class _ImageObject extends StoryObject {
         this.role = "internal.content.image";
         this.isContentNode = true;
         this.userDefinedProperties = {};
-        this.makeFlowInAndOut();
+        this.makeDefaultConnectors();
         
         this.content = {
             resource: "https://www.dafont.com/img/illustration/s/o/something.jpg",
@@ -67,29 +66,6 @@ class _ImageObject extends StoryObject {
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
         return ret;
-    }
-
-
-    public get connectors(): Map<string, IConnectorPort> {
-        const map = super.connectors;
-        [
-            {
-                name: "data-in",
-                type: "data",
-                direction: "in"
-            },
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            },
-        ].forEach(e => map.set(e.name, e as IConnectorPort));
-        return map;
     }
 
     public updateImageURL(newURL: string) {

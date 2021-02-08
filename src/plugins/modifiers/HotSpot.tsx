@@ -1,21 +1,23 @@
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { Component, createRef, h } from "preact";
 import { useRef } from "preact/hooks";
-import { createModelSchema, list, map, object, primitive } from "serializr";
+import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
 
 export class HotSpot {
-    public name: string;
+    protected _name: string | undefined;    
     public x: number;
     public y: number;
+    protected static numOfInstances = 1;
+    public reactionPOut = new ReactionConnectorOutPort("heelo", () => undefined)
 
     constructor(x?: number, y?: number) {
-        this.name = "HotSpot";
         this.x = x ?? 0.5;
         this.y = y ?? 0.5;
+        HotSpot.numOfInstances += 1;
 
         makeObservable(this, {
             x: true,
@@ -33,7 +35,7 @@ export class HotSpot {
         }
     }
 
-    public render(svg: Element): preact.JSX.Element {
+    public render(): preact.JSX.Element {
         throw("This method should not be called");
     }
 
@@ -49,14 +51,29 @@ export class HotSpot {
             default: break;
         }
     }
+
+    public get name(): string {
+        return `${this._name}${(HotSpot.numOfInstances > 0) ? "-" + HotSpot.numOfInstances : ""}`
+    }
 }
 
 class CircleHotSpot extends HotSpot {
     public radius: number;
-    public name = "CircleHotSpot";
+    protected _num: number;
+    
+    public get name() {
+        if (this._name === undefined) return "CircleHotSpot" + this._num;
+        else return this._name;
+    }
+
+    public set name(name: string) {
+        this._name = name
+    }
 
     constructor(x?:number, y?: number, r?: number) {
         super(x, y);
+        this._num = CircleHotSpot.numOfInstances;
+        CircleHotSpot.numOfInstances += 1;
 
         this.radius = r ?? 0.25;
         makeObservable(this, {
@@ -79,7 +96,7 @@ class CircleHotSpot extends HotSpot {
 
             console.log("circle dims", {x: relX, y: relY, r: relR});
             
-            return <circle cx={relX} cy={relY} r={relR} onClick={() => console.log(`Hello from ${this.name}`)}/>
+            return <circle class={"debug"} cx={relX} cy={relY} r={relR} onClick={() => console.log(`Hello from ${this.name}`)}/>
         } else return <circle />
     }
     
@@ -139,7 +156,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
 
             componentDidMount(){
                 if (this.svgRef.current) {
-                    this.hotspots = that.data.hotspots.map(e => e.render(this.svgRef.current));
+                    this.hotspots = that.data.hotspots.map(e => e.render());
                     this.forceUpdate();
                 }
             }
@@ -218,13 +235,12 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     public get getRenderingProperties(): any {
         return super.getRenderingProperties;
     }
+
     public requestConnectors(): [string, IConnectorPort][] {
-        return this.data.hotspots.map((value, index) => {
-            const name = (value.name) ? value.name : `reaction-out-${index}`;
-            return [
-                name,
-                new ReactionConnectorOutPort(name, () => {})
-            ];
+        return this.data.hotspots.map((value) => {
+            const out = value.reactionPOut
+            out.name = value.name;
+            return [out.id, out];
         });
     }
 }

@@ -2,7 +2,7 @@ import { FunctionalComponent, FunctionComponent, h } from "preact";
 import { runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
-import { IConnectorPort, StoryGraph } from 'storygraph';
+import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { StoryObject } from '../helpers/AbstractStoryObject';
@@ -28,22 +28,14 @@ class _TextObject extends StoryObject {
     constructor() {
         super();
         this.isContentNode = true;
-        this.role = "internal.content.text"
-        this.name = "Text" // [this.role, this.id].join("_");
+        this.role = "internal.content.text";
+        this.name = "Text";
         this.renderingProperties = {
             width: 100,
             order: 1,
             collapsable: false
         };
-        // this.connectors = new Map<string, IConnectorPort>();
-        // [
-        //     {
-        //         name: "enterView",
-        //         type: "reaction",
-        //         direction: "out"
-        //     }
-        // ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
-        // this.makeFlowInAndOut();
+        this.makeDefaultConnectors();
         this.content = {
             resource: "Type here...",
             altText: "empty",
@@ -52,24 +44,6 @@ class _TextObject extends StoryObject {
         this.userDefinedProperties = {
             tag: "p"
         };
-        // this.menuTemplate = [
-        //     ...nameField(this),
-        //     {
-        //         label: "Content",
-        //         type: "textarea",
-        //         value: () => this.content.resource,
-        //         valueReference: (text: string) => {this.updateText(text)}
-        //     },
-        //     ...dropDownField(
-        //         this,
-        //         () => ["h1", "h2", "h3", "b", "p"],
-        //         () => "h1",
-        //         (selection: string) => {
-        //             console.log(selection);
-        //         }
-        //     ),
-        //     ...connectionField(this)
-        // ];
         this.icon = _TextObject.defaultIcon;
 
         makeObservable(this, {
@@ -77,7 +51,6 @@ class _TextObject extends StoryObject {
             name:                   observable,
             userDefinedProperties:  observable.deep,
             content:                observable,
-            // connectors:             observable.shallow,
             updateName:             action,
             updateText:             action
         });
@@ -105,28 +78,6 @@ class _TextObject extends StoryObject {
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
         return ret;
-    }
-
-    public get connectors(): Map<string, IConnectorPort> {
-        const map = super.connectors;
-        [
-            {
-                name: "data-in",
-                type: "data",
-                direction: "in"
-            },
-            {
-                name: "flow-in",
-                type: "flow",
-                direction: "in"
-            },
-            {
-                name: "flow-out",
-                type: "flow",
-                direction: "out"
-            },
-        ].forEach(e => map.set(e.name, e as IConnectorPort));
-        return map;
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
@@ -164,6 +115,7 @@ class _TextObject extends StoryObject {
                 Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
             }
             const p = <Elem>{args.content?.resource}</Elem>;
+            p.props.contenteditable = true;
             
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));

@@ -1,13 +1,13 @@
 import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from '../helpers/exportClass';
-import { IConnectorPort, IEdge } from 'storygraph';
+import { ConnectorPort, FlowConnectorOutPort, IConnectorPort, IEdge } from 'storygraph';
 import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
-import { ConnectorPort } from '../../renderer/utils/ConnectorPort';
 import { makeObservable, observable, action } from 'mobx';
 import { createModelSchema } from 'serializr';
+import { rootStore } from "../../renderer";
 
 export class OutputConnectorView extends StoryObject {
     public name: string;
@@ -23,42 +23,21 @@ export class OutputConnectorView extends StoryObject {
     public static defaultIcon = "icon-down";
     public registry?: IRegistry;
 
+    protected _connectors = new Map<string, IConnectorPort>();
+
     constructor() {
         super();
         
         this.name = "Output";
         this.role = "internal.content.outputconnectorview";
         this.icon = OutputConnectorView.defaultIcon;
-        // this.menuTemplate = [
-        //     ...nameField(this),
-        //     ...connectionField(this)
-        // ];
         this.connections = [];
-        // this.connectors = new Map<string, IConnectorPort>();
-        
+
         makeObservable(this,{
             name: observable,
             updateName: action,
             addConnection: action
         });
-    }
-
-    setup(registry: IRegistry): void {
-        this.registry = registry;
-        // if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
-        // const parentNode = registry.getValue(this.parent) as AbstractStoryObject;
-        // if (!parentNode) throw("No, no, no, that'S not possible!");
-
-        // parentNode.
-        // connectors.
-        // forEach(e => {
-        //     const _new = new ConnectorPort(e.type, "in");
-        //     if (e.direction === "out") {
-        //         this.connectors.set(
-        //             _new.name, _new
-        //         )
-        //     }
-        // });
     }
 
     public get menuTemplate(): IMenuTemplate[] {
@@ -71,23 +50,8 @@ export class OutputConnectorView extends StoryObject {
     }
 
     public get connectors(): Map<string, IConnectorPort> {
-        const map = super.connectors;
-
-        if (!this.parent) throw("No, no, no, ye' dirty olde bastard!");
-        const parentNode = this.registry?.getValue(this.parent) as AbstractStoryObject;
-        if (!parentNode) throw("No, no, no, that'S not possible!");
-
-        parentNode.
-        connectors.
-        forEach(e => {
-            if (e.direction === "out" && e.type === "flow") {
-                const _new = new ConnectorPort(e.type, "in");
-                map.set(
-                    _new.name, _new
-                )
-            }
-        });
-        return map;
+        this.updateConnectors();
+        return super.connectors;
     }
 
     getComponent() {
@@ -100,6 +64,32 @@ export class OutputConnectorView extends StoryObject {
 
     updateName(name: string): void {
         this.name = name;
+    }
+
+    setup(id: string, registry: IRegistry): void {
+        this.parent = id;
+        this.registry = registry;
+    }
+
+    private updateConnectors(): void {
+        if (!this.parent || !this.registry) return;
+        const parentNode = this.registry?.getValue(this.parent) as AbstractStoryObject;
+        if (!parentNode) return;
+        if (
+            (parentNode.connectors.size > this._connectors.size) 
+        ) {
+            parentNode.
+            connectors.
+            forEach((e: IConnectorPort) => {
+                if (e.direction === "out" && e.type === "flow") {
+                    const f = (e as FlowConnectorOutPort).reverse()
+                    f.id = (e as ConnectorPort).id;
+                    this._connectors.set(
+                        f.id, f
+                    )
+                }
+            });
+        }
     }
 }
 createModelSchema(OutputConnectorView, {});

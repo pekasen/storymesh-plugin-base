@@ -18,7 +18,7 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.button",
     "",
-    true
+    false
 );
 
 

@@ -32,5 +32,5 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.file-selector",
     "",
-    true
+    false
 );

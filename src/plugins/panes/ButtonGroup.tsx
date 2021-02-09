@@ -29,5 +29,5 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.buttongroup",
     "",
-    true
+    false
 );

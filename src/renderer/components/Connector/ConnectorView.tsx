@@ -36,6 +36,7 @@ export class ConnectorView extends Component<IConnectorViewProps> {
         const { storyContentObjectRegistry } = useContext(Store);
         const [fromId, fromPort] = StoryGraph.parseNodeId(id);
         const obj = storyContentObjectRegistry.getValue(fromId);
+        const fromCon = obj?.connectors.get(fromPort);
 
         return <DraggableDropReceiver id={id} onDrop={(ev: DragEvent) => {
             ev.preventDefault();
@@ -49,7 +50,7 @@ export class ConnectorView extends Component<IConnectorViewProps> {
                     toId,
                     fromPort,
                     toPort,
-                    (fromPort.endsWith("in") ? "in" : "out")
+                    fromCon?.direction
                 )        
             //     network = parentObj?.childNetwork
                 

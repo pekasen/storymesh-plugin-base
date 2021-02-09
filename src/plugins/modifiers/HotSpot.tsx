@@ -1,8 +1,9 @@
 import { action, makeObservable, observable } from "mobx";
-import { Component, createRef, h } from "preact";
+import { Component, createRef, h, RefObject } from "preact";
 import { useRef } from "preact/hooks";
 import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
+import { Store } from "../../renderer";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
@@ -12,7 +13,7 @@ export class HotSpot {
     public x: number;
     public y: number;
     protected static numOfInstances = 1;
-    public reactionPOut = new ReactionConnectorOutPort("heelo", () => undefined)
+    public reactionOut = new ReactionConnectorOutPort("hello", () => {console.log("Hello from", this)})
 
     constructor(x?: number, y?: number) {
         this.x = x ?? 0.5;
@@ -35,7 +36,7 @@ export class HotSpot {
         }
     }
 
-    public render(): preact.JSX.Element {
+    public render(svg?: RefObject<SVGSVGElement>): preact.JSX.Element {
         throw("This method should not be called");
     }
 
@@ -86,9 +87,9 @@ class CircleHotSpot extends HotSpot {
         this.radius = this._clip(radius, 0, Math.PI);
     }
 
-    public render(svg?: Element): preact.JSX.Element {
-        if (svg) {
-            const { width, height } = svg.getBoundingClientRect();
+    public render(svg?: RefObject<SVGSVGElement>): preact.JSX.Element {
+        if (svg?.current) {
+            const { width, height } = svg.current.getBoundingClientRect();
 
             const relX = width * this.x;
             const relY = height * this.y;
@@ -96,7 +97,11 @@ class CircleHotSpot extends HotSpot {
 
             console.log("circle dims", {x: relX, y: relY, r: relR});
             
-            return <circle class={"debug"} cx={relX} cy={relY} r={relR} onClick={() => console.log(`Hello from ${this.name}`)}/>
+            return <circle class={"debug"} cx={relX} cy={relY} r={relR} onClick={() => {
+                
+                console.log("Sending notification to", this.reactionOut);
+                this.reactionOut.notify();
+            }}/>
         } else return <circle />
     }
     
@@ -109,7 +114,8 @@ class CircleHotSpot extends HotSpot {
 }
 
 class HotSpotModifierData {
-    [key: string]: HotSpot[]
+    [key: string]: HotSpot[];
+    hotspots: HotSpot[];
 
     constructor() {
         this.hotspots = [
@@ -134,7 +140,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
             data: observable,
             addHotSpot: action,
             removeHotSpot: action
-        })
+        });
     }
 
     public modify(element: h.JSX.Element): h.JSX.Element {
@@ -144,6 +150,11 @@ export class HTMLHotSpotModifier extends HMTLModifier {
         // Hacky this/that trick
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
+        // this.data.hotspots.forEach(hotspot => {
+        //     hotspot.reactionOut.notify = () => {
+        //         Store
+        //     };
+        // });
         class SVGOverlay extends Component {
             svgRef = createRef();
             hotspots: preact.JSX.Element[] = [];
@@ -156,7 +167,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
 
             componentDidMount(){
                 if (this.svgRef.current) {
-                    this.hotspots = that.data.hotspots.map(e => e.render());
+                    this.hotspots = that.data.hotspots.map(e => e.render(this.svgRef));
                     this.forceUpdate();
                 }
             }
@@ -214,7 +225,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                         },
                         {
                             name: "delete",
-                            type: "function",
+                            type: "button",
                             editable: true,
                             property: (e: HotSpot) => {
                                 this.removeHotSpot(e);
@@ -236,9 +247,10 @@ export class HTMLHotSpotModifier extends HMTLModifier {
         return super.getRenderingProperties;
     }
 
+    // TODO: reaction outputs are not deleted if HotSpot is deleted
     public requestConnectors(): [string, IConnectorPort][] {
         return this.data.hotspots.map((value) => {
-            const out = value.reactionPOut
+            const out = value.reactionOut
             out.name = value.name;
             return [out.id, out];
         });

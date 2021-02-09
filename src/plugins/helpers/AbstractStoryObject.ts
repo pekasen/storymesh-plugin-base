@@ -1,7 +1,7 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
-import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort } from 'storygraph';
+import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, object, optional, primitive, serialize } from 'serializr';
@@ -168,6 +168,23 @@ export class StoryObject extends AbstractStoryObject {
         const map = super.connectors;
         this.modifiers.forEach(modifier => {
             modifier.requestConnectors().forEach(([label, connector]) => {
+                if (connector instanceof ReactionConnectorOutPort) {
+                    connector.notify = () => {
+                        console.log("Notification middleware");
+                        // build edge list
+                        const connected = this.connections.filter(edge => (
+                            edge.from.endsWith(connector.id)
+                        ));
+                        // trigger notifications
+                        connected.forEach(edge => {
+                            const [id, connectorID] = StoryGraph.parseNodeId(edge.to) ;
+                            const obj = rootStore.root.storyContentObjectRegistry.getValue(id);
+                            const con = obj?.connectors.get(connectorID) as ReactionConnectorInPort;
+                            console.log("Notification middleware", obj, con);
+                            con.handleNotification()
+                        });
+                    }
+                }
                 map.set(label, connector);
             });
         });

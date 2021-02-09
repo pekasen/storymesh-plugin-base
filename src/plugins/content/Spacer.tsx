@@ -72,7 +72,7 @@ class _Spacer extends StoryObject {
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ }) => {
-            return <div class="spacer" style={`height:${this.vspace}vh; width: 100%;`}>Hello</div>
+            return <div class="spacer" style={`height:${this.vspace}vh; width: 100%;`}></div>
         }
         return Comp
     }

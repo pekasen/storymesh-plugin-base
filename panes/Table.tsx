@@ -62,11 +62,18 @@ export class HotSpotTableMenuItem implements IMenuItemRenderer {
                                                 });
                                             }
                                         }}>{val}</td>
-                                    } else  if (typeof column.property !== "string") {
+                                    } else if (typeof column.property !== "string") {
                                         const cb = column.property;
-                                        return <td>
-                                            <button onClick={() => {cb(e)}}>{column.name}</button>
-                                        </td>
+                                        if (column.type === "button") {
+                                            return <td>
+                                                <button onClick={() => {cb(e)}}>{column.name}</button>
+                                            </td>
+                                        }
+                                        if (column.type === "slider") {
+                                            return <td>
+                                                <input type="slider"></input>
+                                            </td>
+                                        }
                                     }
                                 })
                             }

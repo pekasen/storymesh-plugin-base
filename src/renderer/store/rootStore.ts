@@ -12,9 +12,10 @@ import { IMenuItemRenderer } from "../../plugins/helpers/IMenuItemRenderer";
 import { Preferences } from "../../preferences";
 import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
 import { NotificationStore } from './Notification';
-import { PlugIn, plugInLoader2, PlugInStore } from './PlugInStore';
+import { plugInLoader2, PlugInStore } from './PlugInStore';
 import { StateProcotol } from "./StateProcotol";
 import { UIStore } from './UIStore';
+import { IPlugInRegistryEntry } from "../utils/PlugInClassRegistry";
 
 export interface IRootStoreProperties {
     uistate: UIStore
@@ -58,9 +59,9 @@ export class RootStore {
         const panes = plugInLoader2("plugins/panes");
         const modifiers = plugInLoader2("plugins/modifiers");
 
-        plugins.forEach(plug => this.pluginStore.setPlugIn(plug.id, new PlugIn(plug.name, plug.id, plug.id, plug.class, plug.public)));
-        panes.forEach(plug => this.pluginStore.setPlugIn(plug.id, new PlugIn(plug.name, plug.id, plug.id, plug.class, plug.public)));
-        modifiers.forEach(plug => this.pluginStore.setPlugIn(plug.id, new PlugIn(plug.name, plug.id, plug.id, plug.class, plug.public)));
+        plugins.forEach((plug: IPlugInRegistryEntry<AbstractStoryObject>) => this.pluginStore.setPlugIn(plug.id, plug));
+        panes.forEach(plug => this.pluginStore.setPlugIn(plug.id, plug));
+        modifiers.forEach(plug => this.pluginStore.setPlugIn(plug.id, plug));
     
         /**
          * If we are in a empty and untitled document, make a root storyobject

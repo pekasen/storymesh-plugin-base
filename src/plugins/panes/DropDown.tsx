@@ -37,5 +37,5 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.dropdown",
     "",
-    true
+    false
 );

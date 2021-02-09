@@ -92,5 +92,5 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.hotspot-table",
     "",
-    true
+    false
 );

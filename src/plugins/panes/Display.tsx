@@ -30,5 +30,5 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.display",
     "",
-    true
+    false
 );

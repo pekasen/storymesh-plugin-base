@@ -29,5 +29,5 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.text",
     "",
-    true
+    false
 );

@@ -8,6 +8,7 @@ import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema } from 'serializr';
 import { rootStore } from "../../renderer";
+import { Container } from "../content/Container";
 
 export class InputConnectorView extends StoryObject {
     
@@ -79,21 +80,23 @@ export class InputConnectorView extends StoryObject {
 
     private updateConnectors(): void {
         if (!this.parent) return;
-        const parentNode = this.registry?.getValue(this.parent) as AbstractStoryObject;
+        const parentNode = this.registry?.getValue(this.parent) as Container;
         if (!parentNode) return;
-        if (parentNode.connectors.size !== this._connectors.size) {
-            parentNode.
-            connectors.
-            forEach((e: IConnectorPort) => {
-                if (e.direction === "in" && e.type === "flow") {
-                    const f = (e as FlowConnectorInPort).reverse()
-                    f.id = (e as ConnectorPort).id;
-                    this._connectors.set(
-                        f.id, f
-                    )
-                }
-            });
-        }
+        parentNode.connectors.forEach((connector) => {
+            const _conn = (connector as ConnectorPort);
+            if (
+                // if that thing is not present in our local map
+                !this._connectors.has(_conn.id) &&
+                // AND that thing is both flow and out
+                connector.direction === "in" &&
+                connector.type === "flow"
+            ) {
+                const newCon = _conn.reverse();
+                newCon.id = _conn.id;
+                if (this.notificationCenter !== undefined) newCon.bindTo(this.notificationCenter);
+                this._connectors.set(_conn.id, newCon);
+            }
+        });
     }
 }
 createModelSchema(InputConnectorView, {});

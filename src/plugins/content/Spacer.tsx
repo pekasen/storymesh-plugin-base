@@ -53,8 +53,7 @@ class _Spacer extends StoryObject {
                 },
                 value: () => this.vspace,
                 valueReference: (vspace: number) => this.updateVSpace(vspace)
-            },
-            ...connectionField(this)
+            }
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
         return ret;

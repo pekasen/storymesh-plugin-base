@@ -1,13 +1,12 @@
 /* ================= THEMES =================== */
 /* ==================== PREVIEW CONTAINER ===================== */
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather+Sans:wght@700&family=Poppins:ital,wght@1,300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Arapey:ital@1&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap");
 .preview-container {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  /*================== STORY WRAPPER =================*/
-  /* ============ MIXINS ============ */
-  /* =============  BASE =========== */ }
+  height: 100%; }
   .preview-container .vertical-pane-mini {
     position: fixed;
     width: 100%;
@@ -21,57 +20,76 @@
       display: inline-block;
       font-size: 0.85rem;
       margin: 5px 0 5px 10px; }
-  .preview-container .storywrapper {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    margin-top: 50px; }
-    .preview-container .storywrapper .ngwebs-story {
-      margin: 0 auto;
-      max-width: 768px;
-      padding: 0 15px; }
-    .preview-container .storywrapper p,
-    .preview-container .storywrapper a,
-    .preview-container .storywrapper span {
+
+/*================== STORY WRAPPER =================*/
+/* ============ MIXINS ============ */
+.storywrapper {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  margin-top: 50px; }
+  .storywrapper .ngwebs-story {
+    margin: 0 auto;
+    padding: 0 20px;
+    /* ========== THEME TYPEWRITER ========== */ }
+    .storywrapper .ngwebs-story p,
+    .storywrapper .ngwebs-story a,
+    .storywrapper .ngwebs-story span {
       font-size: 1rem; }
-    .preview-container .storywrapper h1,
-    .preview-container .storywrapper h2,
-    .preview-container .storywrapper h3,
-    .preview-container .storywrapper h4,
-    .preview-container .storywrapper h5,
-    .preview-container .storywrapper h6,
-    .preview-container .storywrapper strong,
-    .preview-container .storywrapper b {
+    .storywrapper .ngwebs-story figcaption {
+      font-size: 0.7rem; }
+    .storywrapper .ngwebs-story h1,
+    .storywrapper .ngwebs-story h2,
+    .storywrapper .ngwebs-story h3,
+    .storywrapper .ngwebs-story h4,
+    .storywrapper .ngwebs-story h5,
+    .storywrapper .ngwebs-story h6,
+    .storywrapper .ngwebs-story strong,
+    .storywrapper .ngwebs-story b {
       font-weight: bold; }
-    .preview-container .storywrapper h1,
-    .preview-container .storywrapper h2,
-    .preview-container .storywrapper h3,
-    .preview-container .storywrapper h4,
-    .preview-container .storywrapper h5,
-    .preview-container .storywrapper h6 {
+    .storywrapper .ngwebs-story h1,
+    .storywrapper .ngwebs-story h2,
+    .storywrapper .ngwebs-story h3,
+    .storywrapper .ngwebs-story h4,
+    .storywrapper .ngwebs-story h5,
+    .storywrapper .ngwebs-story h6 {
       white-space: normal; }
-    .preview-container .storywrapper h1 {
+    .storywrapper .ngwebs-story h1 {
       font-size: 2.5rem; }
-    .preview-container .storywrapper h2 {
+    .storywrapper .ngwebs-story h2 {
       font-size: 2rem; }
-    .preview-container .storywrapper h3 {
+    .storywrapper .ngwebs-story h3 {
       font-size: 1.8rem; }
-    .preview-container .storywrapper h4 {
+    .storywrapper .ngwebs-story h4 {
       font-size: 1.6rem; }
-    .preview-container .storywrapper h5 {
+    .storywrapper .ngwebs-story h5 {
       font-size: 1.4rem; }
-    .preview-container .storywrapper h6 {
+    .storywrapper .ngwebs-story h6 {
       font-size: 1.2rem; }
-    .preview-container .storywrapper blockquote {
-      font-size: 2.3rem;
-      max-width: 440px;
-      margin: 0 auto;
-      opacity: 0.9; }
-      .storytheme-basic .preview-container .storywrapper blockquote {
+    .storywrapper .ngwebs-story blockquote {
+      font-size: 2.3rem; }
+      .storytheme-basic .storywrapper .ngwebs-story blockquote {
         color: lightblue; }
-    .preview-container .storywrapper img {
+    .storywrapper .ngwebs-story img {
       display: block;
       width: 100%;
       height: auto;
       margin: 20px 0; }
+    .storywrapper .ngwebs-story ul,
+    .storywrapper .ngwebs-story ol {
+      font-size: 1rem; }
+    .storywrapper .ngwebs-story.theme-modernist { }
+      .storywrapper .ngwebs-story.theme-modernist p, .storywrapper .ngwebs-story.theme-modernist a, .storywrapper .ngwebs-story.theme-modernist b, .storywrapper .ngwebs-story.theme-modernist span, .storywrapper .ngwebs-story.theme-modernist figcaption {
+        font-family: 'Lato', sans-serif; }
+      .storywrapper .ngwebs-story.theme-modernist h1, .storywrapper .ngwebs-story.theme-modernist h2, .storywrapper .ngwebs-story.theme-modernist h3, .storywrapper .ngwebs-story.theme-modernist h4, .storywrapper .ngwebs-story.theme-modernist h5, .storywrapper .ngwebs-story.theme-modernist h6 {
+        font-family: 'Merriweather Sans', sans-serif; }
+      .storywrapper .ngwebs-story.theme-modernist blockquote {
+        font-family: 'Poppins', sans-serif; }
+    .storywrapper .ngwebs-story.theme-classic { }
+      .storywrapper .ngwebs-story.theme-classic p, .storywrapper .ngwebs-story.theme-classic a, .storywrapper .ngwebs-story.theme-classic b, .storywrapper .ngwebs-story.theme-classic span, .storywrapper .ngwebs-story.theme-classic figcaption {
+        font-family: 'PT Serif', serif; }
+      .storywrapper .ngwebs-story.theme-classic h1, .storywrapper .ngwebs-story.theme-classic h2, .storywrapper .ngwebs-story.theme-classic h3, .storywrapper .ngwebs-story.theme-classic h4, .storywrapper .ngwebs-story.theme-classic h5, .storywrapper .ngwebs-story.theme-classic h6 {
+        font-family: 'Playfair Display', serif; }
+      .storywrapper .ngwebs-story.theme-classic blockquote {
+        font-family: 'Arapey', serif; }

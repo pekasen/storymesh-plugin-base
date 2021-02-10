@@ -1,7 +1,7 @@
 import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry'
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { AbstractStoryObject } from './AbstractStoryObject';
-import { ConnectorDirection, ConnectorPort, ConnectorType } from '../../renderer/utils/ConnectorPort';
+import { ConnectorDirection, ConnectorPort, ConnectorType } from 'storygraph';
 
 interface IDefaultFieldsMethods {
     addConnection: (registry: IRegistry, ids: string,  myport: string, theirport: string, direction: "in" | "out") => void

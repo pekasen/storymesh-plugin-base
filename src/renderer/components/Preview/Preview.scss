@@ -83,6 +83,25 @@
     //max-width: 768px;
     padding: 0 20px;
 
+    .hero {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      margin: 0 0 20px 0;
+      img {
+        filter: grayscale(.5);
+        margin: 0;
+      }
+      h1 {
+        font-size: 3rem;
+        position: absolute;
+        margin: 0;
+        word-break: break-word;
+        color: #fff;
+      }
+    }
+
     p,
     a,
     span {
@@ -166,35 +185,51 @@
 
     // CTA
 
-
     /* ========== THEME TYPEWRITER ========== */
 
     &.theme-modernist {
-      @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather+Sans:wght@700&family=Poppins:ital,wght@1,300&display=swap');
-      p, a, b, span, figcaption {
-        font-family: 'Lato', sans-serif;
+      @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather+Sans:wght@700&family=Poppins:ital,wght@1,300&display=swap");
+      p,
+      a,
+      b,
+      span,
+      figcaption {
+        font-family: "Lato", sans-serif;
       }
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'Merriweather Sans', sans-serif;
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Merriweather Sans", sans-serif;
       }
       blockquote {
-        font-family: 'Poppins', sans-serif;
+        font-family: "Poppins", sans-serif;
       }
     }
 
     &.theme-classic {
-      @import url('https://fonts.googleapis.com/css2?family=Arapey:ital@1&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap');
-      p, a, b, span, figcaption {
-        font-family: 'PT Serif', serif;
+      @import url("https://fonts.googleapis.com/css2?family=Arapey:ital@1&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap");
+      p,
+      a,
+      b,
+      span,
+      figcaption {
+        font-family: "PT Serif", serif;
       }
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'Playfair Display', serif;
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Playfair Display", serif;
       }
       blockquote {
-        font-family: 'Arapey', serif;
+        font-family: "Arapey", serif;
       }
     }
-
   }
 
   // UTILITIES

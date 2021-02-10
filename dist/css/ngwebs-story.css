@@ -33,6 +33,21 @@
     margin: 0 auto;
     padding: 0 20px;
     /* ========== THEME TYPEWRITER ========== */ }
+    .storywrapper .ngwebs-story .hero {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      margin: 0 0 20px 0; }
+      .storywrapper .ngwebs-story .hero img {
+        filter: grayscale(0.5);
+        margin: 0; }
+      .storywrapper .ngwebs-story .hero h1 {
+        font-size: 3rem;
+        position: absolute;
+        margin: 0;
+        word-break: break-word;
+        color: #fff; }
     .storywrapper .ngwebs-story p,
     .storywrapper .ngwebs-story a,
     .storywrapper .ngwebs-story span {
@@ -80,16 +95,34 @@
     .storywrapper .ngwebs-story ol {
       font-size: 1rem; }
     .storywrapper .ngwebs-story.theme-modernist { }
-      .storywrapper .ngwebs-story.theme-modernist p, .storywrapper .ngwebs-story.theme-modernist a, .storywrapper .ngwebs-story.theme-modernist b, .storywrapper .ngwebs-story.theme-modernist span, .storywrapper .ngwebs-story.theme-modernist figcaption {
-        font-family: 'Lato', sans-serif; }
-      .storywrapper .ngwebs-story.theme-modernist h1, .storywrapper .ngwebs-story.theme-modernist h2, .storywrapper .ngwebs-story.theme-modernist h3, .storywrapper .ngwebs-story.theme-modernist h4, .storywrapper .ngwebs-story.theme-modernist h5, .storywrapper .ngwebs-story.theme-modernist h6 {
-        font-family: 'Merriweather Sans', sans-serif; }
+      .storywrapper .ngwebs-story.theme-modernist p,
+      .storywrapper .ngwebs-story.theme-modernist a,
+      .storywrapper .ngwebs-story.theme-modernist b,
+      .storywrapper .ngwebs-story.theme-modernist span,
+      .storywrapper .ngwebs-story.theme-modernist figcaption {
+        font-family: "Lato", sans-serif; }
+      .storywrapper .ngwebs-story.theme-modernist h1,
+      .storywrapper .ngwebs-story.theme-modernist h2,
+      .storywrapper .ngwebs-story.theme-modernist h3,
+      .storywrapper .ngwebs-story.theme-modernist h4,
+      .storywrapper .ngwebs-story.theme-modernist h5,
+      .storywrapper .ngwebs-story.theme-modernist h6 {
+        font-family: "Merriweather Sans", sans-serif; }
       .storywrapper .ngwebs-story.theme-modernist blockquote {
-        font-family: 'Poppins', sans-serif; }
+        font-family: "Poppins", sans-serif; }
     .storywrapper .ngwebs-story.theme-classic { }
-      .storywrapper .ngwebs-story.theme-classic p, .storywrapper .ngwebs-story.theme-classic a, .storywrapper .ngwebs-story.theme-classic b, .storywrapper .ngwebs-story.theme-classic span, .storywrapper .ngwebs-story.theme-classic figcaption {
-        font-family: 'PT Serif', serif; }
-      .storywrapper .ngwebs-story.theme-classic h1, .storywrapper .ngwebs-story.theme-classic h2, .storywrapper .ngwebs-story.theme-classic h3, .storywrapper .ngwebs-story.theme-classic h4, .storywrapper .ngwebs-story.theme-classic h5, .storywrapper .ngwebs-story.theme-classic h6 {
-        font-family: 'Playfair Display', serif; }
+      .storywrapper .ngwebs-story.theme-classic p,
+      .storywrapper .ngwebs-story.theme-classic a,
+      .storywrapper .ngwebs-story.theme-classic b,
+      .storywrapper .ngwebs-story.theme-classic span,
+      .storywrapper .ngwebs-story.theme-classic figcaption {
+        font-family: "PT Serif", serif; }
+      .storywrapper .ngwebs-story.theme-classic h1,
+      .storywrapper .ngwebs-story.theme-classic h2,
+      .storywrapper .ngwebs-story.theme-classic h3,
+      .storywrapper .ngwebs-story.theme-classic h4,
+      .storywrapper .ngwebs-story.theme-classic h5,
+      .storywrapper .ngwebs-story.theme-classic h6 {
+        font-family: "Playfair Display", serif; }
       .storywrapper .ngwebs-story.theme-classic blockquote {
-        font-family: 'Arapey', serif; }
+        font-family: "Arapey", serif; }

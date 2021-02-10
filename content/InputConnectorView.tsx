@@ -1,13 +1,12 @@
-import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
+import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from '../helpers/exportClass';
-import { ConnectorPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, IEdge } from 'storygraph';
+import { ConnectorPort, IConnectorPort, IEdge } from 'storygraph';
 import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema } from 'serializr';
-import { rootStore } from "../../renderer";
 import { Container } from "../content/Container";
 
 export class InputConnectorView extends StoryObject {
@@ -88,8 +87,7 @@ export class InputConnectorView extends StoryObject {
                 // if that thing is not present in our local map
                 !this._connectors.has(_conn.id) &&
                 // AND that thing is both flow and out
-                connector.direction === "in" &&
-                connector.type === "flow"
+                connector.direction === "in"
             ) {
                 const newCon = _conn.reverse();
                 newCon.id = _conn.id;

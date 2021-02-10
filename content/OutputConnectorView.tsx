@@ -1,7 +1,7 @@
-import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
+import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from '../helpers/exportClass';
-import { ConnectorPort, FlowConnectorInPort, IConnectorPort, IEdge } from 'storygraph';
+import { ConnectorPort, IConnectorPort, IEdge } from 'storygraph';
 import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from '../helpers/plugInHelpers';

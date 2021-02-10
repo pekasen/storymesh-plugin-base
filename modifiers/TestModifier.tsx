@@ -1,5 +1,5 @@
 import { makeObservable } from "mobx";
-import { Component, h } from "preact";
+import { Component, Fragment, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { IConnectorPort, ReactionConnectorInPort } from "storygraph";
 import { exportClass } from "../helpers/exportClass";
@@ -52,12 +52,15 @@ export class TestModifier extends HMTLModifier {
                 return () => {
                     document.removeEventListener("reaction", listener);
                 }
-            })
+            });
+
+            // element.props.style = `${(element.props.style) ? element.props.style + " " : ""}opacity: ${this.amount * 100}%;`;
 
             return <div style={`opacity: ${this.amount * 100}%;`}>
                 {element}
             </div>
         }
+
         return <Wrapper></Wrapper>
     }
 

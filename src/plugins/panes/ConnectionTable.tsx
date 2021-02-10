@@ -53,7 +53,11 @@ export class ConnectionTableMenuItem implements IMenuItemRenderer {
                         );
 
                         const onDropOnTableRow = (e: DragEvent) => {
-                            const id = e.dataTransfer?.getData("text");
+                            const dropInput = e.dataTransfer?.getData("text");
+                            if (!dropInput) {
+                                throw("");
+                            }
+                            const [id, portId] = dropInput?.split(".");
 
                             if (id) {
                                 const direction = port.direction;
@@ -74,8 +78,8 @@ export class ConnectionTableMenuItem implements IMenuItemRenderer {
                                                                 item.valueReference(
                                                                     store.storyContentObjectRegistry,
                                                                     id,
-                                                                    port.name,
-                                                                    con.name,
+                                                                    port.id,
+                                                                    (con as ConnectorPort).id,
                                                                     direction
                                                                 );
                                                             }

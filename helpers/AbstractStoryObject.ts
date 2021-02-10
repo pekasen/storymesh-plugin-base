@@ -10,6 +10,7 @@ import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 import { rootStore } from '../../renderer';
 import { AbstractStoryModifier } from "./AbstractModifier";
+import { IEdgeEvent, INotificationData, NotificationCenter } from "storygraph/dist/StoryGraph/NotificationCenter";
 
 /**
  * Our second little dummy PlugIn
@@ -59,6 +60,20 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             addConnection:          action,
             addModifier:            action,
             removeModifier:         action
+        });
+    }
+    notificationCenter?: NotificationCenter | undefined;
+    
+    public addConnections(edges: IEdge[]): void {
+        this.connections.push(...edges);
+    }
+
+    public bindTo(notificationCenter: NotificationCenter): void {
+        this.notificationCenter = notificationCenter;
+        notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
+            if (payload) {
+                console.log("binding", payload);
+            }
         });
     }
 

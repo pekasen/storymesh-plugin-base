@@ -146,7 +146,7 @@ export const GridItemInlineStatementsSchema = createModelSchema(GridItemInlineSt
 })
 
 export const CSSGriditemModifierDataSchema = createModelSchema(GridItem, {
-    classes: list(primitive()),
+    // classes: list(primitive()),
     data: object(GridItemInlineStatements),
     classMap: map(primitive())
 });

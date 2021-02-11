@@ -1,63 +1,53 @@
-import { makeObservable } from "mobx";
-import { Component, Fragment, h } from "preact";
+import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
+import { createModelSchema, object } from "serializr";
 import { IConnectorPort, ReactionConnectorInPort } from "storygraph";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
-
-class Wrapper extends Component {
-    render({children}, { amount }) {
-        return <div style={`opacity: ${amount*100}%;`}>{
-            children    
-        }</div>
-    }
-
-    update(amount: number) {
-        this.setState({
-            amount: amount
-        });
-    }
-}
-
 export class TestModifier extends HMTLModifier {
 
-    amount = 0;
-
-    private _connectors = [
-        new ReactionConnectorInPort("reaction-in", () => {
-            console.log("Hello", this);
-            this.amount = Math.random();
-            document.dispatchEvent(new CustomEvent("reaction"));
-        })
-    ];
-
-    // constructor() {
-    //     super();
-
-    //     makeObservable(this, {
-    //         amount: true
-    //     })
-    // }
+    public role = "internal.modifier.test";
+    private _trigFun = () => {
+        console.log("Hello", this);
+        this._reactionStack.forEach(e => e());
+    }
+    private _connector = new ReactionConnectorInPort("reaction-in", this._trigFun);
+    private _reactionStack: (() => void)[] = [];
 
     modify(element: h.JSX.Element): h.JSX.Element {
         const Wrapper = () => {
-            const[,setState] = useState({});
+            const [state ,setState] = useState({
+                toggle: true
+            });
             useEffect(() => {
                 const listener = () => {
                     console.log("Hello event!");
-                    setState({});
+                    setState({
+                        toggle: !state.toggle
+                    });
                 };
-                document.addEventListener("reaction", listener);
-
+                this._reactionStack.push(listener);
+                this._connector.handleNotification = this._trigFun;
                 return () => {
-                    document.removeEventListener("reaction", listener);
+                    this._reactionStack.splice(
+                        this._reactionStack.indexOf(listener, 1)
+                    );
                 }
             });
 
-            // element.props.style = `${(element.props.style) ? element.props.style + " " : ""}opacity: ${this.amount * 100}%;`;
-
-            return <div style={`opacity: ${this.amount * 100}%;`}>
+            return <div id={this.id} class={(element.props.class ? element.props.class + " " : "") + (state.toggle ? "active" : "inactive")}>
                 {element}
+<style>{`#${this.id} {
+    transition: transform 2s ease-out;
+}
+#${this.id}.active {
+    transform: translate(-500px, 0px)
+}
+#${this.id}.inactive {
+    transform: translate(0px, 0px)
+}
+`}</style>
             </div>
         }
 
@@ -65,9 +55,13 @@ export class TestModifier extends HMTLModifier {
     }
 
     requestConnectors(): [string, IConnectorPort][] {
-        return this._connectors.map(e => ([e.id, e]));
+        return [[this._connector.id, this._connector]];
     }
 }
+
+export const TestModifierSchema = createModelSchema(TestModifier, {
+    _connector: object(ConnectorSchema)
+});
 
 export const plugInExport = exportClass(
     TestModifier,

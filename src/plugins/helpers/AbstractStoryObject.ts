@@ -196,7 +196,7 @@ export class StoryObject extends AbstractStoryObject {
     public content?: any;
     
     public get connectors(): Map<string, IConnectorPort> {
-        const map = super.connectors;
+        const map = new Map(super.connectors);
         this.modifiers.forEach(modifier => {
             modifier.requestConnectors().forEach(([label, connector]) => {
                 if (connector instanceof ReactionConnectorOutPort) {

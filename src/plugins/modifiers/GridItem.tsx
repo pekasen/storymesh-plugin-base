@@ -53,9 +53,9 @@ export class GridItem implements IGridItemModifierData {
 
     constructor() {
         makeObservable(this, {
-            classes: true,
+            // classes: true,
             classMap: observable,
-            inline: observable
+            // inline: observable
         });
     }
 }

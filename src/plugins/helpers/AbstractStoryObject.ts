@@ -199,23 +199,7 @@ export class StoryObject extends AbstractStoryObject {
         const map = new Map(super.connectors);
         this.modifiers.forEach(modifier => {
             modifier.requestConnectors().forEach(([label, connector]) => {
-                if (connector instanceof ReactionConnectorOutPort) {
-                    connector.notify = () => {
-                        console.log("Notification middleware");
-                        // build edge list
-                        const connected = this.connections.filter(edge => (
-                            edge.from.endsWith(connector.id)
-                        ));
-                        // trigger notifications
-                        connected.forEach(edge => {
-                            const [id, connectorID] = StoryGraph.parseNodeId(edge.to) ;
-                            const obj = rootStore.root.storyContentObjectRegistry.getValue(id);
-                            const con = obj?.connectors.get(connectorID) as ReactionConnectorInPort;
-                            console.log("Notification middleware", obj, con);
-                            con.handleNotification()
-                        });
-                    }
-                }
+                if (connector.needsBinding() && this.notificationCenter !== undefined) connector.bindTo(this.notificationCenter);
                 map.set(label, connector);
             });
         });
@@ -243,6 +227,8 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
     metaData: object(MetaDataSchema),
     content: optional(object(ContentSchema)),
     parent: optional(primitive()),
+    connections: list(object(EdgeSchema)),
+    _connectors: map(object(ConnectorSchema)),
     modifiers: list(custom(
         (value: Record<string, unknown>) => {
             const schema = getDefaultModelSchema(value.constructor);

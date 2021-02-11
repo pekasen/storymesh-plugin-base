@@ -1,9 +1,8 @@
 import { action, makeObservable, observable } from "mobx";
 import { Component, createRef, h, RefObject } from "preact";
-import { useRef } from "preact/hooks";
 import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
-import { Store } from "../../renderer";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
@@ -12,8 +11,8 @@ export class HotSpot {
     protected _name: string | undefined;    
     public x: number;
     public y: number;
+    public reactionOut = new ReactionConnectorOutPort("reaction-out");
     protected static numOfInstances = 1;
-    public reactionOut = new ReactionConnectorOutPort("hello", () => {console.log("Hello from", this)})
 
     constructor(x?: number, y?: number) {
         this.x = x ?? 0.5;
@@ -98,7 +97,6 @@ class CircleHotSpot extends HotSpot {
             console.log("circle dims", {x: relX, y: relY, r: relR});
             
             return <circle class={"debug"} cx={relX} cy={relY} r={relR} onClick={() => {
-                
                 console.log("Sending notification to", this.reactionOut);
                 this.reactionOut.notify();
             }}/>
@@ -144,17 +142,9 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     }
 
     public modify(element: h.JSX.Element): h.JSX.Element {
-        const sizeRef = useRef();
-        element.props.ref = sizeRef;
-
         // Hacky this/that trick
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
-        // this.data.hotspots.forEach(hotspot => {
-        //     hotspot.reactionOut.notify = () => {
-        //         Store
-        //     };
-        // });
         class SVGOverlay extends Component {
             svgRef = createRef();
             hotspots: preact.JSX.Element[] = [];
@@ -166,10 +156,18 @@ export class HTMLHotSpotModifier extends HMTLModifier {
             }
 
             componentDidMount(){
+                this.updateHotSpots();
+                this.forceUpdate();
+            }
+
+            private updateHotSpots() {
                 if (this.svgRef.current) {
                     this.hotspots = that.data.hotspots.map(e => e.render(this.svgRef));
-                    this.forceUpdate();
                 }
+            }
+
+            componentWillUpdate() {
+                this.updateHotSpots();
             }
         }
 
@@ -257,11 +255,11 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     }
 }
 
-
 export const HotSpotSchema = createModelSchema(HotSpot, {
     x: true,
     y: true,
-    name: true
+    name: true,
+    reactionOut: object(ConnectorSchema)
 });
 
 export const CircleHotSpotSchema = createModelSchema(CircleHotSpot, {

@@ -20,5 +20,37 @@ export class ObservableStoryGraph extends StoryGraph {
 
 export const ObservableStoryGraphSchema = createModelSchema(ObservableStoryGraph,{
     nodes: list(primitive()),
-    edges: list(object(EdgeSchema)),
+    edges: list(object(EdgeSchema), {
+        // afterDeserialize: (cb, err, newValue) => {
+        //     // if (newValue instanceof AbstractStoryObject)
+
+        //     // const graph = context.target as ObservableStoryGraph;
+        //     // // graph.edges = [];
+        //     // setTimeout(() => {
+        //     //     newValue.forEach((edge: IEdge) => {
+        //     //         const payload: INotificationData<IEdgeEvent> = {
+        //     //             data: {
+        //     //                 add: [edge]
+        //     //             },
+        //     //             source: this,
+        //     //             type: "edge"
+        //     //         };
+        
+        //     //         [
+        //     //             ...StoryGraph.parseNodeId(edge.from),
+        //     //             ...StoryGraph.parseNodeId(edge.to),
+        //     //         ].forEach(id => {
+        //     //             graph.notificationCenter.push(
+        //     //                 id, payload
+        //     //             )
+        //     //         });
+        //     //     });
+        //     // }, 150)
+        //     // // graph.connect(undefined, newValue);
+        //     // // catches edges
+        //     // console.log("caught", newValue, context);
+        //     // cb(err, newValue);
+        //     cb(err, newValue);
+        // }
+    }),
 });

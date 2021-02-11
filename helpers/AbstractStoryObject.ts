@@ -4,7 +4,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, object, optional, primitive, serialize } from 'serializr';
+import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, map, object, optional, primitive, serialize } from 'serializr';
 import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
 import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
@@ -12,6 +12,8 @@ import { rootStore } from '../../renderer';
 import { AbstractStoryModifier } from "./AbstractModifier";
 import { IEdgeEvent } from "storygraph/dist/StoryGraph/IEdgeEvent";
 import { NotificationCenter, INotificationData } from "storygraph/dist/StoryGraph/NotificationCenter";
+import { EdgeSchema } from "../../renderer/store/schemas/EdgeSchema";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 
 /**
  * Our second little dummy PlugIn

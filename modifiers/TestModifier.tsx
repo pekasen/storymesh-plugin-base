@@ -36,6 +36,8 @@ export class TestModifier extends HMTLModifier {
                 }
             });
 
+            // TODO: <style>-Components could be collected in a central place near the header to make sure that the css is actually evaluated.
+            // this solution worked and then suddenly stopped.
             return <div id={this.id} class={(element.props.class ? element.props.class + " " : "") + (state.toggle ? "active" : "inactive")}>
                 {element}
 <style>{`#${this.id} {

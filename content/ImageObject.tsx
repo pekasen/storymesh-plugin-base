@@ -1,8 +1,8 @@
 import { FunctionComponent, h } from "preact";
 import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
-import { action, makeObservable, observable } from 'mobx';
-import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { action, computed, makeObservable, observable } from 'mobx';
+import { StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
@@ -46,7 +46,8 @@ class _ImageObject extends StoryObject {
         makeObservable(this,{
             name:                   observable,
             userDefinedProperties:  observable,
-            // connectors:             observable.shallow,
+            connectors:             computed,
+            menuTemplate:           computed,
             content:                observable,
             updateName:             action,
             updateImageURL:         action

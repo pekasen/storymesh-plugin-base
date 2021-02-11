@@ -1,32 +1,23 @@
 import { FunctionComponent, h } from "preact";
 import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-
+import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, nameField } from '../helpers/plugInHelpers';
+import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-
-interface IHeroOptions {
-    text: string,
-    filterAmount: number,
-    headlineWidth: number
-}
 
 class _HeroObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: unknown;
+    public userDefinedProperties: any;
     public childNetwork?: StoryGraph;
     public content: IContent;
     public icon: string;
-    public options: IHeroOptions;
-    // public text: string;
-    // public filterAmount: number;
-    // public headlineWidth: number;
+    public valueType: any;
 
     public static defaultIcon = "icon-star"
 
@@ -36,7 +27,6 @@ class _HeroObject extends StoryObject {
         this.name = "Hero";
         this.role = "internal.content.hero";
         this.isContentNode = true;
-        this.userDefinedProperties = {};
         this.makeDefaultConnectors();
 
         this.content = {
@@ -44,10 +34,17 @@ class _HeroObject extends StoryObject {
             contentType: "url",
             altText: "This is an image",
         }
-        this.options = {
+        this.valueType = {
+            percent: "%",
+            px: "px",
+            deg: "deg"
+        }
+        this.userDefinedProperties = {
             text: "Headline goes here",
             filterAmount: 0,
-            headlineWidth: 100
+            headlineWidth: 100,
+            filterType: "grayscale",
+            filterValue: "%"
         }
         this.icon = _HeroObject.defaultIcon;
 
@@ -56,13 +53,13 @@ class _HeroObject extends StoryObject {
             userDefinedProperties: observable,
             // connectors:             observable.shallow,
             content: observable,
-            options: observable,
             updateName: action,
             updateImageURL: action,
             updateAltText: action,
             updateHeadline: action,
             updateHeadlineWidth: action,
-            updateFilterAmount: action
+            updateFilterAmount: action,
+            updateValueType: action
         });
     }
 
@@ -84,7 +81,7 @@ class _HeroObject extends StoryObject {
             {
                 label: "Headline",
                 type: "textarea",
-                value: () => this.options.text,
+                value: () => this.userDefinedProperties.text,
                 valueReference: (text: string) => { this.updateHeadline(text) }
             },
             {
@@ -95,18 +92,27 @@ class _HeroObject extends StoryObject {
                     max: 100,
                     formatter: (val: number) => `${val}%`
                 },
-                value: () => this.options.headlineWidth,
+                value: () => this.userDefinedProperties.headlineWidth,
                 valueReference: (headlineWidth: number) => this.updateHeadlineWidth(headlineWidth)
             },
+            ...dropDownField(
+                this,
+                () => ["grayscale", "invert", "hue-rotate", "blur", "contrast"],
+                () => this.userDefinedProperties.filterType,
+                (selection: string) => {
+                    console.log(selection);
+                    runInAction(() => this.userDefinedProperties.filterType = selection), this.updateValueType();
+                }
+            ),
             {
                 label: "Filter Amount",
                 type: "hslider",
                 options: {
                     min: 0,
                     max: 100,
-                    formatter: (val: number) => `${val}%`
+                    formatter: (val: number) => `${val}${this.userDefinedProperties.filterValue}`
                 },
-                value: () => this.options.filterAmount,
+                value: () => this.userDefinedProperties.filterAmount,
                 valueReference: (filterAmount: number) => this.updateFilterAmount(filterAmount)
             },
             ...connectionField(this),
@@ -128,23 +134,33 @@ class _HeroObject extends StoryObject {
     }
 
     public updateHeadline(text: string) {
-        this.options.text = text;
+        this.userDefinedProperties.text = text;
     }
 
     public updateHeadlineWidth(headlineWidth: number) {
-        this.options.headlineWidth = headlineWidth;
+        this.userDefinedProperties.headlineWidth = headlineWidth;
     }
 
     public updateFilterAmount(filterAmount: number) {
-        this.options.filterAmount = filterAmount;
+        this.userDefinedProperties.filterAmount = filterAmount;
+    }
+
+    public updateValueType(){
+        if(this.userDefinedProperties.filterType === "hue-rotate"){
+            this.userDefinedProperties.filterValue = this.valueType.deg;
+        } else if(this.userDefinedProperties.filterType === "blur"){
+            this.userDefinedProperties.filterValue = this.valueType.px;
+        } else {
+            this.userDefinedProperties.filterValue = this.valueType.percent;
+        }
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
             return (
                 <div class="hero">
-                    <img src={content?.resource} alt={content?.altText} style={`filter:grayscale(${this.options.filterAmount}%);`}></img>
-                    <h1 style={`width:${this.options.headlineWidth}%`}>{this.options.text}</h1>
+                    <img src={content?.resource} alt={content?.altText} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></img>
+                    <h1 style={`width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
                 </div>
             );
         }

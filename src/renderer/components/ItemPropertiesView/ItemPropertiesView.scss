@@ -1,10 +1,12 @@
 /* ==================== ITEM PROPERTIES ===================== */
 
 .sidebar {
-  padding: 10px;
+  margin: 10px;
+  padding: 25px;
+  border-radius: 7px;
   transition: background 0.4s ease-in, color 0.4s ease-in;
   @include customize(theme) {
-    background: getValue(menu-background);
+    background: getValue(node-object-background);
     color: getValue(text);
   }
   /* for testing */
@@ -29,14 +31,24 @@
       flex-direction: row;
       flex-wrap: wrap;
       margin: 0 0 15px 0;
+      &.slider-item {
+        label {
+          line-height: 47px;
+          margin: 1px 5px 5px 0;
+          transform: translateY(1px);
+        }
+        > p {
+          margin-top: 16px;
+        }
+      }
     }
 
     label {
       display: inline-flex;
       flex-grow: 0;
       flex-shrink: 0;
-      margin: 0 10px 0 0;
-      line-height: 2.5em;
+      margin: 0 10px 5px 0;
+      line-height: 2em;
       min-width: 50px;
     }
     input.form-control {
@@ -45,12 +57,87 @@
       /* make resizeable */
       flex-grow: 1;
       flex-shrink: 1;
+      height: 25px;
+      padding: 0 5px;
+      font-size: 12px;
+      line-height: 25px;
     }
     .table-striped tr {
       @include customize(theme) {
         color: getValue(text);
       }
       background: transparent;
+    }
+    textarea {
+      min-width: 250px;
+      min-height: 100px;
+    }
+    input[type="range"] {
+      margin: 5.8px 4px;
+      max-width: 95px;
+      background-color: transparent;
+      -webkit-appearance: none;
+
+      &:focus {
+        outline: none;
+      }
+      &::-webkit-slider-runnable-track {
+        @include customize(theme) {
+          background: getValue(text-background);
+        }
+        transition: background 0.2s ease;
+        border: 0;
+        border-radius: 10px;
+        width: 100%;
+        height: 4px;
+        cursor: pointer;
+      }
+      &::-webkit-slider-thumb {
+        margin-top: -5.8px;
+        width: 15px;
+        height: 15px;
+        border: 1px solid;
+        @include customize(theme) {
+          border-color: getValue(node-object-background);
+          background: getValue(highlight-color);
+        }
+        border-radius: 50px;
+        cursor: pointer;
+        -webkit-appearance: none;
+      }
+      &:hover::-webkit-slider-runnable-track {
+        @include customize(theme) {
+          background: getValue(text);
+        }
+      }
+      &:focus::-webkit-slider-runnable-track {
+        @include customize(theme) {
+          background: getValue(text);
+        }
+      }
+    }
+  }
+  .btn-group {
+    .btn {
+      border: 2px solid #efefef;
+      background: transparent;
+      color: #efefef;
+      padding: 5px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        @include customize(theme) {
+          color: getValue(highlight-color);
+          border-color: getValue(highlight-color);
+        }
+      }
+      &:first-child {
+        &:hover {
+        color: hsl(0deg, 90%, 40%);;
+        border-color: hsl(0deg, 90%, 40%);;
+        }
+      }
     }
   }
 }

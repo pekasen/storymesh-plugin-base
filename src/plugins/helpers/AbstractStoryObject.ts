@@ -1,15 +1,19 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
-import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties } from 'storygraph';
+import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, object, optional, primitive, serialize } from 'serializr';
+import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, map, object, optional, primitive, serialize } from 'serializr';
 import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
 import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 import { rootStore } from '../../renderer';
 import { AbstractStoryModifier } from "./AbstractModifier";
+import { IEdgeEvent } from "storygraph/dist/StoryGraph/IEdgeEvent";
+import { NotificationCenter, INotificationData } from "storygraph/dist/StoryGraph/NotificationCenter";
+import { EdgeSchema } from "../../renderer/store/schemas/EdgeSchema";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 
 /**
  * Our second little dummy PlugIn
@@ -21,9 +25,6 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
 
     public id: string;
     public metaData: IMetaData;
-    // public get connections(): IEdge[] {
-    //     return []
-    // }
     public connections: IEdge[];
     public parent?: string;
     public renderingProperties: IRenderingProperties;
@@ -34,9 +35,9 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public abstract isContentNode: boolean;
     public abstract userDefinedProperties: any;
     public abstract childNetwork?: StoryGraph;
-    public abstract connectors: Map<string, IConnectorPort>
     public abstract icon: string
     public abstract content?: any;
+    protected _connectors = new Map<string, IConnectorPort>();
     
     constructor() {
         this.id = v4();
@@ -60,7 +61,33 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             connections:            observable,
             modifiers:              observable.deep,
             addConnection:          action,
-            addModifier:            action
+            addModifier:            action,
+            removeModifier:         action
+        });
+    }
+    notificationCenter?: NotificationCenter | undefined;
+    
+    public addConnections(edges: IEdge[]): void {
+        // store locally
+        this.connections.push(...edges);
+    }
+
+    public bindTo(notificationCenter: NotificationCenter): void {
+        this.notificationCenter = notificationCenter;
+        this.connectors.forEach((connector) => {
+            console.log("binding", connector, notificationCenter);
+            (connector as ConnectorPort).bindTo(notificationCenter);
+        });
+        notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
+            if (payload) {
+                console.log("binding", payload);
+                if (payload.data.add !== undefined) {
+                    this.addConnections(payload.data.add);
+                }
+                if (payload.data.remove !== undefined) {
+                    this.removeConnections(payload.data.remove);
+                }
+            }
         });
     }
 
@@ -90,18 +117,6 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         }
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [];
-        if (this.modifiers.length !== 0) {
-            ret.push(
-                ...this.modifiers.
-                map(e => e.menuTemplate).
-                reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => ([...e]))
-            );
-        }
-        return ret;
-    }
-    
     public removeConnections(edges: IEdge[]): void {
         edges.forEach((edge) => {
             const _index = this.connections.findIndex((_edge) => (_edge.id === edge.id));
@@ -114,6 +129,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     }
 
     public addModifier(modifier: AbstractStoryModifier): void {
+        modifier.updateParent(this.id);
         this.modifiers.push(modifier);
     }
 
@@ -123,26 +139,50 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         );
     }
 
-    public abstract getComponent?(): FunctionComponent<INGWebSProps>
-
-    public abstract getEditorComponent(): FunctionComponent<INGWebSProps> 
-
     public willDeregister(registry: IRegistry): void {
         if (this.childNetwork) this.childNetwork.willDeregister(registry)
     }
 
-    protected makeFlowInAndOut(): void {
-        const _in: IConnectorPort = { name: "flow-in", type: "flow", direction: "in" };
-        const _out: IConnectorPort = { name: "flow-out", type: "flow", direction: "out" };
+    public get menuTemplate(): IMenuTemplate[] {
+        const ret: IMenuTemplate[] = [];
+        if (this.modifiers.length !== 0) {
+            ret.push(
+                ...this.modifiers.
+                map(e => e.menuTemplate).
+                reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => (p.concat(...e)))
+            );
+        }
+        return ret;
+    }
+
+    public get connectors(): Map<string, IConnectorPort> {
+        return this._connectors;
+    }
+
+    public abstract getComponent?(): FunctionComponent<INGWebSProps>
+
+    public abstract getEditorComponent(): FunctionComponent<INGWebSProps> 
+
+    protected makeDefaultConnectors(): void {
+        const _in = new FlowConnectorInPort();
+        const _out = new FlowConnectorOutPort();
+        const _data = new DataConnectorInPort("data-in", (data: unknown) => {this.content = data});
+
         _in.associated = _out;
         _out.associated = _in;
+        
+        if (this.notificationCenter) {
+            _in.bindTo(this.notificationCenter)
+            _out.bindTo(this.notificationCenter)
+        }
 
         [
             _in,
-            _out
+            _out,
+            _data
         ].forEach(e => {
-            this.connectors.set(
-                e.name, e as IConnectorPort
+            this._connectors.set(
+                e.id, e
             );
         });
     }
@@ -154,10 +194,19 @@ export class StoryObject extends AbstractStoryObject {
     public isContentNode!: boolean;
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph | undefined;
-    public connectors!: Map<string, IConnectorPort>;
     public icon!: string;
     public content?: any;
-
+    
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = new Map(super.connectors);
+        this.modifiers.forEach(modifier => {
+            modifier.requestConnectors().forEach(([label, connector]) => {
+                if (connector.needsBinding() && this.notificationCenter !== undefined) connector.bindTo(this.notificationCenter);
+                map.set(label, connector);
+            });
+        });
+        return map
+    }
     public getComponent(): FunctionComponent<INGWebSProps> {
         throw new Error('Method not implemented.');
     }
@@ -180,6 +229,8 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
     metaData: object(MetaDataSchema),
     content: optional(object(ContentSchema)),
     parent: optional(primitive()),
+    connections: list(object(EdgeSchema)),
+    _connectors: map(object(ConnectorSchema)),
     modifiers: list(custom(
         (value: Record<string, unknown>) => {
             const schema = getDefaultModelSchema(value.constructor);

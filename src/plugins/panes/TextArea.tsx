@@ -23,5 +23,5 @@ export const plugInExport = exportClass(
     "",
     "internal.pane.textarea",
     "",
-    true
+    false
 );

@@ -1,70 +1,71 @@
 /* ==================== BREADCRUMB ===================== */
 
 .breadcrumb-container {
-    display: inline-block;
-    height: auto;
-    width: 100%;
-    transition: background .4s ease-in;
+  display: block;
+  height: auto;
+  margin: 10px 10px 10px 0;
+  padding: 2px 0;
+  border-radius: 7px;
+  transition: background 0.4s ease-in;
+  @include customize(theme) {
+    background: getValue(node-object-background);
+  }
+
+  ul {
+    margin: 5px 0;
+    padding: 0 0 0 10px;
+  }
+
+  .item {
+    display: inline;
+    list-style: none;
+    font-size: 0.85rem;
+    transition: color 0.4s ease-in;
     @include customize(theme) {
-        background: getValue(menu-background);
-        border-left: 3px dashed getValue(border-color); 
-      }
-
-    ul {
-        margin: 5px 0;
-        padding: 0 0 0 10px;
+      color: getValue(text);
     }
+    padding: 0 0 0 10px;
+    cursor: pointer;
+  }
 
-    .item {
-        display: inline;
-        list-style: none;
-        font-size: .85rem;
-        transition: color .4s ease-in;
-      @include customize(theme) {
-       color: getValue(text);
-      }
-        padding: 0 0 0 10px;
-        cursor: pointer;
+  .item:hover {
+    text-decoration: underline;
+  }
+
+  .item:first-of-type {
+    padding: 0;
+  }
+
+  /* highlight selected node */
+
+  .item.selected {
+    @include customize(theme) {
+      color: getValue(highlight-color);
     }
+  }
 
-    .item:hover {
-        text-decoration: underline;
+  /* Arrow between nodes */
+
+  .item::before {
+    content: "\25B6";
+    font-size: 1em;
+    padding: 0 10px 0 0;
+    display: inline-block;
+    transform: translateY(1px);
+    @include customize(theme) {
+      color: getValue(text);
     }
+  }
 
-    .item:first-of-type {
-        padding: 0;
+  .item.selected::before {
+    @include customize(theme) {
+      color: getValue(highlight-color);
     }
+  }
 
-    /* highlight selected node */
+  /* hide arrow after last node */
 
-    .item.selected {
-        @include customize(theme) {
-            color: getValue(highlight-color); 
-          }
-    }
-
-    /* Arrow between nodes */
-
-    .item::before {
-        content: "\25B6";
-        font-size: 1em;
-        padding: 0 10px 0 0;
-        display: inline-block;
-        transform: translateY(1px);
-        @include customize(theme) {
-            color: getValue(text); 
-          }
-    }
-
-    .item.selected::before {
-        @include customize(theme) {
-            color: getValue(highlight-color); 
-          }
-    }
-    
-    /* hide arrow after last node */
-
-    .item:first-of-type::before {
-        display: none;
-    }
+  .item:first-of-type::before {
+    display: none;
+  }
 }

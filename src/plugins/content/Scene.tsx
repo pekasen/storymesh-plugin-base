@@ -1,15 +1,11 @@
 import { action, makeObservable, observable } from 'mobx';
 import { h, FunctionComponent } from "preact";
-import { DataConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { DataConnectorInPort, DataConnectorOutPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { IMenuTemplate, INGWebSProps } from '../../renderer/utils/PlugInClassRegistry';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
-
-// import * as Three from "three";
-// import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema, object } from 'serializr';
-import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
+import { createModelSchema } from 'serializr';
 
 export interface ISceneContent {
     file: string
@@ -22,8 +18,6 @@ class _Scene extends StoryObject {
     public role: string;
     public isContentNode = true;
     public userDefinedProperties: unknown;
-    public connectors: Map<string, IConnectorPort>;
-    // public menuTemplate: IMenuTemplate[];
     public icon: string;
 
     constructor() {
@@ -31,37 +25,16 @@ class _Scene extends StoryObject {
 
         this.name = "Scene";
         this.role = "internal.content.scene";
-        this.connectors = new Map<string, IConnectorPort>();
-        [
-            // {
-            //     name: "data-out",
-            //     type: "data",
-            //     direction: "out",
-            //     call: () => this.content.file
-            // }
-            new DataConnectorOutPort(
-                "data-out",
-                () => this.content.file
-            )
-        ].forEach(e => this.connectors.set(e.name, e as IConnectorPort));
-        // this.menuTemplate = [
-        //     ...nameField(this),
-        //     {
-        //         label: "Scene Location",
-        //         type: "file-selector",
-        //         value: () => this.content.file,
-        //         valueReference: (file: string) => this.updateContent(file)
-        //     },
-        //     ...connectionField(this)
-        // ]
         this.icon = "icon-box";
         this.content = {
             file: ""
         };
+        this.makeDefaultConnectors();
+        const dataOut = new DataConnectorOutPort("data-out", () => (this.content));
+        this._connectors.set(dataOut.id, dataOut);
 
         makeObservable(
             this, {
-            connectors: observable,
             name: observable,
             updateName: action,
             content: observable,
@@ -83,13 +56,13 @@ class _Scene extends StoryObject {
         if (super.menuTemplate) ret.push(...super.menuTemplate);
         return ret;
     }
-
+    
     public updateName(name: string): void {
         this.name = name;
     }
 
     public getComponent() {
-        return () => (<p style="display: none;"></p>)
+        return () => null;
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {

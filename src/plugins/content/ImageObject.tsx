@@ -1,16 +1,13 @@
 import { FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
 import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
-import { action, IReactionDisposer, makeObservable, observable, reaction } from 'mobx';
-import { IConnectorPort, StoryGraph } from 'storygraph';
+import { action, computed, makeObservable, observable } from 'mobx';
+import { StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { CSSModifier } from "../helpers/CSSModifier";
-import { TouchBarSegmentedControl } from "electron";
 
 /**
  * Our first little dummy PlugIn
@@ -24,7 +21,6 @@ class _ImageObject extends StoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: unknown;
     public childNetwork?: StoryGraph;
-    public connectors: Map<string, IConnectorPort>;
     public content: IContent;
     public icon: string;
 
@@ -37,8 +33,7 @@ class _ImageObject extends StoryObject {
         this.role = "internal.content.image";
         this.isContentNode = true;
         this.userDefinedProperties = {};
-        this.connectors =new Map<string, IConnectorPort>();
-        this.makeFlowInAndOut();
+        this.makeDefaultConnectors();
         
         this.content = {
             resource: "https://www.dafont.com/img/illustration/s/o/something.jpg",
@@ -49,12 +44,13 @@ class _ImageObject extends StoryObject {
         this.icon = _ImageObject.defaultIcon;
 
         makeObservable(this,{
-            name:       observable,
-            userDefinedProperties: observable,
-            connectors: observable.shallow,
-            content: observable,
-            updateName: action,
-            updateImageURL: action
+            name:                   observable,
+            userDefinedProperties:  observable,
+            connectors:             computed,
+            menuTemplate:           computed,
+            content:                observable,
+            updateName:             action,
+            updateImageURL:         action
         });
     }
 
@@ -84,10 +80,9 @@ class _ImageObject extends StoryObject {
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
             const img = <img src={content?.resource}></img>;
-            this.modifiers.filter(e => e.type === "css-hybrid").reduce((p,v) => (
-                (v as CSSModifier).modifyCSS(p)
+            return this.modifiers.reduce((p,v) => (
+                v.modify(p)
             ), img);
-            return img
         }
         return Comp
     }

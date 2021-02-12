@@ -1,8 +1,9 @@
 import { readdirSync } from "fs";
+import { IPlugInRegistryEntry } from "../utils/PlugInClassRegistry";
 
-export const  plugInLoader = () => { //Promise<IPlugInRegistryEntry<AbstractStoryObject>[]> 
+export const plugInLoader = () => { //Promise<IplugInRegistryEntry<AbstractStoryObject>[]> 
     const regex = /\.js/gm;
-    const localPath = __dirname + "/../../plugins/"; 
+    const localPath = __dirname + "/../../plugIns/"; 
     const plugs = readdirSync(localPath).
         filter(e => regex.test(e))
 
@@ -19,7 +20,7 @@ export const  plugInLoader = () => { //Promise<IPlugInRegistryEntry<AbstractStor
     .map(plug => require(localPath + plug).plugInExport)
 };
 
-export const  plugInLoader2 = (url: string) => { //Promise<IPlugInRegistryEntry<AbstractStoryObject>[]> 
+export const plugInLoader2 = (url: string) => { //Promise<IplugInRegistryEntry<AbstractStoryObject>[]> 
     const regex = /\.js/gm;
     const localPath = __dirname + `/../../${url}/`; 
     const plugs = readdirSync(localPath).
@@ -38,9 +39,9 @@ export const  plugInLoader2 = (url: string) => { //Promise<IPlugInRegistryEntry<
     .map(plug => require(localPath + plug).plugInExport)
 };
 
-export type PlugInCategory = "object" | "modifier" | "pane";
+export type IPlugInRegistryEntryCategory = "object" | "modifier" | "pane";
 
-export class PlugIn<T> {
+export class PlugInRegistryEntry<T> {
     public name: string;
     public id: string;
     public category: string;
@@ -59,7 +60,7 @@ export class PlugIn<T> {
 type RecursiveMap<T> = Map<string, RecursiveMap<T> | T>;
 
 export class PlugInStore<T> {
-    private entries: RecursiveMap<PlugIn<T>> // Map<string, Map<string, Map<string, IPlugIn>>>;
+    private entries: RecursiveMap<IPlugInRegistryEntry<T>> // Map<string, Map<string, Map<string, IIPlugInRegistryEntry>>>;
 
     constructor() {
         this.entries = new Map([
@@ -78,26 +79,26 @@ export class PlugInStore<T> {
 
     public getNewInstance(id: string): T | undefined {
         const path = id.split(".");
-        const obj = path.reduce((p: RecursiveMap<PlugIn<T>> | PlugIn<T> | undefined, v: string) => {
+        const obj = path.reduce((p: RecursiveMap<IPlugInRegistryEntry<T>> | IPlugInRegistryEntry<T> | undefined, v: string) => {
             if (p instanceof Map) {
                 const value = p.get(v);
                 // console.log("Getting", v, value);
                 return value;
                 
-                // if (value instanceof Map || value instanceof PlugIn) {
+                // if (value instanceof Map || value instanceof IPlugInRegistryEntry) {
                 //     return value
                 // } else return;
             }
         }, this.entries);
 
-        if (obj && obj instanceof PlugIn) return new obj._constructor();
+        if (obj) return new (obj as IPlugInRegistryEntry<T>).class(); // && obj instanceof IPlugInRegistryEntry
     }
 
-    public setPlugIn(id: string, plugin: PlugIn<T>): void {
+    public setPlugIn(id: string, IPlugInRegistryEntry: IPlugInRegistryEntry<T>): void {
         const path = id.split(".");
 
         path.reduce((
-                p: RecursiveMap<PlugIn<T>> | PlugIn<T> | undefined,
+                p: RecursiveMap<IPlugInRegistryEntry<T>> | IPlugInRegistryEntry<T> | undefined,
                 v: string,
                 ci: number
         ) => {
@@ -105,7 +106,7 @@ export class PlugInStore<T> {
                 const value = p.get(v);
                 if (value === undefined) {
                     if (ci === 2) {
-                        p.set(v, plugin)
+                        p.set(v, IPlugInRegistryEntry)
                     } else {
                         p.set(v, new Map())
                     }
@@ -118,16 +119,16 @@ export class PlugInStore<T> {
         }, this.entries);
     }
 
-    public get registry(): PlugIn<T>[] {
+    public get registry(): IPlugInRegistryEntry<T>[] {
         // this accessor should return a array/Map of all entries
-        const recurseMap = (map: RecursiveMap<PlugIn<T>>): PlugIn<T>[] => {
+        const recurseMap = (map: RecursiveMap<IPlugInRegistryEntry<T>>): IPlugInRegistryEntry<T>[] => {
             const entries = Array.from(map).map(e => e[1]);
             const ret = entries.map(entry => {
                 if (entry instanceof Map) {
                     return recurseMap(entry)
                 } else return entry
             });
-            return ret.reduce((arr: PlugIn<T>[], ent: PlugIn<T>[] | PlugIn<T>) => {
+            return ret.reduce((arr: IPlugInRegistryEntry<T>[], ent: IPlugInRegistryEntry<T>[] | IPlugInRegistryEntry<T>) => {
                 if (Array.isArray(ent)) {
                     ent.forEach(e => arr.push(e))
                 } else {

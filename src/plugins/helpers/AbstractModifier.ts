@@ -1,7 +1,9 @@
-import { RollingAverage, TorusBuilder } from "babylonjs";
 import { action, makeObservable, observable } from "mobx";
+import { h } from "preact";
 import { createModelSchema } from "serializr";
-import { IStoryModifier, ModifierType } from "storygraph";
+import { IConnectorPort, IStoryModifier, ModifierType } from "storygraph";
+import { v4 } from "uuid";
+import { rootStore } from "../../renderer";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
 function isStoryModifierType(type: string): boolean {
@@ -10,11 +12,33 @@ function isStoryModifierType(type: string): boolean {
 }
 
 export abstract class AbstractStoryModifier implements IStoryModifier {
-    abstract name: string;
-    abstract type: ModifierType;
-    abstract role: string;
-    abstract get menuTemplate(): IMenuTemplate[];
-    abstract get getRenderingProperties(): any;
+    
+    public id = v4();
+
+    public abstract name: string;
+    public abstract type: ModifierType;
+    public abstract role: string;
+    public abstract parent?: string;
+    public abstract get menuTemplate(): IMenuTemplate[];
+    public abstract get getRenderingProperties(): any;
+    public abstract modify(element: h.JSX.Element): h.JSX.Element;
+
+    public updateParent(id: string): void {
+        this.parent = id;
+    }
+
+    public deleteMe(): void {
+        if (this.parent) {
+            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            if (_parent) {
+                _parent.removeModifier(this);
+            }
+        }
+    }
+
+    public requestConnectors(): [string, IConnectorPort][] {
+        throw new Error("Method not implemented.");
+    }
 }
 
 export class ObservableStoryModifier<T> extends AbstractStoryModifier {
@@ -22,15 +46,69 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
     public type: ModifierType;
     public data: T | undefined;
     public role = "";
+    public parent: string | undefined;
     
     public get menuTemplate(): IMenuTemplate[] {
         return [
             {
                 label: "Name",
-                type: "text",
+                type: "display",
                 value: () => this.name,
                 valueReference: (name: string) => this.updateName(name)
             },
+            {
+                label: "",
+                type: "buttongroup",
+                value: () => undefined,
+                valueReference: () => undefined,
+                options: {
+                    callbacks: [
+                        {
+                            label: "delete",
+                            valueReference: () => {
+                                this.deleteMe();
+                            }
+                        },
+                        {
+                            label: "up",
+    
+                            valueReference: () => {
+                                // this.deleteMe();
+                            }
+                        },
+                        {
+                            label: "down",
+                            valueReference: () => {
+                                // this.deleteMe();
+                            }
+                        }
+                    ]
+                }
+            }
+            // {
+            //     label: "delete",
+            //     type: "button",
+            //     value: () => undefined,
+            //     valueReference: () => {
+            //         this.deleteMe();
+            //     }
+            // },
+            // {
+            //     label: "up",
+            //     type: "button",
+            //     value: () => undefined,
+            //     valueReference: () => {
+            //         // this.deleteMe();
+            //     }
+            // },
+            // {
+            //     label: "down",
+            //     type: "button",
+            //     value: () => undefined,
+            //     valueReference: () => {
+            //         // this.deleteMe();
+            //     }
+            // }
             // {
             //     label: "Type",
             //     type: "dropdown",
@@ -55,8 +133,26 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
         }
     }
 
-    public deleteMe(): void {
-        throw("");
+    public arrayPosUp(): void {
+        if (this.parent) {
+            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            if (_parent) {
+                _parent.removeModifier(this);
+            }
+        }
+    }
+    
+    public arrayPosDown(): void {
+        if (this.parent) {
+            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            if (_parent) {
+                _parent.removeModifier(this);
+            }
+        }
+    }
+
+    public modify(element: h.JSX.Element): h.JSX.Element {
+        throw("Method cannot be called directly");
     }
 
     public constructor() {
@@ -74,10 +170,12 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
     }
 }
 
+
 export const ObservableStoryModifierSchema = createModelSchema(ObservableStoryModifier, {
     name: true,
     type: true,
-    role: true
+    role: true,
+    parent: true
 });
 
 export type CSSUnit = "px" | "fr" | "em" | "rem" | "%" | "vh" | "vw";

@@ -1,67 +1,128 @@
 /* ================= THEMES =================== */
 /* ==================== PREVIEW CONTAINER ===================== */
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather+Sans:wght@700&family=Poppins:ital,wght@1,300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Arapey:ital@1&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap");
 .preview-container {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  margin-top: 30px;
-  /*================== STORY WRAPPER =================*/
-  /* ============ MIXINS ============ */
-  /* =============  BASE =========== */ }
+  height: 100%; }
   .preview-container .vertical-pane-mini {
     position: fixed;
-    width: 100%; }
+    width: 100%;
+    z-index: 99; }
+  .preview-container .vertical-pane-group > .vertical-pane:nth-of-type(even) {
+    background: #fff; }
   .preview-container .header-preview {
-    transition: background .4s ease-in, color .4s ease-in; }
+    transition: background 0.4s ease-in, color 0.4s ease-in;
+    margin: 10px; }
     .preview-container .header-preview span {
       display: inline-block;
-      font-size: .85rem;
+      font-size: 0.85rem;
       margin: 5px 0 5px 10px; }
-  .preview-container .storywrapper {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0; }
-  .preview-container .ngwebs-story {
+
+/*================== STORY WRAPPER =================*/
+/* ============ MIXINS ============ */
+.storywrapper {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  margin-top: 50px; }
+  .storywrapper .ngwebs-story {
     margin: 0 auto;
-    max-width: 768px;
-    padding: 0 15px; }
-  .preview-container .container {
-    display: grid;
-    grid-template-columns: 12fr;
-    grid-row-gap: 20px; }
-  .preview-container .row {
-    display: grid;
-    grid-template-columns: 12fr;
-    grid-gap: 1rem; }
-  .preview-container .content {
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 12fr)); }
-  .preview-container p, .preview-container a, .preview-container span {
-    font-size: 1rem; }
-  .preview-container h1, .preview-container h2, .preview-container h3, .preview-container h4, .preview-container h5, .preview-container h6, .preview-container strong, .preview-container b {
-    font-weight: bold; }
-  .preview-container h1 {
-    font-size: 2.5rem; }
-  .preview-container h2 {
-    font-size: 2rem; }
-  .preview-container h3 {
-    font-size: 1.8rem; }
-  .preview-container h4 {
-    font-size: 1.6rem; }
-  .preview-container h5 {
-    font-size: 1.4rem; }
-  .preview-container h6 {
-    font-size: 1.2rem; }
-  .preview-container blockquote {
-    font-size: 2.3rem;
-    max-width: 440px;
-    margin: 0 auto;
-    opacity: .9; }
-    .storytheme-basic .preview-container blockquote {
-      color: lightblue; }
-  .preview-container img {
-    display: block;
-    width: 100%;
-    height: auto;
-    margin: 20px 0; }
+    padding: 0 20px;
+    /* ========== THEME TYPEWRITER ========== */ }
+    .storywrapper .ngwebs-story .hero {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      margin: 0 0 20px 0; }
+      .storywrapper .ngwebs-story .hero img {
+        filter: grayscale(0.5);
+        margin: 0; }
+      .storywrapper .ngwebs-story .hero h1 {
+        font-size: 3rem;
+        position: absolute;
+        margin: 0;
+        word-break: break-word;
+        color: #fff; }
+    .storywrapper .ngwebs-story p,
+    .storywrapper .ngwebs-story a,
+    .storywrapper .ngwebs-story span {
+      font-size: 1rem; }
+    .storywrapper .ngwebs-story figcaption {
+      font-size: 0.7rem; }
+    .storywrapper .ngwebs-story h1,
+    .storywrapper .ngwebs-story h2,
+    .storywrapper .ngwebs-story h3,
+    .storywrapper .ngwebs-story h4,
+    .storywrapper .ngwebs-story h5,
+    .storywrapper .ngwebs-story h6,
+    .storywrapper .ngwebs-story strong,
+    .storywrapper .ngwebs-story b {
+      font-weight: bold; }
+    .storywrapper .ngwebs-story h1,
+    .storywrapper .ngwebs-story h2,
+    .storywrapper .ngwebs-story h3,
+    .storywrapper .ngwebs-story h4,
+    .storywrapper .ngwebs-story h5,
+    .storywrapper .ngwebs-story h6 {
+      white-space: normal; }
+    .storywrapper .ngwebs-story h1 {
+      font-size: 2.5rem; }
+    .storywrapper .ngwebs-story h2 {
+      font-size: 2rem; }
+    .storywrapper .ngwebs-story h3 {
+      font-size: 1.8rem; }
+    .storywrapper .ngwebs-story h4 {
+      font-size: 1.6rem; }
+    .storywrapper .ngwebs-story h5 {
+      font-size: 1.4rem; }
+    .storywrapper .ngwebs-story h6 {
+      font-size: 1.2rem; }
+    .storywrapper .ngwebs-story blockquote {
+      font-size: 2.3rem; }
+      .storytheme-basic .storywrapper .ngwebs-story blockquote {
+        color: lightblue; }
+    .storywrapper .ngwebs-story img {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 20px 0; }
+    .storywrapper .ngwebs-story ul,
+    .storywrapper .ngwebs-story ol {
+      font-size: 1rem; }
+    .storywrapper .ngwebs-story.theme-modernist { }
+      .storywrapper .ngwebs-story.theme-modernist p,
+      .storywrapper .ngwebs-story.theme-modernist a,
+      .storywrapper .ngwebs-story.theme-modernist b,
+      .storywrapper .ngwebs-story.theme-modernist span,
+      .storywrapper .ngwebs-story.theme-modernist figcaption {
+        font-family: "Lato", sans-serif; }
+      .storywrapper .ngwebs-story.theme-modernist h1,
+      .storywrapper .ngwebs-story.theme-modernist h2,
+      .storywrapper .ngwebs-story.theme-modernist h3,
+      .storywrapper .ngwebs-story.theme-modernist h4,
+      .storywrapper .ngwebs-story.theme-modernist h5,
+      .storywrapper .ngwebs-story.theme-modernist h6 {
+        font-family: "Merriweather Sans", sans-serif; }
+      .storywrapper .ngwebs-story.theme-modernist blockquote {
+        font-family: "Poppins", sans-serif; }
+    .storywrapper .ngwebs-story.theme-classic { }
+      .storywrapper .ngwebs-story.theme-classic p,
+      .storywrapper .ngwebs-story.theme-classic a,
+      .storywrapper .ngwebs-story.theme-classic b,
+      .storywrapper .ngwebs-story.theme-classic span,
+      .storywrapper .ngwebs-story.theme-classic figcaption {
+        font-family: "PT Serif", serif; }
+      .storywrapper .ngwebs-story.theme-classic h1,
+      .storywrapper .ngwebs-story.theme-classic h2,
+      .storywrapper .ngwebs-story.theme-classic h3,
+      .storywrapper .ngwebs-story.theme-classic h4,
+      .storywrapper .ngwebs-story.theme-classic h5,
+      .storywrapper .ngwebs-story.theme-classic h6 {
+        font-family: "Playfair Display", serif; }
+      .storywrapper .ngwebs-story.theme-classic blockquote {
+        font-family: "Arapey", serif; }

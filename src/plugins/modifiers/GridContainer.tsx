@@ -3,6 +3,7 @@ import { createModelSchema, list, object, primitive } from "serializr";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
+import { IConnectorPort, ModifierType } from "storygraph";
 
 interface IGridContainerInlineStatements extends CSSStatement {
     "grid-gap": string;
@@ -14,7 +15,6 @@ interface IGridContainerModifierData extends CSSModifierData {
 
 class GridContainerInlineStatements implements IGridContainerInlineStatements {
     public "grid-gap" = "15px";
-
     constructor() {
         makeObservable(this, {
             "grid-gap": true
@@ -41,6 +41,7 @@ export class CSSGridContainerModifier extends CSSModifier {
     public name = "Grid Container"
     public role = "internal.modifier.gridcontainer";
     public data: GridContainer = new GridContainer();
+    public type: ModifierType = "css-hybrid";
 
     constructor() {
         super();
@@ -81,6 +82,10 @@ export class CSSGridContainerModifier extends CSSModifier {
         ];
     }
 
+    public requestConnectors(): [string, IConnectorPort][] {
+        return []
+    }
+    
     public get getRenderingProperties(): any {
         return super.getRenderingProperties;
     }

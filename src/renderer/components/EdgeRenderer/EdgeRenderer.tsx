@@ -18,9 +18,12 @@ export class EdgeRenderer extends Component {
     store = useContext(Store);
     disposeReactionLoadedItem: IReactionDisposer;
     disposeReactionSelectedEdges: IReactionDisposer;
-    mutationObserver: MutationObserver | undefined;
+    disposeReactionCollapseItem: IReactionDisposer;
+    mutationObserver_LoadedItem: MutationObserver | undefined;
+    mutationObserver_CollapseItem: MutationObserver | undefined;
     mutationTargetNode: HTMLElement | undefined;
-    mutationsConfig: MutationObserverInit;            
+    mutationsConfig_LoadedItem: MutationObserverInit;            
+    mutationsConfig_CollapseItem: MutationObserverInit;            
     looseNoodle?: Line[];
     selectionRectangle?: Rect;
     svg: Svg;
@@ -33,7 +36,8 @@ export class EdgeRenderer extends Component {
         this.edgeRendererID = "edge-renderer";
         let nestedDisposeReaction: IReactionDisposer;
         // Options for the observer (which mutations to observe)
-        this.mutationsConfig = { subtree: true, attributeFilter: [ "id" ]  };
+        this.mutationsConfig_LoadedItem = { subtree: true, attributeFilter: [ "id" ] };
+        this.mutationsConfig_CollapseItem = { subtree: true, attributeFilter: [ "class" ] };
 
         this.disposeReaction = reaction(
             () => {
@@ -73,7 +77,6 @@ export class EdgeRenderer extends Component {
         this.disposeReactionLoadedItem = reaction(
             () => (this.store.uistate.loadedItem),
             () => {
-                //this.clearEdges();
                 this.setState({});
                 
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
@@ -86,10 +89,40 @@ export class EdgeRenderer extends Component {
                 });
 
                 // Create an observer instance linked to the callback function
-                this.mutationObserver = new MutationObserver(callback);
+                this.mutationObserver_LoadedItem = new MutationObserver(callback);
 
                 // Start observing the target node for configured mutations
-                this.mutationObserver.observe(this.mutationTargetNode as Node, this.mutationsConfig);                
+                this.mutationObserver_LoadedItem.observe(this.mutationTargetNode as Node, this.mutationsConfig_LoadedItem);                
+            }
+        );
+
+        this.disposeReactionCollapseItem = reaction(
+            () => {
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
+                const moveableItems = loadedObject?.childNetwork?.nodes.map((id) => {                    
+                    return this.store.uistate.moveableItems.getValue(id);
+                }).filter(e => e != undefined) as MoveableItem[];    
+
+               return [...moveableItems.map(e => e.collapsed)]},
+            () => {
+                this.setState({});
+                
+                const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
+                if (!loadedObject)
+                    throw ("Undefined loaded object");
+                
+                // Callback function to execute when mutations are observed
+                const callback = (() => {
+                    this.executeChangesToEdges(loadedObject);
+                });
+
+                // Create an observer instance linked to the callback function
+                this.mutationObserver_CollapseItem = new MutationObserver(callback);
+
+                // Start observing the target node for configured mutations
+                this.mutationObserver_CollapseItem.observe(this.mutationTargetNode as Node, this.mutationsConfig_CollapseItem);                
             }
         );
 
@@ -284,7 +317,8 @@ export class EdgeRenderer extends Component {
     }
 
     componentWillUnmount(): void {
-        this.mutationObserver?.disconnect();
+        this.mutationObserver_CollapseItem?.disconnect();
+        this.mutationObserver_LoadedItem?.disconnect();
     }
 
     drawEdgeCurve(x1: number, y1: number, x2: number, y2: number): Line[] {
@@ -314,7 +348,7 @@ export class EdgeRenderer extends Component {
         const posX = Math.min(coords1.x, coords2.x);
         const posY = Math.min(coords1.y, coords2.y);
         const rect = this.svg.rect(width, height);
-        rect.fill('#f06').move(posX, posY);        
+        rect.fill('rgba(255,255,255,0.3)').stroke('#efefef').move(posX, posY);        
         return rect;
     }
 

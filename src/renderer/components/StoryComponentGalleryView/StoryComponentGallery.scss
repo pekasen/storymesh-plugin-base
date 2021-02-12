@@ -1,12 +1,12 @@
 /* ==================== STORY COMPONENT GALLERY ===================== */
 .item-gallery-container {
-  // position: relative;
+  margin: 10px 10px 10px 0;
   height: 80px;
   @include customize(theme) {
-    background: getValue(menu-background);
-    border-left: 3px dashed getValue(border-color);
+    background: getValue(node-object-background);
   }
   transition: height 0.3s ease;
+  border-radius: 7px;
 
   .expanded-visible {
     height: 0px;
@@ -40,11 +40,11 @@
     position: absolute;
     width: 40px;
     height: 40px;
-    top: -15px;
+    top: -5px;
     left: calc(50% - 20px);
     border-radius: 50%;
     @include customize(theme) {
-      background: getValue(menu-background);
+      background: getValue(node-object-background);
     }
     & .icon {
       transition: transform 0.2s ease;

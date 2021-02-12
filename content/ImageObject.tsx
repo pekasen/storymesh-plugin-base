@@ -36,7 +36,7 @@ class _ImageObject extends StoryObject {
         this.makeDefaultConnectors();
         
         this.content = {
-            resource: "https://www.dafont.com/img/illustration/s/o/something.jpg",
+            resource: "https://source.unsplash.com/random/1920x1080",
             contentType: "url",
             altText: "This is an image"
         }

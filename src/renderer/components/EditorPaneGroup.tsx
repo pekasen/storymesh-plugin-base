@@ -39,7 +39,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
         <Pane>
             <VerticalPaneGroup>
                 <VerticalPane>
-                        <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
+                    <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
                     <StoryObjectViewRenderer loadedObject={loadedItem} store={store}>
                     </StoryObjectViewRenderer>
                     <VerticalFlexPane>

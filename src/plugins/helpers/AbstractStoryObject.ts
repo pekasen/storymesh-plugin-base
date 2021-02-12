@@ -1,15 +1,19 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
-import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort } from 'storygraph';
+import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, object, optional, primitive, serialize } from 'serializr';
+import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, map, object, optional, primitive, serialize } from 'serializr';
 import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
 import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 import { rootStore } from '../../renderer';
 import { AbstractStoryModifier } from "./AbstractModifier";
+import { IEdgeEvent } from "storygraph/dist/StoryGraph/IEdgeEvent";
+import { NotificationCenter, INotificationData } from "storygraph/dist/StoryGraph/NotificationCenter";
+import { EdgeSchema } from "../../renderer/store/schemas/EdgeSchema";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 
 /**
  * Our second little dummy PlugIn
@@ -59,6 +63,31 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             addConnection:          action,
             addModifier:            action,
             removeModifier:         action
+        });
+    }
+    notificationCenter?: NotificationCenter | undefined;
+    
+    public addConnections(edges: IEdge[]): void {
+        // store locally
+        this.connections.push(...edges);
+    }
+
+    public bindTo(notificationCenter: NotificationCenter): void {
+        this.notificationCenter = notificationCenter;
+        this.connectors.forEach((connector) => {
+            console.log("binding", connector, notificationCenter);
+            (connector as ConnectorPort).bindTo(notificationCenter);
+        });
+        notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
+            if (payload) {
+                console.log("binding", payload);
+                if (payload.data.add !== undefined) {
+                    this.addConnections(payload.data.add);
+                }
+                if (payload.data.remove !== undefined) {
+                    this.removeConnections(payload.data.remove);
+                }
+            }
         });
     }
 
@@ -134,14 +163,18 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
 
     public abstract getEditorComponent(): FunctionComponent<INGWebSProps> 
 
-
     protected makeDefaultConnectors(): void {
         const _in = new FlowConnectorInPort();
         const _out = new FlowConnectorOutPort();
         const _data = new DataConnectorInPort("data-in", (data: unknown) => {this.content = data});
 
-        _in.associated = _out;
-        _out.associated = _in;
+        _in.associated = _out.id;
+        _out.associated = _in.id;
+        
+        if (this.notificationCenter) {
+            _in.bindTo(this.notificationCenter)
+            _out.bindTo(this.notificationCenter)
+        }
 
         [
             _in,
@@ -165,26 +198,10 @@ export class StoryObject extends AbstractStoryObject {
     public content?: any;
     
     public get connectors(): Map<string, IConnectorPort> {
-        const map = super.connectors;
+        const map = new Map(super.connectors);
         this.modifiers.forEach(modifier => {
             modifier.requestConnectors().forEach(([label, connector]) => {
-                if (connector instanceof ReactionConnectorOutPort) {
-                    connector.notify = () => {
-                        console.log("Notification middleware");
-                        // build edge list
-                        const connected = this.connections.filter(edge => (
-                            edge.from.endsWith(connector.id)
-                        ));
-                        // trigger notifications
-                        connected.forEach(edge => {
-                            const [id, connectorID] = StoryGraph.parseNodeId(edge.to) ;
-                            const obj = rootStore.root.storyContentObjectRegistry.getValue(id);
-                            const con = obj?.connectors.get(connectorID) as ReactionConnectorInPort;
-                            console.log("Notification middleware", obj, con);
-                            con.handleNotification()
-                        });
-                    }
-                }
+                if (connector.needsBinding() && this.notificationCenter !== undefined) connector.bindTo(this.notificationCenter);
                 map.set(label, connector);
             });
         });
@@ -212,6 +229,8 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
     metaData: object(MetaDataSchema),
     content: optional(object(ContentSchema)),
     parent: optional(primitive()),
+    connections: list(object(EdgeSchema)),
+    _connectors: map(object(ConnectorSchema)),
     modifiers: list(custom(
         (value: Record<string, unknown>) => {
             const schema = getDefaultModelSchema(value.constructor);

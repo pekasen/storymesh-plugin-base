@@ -2,13 +2,11 @@ import { FunctionComponent, h } from "preact";
 import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
 import { action, makeObservable, observable } from 'mobx';
-import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { OnAfterEnteringVRObservableEvent } from "babylonjs";
 
 class _Spacer extends StoryObject {
 

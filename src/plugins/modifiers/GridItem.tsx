@@ -53,9 +53,9 @@ export class GridItem implements IGridItemModifierData {
 
     constructor() {
         makeObservable(this, {
-            classes: true,
+            // classes: true,
             classMap: observable,
-            inline: observable
+            // inline: observable
         });
     }
 }
@@ -146,7 +146,7 @@ export const GridItemInlineStatementsSchema = createModelSchema(GridItemInlineSt
 })
 
 export const CSSGriditemModifierDataSchema = createModelSchema(GridItem, {
-    classes: list(primitive()),
+    // classes: list(primitive()),
     data: object(GridItemInlineStatements),
     classMap: map(primitive())
 });

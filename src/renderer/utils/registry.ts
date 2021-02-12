@@ -13,6 +13,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, custom, getDefaultModelSchema, map, ModelSchema, object, serialize, deserialize, mapAsArray } from 'serializr';
 import { IStoryObject } from 'storygraph';
 import { rootStore } from '..';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 // import { deserializeObjectWithSchema } from '../../../node_modules/serializr/lib/core/deserialize';
 import { IItem } from '../components/IItem';
 
@@ -181,6 +182,21 @@ export function AutoValueRegistrySchema<T extends IValue<T>> () : ModelSchema<Va
                     })
                 }
                 cb(null, value);
+            },
+            afterDeserialize: (cb, err, newValue, jsonValue, jsonParentVAlue, propNameorIndex, context, propDef) => {
+                // This hook fires after the registry is loaded completly!
+                const registry = newValue as Map<string, AbstractStoryObject>;
+                registry.forEach(value => {
+                    if (value.isContentNode && value.parent !== undefined) {
+                        const parentGraph = registry.get(value.parent)?.childNetwork;
+                        if (parentGraph?.notificationCenter) value.bindTo(parentGraph?.notificationCenter);
+                    }
+                })
+                if (newValue instanceof AbstractStoryObject)
+    
+                // catches edges
+                console.log("caught", newValue, context);
+                cb(err, registry);
             }
         })
     });

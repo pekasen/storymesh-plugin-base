@@ -53,43 +53,61 @@ export class ConnectionTableMenuItem implements IMenuItemRenderer {
                         );
 
                         const onDropOnTableRow = (e: DragEvent) => {
-                            const id = e.dataTransfer?.getData("text");
+                            const dropInput = e.dataTransfer?.getData("text");
+                            if (!dropInput) {
+                                throw("");
+                            }
+                            const [id, portId] = dropInput?.split(".");
 
                             if (id) {
                                 const direction = port.direction;
                                 const _item = store.storyContentObjectRegistry.getValue(id);
 
                                 if (_item) {
-                                    const contextMenu = new Menu();
-
-                                    _item.connectors.forEach(con => {
-                                        if (con.type === port.type &&
-                                            con.direction !== port.direction) {
-                                                contextMenu.append(
-                                                    new MenuItem({
-                                                        label: con.name,
-                                                        click: () => {
-                                                            console.log("add edge to", id + "." + con.name);
-                                                            if (item.valueReference) {
-                                                                item.valueReference(
-                                                                    store.storyContentObjectRegistry,
-                                                                    id,
-                                                                    port.name,
-                                                                    con.name,
-                                                                    direction
-                                                                );
+                                    const droppedCon = _item.connectors.get(portId);
+                                    if (droppedCon !== undefined && droppedCon.type === port.type) {
+                                        console.log("add edge to", id + "." + droppedCon.name);
+                                        if (item.valueReference) {
+                                            item.valueReference(
+                                                store.storyContentObjectRegistry,
+                                                id,
+                                                port.id,
+                                                (droppedCon as ConnectorPort).id,
+                                                direction
+                                            );
+                                        }
+                                    } else {
+                                        const contextMenu = new Menu();
+    
+                                        _item.connectors.forEach(con => {
+                                            if (con.type === port.type &&
+                                                con.direction !== port.direction) {
+                                                    contextMenu.append(
+                                                        new MenuItem({
+                                                            label: con.name,
+                                                            click: () => {
+                                                                console.log("add edge to", id + "." + con.name);
+                                                                if (item.valueReference) {
+                                                                    item.valueReference(
+                                                                        store.storyContentObjectRegistry,
+                                                                        id,
+                                                                        port.id,
+                                                                        (con as ConnectorPort).id,
+                                                                        direction
+                                                                    );
+                                                                }
                                                             }
-                                                        }
-                                                    })
-                                                );
-                                            }
-                                    })
-
-                                    contextMenu.popup({
-                                        window: remote.getCurrentWindow(),
-                                        x: e.x,
-                                        y: e.y
-                                    });
+                                                        })
+                                                    );
+                                                }
+                                        })
+    
+                                        contextMenu.popup({
+                                            window: remote.getCurrentWindow(),
+                                            x: e.x,
+                                            y: e.y
+                                        });
+                                    }
                                 }
                             }
                         };

@@ -94,7 +94,6 @@
         margin: 0;
       }
       h1 {
-        font-size: 3rem;
         position: absolute;
         margin: 0;
         word-break: break-word;
@@ -134,6 +133,18 @@
 
     h1 {
       font-size: 2.5rem;
+      @include for-mobile(){
+      font-size: 1.5rem;
+      }
+      @include for-tablet-portrait(){
+        font-size: 1.8rem;
+      }
+      @include for-tablet-landscape(){
+        font-size: 1.9rem;
+      }
+      @include for-desktop(){
+        font-size: 2.1rem;
+      }
     }
 
     h2 {

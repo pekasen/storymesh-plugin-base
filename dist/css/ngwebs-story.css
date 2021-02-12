@@ -43,7 +43,6 @@
         filter: grayscale(0.5);
         margin: 0; }
       .storywrapper .ngwebs-story .hero h1 {
-        font-size: 3rem;
         position: absolute;
         margin: 0;
         word-break: break-word;
@@ -72,6 +71,14 @@
       white-space: normal; }
     .storywrapper .ngwebs-story h1 {
       font-size: 2.5rem; }
+      .storywrapper .ngwebs-story h1 .storywrapper.XS {
+        font-size: 1.5rem; }
+      .storywrapper .ngwebs-story h1 .storywrapper.SM {
+        font-size: 1.8rem; }
+      .storywrapper .ngwebs-story h1 .storywrapper.MD {
+        font-size: 1.9rem; }
+      .storywrapper .ngwebs-story h1 .storywrapper.LG {
+        font-size: 2.1rem; }
     .storywrapper .ngwebs-story h2 {
       font-size: 2rem; }
     .storywrapper .ngwebs-story h3 {

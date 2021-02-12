@@ -38,24 +38,22 @@ export const EditorPaneGroup: FunctionalComponent = () => {
         </ResizablePane>
         <Pane>
             <VerticalPaneGroup>
-                <VerticalMiniPane>
-                    <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
-                </VerticalMiniPane>
                 <VerticalPane>
+                        <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
                     <StoryObjectViewRenderer loadedObject={loadedItem} store={store}>
                     </StoryObjectViewRenderer>
+                    <VerticalFlexPane>
+                        <StoryComponentGallery>
+                            {store.pluginStore.registry.
+                                filter((val) => (val.public)).
+                                map((item) => (
+                                    <GalleryItemView item={item}>
+                                        <span>{item.name}</span>
+                                    </GalleryItemView>
+                                ))}
+                        </StoryComponentGallery>
+                    </VerticalFlexPane>
                 </VerticalPane>
-                <VerticalFlexPane>
-                    <StoryComponentGallery>
-                        {store.pluginStore.registry.
-                        filter((val) => (val.public)).
-                        map((item) => (
-                            <GalleryItemView item={item}>
-                                <span>{item.name}</span>
-                            </GalleryItemView>
-                        ))}
-                    </StoryComponentGallery>
-                </VerticalFlexPane>
             </VerticalPaneGroup>
         </Pane>
         <ResizablePane paneState={store.uistate.windowProperties.previewPane} resizable="left">

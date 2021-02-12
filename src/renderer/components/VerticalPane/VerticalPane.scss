@@ -57,4 +57,9 @@
   height: fit-content;
   overflow: visible;
   border: none;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: calc(100% - 20px);
+  z-index: 99;
 }

@@ -168,8 +168,8 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         const _out = new FlowConnectorOutPort();
         const _data = new DataConnectorInPort("data-in", (data: unknown) => {this.content = data});
 
-        _in.associated = _out;
-        _out.associated = _in;
+        _in.associated = _out.id;
+        _out.associated = _in.id;
         
         if (this.notificationCenter) {
             _in.bindTo(this.notificationCenter)

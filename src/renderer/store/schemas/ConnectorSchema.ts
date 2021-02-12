@@ -8,7 +8,7 @@ export const ConnectorSchema = createModelSchema(ConnectorPort, {
     direction: true,
     type: true,
     connections: list(object(EdgeSchema)),
-    associated: false
+    associated: true
 }, (context) => {
     console.log("caught", context);
     // const { parentContext } = context;

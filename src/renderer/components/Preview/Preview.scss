@@ -90,7 +90,7 @@
       align-items: center;
       margin: 0 0 20px 0;
       img {
-        filter: grayscale(.5);
+        filter: grayscale(0.5);
         margin: 0;
       }
       h1 {
@@ -107,8 +107,14 @@
       font-size: 1rem;
     }
 
-    figcaption {
-      font-size: 0.7rem;
+    figure {
+      img {
+        margin: 0;
+      }
+      figcaption {
+        font-size: 0.8rem;
+        margin: 5px 0 0 0;
+      }
     }
 
     h1,
@@ -133,16 +139,16 @@
 
     h1 {
       font-size: 2.5rem;
-      @include for-mobile(){
-      font-size: 1.5rem;
+      @include for-mobile() {
+        font-size: 1.5rem;
       }
-      @include for-tablet-portrait(){
+      @include for-tablet-portrait() {
         font-size: 1.8rem;
       }
-      @include for-tablet-landscape(){
+      @include for-tablet-landscape() {
         font-size: 1.9rem;
       }
-      @include for-desktop(){
+      @include for-desktop() {
         font-size: 2.1rem;
       }
     }

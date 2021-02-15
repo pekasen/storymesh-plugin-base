@@ -19,7 +19,7 @@ class _ImageObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: unknown;
+    public userDefinedProperties: any;
     public childNetwork?: StoryGraph;
     public content: IContent;
     public icon: string;
@@ -34,23 +34,29 @@ class _ImageObject extends StoryObject {
         this.isContentNode = true;
         this.userDefinedProperties = {};
         this.makeDefaultConnectors();
-        
+
         this.content = {
             resource: "https://source.unsplash.com/random/1920x1080",
             contentType: "url",
-            altText: "This is an image"
+            altText: "This is an image",
+        }
+
+        this.userDefinedProperties = {
+            caption: "This is the image caption"
         }
         // this.menuTemplate = connectionField(this);
         this.icon = _ImageObject.defaultIcon;
 
-        makeObservable(this,{
-            name:                   observable,
-            userDefinedProperties:  observable,
-            connectors:             computed,
-            menuTemplate:           computed,
-            content:                observable,
-            updateName:             action,
-            updateImageURL:         action
+        makeObservable(this, {
+            name: observable,
+            userDefinedProperties: observable,
+            connectors: computed,
+            menuTemplate: computed,
+            content: observable,
+            updateName: action,
+            updateImageURL: action,
+            updateAltText: action,
+            updateCaption: action
         });
     }
 
@@ -62,6 +68,18 @@ class _ImageObject extends StoryObject {
                 value: () => this.content.resource,
                 valueReference: (url: string) => this.updateImageURL(url),
                 type: "text"
+            },
+            {
+                label: "Alt-Text",
+                value: () => this.content.altText,
+                valueReference: (altText: string) => this.updateAltText(altText),
+                type: "text"
+            },
+            {
+                label: "Caption",
+                value: () => this.userDefinedProperties.caption,
+                valueReference: (caption: string) => this.updateCaption(caption),
+                type: "textarea"
             },
             ...connectionField(this),
         ];
@@ -77,12 +95,29 @@ class _ImageObject extends StoryObject {
         this.name = name;
     }
 
+    public updateAltText(altText: string) {
+        this.content.altText = altText;
+    }
+
+    public updateCaption(caption: string) {
+        this.userDefinedProperties.caption = caption;
+    }
+
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
+        const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
             const img = <img src={content?.resource}></img>;
-            return this.modifiers.reduce((p,v) => (
-                v.modify(p)
-            ), img);
+            return (
+                <div class="imagewrapper">
+                    <figure>
+                        {
+                            this.modifiers.reduce((p, v) => (
+                                v.modify(p)
+                            ), img)
+                        }
+                        <figcaption>{this.userDefinedProperties.caption}</figcaption>
+                    </figure>
+                </div>
+            );
         }
         return Comp
     }

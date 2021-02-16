@@ -2,7 +2,7 @@ import { FunctionalComponent, FunctionComponent, h } from "preact";
 import { runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
-import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { StoryObject } from '../helpers/AbstractStoryObject';
@@ -19,7 +19,9 @@ class _TextObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: any;
+    public userDefinedProperties: {
+        tag: string
+    };
     public content: IContent;
     public childNetwork?: StoryGraph | undefined;
     public icon: string;

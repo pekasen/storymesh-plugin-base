@@ -8,6 +8,7 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+import { useEffect, useState } from "preact/hooks";
 
 /**
  * Our first little dummy PlugIn
@@ -46,9 +47,9 @@ class _ImageObject extends StoryObject {
         makeObservable(this,{
             name:                   observable,
             userDefinedProperties:  observable,
+            content:                observable,
             connectors:             computed,
             menuTemplate:           computed,
-            content:                observable,
             updateName:             action,
             updateImageURL:         action
         });
@@ -79,7 +80,17 @@ class _ImageObject extends StoryObject {
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            const img = <img src={content?.resource}></img>;
+
+            const [, setState] = useState({});
+
+            this._rerender = () => {
+                setState({});
+            }
+
+            const img = <div id={this.id} class="image">
+                <img src={content?.resource}></img>
+            </div>;
+
             return this.modifiers.reduce((p,v) => (
                 v.modify(p)
             ), img);

@@ -1,6 +1,6 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
-import { action, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
@@ -38,6 +38,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public abstract icon: string
     public abstract content?: any;
     protected _connectors = new Map<string, IConnectorPort>();
+    protected _rerender?: (() => void);
     
     constructor() {
         this.id = v4();
@@ -60,6 +61,8 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             metaData:               observable,
             connections:            observable,
             modifiers:              observable.deep,
+            // cannot makr connectors as computed as it will fuck up everything and the world.
+            // connectors:             computed,
             addConnection:          action,
             addModifier:            action,
             removeModifier:         action
@@ -76,7 +79,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         this.notificationCenter = notificationCenter;
         this.connectors.forEach((connector) => {
             console.log("binding", connector, notificationCenter);
-            (connector as ConnectorPort).bindTo(notificationCenter);
+            (connector as ConnectorPort).bindTo(notificationCenter, this.id);
         });
         notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
             if (payload) {
@@ -89,7 +92,11 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
                 }
             }
         });
+        notificationCenter.subscribe(this.id+"/rerender", () => {
+            if (this._rerender !== undefined) this._rerender();
+        })
     }
+
 
     /**
      * 
@@ -172,8 +179,8 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         _out.associated = _in.id;
         
         if (this.notificationCenter) {
-            _in.bindTo(this.notificationCenter)
-            _out.bindTo(this.notificationCenter)
+            _in.bindTo(this.notificationCenter, this.id)
+            _out.bindTo(this.notificationCenter, this.id)
         }
 
         [
@@ -201,7 +208,9 @@ export class StoryObject extends AbstractStoryObject {
         const map = new Map(super.connectors);
         this.modifiers.forEach(modifier => {
             modifier.requestConnectors().forEach(([label, connector]) => {
-                if (connector.needsBinding() && this.notificationCenter !== undefined) connector.bindTo(this.notificationCenter);
+                if (connector.needsBinding() && this.notificationCenter !== undefined) {
+                    connector.bindTo(this.notificationCenter, this.id);
+                }
                 map.set(label, connector);
             });
         });

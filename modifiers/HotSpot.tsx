@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, runInAction } from "mobx";
 import { Component, createRef, h, RefObject } from "preact";
 import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
@@ -12,6 +12,7 @@ export class HotSpot {
     public x: number;
     public y: number;
     public reactionOut = new ReactionConnectorOutPort("reaction-out");
+    public debug = false;
     protected static numOfInstances = 1;
 
     constructor(x?: number, y?: number) {
@@ -22,6 +23,7 @@ export class HotSpot {
         makeObservable(this, {
             x: true,
             y: true,
+            debug: true,
             updateXY: action
         });
     }
@@ -96,7 +98,7 @@ class CircleHotSpot extends HotSpot {
 
             console.log("circle dims", {x: relX, y: relY, r: relR});
             
-            return <circle class={"debug"} cx={relX} cy={relY} r={relR} onClick={() => {
+            return <circle class={(this.debug) ? "debug" : undefined} cx={relX} cy={relY} r={relR} onClick={() => {
                 console.log("Sending notification to", this.reactionOut);
                 this.reactionOut.notify();
             }}/>
@@ -237,6 +239,16 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                 type: "button",
                 value: () => undefined,
                 valueReference: () => this.addHotSpot(new CircleHotSpot())
+            },
+            {
+                label: "Toggle DEBUG",
+                type: "button",
+                value: () => undefined,
+                valueReference: () => {
+                    runInAction(() => {
+                        this.data.hotspots.forEach(e => e.debug = !e.debug);
+                    });
+                }
             }
         ];
     }

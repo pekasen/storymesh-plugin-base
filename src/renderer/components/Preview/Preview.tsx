@@ -1,5 +1,5 @@
 import { Component, createRef, h } from 'preact';
-import { INGWebSProps, IPlugIn } from '../../utils/PlugInClassRegistry';
+import { INGWebSProps } from '../../utils/PlugInClassRegistry';
 import { VerticalPaneGroup, VerticalMiniPane, VerticalPane } from '../VerticalPane/VerticalPane';
 import { deepObserve, IDisposer } from 'mobx-utils';
 import { useContext } from 'preact/hooks';
@@ -25,6 +25,7 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
     constructor(props: IPreviewProps) {
         super(props);
         const store = useContext(Store);
+        // TODO: debounce user input
         this.reactionDisposer = deepObserve(store.storyContentObjectRegistry, () => {
             console.log("Updated")
             this.setState({});
@@ -68,7 +69,7 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
         }
     }
 
-    render({ topLevelObjectId, registry, graph }: IPreviewProps, { classes }: IPreviewState): h.JSX.Element {
+    render({ topLevelObjectId, registry }: IPreviewProps, { classes }: IPreviewState): h.JSX.Element {
         // const g = graph?.traverse(registry, (topLevelObjectId  + ".start"))
         // const children = graph?.nodes.map(id => registry.getValue(id)).filter(node => node !== undefined);
         const topLevelObject = registry.getValue(topLevelObjectId) as AbstractStoryObject | undefined;
@@ -78,6 +79,7 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
         if (!Elem) throw("BIGGY!3");
 
         // console.log("children", children);
+        // TODO: refactor so that peripharals are outside this component
         return <div class="preview-container" >
             <VerticalPaneGroup>
                 <VerticalMiniPane>

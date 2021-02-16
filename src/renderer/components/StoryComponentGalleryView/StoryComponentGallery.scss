@@ -1,6 +1,5 @@
 /* ==================== STORY COMPONENT GALLERY ===================== */
 .item-gallery-container {
-  margin: 10px 10px 10px 0;
   height: 80px;
   @include customize(theme) {
     background: getValue(node-object-background);
@@ -40,7 +39,7 @@
     position: absolute;
     width: 40px;
     height: 40px;
-    top: -5px;
+    top: -10px;
     left: calc(50% - 20px);
     border-radius: 50%;
     @include customize(theme) {

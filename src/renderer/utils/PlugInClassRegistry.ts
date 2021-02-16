@@ -30,7 +30,8 @@ export interface IPlugInRegistryEntry<T> extends IRegistryEntry<T> {
     icon: string;
     website?: string;
     description?: string;
-    public?: boolean
+    public?: boolean;
+    category?: string;
     class: Class<T>;
 }
 
@@ -38,6 +39,7 @@ export interface INGWebSProps {
     id: string
     registry: ValueRegistry<IStoryObject>
     renderingProperties?: IRenderingProperties
+    userDefinedProperties?: any;
     content?: IContent
     modifiers?: IStoryModifier[]
     graph?: StoryGraph
@@ -45,24 +47,37 @@ export interface INGWebSProps {
 
 export interface IPlugIn {
     menuTemplate: IMenuTemplate[];
-    getComponent(): FunctionalComponent<INGWebSProps>;
+    getComponent?(): FunctionalComponent<INGWebSProps>;
 }
 
 export type MenuItemSpecification = "table" |
     "radio" |
+    "button" |
+    "buttongroup" |
+    "divider" |
     "textarea" |
     "text" |
     "hslider" |
     "vslider" |
     "dropdown" |
     "check" |
+    "file-selector" |
     "url" |
-    "color";
+    "color" |
+    "connectiontable" |
+    "hotspot-table" |
+    "display";
 
-export interface IMenuTemplate {
+export interface IMenuTemplate<Value = any, Options = any> {
     label: string;
     type: MenuItemSpecification;
-    valueReference: (...args: any[]) => void;
-    value: (() => any);
-    options?: string[];
+    valueReference: (...args: Value[]) => void;
+    value: (() => Value);
+    // TODO: make it type-safe!!!
+    options?: Options;
+}
+
+export interface IMenuTemplate2<U, V> extends IMenuTemplate{
+    valueReference: (...args: any[]) => U;
+    value: () => V
 }

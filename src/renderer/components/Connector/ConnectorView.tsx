@@ -1,35 +1,91 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
-import { Draggable } from '../Draggable';
-import { IItem } from '../IItem';
+import { useContext } from 'preact/hooks';
+import { StoryGraph } from 'storygraph';
+import { Store } from '../..';
+import { DraggableDropReceiver } from '../DraggableDragReceiver';
 
-interface IConnectorViewProps<T extends IItem> {
-    item: T
-    onClick?: () => void
+interface IConnectorViewProps {
+    id: string
+    class: string
+    onClick?: () => void    
     onDblClick?: () => void
-    onDrag?: () => void
-    children: h.JSX.Element
+    //onDrag?: () => void
+    children?: h.JSX.Element
 }
 
-export class ConnectorView extends Component<IConnectorViewProps<IItem>> {
+export class ConnectorView extends Component<IConnectorViewProps> {
 
     reactionDisposer: IReactionDisposer;
+    class: string;
 
-    constructor(props: IConnectorViewProps<IItem>) {
+    constructor(props: IConnectorViewProps) {
         super(props);
+        this.class = props.class;
 
         this.reactionDisposer = reaction(
-            () => ({ ...props.item }),
+            () => ({ ...props }),
             () => {
                 this.setState({});
             }
         );
     }
     
-    render({ item, children, onDrag }: IConnectorViewProps<IItem>): h.JSX.Element {
-        return <Draggable id={item.id}> 
-            <span class="connector" onDrag={onDrag}>{children}</span>
-        </Draggable>
+    render({ id, children }: IConnectorViewProps): h.JSX.Element {
+        // onDrag={this.onDrag(id)}
+        const { storyContentObjectRegistry } = useContext(Store);
+        const [fromId, fromPort] = StoryGraph.parseNodeId(id);
+        const obj = storyContentObjectRegistry.getValue(fromId);
+        const fromCon = obj?.connectors.get(fromPort);
+
+        return <DraggableDropReceiver id={id} onDrop={(ev: DragEvent) => {
+            ev.preventDefault();
+
+            const _id = ev.dataTransfer?.getData("text");
+            console.log("received drop from", _id);
+            if (_id && obj) {
+                const [toId, toPort] = StoryGraph.parseNodeId(_id);
+                obj.addConnection(
+                    storyContentObjectRegistry,
+                    toId,
+                    fromPort,
+                    toPort,
+                    fromCon?.direction
+                )        
+            //     network = parentObj?.childNetwork
+                
+            //     network.connect(storyContentObjectRegistry, [{
+            //         from: id,
+            //         to: _id,
+            //         id: ["edge-",id,"-",_id].join("")
+            //     }])
+                    }
+                }
+            }
+            onDragStart={() => {
+                    const spanRef = document.getElementById(id);
+                    const rect = spanRef?.getBoundingClientRect();
+                    let xSpan = 0;
+                    let ySpan = 0;
+                    if (rect) {
+                        xSpan = rect.left + (rect.width / 2);
+                        ySpan = rect.top + (rect.height / 2);
+                    } else {
+                        xSpan = 0;
+                        ySpan = 0;
+                    }
+                    // create and dispatch the event
+                    const event = new CustomEvent("ConnectorDragStart", {
+                        detail: {
+                            x: xSpan,
+                            y: ySpan
+                        }
+                    });
+                    document.dispatchEvent(event);
+                }   
+            }>
+            <span id={id} class={this.class}>{children}</span>
+        </DraggableDropReceiver>
     }
 
     componentWillUnmount(): void {

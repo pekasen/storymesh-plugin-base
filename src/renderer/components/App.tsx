@@ -1,14 +1,34 @@
 import { h } from "preact";
 
 import { Header } from './Header';
-import { Window, WindowContent } from "./Window";
+import { ThemedWindowContent, Window } from "./Window";
 import { Store } from '..';
-import { useContext } from 'preact/hooks';
+import { useContext, useEffect, useState } from 'preact/hooks';
 import { EditorPaneGroup } from './EditorPaneGroup';
+import { NotificationView } from './NotificationView/NotificationView';
+import { reaction } from 'mobx';
 
 export const App = (): h.JSX.Element => {
-
+    const [, setState] = useState({});
     const store = useContext(Store);
+    useEffect(() => {
+        const disposer = reaction(
+            () => [
+                // doesn't ever trigger, remove:
+                // store,
+                // TODO: defer these both reactions to the appropriate component
+                store.uistate.windowProperties.title,
+                store.userPreferences.theme],
+            (root) => {
+                console.log("changed@root", root);
+                setState({})
+            }
+        )
+
+        return () => {
+            disposer();
+        }
+    });
 
     return <Window>
             <Header
@@ -30,8 +50,9 @@ export const App = (): h.JSX.Element => {
                 </button>
                 ]}
             ></Header>
-            <WindowContent>
-                <EditorPaneGroup></EditorPaneGroup>
-            </WindowContent>             
+            <ThemedWindowContent>
+                <NotificationView />
+                <EditorPaneGroup />
+            </ThemedWindowContent>             
     </Window>
 }

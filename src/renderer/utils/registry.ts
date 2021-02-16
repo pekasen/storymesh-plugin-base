@@ -10,6 +10,11 @@
 // }
 
 import { action, makeObservable, observable } from 'mobx';
+import { createModelSchema, custom, getDefaultModelSchema, map, ModelSchema, object, serialize, deserialize, mapAsArray } from 'serializr';
+import { IStoryObject } from 'storygraph';
+import { rootStore } from '..';
+import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+// import { deserializeObjectWithSchema } from '../../../node_modules/serializr/lib/core/deserialize';
 import { IItem } from '../components/IItem';
 
 // Crazy stuff, sauce here: https://2ality.com/2020/04/classes-as-values-typescript.html
@@ -145,3 +150,61 @@ export interface IValue<T extends IValue<T>> {
     id: string
     willDeregister?(registry: ValueRegistry<T>): void
 }
+/**
+ * 
+ * @param target 
+ */
+export function AutoValueRegistrySchema<T extends IValue<T>> () : ModelSchema<ValueRegistry<IValue<T>>> {
+    return createModelSchema(ValueRegistry, {
+        registry: mapAsArray(custom(
+        (v, k, obj) => {
+            console.log("getting schema for", v.constructor.name);
+            const _schema = getDefaultModelSchema(v.constructor);
+            if (!_schema) throw("no schema available for "+ v.contructor.name);
+            return serialize(_schema, v);
+        },
+        (jsonVal, context, callback) => {
+            const instance = rootStore.root.pluginStore.getNewInstance(jsonVal.role);
+            if (!instance) throw("Big time failure !!11 while fetching schema for" + jsonVal.role);
+            console.log("getting schema for", instance.constructor.name);
+            const _schema = getDefaultModelSchema(instance.constructor);
+            if (!_schema) throw("no schema present during deserialization for " + context.target.constructor.name);
+            return deserialize(_schema, jsonVal, callback);
+            // return deserializeObjectWithSchema(context, _schema, jsonVal, callback, null);
+        }), "id", {
+            beforeDeserialize: (cb, value) => {
+                if (Array.isArray(value)) {
+                    value.sort((a: IStoryObject, b: IStoryObject) => {
+                        const _aLength = a.childNetwork?.nodes.length
+                        const _bLength = b.childNetwork?.nodes.length
+
+                        return ((_aLength || 0) - (_bLength || 0)) || 0;
+                    })
+                }
+                cb(null, value);
+            },
+            afterDeserialize: (cb, err, newValue, jsonValue, jsonParentVAlue, propNameorIndex, context, propDef) => {
+                // This hook fires after the registry is loaded completly!
+                const registry = newValue as Map<string, AbstractStoryObject>;
+                registry.forEach(value => {
+                    if (value.isContentNode && value.parent !== undefined) {
+                        const parentGraph = registry.get(value.parent)?.childNetwork;
+                        if (parentGraph?.notificationCenter) value.bindTo(parentGraph?.notificationCenter);
+                    }
+                })
+                if (newValue instanceof AbstractStoryObject)
+    
+                // catches edges
+                console.log("caught", newValue, context);
+                cb(err, registry);
+            }
+        })
+    });
+}
+
+export function ValueRegistrySchema<T extends IValue<T>> (target: ModelSchema<T>) : ModelSchema<ValueRegistry<IValue<T>>> {
+    return createModelSchema(ValueRegistry, {
+        registry: map(object(target))
+    });
+}
+// setDefaultModelSchema(ValueRegistry, ValueRegistrySchema);

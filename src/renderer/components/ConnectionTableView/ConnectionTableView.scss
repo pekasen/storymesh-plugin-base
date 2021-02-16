@@ -1,5 +1,7 @@
 table.connection-table {
 
+    transition: color .4s ease;
+
     &, tbody, thead {
         background: transparent;
     }
@@ -7,21 +9,33 @@ table.connection-table {
     th {
         border: none;
         font-weight: bold;
+        @include customize(theme) {
+            color: getValue(text);
+           }
 
         &.flow {
-            color: orange;
+            @include customize(theme) {
+                color: getValue(flow);
+            }
         }
 
         &.data {
-            color: green;
+            @include customize(theme) {
+                color: getValue(data);
+            }
         }
 
         &.reaction {
-            color: royalblue;
+            @include customize(theme) {
+                color: getValue(reaction);
+            }
         }
     }
 
     td {
         border: none;
+        @include customize(theme) {
+            color: getValue(text);
+        }
     }
 }

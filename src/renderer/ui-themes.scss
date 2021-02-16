@@ -2,24 +2,46 @@
 
 $themes: (
   light: (
-    menu-background: #e5e5e5,
-    menu-font: #191919,
-    content-font: #000,
-    node-object-background: #e5e5e5,
-    node-editor-background: #fff,
-    highlight-color: rgb(35, 90, 94),
-    highlight-color-font: #fff,
-    border-color: #252525,
+    menu-background: #d9d9d9,
+    text-background: #b5b5b5,
+    text: #262626,
+    node-area-background: #b5b5b5,
+    node-object-background: #949494,
+    highlight-color: #009485,
+    highlight-color-font: #efefef,
+    border-color: #262626,
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow: #009485,
+    data: #409bff,
+    reaction: rgb(255, 166, 0),
   ),
   dark: (
-    menu-background: linear-gradient(90deg, rgba(62,62,62,1) 0%, rgba(62,62,62,1) 100%),
-    menu-font: #fff,
-    content-font: #000,
-    node-object-background: #fff,
-    node-editor-background: #e5e5e5,
-    highlight-color: salmon,
-    highlight-color-font: #fff,
+    menu-background: #262626,
+    text-background: #4d4d4d,
+    text: #efefef,
+    node-area-background: #4d4d4d,
+    node-object-background: #3b3b3b,
+    highlight-color: #009485,
+    highlight-color-font: #262626,
     border-color: #fff,
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow: #009485,
+    data: #409bff,
+    reaction: rgb(255, 166, 0),
+  ),
+  eggplant: (
+    menu-background: #121622,
+    text-background: #9599ab,
+    text: rgb(255, 255, 255),
+    node-area-background: #a0a5b9,
+    node-object-background: #1f253a,
+    highlight-color: #33d69f,
+    highlight-color-font: #1f253a,
+    border-color: #a0a5b9,
+    //TODO: Replace and also add colors for "warning", "success", ...
+    flow: #009485,
+    data: #409bff,
+    reaction: rgb(255, 166, 0),
   ),
 );
 
@@ -31,8 +53,13 @@ $themes: (
     .#{$prefix}-#{$theme} & {
       $array-map: () !global;
       @each $key, $submap in $map {
-        $value: map-get(map-get($array, $theme), '#{$key}');
-        $array-map: map-merge($array-map, ($key: $value)) !global;
+        $value: map-get(map-get($array, $theme), "#{$key}");
+        $array-map: map-merge(
+          $array-map,
+          (
+            $key: $value,
+          )
+        ) !global;
       }
 
       @content;

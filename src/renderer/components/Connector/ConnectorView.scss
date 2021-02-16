@@ -7,3 +7,85 @@
   border-radius: 50%;
   display: inline-block;
 }
+
+.outer {
+  .data {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: absolute;
+    z-index: 99;
+    border-radius: 50%;
+    @include customize(theme){
+      background: getValue(data);
+    }
+    border: 2px solid;
+    @include customize(theme){
+      border-color: getValue(menu-background);
+    }
+
+    &.in {
+      top: 50%;
+      left: -8px;
+    }
+
+    &.out {
+      top: 50%;
+      right: -8px;
+    }
+  }
+
+  .flow {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: absolute;
+    z-index: 99;
+    border-radius: 50%;
+    transition: background .4s ease-in, border-color .4s ease-in;
+    @include customize(theme){
+      background: getValue(flow);
+    }
+    border: 2px solid;
+    @include customize(theme){
+      border-color: getValue(menu-background);
+    }
+
+    &.in {
+      left: 50%;
+      top: -8px;
+    }
+
+    &.out {
+      left: 50%;
+      bottom: -8px;
+    }
+  }
+
+  .reaction {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: absolute;
+    z-index: 99;
+    border-radius: 50%;
+    transition: background .4s ease-in, border-color .4s ease-in;
+    @include customize(theme){
+      background: getValue(reaction);
+    }
+    border: 2px solid;
+    @include customize(theme){
+      border-color: getValue(menu-background);
+    }
+
+    &.in {
+      left: 50%;
+      top: -8px;
+    }
+
+    &.out {
+      left: 50%;
+      bottom: -8px;
+    }
+  }
+}

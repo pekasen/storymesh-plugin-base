@@ -1,4 +1,6 @@
 import { FunctionalComponent, h } from "preact";
+import { useContext } from "preact/hooks";
+import { Store } from "..";
 
 
 export const Window: FunctionalComponent = ({ children }) => (
@@ -6,5 +8,11 @@ export const Window: FunctionalComponent = ({ children }) => (
 )
 
 export const WindowContent: FunctionalComponent = ({ children })=> (
-    <div class="window-content theme-dark">{children}</div>
+    <div class="window-content theme-eggplant">{children}</div>
 )
+
+export const ThemedWindowContent: FunctionalComponent = ({ children })=> {
+    const { userPreferences } = useContext(Store);
+
+    return <div class={`window-content theme-${userPreferences.theme}`}>{children}</div>
+}

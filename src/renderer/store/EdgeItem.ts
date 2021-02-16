@@ -3,20 +3,20 @@ import Two from 'twojs-ts';
 import { IItem } from '../components/IItem';
 import { MoveableItem } from './MoveableItem';
 
-export interface IEdge extends IItem {
+export interface IEdgeProps extends IItem {
     id: string;
     from: MoveableItem;
     to: MoveableItem;
-    line: Two.Path;
+    line?: Two.Path;
 }
 
-export class EdgeItem implements IEdge {
+export class EdgeItem implements IEdgeProps {
+    id: string;
     from: MoveableItem;
     to: MoveableItem;
-    line: Two.Path;
-    id: string;
+    line?: Two.Path;    
 
-    constructor(props: IEdge) {
+    constructor(props: IEdgeProps) {
         this.from = props.from;
         this.to = props.to;
         this.id = props.id; 

@@ -3,14 +3,17 @@ import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { Store } from '../..';
+import { Container } from '../../../plugins/content/Container';
+import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
+import { EdgeRenderer } from '../EdgeRenderer/EdgeRenderer';
 import { MoveReceiver } from '../Moveable';
 import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
 
 export interface IStoryObjectViewRendererProperties {
-    loadedObject: IStoryObject
+    loadedObject: AbstractStoryObject
     store: RootStore
 }
 
@@ -30,7 +33,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
                 if (!network) throw("network ist not defined!");
             return {
                 id: id,
-                names: network.nodes.map(e => e.name),
+                names: network.nodes.map(id => store.storyContentObjectRegistry.getValue(id)?.name),
                 edges: network.edges.map(e => e.id)
             }},
             (i) => {
@@ -60,8 +63,7 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
 
             if (input) {
                 const [loc, type, id] = input.split(".");
-            
-                console.log("Hello");
+
                 if (id) {
                     switch(loc) {
                         case "internal": {
@@ -89,37 +91,39 @@ export class StoryObjectViewRenderer extends Component<IStoryObjectViewRendererP
         }
         }>
             <div
-                id="hello-world"
+                id="node-editor"
                 onClick={(e) => {
                     const target = e.target as HTMLElement;
-                    if (target.id === "hello-world"){
-                        store.uistate.selectedItems.setSelectedItems([]);
+                    if (target.id === "node-editor"){
+                        store.uistate.selectedItems.clearSelectedItems();
                     }
                 }
             }>
+                <EdgeRenderer></EdgeRenderer>
                 {
                     loadedObject.childNetwork?.nodes
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    // TODO: declare icon in IStoryObject
-                    .map((object) => (
-                        <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <StoryObjectView store={store} object={object}>
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    .map(id => store.storyContentObjectRegistry.getValue(id))
+                    .map((object) => {
+                        if (object) return <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
+                            <StoryObjectView store={store} object={object as AbstractStoryObject}>
                                 <span class={`icon ${object.icon}`}>
                                     <p>{object.name}</p>
                                 </span> 
                             </StoryObjectView>
                         </MoveReceiver>
-                        ))
+                        })
                     }
             </div>
         </DragReceiver>
     }
 
     private makeNewInstance(store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) {
-        const instance = store.storyContentTemplatesRegistry.getNewInstance(input);
-        console.log(instance);
+        const instance = store.pluginStore.getNewInstance(input) as AbstractStoryObject;
+
         if (instance) {
             loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
+            if (instance.role === "internal.content.container") ((instance as Container).setup(store.storyContentObjectRegistry, store.uistate));           
             store.uistate.selectedItems.setSelectedItems([instance.id]);
             store.uistate.moveableItems.register(new MoveableItem(instance.id, coords.x, coords.y));
         }

@@ -6,16 +6,17 @@ export const handleSaveEvent = (menuItem: MenuItem, window: BrowserWindow | unde
     ipcMain.once('request-reply', (e, args) => {
         const isUntitled = args.file === "";
 
-        if(window && isUntitled) {
-            dialog.showSaveDialog(window, {
+        if(window ) {
+            if (isUntitled) dialog.showSaveDialog(window, {
                 title: "Save",
                 filters: [{name: "NGWebS Project", extensions: ["json"]}]
             }).then((v) => {
-                window?.webContents.send('save', {file: v.filePath})
+                window.webContents.send('save', {file: v.filePath})
             })
-        } else {
-            window?.webContents.send('save', {})
-        }
+            else {
+                window?.webContents.send('save', {})
+            }
+        } 
     });    
 };
 

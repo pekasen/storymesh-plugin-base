@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { createModelSchema, list, primitive } from 'serializr';
 
 export interface ISelectableProps {
     selectedItems: SelectedItemStore
@@ -19,6 +20,10 @@ export class SelectedItemStore {
         this.selectedItemIds = ids;
     }
 
+    clearSelectedItems(): void {
+        this.selectedItemIds.length = 0;
+    }
+
     addToSelectedItems(id: string): void {
         if (!this.isSelected(id)) this.selectedItemIds.push(id)
     }
@@ -26,6 +31,12 @@ export class SelectedItemStore {
     removeFromSelectedItems(id: string): void {
         if (this.isSelected(id)) this.selectedItemIds.splice(
             this.selectedItemIds.findIndex(e => e === id), 1
+        )
+    }
+
+    removeAllEdgesFromSelectedItems(): void {
+        this.selectedItemIds.splice(
+            this.selectedItemIds.findIndex(e => e.startsWith("edge."))
         )
     }
 
@@ -45,3 +56,7 @@ export class SelectedItemStore {
         return this.selectedItemIds
     }
 }
+
+export const SelectedItemStoreSchema = createModelSchema(SelectedItemStore, {
+    selectedItems: list(primitive())
+});

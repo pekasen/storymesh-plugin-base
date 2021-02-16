@@ -1,11 +1,12 @@
 /* ==================== OBJECT RENDERER ===================== */
 
-#hello-world {
+#node-editor {
     height: 100%;
     width: auto;
     position: relative;
-    overflow: scroll;    
+    overflow: scroll;  
+    transition: background .4s ease-in;  
     @include customize(theme) {
-        background: getValue(node-editor-background);
+        background: getValue(node-area-background);
        }
 }

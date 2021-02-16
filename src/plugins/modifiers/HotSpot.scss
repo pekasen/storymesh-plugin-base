@@ -8,10 +8,10 @@
     height: 100%;
 
     circle {
-      background-color: transparent;
+      fill: transparent;
 
       &.debug {
-        fill: red;
+        stroke: red;
       }
     }
   }

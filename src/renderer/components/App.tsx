@@ -13,7 +13,12 @@ export const App = (): h.JSX.Element => {
     const store = useContext(Store);
     useEffect(() => {
         const disposer = reaction(
-            () => [store, store.uistate.windowProperties.title, store.userPreferences.theme],
+            () => [
+                // doesn't ever trigger, remove:
+                // store,
+                // TODO: defer these both reactions to the appropriate component
+                store.uistate.windowProperties.title,
+                store.userPreferences.theme],
             (root) => {
                 console.log("changed@root", root);
                 setState({})
@@ -47,7 +52,7 @@ export const App = (): h.JSX.Element => {
             ></Header>
             <ThemedWindowContent>
                 <NotificationView />
-                <EditorPaneGroup></EditorPaneGroup>
+                <EditorPaneGroup />
             </ThemedWindowContent>             
     </Window>
 }

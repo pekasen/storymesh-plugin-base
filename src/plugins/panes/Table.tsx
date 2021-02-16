@@ -19,20 +19,20 @@ interface ITableOptions {
 
 export class HotSpotTableMenuItem implements IMenuItemRenderer {
     render(item: IMenuTemplate<HotSpot[], ITableOptions>): JSX.Element {
-        const [, setState] = useState({});
+        // const [, setState] = useState({});
 
-        useEffect(() => {
-            const reactionDisposer = reaction(
-                () => {
-                    return [...item.value()]
-                },
-                () => setState({})
-            );
+        // useEffect(() => {
+        //     const reactionDisposer = reaction(
+        //         () => {
+        //             return [...item.value()]
+        //         },
+        //         () => setState({})
+        //     );
 
-            return () => {
-                reactionDisposer();
-            };
-        });
+        //     return () => {
+        //         reactionDisposer();
+        //     };
+        // });
 
         return <div class="form-group-item">
             <label>HotSpots</label>
@@ -82,7 +82,6 @@ export class HotSpotTableMenuItem implements IMenuItemRenderer {
                 }
                 </tbody>
             </table>
-            
         </div>
     }
 }

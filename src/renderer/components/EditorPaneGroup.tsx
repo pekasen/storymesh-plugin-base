@@ -32,9 +32,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
 
     if (loadedItem) return <HorizontalPaneGroup>
         <ResizablePane paneState={store.uistate.windowProperties.sidebarPane} resizable="right" classes={["sidebar"]}>
-            <ItemPropertiesView
-                store={store}>
-            </ItemPropertiesView>
+            <ItemPropertiesView />
         </ResizablePane>
         <Pane>
             <VerticalPaneGroup>

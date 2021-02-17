@@ -128,9 +128,9 @@ export class EdgeRenderer extends Component {
 
         this.disposeReactionSelectedEdges = reaction(
             () => ([this.store.uistate.selectedItems.ids, this.store.uistate.selectedItems.ids.length]),
-            () => {
+            () => {  
                 this.setState({});
-                console.log("selected items changed", this.store.uistate.selectedItems.ids.length);
+                //console.log("selected items changed", this.store.uistate.selectedItems.ids.length);
                 const loadedObject = this.store.storyContentObjectRegistry.getValue(this.store.uistate.loadedItem);
                 if (!loadedObject)
                     throw ("Undefined loaded object");
@@ -140,10 +140,10 @@ export class EdgeRenderer extends Component {
                     if (edge && edge.from && edge.to) {
                         const edgeLine = this.edges.get(edge.id);  
                         const edgeFound = this.store.uistate.selectedItems.ids.find((id) => id == edge.id);
-                        console.log(edgeFound);
+                        //console.log(edgeFound);
                         if (edgeFound && edgeLine)  {
                             edgeLine[0].addClass("selected");
-                            console.log("edge selected");
+                           // console.log("edge selected");
                         }
                     }
                 });
@@ -151,7 +151,7 @@ export class EdgeRenderer extends Component {
         );
 
         document.addEventListener("ConnectorDragStart", (customEvent: Event) => {
-            console.log("ConnectorDragStart");
+            //console.log("ConnectorDragStart");
             const e = customEvent as CustomEvent;
             const mouseMove = (ev: MouseEvent) => 
             { 
@@ -171,7 +171,7 @@ export class EdgeRenderer extends Component {
 
         document.addEventListener("SelectionDragStart", (customEvent: Event) => {            
             const e = customEvent as CustomEvent;            
-            console.log("SelectionDragStart", e.detail.x, e.detail.y);   
+            //console.log("SelectionDragStart", e.detail.x, e.detail.y);   
 
             const mouseMove = (ev: MouseEvent) => 
             {

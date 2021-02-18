@@ -2,12 +2,14 @@ import { FunctionalComponent, FunctionComponent, h } from "preact";
 import { runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
-import { DataConnectorInPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+
+import { QuillDeltaToHtmlConverter }  from "quill-delta-to-html"; 
 
 /**
  * Our first little dummy PlugIn
@@ -15,11 +17,14 @@ import { createModelSchema } from 'serializr';
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 class _TextObject extends StoryObject {
-    
+
+    deltaConverter: QuillDeltaToHtmlConverter;
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: any;
+    public userDefinedProperties: {
+        tag: string
+    };
     public content: IContent;
     public childNetwork?: StoryGraph | undefined;
     public icon: string;
@@ -114,6 +119,12 @@ class _TextObject extends StoryObject {
             if (!Elem) {
                 Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
             }
+
+            const cfg = {};
+            this.deltaConverter = new QuillDeltaToHtmlConverter(args.content?.resource, cfg);
+  
+            console.log("Delta convert", this.deltaConverter.convert(), args.content?.resource);
+
             const p = <Elem>{args.content?.resource}</Elem>;
             p.props.contenteditable = true;
             

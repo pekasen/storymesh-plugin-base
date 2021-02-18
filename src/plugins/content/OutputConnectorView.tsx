@@ -86,7 +86,7 @@ export class OutputConnectorView extends StoryObject {
             ) {
                 const newCon = _conn.reverse();
                 newCon.id = _conn.id;
-                if (this.notificationCenter !== undefined) newCon.bindTo(this.notificationCenter);
+                if (this.notificationCenter !== undefined) newCon.bindTo(this.notificationCenter, this.id);
                 this._connectors.set(newCon.id, newCon);
             }
         });

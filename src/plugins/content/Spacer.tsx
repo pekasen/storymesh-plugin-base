@@ -1,8 +1,8 @@
 import { FunctionComponent, h } from "preact";
 import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 
-import { action, makeObservable, observable } from 'mobx';
-import { StoryGraph } from 'storygraph';
+import { action, computed, makeObservable, observable } from 'mobx';
+import { FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
@@ -15,29 +15,44 @@ class _Spacer extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
-    public userDefinedProperties: unknown;
+    public userDefinedProperties: {
+        vspace: number
+    };
     public childNetwork?: StoryGraph;
-    public vspace: number;
+    // public vspace: number;
+    public icon: string
+    protected _connectors: Map<string, IConnectorPort>;
 
     constructor() {
         super();
-        this.makeDefaultConnectors();
+        // this.makeDefaultConnectors();
         this.name = "Spacer";
         this.role = "internal.content.spacer";
         this.isContentNode = true;
-        this.userDefinedProperties = {};
+        this.userDefinedProperties = {
+            vspace: 10
+        };
+        // this.vspace = 10;
+        this.icon = _Spacer.defaultIcon;
+        const _in = new FlowConnectorInPort();
+        const _out = new FlowConnectorOutPort();
+        _in.associated = _out.id
+        _out.associated = _in.id;
 
-        this.vspace = 10;
+        this._connectors = new Map([
+            [_in.id, _in],
+            [_out.id, _out],
+        ] as [string, IConnectorPort][]);
 
         makeObservable(this, {
             name: observable,
-            userDefinedProperties: observable,
-            //connectors: observable.shallow,
-            vspace: observable,
+            userDefinedProperties: observable.deep,
+            // vspace: observable,
             updateName: action,
-            updateVSpace: action
+            updateVSpace: action,
+            connectors: computed,
+            menuTemplate: computed
         });
-
     }
 
     public get menuTemplate(): IMenuTemplate[] {
@@ -51,9 +66,10 @@ class _Spacer extends StoryObject {
                     max: 100,
                     formatter: (val: number) => `${val}%`
                 },
-                value: () => this.vspace,
+                value: () => this.userDefinedProperties.vspace,
                 valueReference: (vspace: number) => this.updateVSpace(vspace)
-            }
+            },
+            ...connectionField(this)
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
         return ret;
@@ -64,16 +80,15 @@ class _Spacer extends StoryObject {
     }
 
     public updateVSpace(vspace: number): void {
-        this.vspace = vspace;
+        this.userDefinedProperties.vspace = vspace;
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({ }) => {
-            return <div class="spacer" style={`height:${this.vspace}vh; width: 100%;`}></div>
+        const Comp: FunctionComponent<INGWebSProps> = ({userDefinedProperties}) => {
+            return <div class="spacer" style={`height:${userDefinedProperties.vspace}vh; width: 100%;`}></div>
         }
         return Comp
     }
-
 }
 
 createModelSchema(_Spacer, {})

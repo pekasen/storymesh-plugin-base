@@ -1,5 +1,4 @@
 import { h } from "preact";
-import { useEffect, useState } from "preact/hooks";
 import { createModelSchema, object } from "serializr";
 import { IConnectorPort, ReactionConnectorInPort } from "storygraph";
 import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
@@ -7,53 +6,38 @@ import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
 export class TestModifier extends HMTLModifier {
 
+    public name = "Transition"
     public role = "internal.modifier.test";
+    public data = {
+        toggle: true
+    }
     private _trigFun = () => {
         console.log("Hello", this);
-        this._reactionStack.forEach(e => e());
+        this.data.toggle = !this.data.toggle
+        // request rerendering
+        this._connector.notificationCenter?.push(this._connector.parent+"/rerender")
     }
     private _connector = new ReactionConnectorInPort("reaction-in", this._trigFun);
-    private _reactionStack: (() => void)[] = [];
 
     modify(element: h.JSX.Element): h.JSX.Element {
-        const Wrapper = () => {
-            const [state ,setState] = useState({
-                toggle: true
-            });
-            useEffect(() => {
-                const listener = () => {
-                    console.log("Hello event!");
-                    setState({
-                        toggle: !state.toggle
-                    });
-                };
-                this._reactionStack.push(listener);
-                this._connector.handleNotification = this._trigFun;
-                return () => {
-                    this._reactionStack.splice(
-                        this._reactionStack.indexOf(listener, 1)
-                    );
-                }
-            });
-
-            // TODO: <style>-Components could be collected in a central place near the header to make sure that the css is actually evaluated.
-            // this solution worked and then suddenly stopped.
-            return <div id={this.id} class={(element.props.class ? element.props.class + " " : "") + (state.toggle ? "active" : "inactive")}>
-                {element}
-<style>{`#${this.id} {
+        this._connector.handleNotification = this._trigFun;
+        const Style = () => <style  type="text/css" scoped>{`#_${this.id} {
     transition: transform 2s ease-out;
 }
-#${this.id}.active {
+#_${this.id}.active {
     transform: translate(-500px, 0px)
 }
-#${this.id}.inactive {
+#_${this.id}.inactive {
     transform: translate(0px, 0px)
 }
 `}</style>
-            </div>
-        }
 
-        return <Wrapper></Wrapper>
+        return <div>
+            <Style />
+            <div id={`_${this.id}`} class={(this.data.toggle) ? "active" : "inactive"}>
+                {element}
+            </div>
+        </div>
     }
 
     requestConnectors(): [string, IConnectorPort][] {

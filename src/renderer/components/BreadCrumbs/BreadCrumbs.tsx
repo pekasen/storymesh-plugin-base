@@ -1,6 +1,8 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from "preact";
+import { useContext } from 'preact/hooks';
 import { IStoryObject } from "storygraph";
+import { Store } from '../..';
 import { RootStore } from "../../store/rootStore";
 
 interface IBreadCrumbPropeties {
@@ -17,20 +19,24 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
 
          // TODO: this reaction increases it's call count with each call!!
         this.reactionDisposer = reaction(
-            () => [...props.store.uistate.selectedItems.ids],
-            () => {
-                this.setState({});
+            () => props.store.uistate.selectedItems.ids,
+            (ids: string[]) => {
+                this.setState({
+                    ids: ids
+                });
             }
         );
     }
 
-    render({ store, loadedObject }: IBreadCrumbPropeties): h.JSX.Element {
+    render({ loadedObject }: IBreadCrumbPropeties, { ids }): h.JSX.Element {
+        const { storyContentObjectRegistry, uistate } = useContext(Store);
+
         const recursePath = ( obj: IStoryObject ): IStoryObject[] => {
             const res: IStoryObject[] = [];
             res.push(obj);
    
             if (obj && obj.parent) {
-                const rObj = store.storyContentObjectRegistry.getValue(obj.parent);
+                const rObj = storyContentObjectRegistry.getValue(obj.parent);
                 if (rObj) {
                     const r = recursePath(rObj);
                     if (r) res.push(...r)
@@ -47,15 +53,15 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
                     path?.reverse().map(e => (
                         <li
                             class="item"
-                            onClick={() => store.uistate.selectedItems.setSelectedItems([e.id])}
-                            onDblClick={() => store.uistate.setLoadedItem(e.id)}>
+                            onClick={() => uistate.selectedItems.setSelectedItems([e.id])}
+                            onDblClick={() => uistate.setLoadedItem(e.id)}>
                             {e.name}
                         </li>
                     ))
                 }
                 {
                     (() => {
-                        const selectedItems = store.uistate.selectedItems.size;
+                        const selectedItems = uistate.selectedItems.size;
 
                         switch(selectedItems) {
                             case 0: {
@@ -63,11 +69,11 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
                             }
                             case 1: {
                                 return <li class="item selected">{
-                                    store.storyContentObjectRegistry.getValue(store.uistate.selectedItems.first)?.name
+                                    storyContentObjectRegistry.getValue(uistate.selectedItems.first)?.name
                                     }</li>
                             }
                             default: {
-                                return <li class="item selected">Multiselection</li>
+                                return <li class="item selected">{`${selectedItems} items`}</li>
                             }
                         }
                     })()

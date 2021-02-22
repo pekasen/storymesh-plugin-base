@@ -1,4 +1,4 @@
-import { FunctionalComponent, FunctionComponent, h } from "preact";
+import { FunctionComponent, h } from "preact";
 import { runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
@@ -8,8 +8,8 @@ import { connectionField, dropDownField, nameField } from '../helpers/plugInHelp
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-
-import { QuillDeltaToHtmlConverter }  from "quill-delta-to-html"; 
+import Delta from "quill-delta";
+import Op from "quill-delta/dist/Op";
 
 /**
  * Our first little dummy PlugIn
@@ -18,7 +18,6 @@ import { QuillDeltaToHtmlConverter }  from "quill-delta-to-html";
  */
 class _TextObject extends StoryObject {
 
-    deltaConverter: QuillDeltaToHtmlConverter;
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -101,32 +100,52 @@ class _TextObject extends StoryObject {
     }
 
     public getComponent() {
+        
+        function renderDelta (delta: Delta) {
+            if (!delta.ops) return <p></p>
+            return delta.ops.map((op: Op) => {
+                // handle newline chars
+            
+                // handle attributes
+                if (op.attributes !== undefined) {
+                    return Object.keys(op.attributes).reduce((p, v) => {
+                    switch(v) {
+                    case "bold": return <b>{p}</b>;
+                    case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>v</a>;
+                    case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
+                    }
+                    }, op.insert);
+                    // else handle text content
+                } else return op.insert
+            });
+        }
+  
+
         const Comp: FunctionComponent<INGWebSProps> = (args => {
             console.log("rendering", args);
 
-            const elemMap = new Map<string, FunctionalComponent>([
-                ["h1", ({children, ...props}) => (<h1 {...props}>{children}</h1>)],
-                ["h2", ({children, ...props}) => (<h2 {...props}>{children}</h2>)],
-                ["h3", ({children, ...props}) => (<h3 {...props}>{children}</h3>)],
-                ["b", ({children, ...props}) => (<b {...props}>{children}</b>)],
-                ["p", ({children, ...props}) => (<p {...props}>{children}</p>)],
-            ]);
-            let Elem: FunctionalComponent | undefined;
+            // const elemMap = new Map<string, FunctionalComponent>([
+            //     ["h1", ({children, ...props}) => (<h1 {...props}>{children}</h1>)],
+            //     ["h2", ({children, ...props}) => (<h2 {...props}>{children}</h2>)],
+            //     ["h3", ({children, ...props}) => (<h3 {...props}>{children}</h3>)],
+            //     ["b", ({children, ...props}) => (<b {...props}>{children}</b>)],
+            //     ["p", ({children, ...props}) => (<p {...props}>{children}</p>)],
+            // ]);
+            // let Elem: FunctionalComponent | undefined;
 
-            if (args.userDefinedProperties && args.userDefinedProperties.tag) {
-                Elem = elemMap.get(args.userDefinedProperties.tag);
-            }
-            if (!Elem) {
-                Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
-            }
+            // if (args.userDefinedProperties && args.userDefinedProperties.tag) {
+            //     Elem = elemMap.get(args.userDefinedProperties.tag);
+            // }
+            // if (!Elem) {
+            //     Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
+            // }
 
-            const cfg = {};
-            this.deltaConverter = new QuillDeltaToHtmlConverter(args.content?.resource, cfg);
-  
-            console.log("Delta convert", this.deltaConverter.convert(), args.content?.resource);
+           
 
-            const p = <Elem>{args.content?.resource}</Elem>;
-            p.props.contenteditable = true;
+            // const p = <Elem>{args.content?.resource}</Elem>;
+            // p.props.contenteditable = true;
+
+            const p = <p>{renderDelta(new Delta(args.content?.resource))}</p>
             
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));

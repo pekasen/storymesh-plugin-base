@@ -28,13 +28,6 @@ export class TextAreaMenuItem implements IMenuItemRenderer {
                 },
                 theme: 'snow'  // or 'bubble'
               }); 
-              this.quill.on('text-change', (delta: Delta, oldDelta: Delta, source: string) => {
-                if (source == 'api') {
-                  console.log("An API call triggered this change.");
-                } else if (source == 'user') {
-                  console.log("A user action triggered this change.");
-                }
-              });
               
               this.disposeReaction = reaction(
                 () => ([...this.store.uistate.selectedItems.ids, this.store.uistate.selectedItems.ids.length, this.quill]), // how to watch for quill only?
@@ -80,18 +73,13 @@ export class TextAreaMenuItem implements IMenuItemRenderer {
 
     updateText(item: IMenuTemplate): void {
       setTimeout( () =>
-      { 
-        
+      {         
           this.quill.setContents(item.value());
-     
-
-        this.quill.on('text-change', (delta: Delta, oldDelta: Delta, source: string) => {
-    
-
-          item.valueReference(this.quill.getContents());   
+          this.quill.on('text-change', (delta: Delta, oldDelta: Delta, source: string) => {
+            item.valueReference(this.quill.getContents());   
         });
                 
-      }, 50);
+      }, 120);
     }
 
     render(item: IMenuTemplate): JSX.Element {

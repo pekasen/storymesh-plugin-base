@@ -1,4 +1,4 @@
-import { FunctionalComponent, FunctionComponent, h } from "preact";
+import { FunctionalComponent, FunctionComponent, h, JSX } from "preact";
 import { runInAction } from "mobx";
 import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
@@ -8,17 +8,13 @@ import { connectionField, dropDownField, nameField } from '../helpers/plugInHelp
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-
-import { QuillDeltaToHtmlConverter }  from "quill-delta-to-html"; 
-
+import Delta from "quill";
 /**
  * Our first little dummy PlugIn
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 class _TextObject extends StoryObject {
-
-    deltaConverter: QuillDeltaToHtmlConverter;
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -100,10 +96,27 @@ class _TextObject extends StoryObject {
         if (this.content) this.content.resource = text;
     }
 
+    renderDelta (delta: Delta): any {
+        return delta.ops.map((op: any) => {
+          // handle newline chars
+      
+          // handle attributes
+          if (op.attributes !== undefined) {
+            return Object.keys(op.attributes).reduce((p, v) => {
+              switch(v) {
+              case "bold": return <b>{p}</b>;
+              case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
+              case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
+              }
+            }, op.insert);
+            // else handle text content
+          } else return op.insert
+        });
+      }
+
     public getComponent() {
         const Comp: FunctionComponent<INGWebSProps> = (args => {
-            console.log("rendering", args);
-
+            let p: h.JSX.Element;
             const elemMap = new Map<string, FunctionalComponent>([
                 ["h1", ({children, ...props}) => (<h1 {...props}>{children}</h1>)],
                 ["h2", ({children, ...props}) => (<h2 {...props}>{children}</h2>)],
@@ -120,13 +133,15 @@ class _TextObject extends StoryObject {
                 Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
             }
 
-            const cfg = {};
-            this.deltaConverter = new QuillDeltaToHtmlConverter(args.content?.resource, cfg);
-  
-            console.log("Delta convert", this.deltaConverter.convert(), args.content?.resource);
+            if (args.content?.resource && args.content?.resource.ops) {
+                const thing = this.renderDelta(args.content?.resource);
 
-            const p = <Elem>{args.content?.resource}</Elem>;
-            p.props.contenteditable = true;
+                console.log("rendering", thing);
+                p = <Elem>{thing}</Elem>;
+            } else {
+                p = <Elem><div>{args.content?.resource}</div></Elem>;
+            }
+            //p.props.contenteditable = true;
             
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));

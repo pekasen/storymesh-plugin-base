@@ -10,14 +10,12 @@ import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import Delta from "quill-delta";
 import Op from "quill-delta/dist/Op";
-
 /**
  * Our first little dummy PlugIn
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 class _TextObject extends StoryObject {
-
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -99,6 +97,24 @@ class _TextObject extends StoryObject {
         if (this.content) this.content.resource = text;
     }
 
+    // renderDelta (delta: Delta): h.JSX.Element {
+    //     return delta.ops.map((op: Op) => {
+    //       // handle newline chars
+      
+    //       // handle attributes
+    //       if (op.attributes !== undefined) {
+    //         return Object.keys(op.attributes).reduce((p, v) => {
+    //           switch(v) {
+    //           case "bold": return <b>{p}</b>;
+    //           case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
+    //           case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
+    //           }
+    //         }, op.insert);
+    //         // else handle text content
+    //       } else return op.insert
+    //     });
+    //   }
+
     public getComponent() {
         
         function renderDelta (delta: Delta) {
@@ -145,7 +161,7 @@ class _TextObject extends StoryObject {
             // const p = <Elem>{args.content?.resource}</Elem>;
             // p.props.contenteditable = true;
 
-            const p = <p>{renderDelta(new Delta(args.content?.resource))}</p>
+            const p = <p>{renderDelta(new Delta(args.content?.resource as unknown as Op[]))}</p>
             
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));

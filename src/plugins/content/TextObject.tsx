@@ -1,6 +1,6 @@
 import { FunctionComponent, h } from "preact";
 import { runInAction } from "mobx";
-import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
+import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
@@ -10,6 +10,7 @@ import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import Delta from "quill-delta";
 import Op from "quill-delta/dist/Op";
+import { MenuTemplate, RichText } from "preact-sidebar";
 /**
  * Our first little dummy PlugIn
  * 
@@ -58,15 +59,16 @@ class _TextObject extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
-            {
-                label: "Content",
-                type: "textarea",
-                value: () => this.content.resource,
-                valueReference: (text: string) => {this.updateText(text)}
-            },
+            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg)),
+            // {
+            //     label: "Content",
+            //     type: "textarea",
+            //     value: () => this.content.resource,
+            //     valueReference: (text: string) => {this.updateText(text)}
+            // },
             ...dropDownField(
                 this,
                 () => ["h1", "h2", "h3", "b", "p"],

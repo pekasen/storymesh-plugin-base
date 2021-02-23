@@ -3,7 +3,7 @@ import { Component, createRef, h, RefObject } from "preact";
 import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
 import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { Button, MenuTemplate, Table } from "preact-sidebar";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
 
@@ -57,6 +57,10 @@ export class HotSpot {
     public get name(): string {
         return `${this._name}${(HotSpot.numOfInstances > 0) ? "-" + HotSpot.numOfInstances : ""}`
     }
+
+    public set name(name: string) {
+        this._name = name
+    }
 }
 
 class CircleHotSpot extends HotSpot {
@@ -66,10 +70,6 @@ class CircleHotSpot extends HotSpot {
     public get name() {
         if (this._name === undefined) return "CircleHotSpot" + this._num;
         else return this._name;
-    }
-
-    public set name(name: string) {
-        this._name = name
     }
 
     constructor(x?:number, y?: number, r?: number) {
@@ -189,67 +189,75 @@ export class HTMLHotSpotModifier extends HMTLModifier {
         )
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
+    public get menuTemplate(): MenuTemplate[] {
         return [
             ...super.menuTemplate,
-            {
-                label: "Hotspots",
-                type: "hotspot-table",
-                value: () => this.data.hotspots,
-                valueReference: () => (null),
-                options: {
+            new Table<CircleHotSpot>(
+                "Hotspots",
+                {
                     columns: [
                         {
                             name: "Name",
-                            type: "string",
+                            type: "",
                             editable: true,
-                            property: "name"
-                        },
-                        {
-                            name: "X",
-                            type: "number",
-                            editable: true,
-                            property: "x"
+                            property: "name",
+                            setter: (arg, property, value: HotSpot) => {
+                                runInAction(() => {
+                                    if (typeof arg === "string") {
+                                        value.name = arg;
+                                    }
+                                });
+                            }
                         },
                         {
                             name: "Y",
-                            type: "number",
+                            type: "",
                             editable: true,
-                            property: "y"
+                            property: "x",
+                            setter: (arg, property, value: HotSpot) => {
+                                runInAction(() => {
+                                    if (typeof arg === "number") {
+                                        value.x = arg;
+                                    }
+                                });
+                            }
                         },
                         {
-                            name: "R",
-                            type: "number",
+                            name: "Y",
+                            type: "",
                             editable: true,
-                            property: "radius"
+                            property: "y",
+                            setter: (arg, property, value: HotSpot) => {
+                                runInAction(() => {
+                                    if (typeof arg === "number") {
+                                        value.y = arg;
+                                    }
+                                });
+                            }
                         },
                         {
-                            name: "delete",
-                            type: "button",
+                            name: "Radius",
+                            type: "",
                             editable: true,
-                            property: (e: HotSpot) => {
-                                this.removeHotSpot(e);
+                            property: "radius",
+                            setter: (arg, property, value) => {
+                                runInAction(() => {
+                                    if (typeof arg === "number") {
+                                        value.radius = arg;
+                                    }
+                                });
                             }
                         }
                     ]
-                }
-            },
-            {
-                label: "Add HotSpot",
-                type: "button",
-                value: () => undefined,
-                valueReference: () => this.addHotSpot(new CircleHotSpot())
-            },
-            {
-                label: "Toggle DEBUG",
-                type: "button",
-                value: () => undefined,
-                valueReference: () => {
-                    runInAction(() => {
-                        this.data.hotspots.forEach(e => e.debug = !e.debug);
-                    });
-                }
-            }
+                },
+                () => this.data.hotspots as CircleHotSpot[]
+            ),
+            new Button("Add HotSpot", () => this.addHotSpot(new CircleHotSpot())),
+            new Button("Toggle Vis.", () => {
+                runInAction(() => {
+                    this.data.hotspots.forEach(e => e.debug = !e.debug);
+                });
+            })
         ];
     }
 

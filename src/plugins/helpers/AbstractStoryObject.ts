@@ -1,9 +1,10 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
-import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
+import { IPlugIn, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
+import { Card, MenuTemplate } from "preact-sidebar";
 import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, map, object, optional, primitive, serialize } from 'serializr';
 import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
 import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
@@ -150,15 +151,22 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         if (this.childNetwork) this.childNetwork.willDeregister(registry)
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [];
-        if (this.modifiers.length !== 0) {
-            ret.push(
-                ...this.modifiers.
-                map(e => e.menuTemplate).
-                reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => (p.concat(...e)))
-            );
-        }
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [];
+        // if (this.modifiers.length !== 0) {
+        //     // ret.push(
+        //     //     ...this.modifiers.
+        //     //     map(e => e.menuTemplate).
+        //     //     reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => (p.concat(...e)))
+        //     // );
+        // }
+        ret.push(
+            ...this.modifiers.map(modifier => (
+                new Card(modifier.name, {
+                    items: modifier.menuTemplate
+                })
+            ))
+        );
         return ret;
     }
 

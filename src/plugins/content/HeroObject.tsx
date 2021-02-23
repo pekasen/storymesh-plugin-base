@@ -1,5 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { INGWebSProps, } from "../../renderer/utils/PlugInClassRegistry";
 import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
@@ -8,6 +8,7 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+import { HSlider, MenuTemplate, Text } from "preact-sidebar";
 
 class _HeroObject extends StoryObject {
     public name: string;
@@ -63,38 +64,20 @@ class _HeroObject extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
-            {
-                label: "url",
-                value: () => this.content.resource,
-                valueReference: (url: string) => this.updateImageURL(url),
-                type: "text"
+            new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateImageURL(url)),
+            new Text("Alt-Text", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
+            new Text("Headline", { defaultValue: "" }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
+            new HSlider("Headline Width", {
+                min: 0,
+                max: 100,
+                formatter: (val: number) => `${val}%`
             },
-            {
-                label: "Alt-Text",
-                type: "text",
-                value: () => this.content.altText,
-                valueReference: (altText: string) => { this.updateAltText(altText) }
-            },
-            {
-                label: "Headline",
-                type: "textarea",
-                value: () => this.userDefinedProperties.text,
-                valueReference: (text: string) => { this.updateHeadline(text) }
-            },
-            {
-                label: "Headline width",
-                type: "hslider",
-                options: {
-                    min: 0,
-                    max: 100,
-                    formatter: (val: number) => `${val}%`
-                },
-                value: () => this.userDefinedProperties.headlineWidth,
-                valueReference: (headlineWidth: number) => this.updateHeadlineWidth(headlineWidth)
-            },
+            () => this.userDefinedProperties.headlineWidth,
+            (headlineWidth: number) => this.updateHeadlineWidth(headlineWidth)
+            ),
             ...dropDownField(
                 this,
                 () => ["grayscale", "invert", "hue-rotate", "blur", "contrast"],
@@ -104,17 +87,16 @@ class _HeroObject extends StoryObject {
                     runInAction(() => this.userDefinedProperties.filterType = selection), this.updateValueType();
                 }
             ),
-            {
-                label: "Filter Amount",
-                type: "hslider",
-                options: {
+            new HSlider(
+                "Filter Amount",
+                {
                     min: 0,
                     max: 100,
                     formatter: (val: number) => `${val}${this.userDefinedProperties.filterValue}`
                 },
-                value: () => this.userDefinedProperties.filterAmount,
-                valueReference: (filterAmount: number) => this.updateFilterAmount(filterAmount)
-            },
+                () => this.userDefinedProperties.filterAmount,
+                (filterAmount: number) => this.updateFilterAmount(filterAmount)
+            ),
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);

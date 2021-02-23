@@ -1,6 +1,6 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, map, object, primitive } from "serializr";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { HSlider, MenuTemplate } from "preact-sidebar";
 import { exportClass } from "../helpers/exportClass";
 import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
 import { IConnectorPort, ModifierType } from "storygraph";
@@ -74,7 +74,7 @@ export class CSSGriditemModifier extends CSSModifier {
         })
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
+    public get menuTemplate(): MenuTemplate[] {
         return [
             ...super.menuTemplate,
             // {
@@ -121,22 +121,36 @@ export class CSSGriditemModifier extends CSSModifier {
         return super.getRenderingProperties;
     }
 
-    private makeSlider(key: Size): IMenuTemplate {
-        return {
-            label: key + " Width",
-            value: () => this.data.classMap.get(key),
-            valueReference: (value: string) => {
-                const num = Number(value);
-
-                runInAction(() => this.data.classMap.set(key, num))
-            },
-            type: "hslider",
-            options: {
+    private makeSlider(key: Size): MenuTemplate {
+        return new HSlider(
+            key + " Width",
+            {
                 min: 1,
                 max: 12,
-                formatter: (val: number) => `${val} Column${(val === 1) ? "" : "s"}`
+                formatter: (val: string | number) => `${val} Column${(val === 1) ? "" : "s"}`
+            },
+            () => this.data.classMap.get(key) ?? 12,
+            (value: number) => {
+                const num = Number(value);
+                runInAction(() => this.data.classMap.set(key, num))
             }
-        }
+        )
+        
+        // {
+        //     label: key + " Width",
+        //     value: () => this.data.classMap.get(key),
+        //     valueReference: (value: string) => {
+        //         const num = Number(value);
+
+        //         runInAction(() => this.data.classMap.set(key, num))
+        //     },
+        //     type: "hslider",
+        //     options: {
+        //         min: 1,
+        //         max: 12,
+        //         formatter: (val: number) => `${val} Column${(val === 1) ? "" : "s"}`
+        //     }
+        // }
     }
 }
 

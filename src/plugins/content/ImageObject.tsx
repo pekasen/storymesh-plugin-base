@@ -1,6 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-
+import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
@@ -9,6 +8,8 @@ import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { useEffect, useState } from "preact/hooks";
+import { MenuTemplate, Text } from "preact-sidebar";
+import { ThinSprite } from "babylonjs/Sprites/thinSprite";
 
 /**
  * Our first little dummy PlugIn
@@ -55,15 +56,10 @@ class _ImageObject extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
-            {
-                label: "url",
-                value: () => this.content.resource,
-                valueReference: (url: string) => this.updateImageURL(url),
-                type: "text"
-            },
+            new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateImageURL(arg)),
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);

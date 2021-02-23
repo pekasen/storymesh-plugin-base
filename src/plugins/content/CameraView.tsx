@@ -1,7 +1,6 @@
 import { DataConnectorInPort, DataConnectorOutPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
-import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { action, makeObservable, observable } from 'mobx';
@@ -10,6 +9,7 @@ import { Store } from '../../renderer';
 import * as BABYLON from 'babylonjs';
 import "babylonjs-loaders";
 import { createModelSchema } from 'serializr';
+import { MenuTemplate } from 'preact-sidebar';
 
 class _CameraView extends StoryObject {
     public content: any;
@@ -47,8 +47,8 @@ class _CameraView extends StoryObject {
 
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             ...dropDownField(
                 this,
@@ -56,6 +56,7 @@ class _CameraView extends StoryObject {
                 () => this.activeCamera,
                 (selection) => this.updateActiveCamera(selection)
             ),
+
             ...connectionField(this),
          ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);

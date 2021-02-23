@@ -28,7 +28,7 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
         );
     }
 
-    render({ loadedObject }: IBreadCrumbPropeties, { ids }): h.JSX.Element {
+    render({ loadedObject }: IBreadCrumbPropeties): h.JSX.Element {
         const { storyContentObjectRegistry, uistate } = useContext(Store);
 
         const recursePath = ( obj: IStoryObject ): IStoryObject[] => {

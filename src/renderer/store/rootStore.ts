@@ -25,7 +25,7 @@ export interface IRootStoreProperties {
 export class RootStore {
     uistate: UIStore
     storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
-    pluginStore: PlugInStore<AbstractStoryObject | AbstractStoryModifier | IMenuItemRenderer>;
+    pluginStore: PlugInStore<AbstractStoryObject | AbstractStoryModifier>;
     notifications: NotificationStore;
     protocol: StateProcotol;
     userPreferences: Preferences;
@@ -55,11 +55,9 @@ export class RootStore {
          * Read the plugins and register them in the template store
          */
         const plugins = plugInLoader2("plugins/content");
-        const panes = plugInLoader2("plugins/panes");
         const modifiers = plugInLoader2("plugins/modifiers");
 
         plugins.forEach((plug: IPlugInRegistryEntry<AbstractStoryObject>) => this.pluginStore.setPlugIn(plug.id, plug));
-        panes.forEach(plug => this.pluginStore.setPlugIn(plug.id, plug));
         modifiers.forEach(plug => this.pluginStore.setPlugIn(plug.id, plug));
     
         /**

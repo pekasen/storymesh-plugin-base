@@ -8,7 +8,6 @@ import { __prefPath } from "../../constants";
 import { Container } from "../../plugins/content/Container";
 import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
 import { AbstractStoryModifier } from "../../plugins/helpers/AbstractModifier";
-import { IMenuItemRenderer } from "../../plugins/helpers/IMenuItemRenderer";
 import { Preferences } from "../../preferences";
 import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
 import { NotificationStore } from './Notification';
@@ -111,7 +110,9 @@ export class RootStore {
         if (existsSync(__prefPath)) {
             const data = readFileSync(
                 __prefPath,
-                {encoding: "UTF8"}
+                {
+                    encoding: "utf8"
+                }
             );
             const _d = JSON.parse(data);
             const _e  = deserialize(Preferences, _d);

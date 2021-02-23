@@ -38,8 +38,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
             <VerticalPaneGroup>
                 <VerticalPane>
                         <BreadCrumb store={store} loadedObject={loadedItem}></BreadCrumb>
-                    <StoryObjectViewRenderer loadedObject={loadedItem} store={store}>
-                    </StoryObjectViewRenderer>
+                    <StoryObjectViewRenderer />
                     <VerticalFlexPane>
                         <StoryComponentGallery>
                             {store.pluginStore.registry.

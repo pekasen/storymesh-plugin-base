@@ -1,13 +1,18 @@
-import { Component, createRef, h } from 'preact';
+import { Component, createRef, FunctionComponent, h } from 'preact';
 import { INGWebSProps } from '../../utils/PlugInClassRegistry';
 import { VerticalPaneGroup, VerticalMiniPane, VerticalPane } from '../VerticalPane/VerticalPane';
 import { deepObserve, IDisposer } from 'mobx-utils';
 import { useContext } from 'preact/hooks';
 import { Store } from '../..';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { RootStore } from '../../store/rootStore';
 
-interface IPreviewProps extends INGWebSProps {
+interface IPreviewWrapperProps extends INGWebSProps {
     topLevelObjectId: string
+}
+
+interface IPreviewProps extends IPreviewWrapperProps {
+    store: RootStore
 }
 
 type WidthClass = "XS" | "SM" | "MD" | "LG" | "XL";
@@ -16,7 +21,11 @@ interface IPreviewState {
     classes: WidthClass[]
 }
 
-export class Preview extends Component<IPreviewProps, IPreviewState> {
+export const Preview: FunctionComponent<IPreviewWrapperProps> = (props) => {
+    const store = useContext(Store);
+    return <Preview2 store={store} {...props}/>
+}
+export class Preview2 extends Component<IPreviewProps, IPreviewState> {
 
     private reactionDisposer: IDisposer
     private ref = createRef<HTMLDivElement>();
@@ -24,7 +33,7 @@ export class Preview extends Component<IPreviewProps, IPreviewState> {
 
     constructor(props: IPreviewProps) {
         super(props);
-        const store = useContext(Store);
+        const store = props.store;
         // TODO: debounce user input
         this.reactionDisposer = deepObserve(store.storyContentObjectRegistry, () => {
             console.log("Updated")

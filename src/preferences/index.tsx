@@ -1,3 +1,4 @@
+import "preact/debug";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { Component, FunctionalComponent, h, JSX, render } from "preact";
 import { createModelSchema, deserialize, primitive, serialize } from "serializr";
@@ -36,7 +37,9 @@ class PreferencesView extends Component<unknown, Preferences> {
         if (existsSync(__prefPath)) {
             const data = readFileSync(
                 __prefPath,
-                {encoding: "UTF8"}
+                {
+                    encoding: "utf8"
+                }
             );
             const _d = JSON.parse(data);
             const _e  = deserialize(Preferences, _d);
@@ -49,7 +52,7 @@ class PreferencesView extends Component<unknown, Preferences> {
         writeFileSync(
             __prefPath,
             JSON.stringify(_d), {
-                encoding: "UTF8"
+                encoding: "utf8"
             }
         );
 

@@ -32,7 +32,7 @@ export function registerHandlers(): void {
         // rootStore.root.uistate.setFile(file);
         // rootStore.root.reset();
 
-        readFile(file, { encoding: 'UTF8' }, (err, data) => {
+        readFile(file, { encoding: 'utf8' }, (err, data) => {
             if (err)
                 throw err;
             const parsedData = JSON.parse(data);

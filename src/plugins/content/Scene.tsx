@@ -1,11 +1,12 @@
 import { action, makeObservable, observable } from 'mobx';
 import { h, FunctionComponent } from "preact";
-import { DataConnectorInPort, DataConnectorOutPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
-import { IMenuTemplate, INGWebSProps } from '../../renderer/utils/PlugInClassRegistry';
+import { DataConnectorOutPort, StoryGraph } from 'storygraph';
+import { INGWebSProps } from '../../renderer/utils/PlugInClassRegistry';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+import { MenuTemplate, Text } from 'preact-sidebar';
 
 export interface ISceneContent {
     file: string
@@ -42,15 +43,10 @@ class _Scene extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
-            {
-                label: "Scene Location",
-                type: "file-selector",
-                value: () => this.content.file,
-                valueReference: (file: string) => this.updateContent(file)
-            },
+            new Text("URL", {defaultValue: ""}, () => this.content.file, (arg: string) => this.updateContent(arg)),
             ...connectionField(this)
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);

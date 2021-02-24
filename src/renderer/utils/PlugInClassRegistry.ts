@@ -1,4 +1,5 @@
 import { FunctionalComponent } from 'preact';
+import { MenuTemplate } from 'preact-sidebar';
 import { IStoryObject, StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { IRenderingProperties } from 'storygraph/dist/StoryGraph/IRenderingProperties';
@@ -46,38 +47,6 @@ export interface INGWebSProps {
 }
 
 export interface IPlugIn {
-    menuTemplate: IMenuTemplate[];
+    menuTemplate: MenuTemplate[];
     getComponent?(): FunctionalComponent<INGWebSProps>;
-}
-
-export type MenuItemSpecification = "table" |
-    "radio" |
-    "button" |
-    "buttongroup" |
-    "divider" |
-    "textarea" |
-    "text" |
-    "hslider" |
-    "vslider" |
-    "dropdown" |
-    "check" |
-    "file-selector" |
-    "url" |
-    "color" |
-    "connectiontable" |
-    "hotspot-table" |
-    "display";
-
-export interface IMenuTemplate<Value = any, Options = any> {
-    label: string;
-    type: MenuItemSpecification;
-    valueReference: (...args: Value[]) => void;
-    value: (() => Value);
-    // TODO: make it type-safe!!!
-    options?: Options;
-}
-
-export interface IMenuTemplate2<U, V> extends IMenuTemplate{
-    valueReference: (...args: any[]) => U;
-    value: () => V
 }

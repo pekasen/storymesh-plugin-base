@@ -1,21 +1,27 @@
 import { IReactionDisposer, reaction } from 'mobx';
-import { Component, h } from 'preact';
+import { Component, FunctionalComponent, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph';
 import { Store } from '../..';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { Line, Rect, Svg, SVG } from '@svgdotjs/svg.js';
+import { RootStore } from '../../store/rootStore';
 
 export interface IEdgeRendererProperties {
     loadedObject: IStoryObject
 }
 
-export class EdgeRenderer extends Component {
+export const EdgeRenderer: FunctionalComponent = () => {
+    const store = useContext(Store);
+    return <EdgeRenderer2 store={store}/>
+}
+
+export class EdgeRenderer2 extends Component<{store: RootStore}> {
     edgeRendererID!: "edge-renderer";
     disposeReaction: IReactionDisposer;
     edges: Map<string, Line[]>;
-    store = useContext(Store);
+    store: RootStore; // = useContext(Store);
     disposeReactionLoadedItem: IReactionDisposer;
     disposeReactionSelectedEdges: IReactionDisposer;
     disposeReactionCollapseItem: IReactionDisposer;
@@ -28,8 +34,9 @@ export class EdgeRenderer extends Component {
     selectionRectangle?: Rect;
     svg: Svg;
 
-    constructor() {
+    constructor({ store }: { store: RootStore}) {
         super();
+        this.store = store;
         this.svg = SVG();
         this.edges = new Map();
         this.mutationTargetNode = undefined;

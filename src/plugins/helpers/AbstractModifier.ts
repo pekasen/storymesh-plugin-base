@@ -4,7 +4,7 @@ import { createModelSchema } from "serializr";
 import { IConnectorPort, IStoryModifier, ModifierType } from "storygraph";
 import { v4 } from "uuid";
 import { rootStore } from "../../renderer";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { ButtonGroup, Display, MenuTemplate } from "preact-sidebar";
 
 function isStoryModifierType(type: string): boolean {
     const modifierTypes = ["css-class", "css-inline", "css-hybrid"];
@@ -19,7 +19,7 @@ export abstract class AbstractStoryModifier implements IStoryModifier {
     public abstract type: ModifierType;
     public abstract role: string;
     public abstract parent?: string;
-    public abstract get menuTemplate(): IMenuTemplate[];
+    public abstract get menuTemplate(): MenuTemplate[];
     public abstract get getRenderingProperties(): any;
     public abstract modify(element: h.JSX.Element): h.JSX.Element;
 
@@ -48,73 +48,59 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
     public role = "";
     public parent: string | undefined;
     
-    public get menuTemplate(): IMenuTemplate[] {
+    public get menuTemplate(): MenuTemplate[] {
         return [
-            {
-                label: "Name",
-                type: "display",
-                value: () => this.name,
-                valueReference: (name: string) => this.updateName(name)
-            },
-            {
-                label: "",
-                type: "buttongroup",
-                value: () => undefined,
-                valueReference: () => undefined,
-                options: {
-                    callbacks: [
-                        {
-                            label: "delete",
-                            valueReference: () => {
-                                this.deleteMe();
-                            }
-                        },
-                        {
-                            label: "up",
+            // {
+            //     label: "Name",
+            //     type: "display",
+            //     value: () => this.name,
+            //     valueReference: (name: string) => this.updateName(name)
+            // },
+            new Display("Name", () => this.name),
+            new ButtonGroup("Default", {
+                callbacks: [
+                    {
+                        label: "delete",
+                        trigger: () => this.deleteMe()
+                    },
+                    {
+                        label: "up",
+                        trigger: () => undefined
+                    },
+                    {
+                        label: "down",
+                        trigger: () => undefined
+                    },
+                ]
+            })
+            // {
+            //     label: "",
+            //     type: "buttongroup",
+            //     value: () => undefined,
+            //     valueReference: () => undefined,
+            //     options: {
+            //         callbacks: [
+            //             {
+            //                 label: "delete",
+            //                 valueReference: () => {
+            //                     this.deleteMe();
+            //                 }
+            //             },
+            //             {
+            //                 label: "up",
     
-                            valueReference: () => {
-                                // this.deleteMe();
-                            }
-                        },
-                        {
-                            label: "down",
-                            valueReference: () => {
-                                // this.deleteMe();
-                            }
-                        }
-                    ]
-                }
-            }
-            // {
-            //     label: "delete",
-            //     type: "button",
-            //     value: () => undefined,
-            //     valueReference: () => {
-            //         this.deleteMe();
+            //                 valueReference: () => {
+            //                     // this.deleteMe();
+            //                 }
+            //             },
+            //             {
+            //                 label: "down",
+            //                 valueReference: () => {
+            //                     // this.deleteMe();
+            //                 }
+            //             }
+            //         ]
             //     }
-            // },
-            // {
-            //     label: "up",
-            //     type: "button",
-            //     value: () => undefined,
-            //     valueReference: () => {
-            //         // this.deleteMe();
-            //     }
-            // },
-            // {
-            //     label: "down",
-            //     type: "button",
-            //     value: () => undefined,
-            //     valueReference: () => {
-            //         // this.deleteMe();
-            //     }
-            // }
-            // {
-            //     label: "Type",
-            //     type: "dropdown",
-            //     value: () => this.type,
-            //     valueReference: (type: ModifierType) => this.updateType(type),
-            //     options: ["css-class", "css-inline", "css-hybrid"]
             // }
         ]
     }

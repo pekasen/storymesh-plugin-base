@@ -1,5 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 
 import { action, computed, makeObservable, observable } from 'mobx';
 import { FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
@@ -7,6 +7,7 @@ import { StoryObject } from '../helpers/AbstractStoryObject';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
+import { HSliderMenuItem, MenuTemplate } from "preact-sidebar";
 
 class _Spacer extends StoryObject {
 
@@ -55,19 +56,19 @@ class _Spacer extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             {
                 label: "Vertical Space",
-                type: "hslider",
+                type: HSliderMenuItem,
                 options: {
                     min: 0,
                     max: 100,
                     formatter: (val: number) => `${val}%`
                 },
-                value: () => this.userDefinedProperties.vspace,
-                valueReference: (vspace: number) => this.updateVSpace(vspace)
+                getter: () => this.userDefinedProperties.vspace,
+                setter: (vspace: number) => this.updateVSpace(vspace)
             },
             ...connectionField(this)
         ];

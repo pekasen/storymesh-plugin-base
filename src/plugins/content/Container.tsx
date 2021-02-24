@@ -3,7 +3,6 @@ import { createModelSchema, object } from 'serializr';
 import { exportClass } from '../helpers/exportClass';
 import { FunctionComponent, h } from "preact";
 import { InputConnectorView } from "./InputConnectorView";
-import { IPlugIn, INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
 import { makeObservable, observable, action, computed } from 'mobx';
 import { MoveableItem } from "../../renderer/store/MoveableItem";
@@ -13,6 +12,8 @@ import { IStoryObject, StoryGraph } from 'storygraph';
 import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { UIStore } from "../../renderer/store/UIStore";
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
+import { MenuTemplate } from 'preact-sidebar';
+import { INGWebSProps, IPlugIn } from '../../renderer/utils/PlugInClassRegistry';
 
 /**
  * Our second little dummy PlugIn
@@ -178,8 +179,8 @@ export class Container extends StoryObject {
         this.endNode.setup(this.id, registry);
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             ...dropDownField(
                 this,

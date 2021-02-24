@@ -1,6 +1,6 @@
-import { FunctionalComponent, FunctionComponent, h, JSX } from "preact";
+import { FunctionComponent, h } from "preact";
 import { runInAction } from "mobx";
-import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
+import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
@@ -8,7 +8,9 @@ import { connectionField, dropDownField, nameField } from '../helpers/plugInHelp
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import Delta from "quill";
+import Delta from "quill-delta";
+import Op from "quill-delta/dist/Op";
+import { MenuTemplate, RichText } from "preact-sidebar";
 /**
  * Our first little dummy PlugIn
  * 
@@ -57,24 +59,25 @@ class _TextObject extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
-            {
-                label: "Content",
-                type: "textarea",
-                value: () => this.content.resource,
-                valueReference: (text: string) => {this.updateText(text)}
-            },
-            ...dropDownField(
-                this,
-                () => ["h1", "h2", "h3", "b", "p"],
-                () => this.userDefinedProperties.tag,
-                (selection: string) => {
-                    console.log(selection);
-                    runInAction(() => this.userDefinedProperties.tag = selection);
-                }
-            ),
+            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg.getContents())),
+            // {
+            //     label: "Content",
+            //     type: "textarea",
+            //     value: () => this.content.resource,
+            //     valueReference: (text: string) => {this.updateText(text)}
+            // },
+            //...dropDownField(
+            //    this,
+            //    () => ["h1", "h2", "h3", "b", "p"],
+            //    () => this.userDefinedProperties.tag,
+            //    (selection: string) => {
+            //        console.log(selection);
+            //        runInAction(() => this.userDefinedProperties.tag = selection);
+            //    }
+            //),
             ...connectionField(this)
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
@@ -96,52 +99,65 @@ class _TextObject extends StoryObject {
         if (this.content) this.content.resource = text;
     }
 
-    renderDelta (delta: Delta): any {
-        return delta.ops.map((op: any) => {
-          // handle newline chars
+    // renderDelta (delta: Delta): h.JSX.Element {
+    //     return delta.ops.map((op: Op) => {
+    //       // handle newline chars
       
-          // handle attributes
-          if (op.attributes !== undefined) {
-            return Object.keys(op.attributes).reduce((p, v) => {
-              switch(v) {
-              case "bold": return <b>{p}</b>;
-              case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
-              case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
-              }
-            }, op.insert);
-            // else handle text content
-          } else return op.insert
-        });
-      }
+    //       // handle attributes
+    //       if (op.attributes !== undefined) {
+    //         return Object.keys(op.attributes).reduce((p, v) => {
+    //           switch(v) {
+    //           case "bold": return <b>{p}</b>;
+    //           case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
+    //           case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
+    //           }
+    //         }, op.insert);
+    //         // else handle text content
+    //       } else return op.insert
+    //     });
+    //   }
 
     public getComponent() {
+        
+        function renderDelta (delta: Delta) {
+            if (!delta.ops) return <p></p>
+            return delta.ops.map((op: Op) => {
+                // handle newline chars
+                if (op.insert !== undefined) {
+                    if (op.insert == '\n') {
+                        return <br></br>
+                    }
+                }
+                // handle attributes
+                if (op.attributes !== undefined) {
+                    return Object.keys(op.attributes).reduce((p, v) => {
+                        switch(v) {
+                            case "bold": return <b>{p}</b>;
+                            case "italic": return <i>{p}</i>;
+                            case "underline": return <u>{p}</u>;
+                            case "blockquote": return <blockquote>{p}</blockquote>;                                
+                            case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
+                            case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
+                            case "code-block": return <code>{p}</code>;
+                            case "header": {
+                                switch(op.attributes?.header) {
+                                    case 1: return <h1>{p}</h1>;
+                                    case 2: return <h2>{p}</h2>;
+                                    case 3: return <h3>{p}</h3>;
+                                }                  
+                            }
+                        }
+                    }, op.insert);
+                    // else handle text content
+                } else return op.insert
+        });
+        }  
+
         const Comp: FunctionComponent<INGWebSProps> = (args => {
-            let p: h.JSX.Element;
-            const elemMap = new Map<string, FunctionalComponent>([
-                ["h1", ({children, ...props}) => (<h1 {...props}>{children}</h1>)],
-                ["h2", ({children, ...props}) => (<h2 {...props}>{children}</h2>)],
-                ["h3", ({children, ...props}) => (<h3 {...props}>{children}</h3>)],
-                ["b", ({children, ...props}) => (<b {...props}>{children}</b>)],
-                ["p", ({children, ...props}) => (<p {...props}>{children}</p>)],
-            ]);
-            let Elem: FunctionalComponent | undefined;
+            console.log("rendering", args);
 
-            if (args.userDefinedProperties && args.userDefinedProperties.tag) {
-                Elem = elemMap.get(args.userDefinedProperties.tag);
-            }
-            if (!Elem) {
-                Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
-            }
-
-            if (args.content?.resource && args.content?.resource.ops) {
-                const thing = this.renderDelta(args.content?.resource);
-
-                console.log("rendering", thing);
-                p = <Elem>{thing}</Elem>;
-            } else {
-                p = <Elem><div>{args.content?.resource}</div></Elem>;
-            }
-            //p.props.contenteditable = true;
+            // @todo args.content.resource needs to change type
+            const p = <p>{renderDelta(new Delta(args.content?.resource as unknown as Op[]))}</p>
             
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));

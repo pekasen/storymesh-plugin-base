@@ -1,7 +1,9 @@
 import { action, computed, makeObservable } from "mobx";
 import { Fragment, h } from "preact";
-import { IColumnSpecification, MenuTemplate, Table } from "preact-sidebar";
+import { Display, IColumnSpecification, MenuTemplate, Table } from "preact-sidebar";
+import { createModelSchema, list, object, primitive } from "serializr";
 import { FlowConnectorInPort, FlowConnectorOutPort, ReactionConnectorInPort } from "storygraph";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { StoryObject } from "../helpers/AbstractStoryObject";
 import { exportClass } from "../helpers/exportClass";
 import { nameField, connectionField } from "../helpers/plugInHelpers";
@@ -10,8 +12,8 @@ export class Branch extends StoryObject {
     public name = "Branch";
     public isContentNode = true;
     public role = "internal.content.branch";
-    public activeConnector = 1;
     public icon = "icon-switch";
+    public activeConnector = 1;
     private _outConnectors = [
        [ new FlowConnectorOutPort(), new ReactionConnectorInPort("out1", () => this._switchConnectors(0))],
         [new FlowConnectorOutPort(),  new ReactionConnectorInPort("out1", () => this._switchConnectors(1))]
@@ -42,7 +44,7 @@ export class Branch extends StoryObject {
                             name: "ID",
                             property: "id",
                             editable: false,
-                            type: ""
+                            type: Display
                         },
                         {
                             name: "Name",
@@ -122,6 +124,12 @@ export class Branch extends StoryObject {
         return () => <Fragment></Fragment>
     }
 }
+
+createModelSchema(Branch, {
+    _outConnectors: list(list(object(ConnectorSchema))),
+    _flowInConnector: object(ConnectorSchema),
+    activeConnector: primitive()
+});
 
 export const plugInExport = exportClass(
     Branch,

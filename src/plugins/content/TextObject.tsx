@@ -62,22 +62,22 @@ class _TextObject extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg)),
+            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg.getContents())),
             // {
             //     label: "Content",
             //     type: "textarea",
             //     value: () => this.content.resource,
             //     valueReference: (text: string) => {this.updateText(text)}
             // },
-            ...dropDownField(
-                this,
-                () => ["h1", "h2", "h3", "b", "p"],
-                () => this.userDefinedProperties.tag,
-                (selection: string) => {
-                    console.log(selection);
-                    runInAction(() => this.userDefinedProperties.tag = selection);
-                }
-            ),
+            //...dropDownField(
+            //    this,
+            //    () => ["h1", "h2", "h3", "b", "p"],
+            //    () => this.userDefinedProperties.tag,
+            //    (selection: string) => {
+            //        console.log(selection);
+            //        runInAction(() => this.userDefinedProperties.tag = selection);
+            //    }
+            //),
             ...connectionField(this)
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
@@ -123,46 +123,40 @@ class _TextObject extends StoryObject {
             if (!delta.ops) return <p></p>
             return delta.ops.map((op: Op) => {
                 // handle newline chars
-            
+                if (op.insert !== undefined) {
+                    if (op.insert == '\n') {
+                        return <br></br>
+                    }
+                }
                 // handle attributes
                 if (op.attributes !== undefined) {
                     return Object.keys(op.attributes).reduce((p, v) => {
-                    switch(v) {
-                    case "bold": return <b>{p}</b>;
-                    case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>v</a>;
-                    case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
-                    }
+                        switch(v) {
+                            case "bold": return <b>{p}</b>;
+                            case "italic": return <i>{p}</i>;
+                            case "underline": return <u>{p}</u>;
+                            case "blockquote": return <blockquote>{p}</blockquote>;                                
+                            case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
+                            case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
+                            case "code-block": return <code>{p}</code>;
+                            case "header": {
+                                switch(op.attributes?.header) {
+                                    case 1: return <h1>{p}</h1>;
+                                    case 2: return <h2>{p}</h2>;
+                                    case 3: return <h3>{p}</h3>;
+                                }                  
+                            }
+                        }
                     }, op.insert);
                     // else handle text content
                 } else return op.insert
-            });
-        }
-  
+        });
+        }  
 
         const Comp: FunctionComponent<INGWebSProps> = (args => {
             console.log("rendering", args);
 
-            // const elemMap = new Map<string, FunctionalComponent>([
-            //     ["h1", ({children, ...props}) => (<h1 {...props}>{children}</h1>)],
-            //     ["h2", ({children, ...props}) => (<h2 {...props}>{children}</h2>)],
-            //     ["h3", ({children, ...props}) => (<h3 {...props}>{children}</h3>)],
-            //     ["b", ({children, ...props}) => (<b {...props}>{children}</b>)],
-            //     ["p", ({children, ...props}) => (<p {...props}>{children}</p>)],
-            // ]);
-            // let Elem: FunctionalComponent | undefined;
-
-            // if (args.userDefinedProperties && args.userDefinedProperties.tag) {
-            //     Elem = elemMap.get(args.userDefinedProperties.tag);
-            // }
-            // if (!Elem) {
-            //     Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
-            // }
-
-           
-
-            // const p = <Elem>{args.content?.resource}</Elem>;
-            // p.props.contenteditable = true;
-
+            // @todo args.content.resource needs to change type
             const p = <p>{renderDelta(new Delta(args.content?.resource as unknown as Op[]))}</p>
             
             return this.modifiers.reduce((p,v) => {

@@ -62,7 +62,7 @@ class _TextObject extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg.getContents())),
+            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg)),
             // {
             //     label: "Content",
             //     type: "textarea",

@@ -1,4 +1,4 @@
-import { h, FunctionalComponent, ComponentProps } from 'preact';
+import { h, FunctionalComponent } from 'preact';
 
 /**
  * Creates a vertical pane group

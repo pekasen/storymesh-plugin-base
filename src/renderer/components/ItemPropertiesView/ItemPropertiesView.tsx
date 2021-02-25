@@ -16,8 +16,14 @@ export const ItemPropertiesView: FunctionalComponent = () => {
 
     useEffect(() => {
         const disposer = reaction(
-            () => (uistate.selectedItems.first),
-            (id: string) => {
+            () => (
+                {
+                    id: uistate.selectedItems.first,
+                    connections: res?.connections.length,
+                    connectors: res?.connectors.size
+                }
+            ),
+            ({ id }) => {
                 const items = storyContentObjectRegistry.getValue(id)?.menuTemplate;
                 if (items !== undefined && items.length >= 0) {
                     setState({

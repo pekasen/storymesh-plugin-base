@@ -10,7 +10,7 @@ import { ipcRenderer } from "electron/renderer";
 type Themes = "dark" | "light" | "eggplant";
 
 export class Preferences {
-    theme:  Themes = "eggplant";
+    theme: Themes = "eggplant";
     author = "NGWebS Default User";
     static availableThemes = ["dark", "light", "eggplant"];
 }
@@ -28,8 +28,12 @@ class PreferencesView extends Component<unknown, Preferences> {
 
     constructor(_: never) {
         super();
-        this.state = new Preferences();
-        this.readPrefDict();
+        const _prefs = this.readPrefDict();
+        if (_prefs !== undefined) {
+            this.state = _prefs;
+        } else {
+            this.state = new Preferences();
+        }
     }
 
 
@@ -43,7 +47,7 @@ class PreferencesView extends Component<unknown, Preferences> {
             );
             const _d = JSON.parse(data);
             const _e  = deserialize(Preferences, _d);
-            if (_e) this.setState(_e);
+            if (_e) return _e;
         }
     }
 

@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { patchMenu } from './menus';
+import installExtension, {} from "electron-devtools-installer";
 
 export const windows: Electron.BrowserWindow[] = [];
 
@@ -25,6 +26,18 @@ app
     .whenReady()
     .then(() => {
         windows.push(createWindow());
+        installExtension([
+            {
+                id: "pfgnfdagidkfgccljigdamigbcnndkod",
+                electron: ">=1.2.1"
+            },
+            {
+                id: "ilcajpmogmhpliinlbcdebhbcanbghmd",
+                electron: ">=1.2.1"
+            },
+        ])
+        .then((value) => console.log(`Loaded ${value}`))
+        .catch(() => console.warn("failed to load devtools extension"))
     })
     .then(() => patchMenu());
 

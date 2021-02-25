@@ -32,23 +32,19 @@ export function connectionField(target: AbstractStoryObject & IDefaultFieldsMeth
         map(connector => {
             const connections = connector.connections.map(connection => {
                 const [toId, toConnectorId] = StoryGraph.parseNodeId(connection.to);
-                const [fromId, fromConnectorId] = StoryGraph.parseNodeId(connection.to);
+                const [fromId, fromConnectorId] = StoryGraph.parseNodeId(connection.from);
 
                 const toObj = storyContentObjectRegistry.getValue(toId);
                 const fromObj = storyContentObjectRegistry.getValue(fromId);
                 const toPort = toObj?.connectors.get(toConnectorId);
                 const fromPort = fromObj?.connectors.get(fromConnectorId);
 
-                const otherPort = (toPort === connector) ? fromPort : toPort;
-                const otherObj = (toPort === connector) ? fromObj: toObj;
+                const otherPort = (toPort == connector) ? fromPort : toPort;
+                const otherObj = (toPort == connector) ? fromObj: toObj;
 
-                if (
-                    connector !== undefined
-                ) {
-                    return {
-                        thisPort: connector.name,
-                        otherPort: otherObj?.name,
-                    }
+                return {
+                    thisPort: connector.name,
+                    otherPort: `${otherObj?.name}.${otherPort?.name}`,
                 }
             }) as IConnectionTableEntry[];
 

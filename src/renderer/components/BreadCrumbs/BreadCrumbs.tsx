@@ -12,20 +12,20 @@ interface IBreadCrumbPropeties {
 
 export class BreadCrumb extends Component<IBreadCrumbPropeties>
 {
-    reactionDisposer: IReactionDisposer
+    // reactionDisposer: IReactionDisposer
 
     constructor(props: IBreadCrumbPropeties) {
         super(props);
 
          // TODO: this reaction increases it's call count with each call!!
-        this.reactionDisposer = reaction(
-            () => props.store.uistate.selectedItems.ids,
-            (ids: string[]) => {
-                this.setState({
-                    ids: ids
-                });
-            }
-        );
+        // this.reactionDisposer = reaction(
+        //     () => props.store.uistate.selectedItems.ids,
+        //     (ids: string[]) => {
+        //         this.setState({
+        //             ids: ids
+        //         });
+        //     }
+        // );
     }
 
     render({ loadedObject }: IBreadCrumbPropeties): h.JSX.Element {
@@ -83,6 +83,6 @@ export class BreadCrumb extends Component<IBreadCrumbPropeties>
     }
 
     componentWillUnmount(): void {
-        this.reactionDisposer();
+        // this.reactionDisposer();
     }
 }

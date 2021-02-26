@@ -1,10 +1,8 @@
 table .slider-item > input {
-    visibility: hidden;
     display: none;
 }
 
 table .slider-item:hover > input {
-    visibility: visible;
     z-index: 1999;
-    display: block;
+    display: inline-block;
 }

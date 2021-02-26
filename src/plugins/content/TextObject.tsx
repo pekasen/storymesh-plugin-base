@@ -124,6 +124,9 @@ class _TextObject extends StoryObject {
             return delta.ops.map((op: Op) => {
                 // handle newline chars
                 if (op.insert !== undefined) {
+                    if (typeof op.insert === "string" && /\n/gm.test(op.insert)) {
+                        console.log("should break line", op.insert);
+                    }
                     if (op.insert == '\n') {
                         return <br></br>
                     }

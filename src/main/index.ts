@@ -27,10 +27,10 @@ app
     .then(() => {
         windows.push(createWindow());
         installExtension([
-            {
-                id: "pfgnfdagidkfgccljigdamigbcnndkod",
-                electron: ">=1.2.1"
-            },
+            // {
+            //     id: "pfgnfdagidkfgccljigdamigbcnndkod",
+            //     electron: ">=1.2.1"
+            // },
             {
                 id: "ilcajpmogmhpliinlbcdebhbcanbghmd",
                 electron: ">=1.2.1"

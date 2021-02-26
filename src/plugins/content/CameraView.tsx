@@ -1,4 +1,4 @@
-import { DataConnectorInPort, DataConnectorOutPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { DataConnectorOutPort, StoryGraph } from 'storygraph';
 import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
@@ -109,7 +109,7 @@ class _CameraView extends StoryObject {
                         scene.render();
                     });
 
-                    window.addEventListener("resize", (ev: UIEvent) => {
+                    window.addEventListener("resize", () => {
                         // ev.currentTarget
                         engine.resize();
                     });

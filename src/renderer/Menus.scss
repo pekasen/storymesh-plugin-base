@@ -1,0 +1,8 @@
+table .slider-item > input {
+    display: none;
+}
+
+table .slider-item:hover > input {
+    z-index: 1999;
+    display: inline-block;
+}

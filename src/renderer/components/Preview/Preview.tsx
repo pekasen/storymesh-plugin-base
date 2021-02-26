@@ -6,6 +6,7 @@ import { useContext } from 'preact/hooks';
 import { Store } from '../..';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { RootStore } from '../../store/rootStore';
+import Logger from 'js-logger';
 
 interface IPreviewWrapperProps extends INGWebSProps {
     topLevelObjectId: string
@@ -36,7 +37,7 @@ export class Preview2 extends Component<IPreviewProps, IPreviewState> {
         const store = props.store;
         // TODO: debounce user input
         this.reactionDisposer = deepObserve(store.storyContentObjectRegistry, () => {
-            console.log("Updated")
+            Logger.info("Updated")
             this.setState({});
         });
 
@@ -87,7 +88,7 @@ export class Preview2 extends Component<IPreviewProps, IPreviewState> {
         const Elem = topLevelObject.getComponent();
         if (!Elem) throw("BIGGY!3");
 
-        // console.log("children", children);
+        // Logger.info("children", children);
         // TODO: refactor so that peripharals are outside this component
         return <div class="preview-container" >
             <VerticalPaneGroup>

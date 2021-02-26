@@ -15,6 +15,7 @@ import { AbstractStoryModifier } from '../helpers/AbstractModifier';
 import { MenuTemplate } from 'preact-sidebar';
 import { INGWebSProps, IPlugIn } from '../../renderer/utils/PlugInClassRegistry';
 import { useEffect, useState } from 'preact/hooks';
+import Logger from 'js-logger';
 
 /**
  * Our second little dummy PlugIn
@@ -70,7 +71,7 @@ export class Container extends StoryObject {
 
             useEffect(() => {
                 this._rerender = () => {
-                    console.log(`${this.id} rerendering`);
+                    Logger.info(`${this.id} rerendering`);
                     setState({});
                 };
 

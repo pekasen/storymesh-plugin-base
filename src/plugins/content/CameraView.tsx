@@ -10,6 +10,7 @@ import * as BABYLON from 'babylonjs';
 import "babylonjs-loaders";
 import { createModelSchema } from 'serializr';
 import { MenuTemplate } from 'preact-sidebar';
+import Logger from 'js-logger';
 
 class _CameraView extends StoryObject {
     public content: any;
@@ -94,7 +95,7 @@ class _CameraView extends StoryObject {
             const file = this.pullData() as string | undefined;
             
             if (file) {
-                console.log(file)
+                Logger.info(file)
                 BABYLON.SceneLoader.ShowLoadingScreen = false;
                 BABYLON.SceneLoader.LoadAsync(
                     file, "", engine

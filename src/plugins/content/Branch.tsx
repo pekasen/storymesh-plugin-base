@@ -1,6 +1,7 @@
+import Logger from "js-logger";
 import { action, computed, makeObservable } from "mobx";
 import { Fragment, h } from "preact";
-import { Display, IColumnSpecification, MenuTemplate, Table } from "preact-sidebar";
+import { Button, Display, IColumnSpecification, MenuTemplate, Table, Text } from "preact-sidebar";
 import { createModelSchema, list, object, primitive } from "serializr";
 import { FlowConnectorInPort, FlowConnectorOutPort, ReactionConnectorInPort } from "storygraph";
 import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
@@ -40,28 +41,40 @@ export class Branch extends StoryObject {
                 "Connectors",
                 {
                     columns: [
-                        {
-                            name: "ID",
-                            property: "id",
-                            editable: false,
-                            type: Display
-                        },
+                        // {
+                        //     name: "ID",
+                        //     property: "id",
+                        //     editable: false,
+                        //     type: (arg: FlowConnectorOutPort, spec) => (
+                        //         new Display("", () => arg.id)
+                        //     )
+                        // },
                         {
                             name: "Name",
                             property: "name",
-                            editable: true,
-                            type: "",
+                            editable: false,
+                            type: (arg, spec) => {
+                                return new Text("", { defaultValue: "" }, () => arg.name, (name) => this.updateName(name))
+                            },
                             setter: (arg, property, value) => {
                                 if (typeof arg === "string" && property === "name") {
-                                    // value.name = arg;
+                                    value.name = arg;
                                 }
-                                // return value[property] = arg;
                             }
+                        },
+                        {
+                            name: "Delete",
+                            property: "id",
+                            editable: false,
+                            type: (arg) => (
+                                new Button("delete", () => this.removeConnector(arg))
+                            )
                         }
                     ]
                 },
                 () => this._outConnectors.map(e => e[0]) as FlowConnectorOutPort[]
             ),
+            new Button("add Connector", () => this.addConnector()),
             ...connectionField(this)
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
@@ -115,7 +128,7 @@ export class Branch extends StoryObject {
             _in.associated = _out.id;
             _out.associated = _in.id;
 
-            console.log("set port association for", _in, _out);
+            Logger.info("set port association for", _in, _out);
             this.notificationCenter?.push(this.parent+"/rerender");
         }
     }

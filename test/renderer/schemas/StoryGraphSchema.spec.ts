@@ -6,6 +6,7 @@ import { EdgeSchema } from '../../../src/renderer/store/schemas/EdgeSchema';
 import { identifier } from 'serializr';
 import { action, makeObservable, observable } from 'mobx';
 import { assert } from 'chai';
+import Logger from 'js-logger';
 
 describe("StoryGraphSchema", () => {
     class ObservableStoryGraph extends StoryGraph {
@@ -65,14 +66,14 @@ describe("StoryGraphSchema", () => {
     };
     const lookUpNode: RefLookupFunction = (id: string, callback) => {
         const instance = reg.getValue(id);
-        console.log(instance);
+        Logger.info(instance);
         if (instance) callback(null, instance);
     };
     const StoryGraphSchema: ModelSchema<StoryGraph> = {
         factory: (context) => {
             if (context && context.parentContext && context.parentContext.target) return new StoryGraph(context.parentContext.target);
             else {
-                console.log("LEG2");
+                Logger.info("LEG2");
                 return new StoryGraph(con1);
             }
         },
@@ -94,7 +95,7 @@ describe("StoryGraphSchema", () => {
         factory: (context) => {
             if (context && context.parentContext && context.parentContext.target) return new ObservableStoryGraph(context.parentContext.target);
             else {
-                console.log("LEG2");
+                Logger.info("LEG2");
                 return new ObservableStoryGraph(con1);
             }
         },
@@ -167,7 +168,7 @@ describe("StoryGraphSchema", () => {
         describe("serializiation", () => {
             it("should serialize a StoryGraph", () => {
                 json = serialize(StoryGraphSchema, con1.childNetwork);
-                // console.log("serialized:", json)
+                // Logger.info("serialized:", json)
                 assert.deepEqual(json, {nodes: ["2", "3"], edges: [], parent: "1"})
             });
             it("should serialize a StoryObject with a StoryGraph", () => {
@@ -175,7 +176,7 @@ describe("StoryGraphSchema", () => {
                     StoryObjectSchema, con1
                 );
 
-                console.log(json2);
+                Logger.info(json2);
                 assert.deepEqual(json2, {
                     id: '1',
                     name: 'Alpha',
@@ -188,7 +189,7 @@ describe("StoryGraphSchema", () => {
                 ob.addNode(reg, con3);
 
                 const obJson = serialize(ObservableStoryGraphSchema, ob);
-                console.log(obJson)
+                Logger.info(obJson)
                 assert.deepEqual(obJson, {nodes: ["2", "3"], edges: [], parent: "1"})
             });
         });
@@ -196,24 +197,24 @@ describe("StoryGraphSchema", () => {
             it("should deserialize a StoryGraph to an Observable", () => {
                 const g1 = deserialize(ObservableStoryGraph, json);
 
-                console.log("deserialized", g1);
+                Logger.info("deserialized", g1);
                 // assert.deepEqual(g1, con1a.childNetwork);
             });
 
             it("should deserialize a StoryObject with StoryGraph", () => {
                 const o1 = deserialize(StoryObjectSchema, json2);
-                console.log(o1);
+                Logger.info(o1);
                 assert.deepEqual(o1, con1);
             });
             let o2: ObservableContainer;
             it("should deserialize a StoryObject with StoryGraph and not interfere with MobX", () => {
                 o2 = deserialize(ObservableContainer, json2);
-                console.log(o2);
+                Logger.info(o2);
                 // assert.deepEqual(o2, con1 as StoryObject);
                 assert.hasAnyKeys(o2, ["childNetwork"]);
                 
-                console.log("Contructor", o2.constructor);
-                console.log(o2.childNetwork.nodes.map(e => e.id))
+                Logger.info("Contructor", o2.constructor);
+                Logger.info(o2.childNetwork.nodes.map(e => e.id))
             });
             it("should have references to its children", () => {
                 assert.deepEqual(

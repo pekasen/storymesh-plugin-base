@@ -1,3 +1,4 @@
+import Logger from "js-logger";
 import { h } from "preact";
 import { createModelSchema, object } from "serializr";
 import { IConnectorPort, ReactionConnectorInPort } from "storygraph";
@@ -12,7 +13,7 @@ export class TestModifier extends HMTLModifier {
         toggle: true
     }
     private _trigFun = () => {
-        console.log("Hello", this);
+        Logger.info("Hello", this);
         this.data.toggle = !this.data.toggle
         // request rerendering
         this._connector.notificationCenter?.push(this._connector.parent+"/rerender")

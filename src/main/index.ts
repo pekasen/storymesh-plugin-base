@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { patchMenu } from './menus';
-import installExtension, {} from "electron-devtools-installer";
+import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
+import Logger from "js-logger";
 
 export const windows: Electron.BrowserWindow[] = [];
 
@@ -16,6 +17,19 @@ function createWindow() {
             enableRemoteModule: true
         }
     });
+    installExtension([
+        REACT_DEVELOPER_TOOLS
+        // {
+        //     id: "pfgnfdagidkfgccljigdamigbcnndkod",
+        //     electron: ">=1.2.1"
+        // },
+        // {
+        //     id: "ilcajpmogmhpliinlbcdebhbcanbghmd",
+        //     electron: ">=1.2.1"
+        // },
+    ], true)
+    .then((value) => Logger.info(`Loaded ${value}`))
+    .catch(() => console.warn("failed to load devtools extension"))
 
     win.loadFile("./dist/index.html");
     // win.webContents.openDevTools();
@@ -26,18 +40,6 @@ app
     .whenReady()
     .then(() => {
         windows.push(createWindow());
-        installExtension([
-            {
-                id: "pfgnfdagidkfgccljigdamigbcnndkod",
-                electron: ">=1.2.1"
-            },
-            {
-                id: "ilcajpmogmhpliinlbcdebhbcanbghmd",
-                electron: ">=1.2.1"
-            },
-        ])
-        .then((value) => console.log(`Loaded ${value}`))
-        .catch(() => console.warn("failed to load devtools extension"))
     })
     .then(() => patchMenu());
 

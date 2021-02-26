@@ -130,7 +130,7 @@
 //             if ( instance ) {
 //                 const result = instance.elapsedTime;
 
-//                 console.log("Time difference", result);
+//                 Logger.info("Time difference", result);
 //                 assert.isNumber(result);
 //             }
 //         });

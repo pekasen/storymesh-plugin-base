@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 import { EditorPaneGroup } from './EditorPaneGroup';
 import { NotificationView } from './NotificationView/NotificationView';
 import { reaction } from 'mobx';
+import Logger from "js-logger";
 
 export const App = (): h.JSX.Element => {
     const [, setState] = useState({});
@@ -20,7 +21,7 @@ export const App = (): h.JSX.Element => {
                 store.uistate.windowProperties.title,
                 store.userPreferences.theme],
             (root) => {
-                console.log("changed@root", root);
+                Logger.info("changed@root", root);
                 setState({})
             }
         )
@@ -36,7 +37,7 @@ export const App = (): h.JSX.Element => {
                 leftToolbar={[
                 <button class="btn btn-default"
                     onClick={() => {
-                        console.log("Hello");
+                        Logger.info("Hello");
                         store.uistate.windowProperties.sidebarPane.toggleHidden();
                     }}>
                     <span class={"icon icon-left-dir"}></span>

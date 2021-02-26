@@ -5,6 +5,7 @@ import { createModelSchema, deserialize, primitive, serialize } from "serializr"
 import { __prefPath } from "../constants";
 import { remote } from "electron";
 import { ipcRenderer } from "electron/renderer";
+import Logger from "js-logger";
 // const { windows } = remote;
 
 type Themes = "dark" | "light" | "eggplant";
@@ -65,7 +66,7 @@ class PreferencesView extends Component<unknown, Preferences> {
 
     public render(_: never, {theme, author}: Preferences): JSX.Element {
 
-        console.log(this.state);
+        Logger.info(this.state);
         
         const FormGroupitem: FunctionalComponent = ({children}) => (
             <div class="form-group-item">{children}</div>
@@ -77,7 +78,7 @@ class PreferencesView extends Component<unknown, Preferences> {
                 <select class="form-control" onInput={(ev: Event) => {
                     const newValue = (ev.target as HTMLSelectElement).value;
                     if (options.findIndex((v) => v === newValue) !== -1) {
-                        console.log(newValue);
+                        Logger.info(newValue);
                         this.setState({ theme: newValue as Themes});
                     }
                 }}>

@@ -35,7 +35,7 @@ export class MoveSender extends Component<IMoveableProps> {
                             event.movementX,
                             event.movementY
                         );
-                        // console.log("Moving item:", _item)
+                        // Logger.info("Moving item:", _item)
                     }
                 });
             }

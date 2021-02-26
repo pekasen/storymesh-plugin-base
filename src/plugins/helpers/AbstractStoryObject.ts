@@ -15,6 +15,7 @@ import { IEdgeEvent } from "storygraph/dist/StoryGraph/IEdgeEvent";
 import { NotificationCenter, INotificationData } from "storygraph/dist/StoryGraph/NotificationCenter";
 import { EdgeSchema } from "../../renderer/store/schemas/EdgeSchema";
 import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
+import Logger from "js-logger";
 
 /**
  * Our second little dummy PlugIn
@@ -79,12 +80,12 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     public bindTo(notificationCenter: NotificationCenter): void {
         this.notificationCenter = notificationCenter;
         this.connectors.forEach((connector) => {
-            console.log("binding", connector, notificationCenter);
+            Logger.info("binding", connector, notificationCenter);
             (connector as ConnectorPort).bindTo(notificationCenter, this.id);
         });
         notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
             if (payload) {
-                console.log("binding", payload);
+                Logger.info("binding", payload);
                 if (payload.data.add !== undefined) {
                     this.addConnections(payload.data.add);
                 }
@@ -119,7 +120,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
                     to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
                     // parent: parentNetwork
                 };
-                console.log("new Edge", newEdge);
+                Logger.info("new Edge", newEdge);
                 parentNetwork.connect(registry, [newEdge]);
             }
         }
@@ -130,7 +131,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             const _index = this.connections.findIndex((_edge) => (_edge.id === edge.id));
             if (_index !== -1) {
                 if (this.connections.splice(_index, 1)[0].id === edge.id) {
-                    console.log(`edge removed from node ${this.id}`);
+                    Logger.info(`edge removed from node ${this.id}`);
                 } else console.warn(`edge not removed in node ${this.id}`);
             } else console.warn(`edge not found in node ${this.id}`);  
         });
@@ -236,7 +237,7 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
     id: identifier(
         (id: string, obj) => {
             const reg = rootStore._loadingCache;
-            console.log("registering @valuecache", obj,reg.set(id, obj))
+            Logger.info("registering @valuecache", obj,reg.set(id, obj))
         }
     ),
     name: primitive(),
@@ -257,7 +258,7 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
         (jsonValue, context, callback) => {
             const instance = rootStore.root.pluginStore.getNewInstance(jsonValue.role);
             if (!instance) throw("Big time failure !!11 while fetching schema for" + jsonValue.role);
-            console.log("getting schema for", instance.constructor.name);
+            Logger.info("getting schema for", instance.constructor.name);
             const _schema = getDefaultModelSchema(instance.constructor);
             if (!_schema) throw("no schema present during deserialization for " + context.target.constructor.name);
             return deserialize(_schema, jsonValue, callback);

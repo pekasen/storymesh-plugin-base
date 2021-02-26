@@ -82,7 +82,7 @@ export class PlugInStore<T> {
         const obj = path.reduce((p: RecursiveMap<IPlugInRegistryEntry<T>> | IPlugInRegistryEntry<T> | undefined, v: string) => {
             if (p instanceof Map) {
                 const value = p.get(v);
-                // console.log("Getting", v, value);
+                // Logger.info("Getting", v, value);
                 return value;
                 
                 // if (value instanceof Map || value instanceof IPlugInRegistryEntry) {

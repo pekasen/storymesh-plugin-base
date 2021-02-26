@@ -16,15 +16,6 @@
   .preview-container .header-preview {
     transition: background 0.4s ease-in, color 0.4s ease-in;
     margin: 10px; }
-    .theme-light .preview-container .header-preview {
-      background: #b5b5b5;
-      color: #262626; }
-    .theme-dark .preview-container .header-preview {
-      background: #4d4d4d;
-      color: #efefef; }
-    .theme-eggplant .preview-container .header-preview {
-      background: #a0a5b9;
-      color: white; }
     .preview-container .header-preview span {
       display: inline-block;
       font-size: 0.85rem;
@@ -60,8 +51,11 @@
     .storywrapper .ngwebs-story a,
     .storywrapper .ngwebs-story span {
       font-size: 1rem; }
-    .storywrapper .ngwebs-story figcaption {
-      font-size: 0.7rem; }
+    .storywrapper .ngwebs-story figure img {
+      margin: 0; }
+    .storywrapper .ngwebs-story figure figcaption {
+      font-size: 0.8rem;
+      margin: 5px 0 0 0; }
     .storywrapper .ngwebs-story h1,
     .storywrapper .ngwebs-story h2,
     .storywrapper .ngwebs-story h3,
@@ -100,6 +94,8 @@
       font-size: 1.2rem; }
     .storywrapper .ngwebs-story blockquote {
       font-size: 2.3rem; }
+      .storytheme-basic .storywrapper .ngwebs-story blockquote {
+        color: lightblue; }
     .storywrapper .ngwebs-story img {
       display: block;
       width: 100%;

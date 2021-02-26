@@ -3,6 +3,7 @@ import { IReactionDisposer, reaction } from "mobx";
 import { UIStore } from '../../store/UIStore';
 import { useEffect, useState } from 'preact/hooks';
 import { PaneProperties } from '../../store/PaneProperties';
+import Logger from 'js-logger';
 
 export const PaneGroup: FunctionalComponent = ({ children }) => (
     <div class="pane-group">{children}</div>
@@ -104,7 +105,7 @@ export const ResizablePane: FunctionalComponent<IResizablePaneProps> = ({childre
                     // element position
                     const rectX = (f.target as HTMLElement).getBoundingClientRect().x;
                     cache.x
-                    console.log("Bounds", (f.target as HTMLElement).getBoundingClientRect());
+                    Logger.info("Bounds", (f.target as HTMLElement).getBoundingClientRect());
 
                     paneState.setWidth(-f.movementX + paneState.width);
 

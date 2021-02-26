@@ -40,7 +40,6 @@ app
     .whenReady()
     .then(() => {
         windows.push(createWindow());
-
     })
     .then(() => patchMenu());
 

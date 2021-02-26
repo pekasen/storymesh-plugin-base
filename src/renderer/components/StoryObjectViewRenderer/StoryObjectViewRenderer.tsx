@@ -1,3 +1,4 @@
+import Logger from 'js-logger';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
@@ -37,7 +38,7 @@ export interface IStoryObjectViewRendererProperties {
 //                 edges: network.edges.map(e => e.id)
 //             }},
 //             (i) => {
-//                 console.log("I changed!", i);
+//                 Logger.info("I changed!", i);
 //                 this.setState({});
 //             }
 //         );
@@ -59,7 +60,7 @@ export interface IStoryObjectViewRendererProperties {
 //                 y: e.y - bounds.top
 //             };
 
-//             console.log(coords);
+//             Logger.info(coords);
 
 //             if (input) {
 //                 const [loc, type, id] = input.split(".");
@@ -87,7 +88,7 @@ export interface IStoryObjectViewRendererProperties {
 //                     }
 //                 }
 //             }
-//             console.log(store.storyContentObjectRegistry)
+//             Logger.info(store.storyContentObjectRegistry)
 //         }
 //         }>
 //             <div
@@ -153,7 +154,7 @@ export const StoryObjectViewRenderer: FunctionalComponent = () => {
                     edges: network.edges.map(e => e.id)
                 }},
                 (i) => {
-                    console.log("I changed!", i);
+                    Logger.info("I changed!", i);
                     setState({});
                 }
             );
@@ -182,7 +183,7 @@ export const StoryObjectViewRenderer: FunctionalComponent = () => {
                 y: e.y - bounds.top
             };
 
-            console.log(coords);
+            Logger.info(coords);
 
             if (input) {
                 const [loc, type, id] = input.split(".");
@@ -210,7 +211,7 @@ export const StoryObjectViewRenderer: FunctionalComponent = () => {
                     }
                 }
             }
-            console.log(store.storyContentObjectRegistry)
+            Logger.info(store.storyContentObjectRegistry)
         }
         }>
             <div

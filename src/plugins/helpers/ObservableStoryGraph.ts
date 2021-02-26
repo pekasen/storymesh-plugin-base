@@ -48,7 +48,7 @@ export const ObservableStoryGraphSchema = createModelSchema(ObservableStoryGraph
         //     // }, 150)
         //     // // graph.connect(undefined, newValue);
         //     // // catches edges
-        //     // console.log("caught", newValue, context);
+        //     // Logger.info("caught", newValue, context);
         //     // cb(err, newValue);
         //     cb(err, newValue);
         // }

@@ -9,6 +9,7 @@
 //     }
 // }
 
+import Logger from 'js-logger';
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, custom, getDefaultModelSchema, map, ModelSchema, object, serialize, deserialize, mapAsArray } from 'serializr';
 import { IStoryObject } from 'storygraph';
@@ -158,7 +159,7 @@ export function AutoValueRegistrySchema<T extends IValue<T>> () : ModelSchema<Va
     return createModelSchema(ValueRegistry, {
         registry: mapAsArray(custom(
         (v, k, obj) => {
-            console.log("getting schema for", v.constructor.name);
+            Logger.info("getting schema for", v.constructor.name);
             const _schema = getDefaultModelSchema(v.constructor);
             if (!_schema) throw("no schema available for "+ v.contructor.name);
             return serialize(_schema, v);
@@ -166,7 +167,7 @@ export function AutoValueRegistrySchema<T extends IValue<T>> () : ModelSchema<Va
         (jsonVal, context, callback) => {
             const instance = rootStore.root.pluginStore.getNewInstance(jsonVal.role);
             if (!instance) throw("Big time failure !!11 while fetching schema for" + jsonVal.role);
-            console.log("getting schema for", instance.constructor.name);
+            Logger.info("getting schema for", instance.constructor.name);
             const _schema = getDefaultModelSchema(instance.constructor);
             if (!_schema) throw("no schema present during deserialization for " + context.target.constructor.name);
             return deserialize(_schema, jsonVal, callback);
@@ -195,7 +196,7 @@ export function AutoValueRegistrySchema<T extends IValue<T>> () : ModelSchema<Va
                 if (newValue instanceof AbstractStoryObject)
     
                 // catches edges
-                console.log("caught", newValue, context);
+                Logger.info("caught", newValue, context);
                 cb(err, registry);
             }
         })

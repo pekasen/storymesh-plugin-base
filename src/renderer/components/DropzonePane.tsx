@@ -44,18 +44,18 @@
     
 //     componentDidMount(): void {
 //        // this.two.svg.appendTo(this.ref.current);
-//         //console.log("hi from ", this);
+//         //Logger.info("hi from ", this);
 //     }
 
 //     render({ uistate }: IDropzonePaneProps): h.JSX.Element {
-//         console.log(uistate.moveableItems);
+//         Logger.info(uistate.moveableItems);
 
 //         return <div ref={this.ref}
 //             class="pane"
 //             onDrop={(e) => {
 //                 e.preventDefault();
 //                 const id = e.dataTransfer?.getData("text") || undefined;
-//                 console.log(id);
+//                 Logger.info(id);
 
 //                 if (e.target) {
 //                     const elem = e.target as Element;
@@ -63,7 +63,7 @@
 //                     /*
 //                     if (id !== undefined) {
 //                         const data = model.itemByID(id);
-//                         console.log(data);
+//                         Logger.info(data);
 //                         if (data) 
 //                             uistate.moveableItems.register(new MoveableItem(data, e.clientX - boundingRect.left, e.clientY - boundingRect.top));
 //                     }

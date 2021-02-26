@@ -7,6 +7,7 @@ import { ConnectorView } from '../Connector/ConnectorView';
 import { Draggable } from '../Draggable';
 import { MoveSender } from '../Moveable';
 import { ConnectorPort } from 'storygraph';
+import Logger from 'js-logger';
 
 
 export class StoryObjectView extends Component<StoryObjectViewProperties> {
@@ -80,7 +81,7 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                 {
                     Array.from(object.connectors).map(a => {
                         const [, obj] = a as [string, ConnectorPort];
-                        console.log("connector", obj);
+                        Logger.info("connector", obj);
                         return <ConnectorView class={`${obj.type} ${obj.direction}`} id={`${object.id}.${obj.id}`} />
                     })
                 }

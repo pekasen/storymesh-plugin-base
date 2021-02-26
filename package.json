@@ -5,7 +5,7 @@
   "main": "dist/main/index.js",
   "scripts": {
     "test": "echo 'Please do not. ",
-    "start": "electron ."
+    "start": "electron --trace-warnings ."
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "preact-sidebar": "file:../preact-sidebar",
     "quill-delta": "^4.2.2",
     "serializr": "^2.0.3",
-    "storygraph": "github:pekasen/storygraph#dev-20200930",
+    "storygraph": "file:../storygraph",
     "tslib": "^2.0.1",
     "uuid": "^8.3.1"
   },
@@ -59,6 +59,7 @@
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-sass": "^4.1.0",
+    "js-logger": "^1.6.1",
     "merge-stream": "^2.0.0",
     "mobx-utils": "^6.0.1",
     "mocha": "^8.2.0",

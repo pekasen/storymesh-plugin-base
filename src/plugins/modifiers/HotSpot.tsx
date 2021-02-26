@@ -6,6 +6,7 @@ import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { Button, HSlider, MenuTemplate, Table } from "preact-sidebar";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
+import Logger from "js-logger";
 
 export class HotSpot {
     protected _name: string | undefined;    
@@ -100,10 +101,10 @@ class CircleHotSpot extends HotSpot {
             const relY = height * this.y;
             const relR = Math.sqrt(width * width + height * height) * this.radius;
 
-            console.log("circle dims", {x: relX, y: relY, r: relR});
+            Logger.info("circle dims", {x: relX, y: relY, r: relR});
             
             return <circle class={(this.debug) ? "debug" : undefined} cx={relX} cy={relY} r={relR} onClick={() => {
-                console.log("Sending notification to", this.reactionOut);
+                Logger.info("Sending notification to", this.reactionOut);
                 this.reactionOut.notify();
             }}/>
         } else return <circle />
@@ -221,7 +222,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                                     {
                                         min:0,
                                         max: 100,
-                                        formatter: (x) => `${x}`
+                                        formatter: (x) => `${x}%`
                                     },
                                     () => arg.x * 100,
                                     (x) => {
@@ -249,7 +250,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                                     {
                                         min:0,
                                         max: 100,
-                                        formatter: (x) => `${x}`
+                                        formatter: (x) => `${x}%`
                                     },
                                     () => arg.y * 100,
                                     (y) => {
@@ -277,7 +278,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                                     {
                                         min:0,
                                         max: 100,
-                                        formatter: (x) => `${x}`
+                                        formatter: (x) => `${x}%`
                                     },
                                     () => arg.x * 100,
                                     (x) => {

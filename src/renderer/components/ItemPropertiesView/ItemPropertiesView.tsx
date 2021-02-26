@@ -4,6 +4,7 @@ import { FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { Store } from '../..';
 import { SideBar } from "preact-sidebar";
+import Logger from 'js-logger';
 
 export const ItemPropertiesView: FunctionalComponent = () => {
     const { storyContentObjectRegistry, uistate } = useContext(Store);
@@ -39,6 +40,22 @@ export const ItemPropertiesView: FunctionalComponent = () => {
     })
     
     if (state.items) {
-        return <SideBar items={state.items} />
+        return <SideBar items={state.items} onDrop={(ev: DragEvent) => {
+            const data  = ev.dataTransfer?.getData("text");
+
+            if (data != undefined) {
+                Logger.info("Drop Received", data);
+                if (/\w+\.\w+/gm.test(data)) {
+                    Logger.info("edge")
+                }
+                if (data.startsWith("edge")) {
+                    Logger.info("something else")
+                }
+                if (data.startsWith("internal.modifier")) {
+                    Logger.info("modifier")
+                }
+                // if (data.startsWith())
+            } else  console.warn("Received drop without data");
+        }}/>
     } else return <div></div>
 }

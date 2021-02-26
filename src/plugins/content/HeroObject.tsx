@@ -9,6 +9,7 @@ import { connectionField, dropDownField, nameField } from '../helpers/plugInHelp
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { HSlider, MenuTemplate, Text } from "preact-sidebar";
+import Logger from "js-logger";
 
 class _HeroObject extends StoryObject {
     public name: string;
@@ -83,7 +84,7 @@ class _HeroObject extends StoryObject {
                 () => ["grayscale", "invert", "hue-rotate", "blur", "contrast"],
                 () => this.userDefinedProperties.filterType,
                 (selection: string) => {
-                    console.log(selection);
+                    Logger.info(selection);
                     runInAction(() => this.userDefinedProperties.filterType = selection), this.updateValueType();
                 }
             ),

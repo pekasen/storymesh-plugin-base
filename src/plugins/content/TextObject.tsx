@@ -11,6 +11,7 @@ import { createModelSchema } from 'serializr';
 import Delta from "quill-delta";
 import Op from "quill-delta/dist/Op";
 import { MenuTemplate, RichText } from "preact-sidebar";
+import Logger from "js-logger";
 /**
  * Our first little dummy PlugIn
  * 
@@ -74,7 +75,7 @@ class _TextObject extends StoryObject {
             //    () => ["h1", "h2", "h3", "b", "p"],
             //    () => this.userDefinedProperties.tag,
             //    (selection: string) => {
-            //        console.log(selection);
+            //        Logger.info(selection);
             //        runInAction(() => this.userDefinedProperties.tag = selection);
             //    }
             //),
@@ -154,7 +155,7 @@ class _TextObject extends StoryObject {
         }  
 
         const Comp: FunctionComponent<INGWebSProps> = (args => {
-            console.log("rendering", args);
+            Logger.info("rendering", args);
 
             // @todo args.content.resource needs to change type
             const p = <p>{renderDelta(new Delta(args.content?.resource as unknown as Op[]))}</p>

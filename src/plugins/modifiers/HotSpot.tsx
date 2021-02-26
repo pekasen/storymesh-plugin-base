@@ -3,7 +3,7 @@ import { Component, createRef, h, RefObject } from "preact";
 import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
 import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
-import { Button, MenuTemplate, Table } from "preact-sidebar";
+import { Button, HSlider, MenuTemplate, Table } from "preact-sidebar";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
 
@@ -70,6 +70,10 @@ class CircleHotSpot extends HotSpot {
     public get name() {
         if (this._name === undefined) return "CircleHotSpot" + this._num;
         else return this._name;
+    }
+
+    public set name(name: string) {
+        this._name = name;
     }
 
     constructor(x?:number, y?: number, r?: number) {
@@ -210,8 +214,23 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                             }
                         },
                         {
-                            name: "Y",
-                            type: "",
+                            name: "X",
+                            type: (arg, spec) => {
+                                return new HSlider(
+                                    "",
+                                    {
+                                        min:0,
+                                        max: 100,
+                                        formatter: (x) => `${x}`
+                                    },
+                                    () => arg.x * 100,
+                                    (x) => {
+                                        if (spec.setter) {
+                                            spec.setter(x / 100, "x", arg)
+                                        }
+                                    }
+                                );
+                            },
                             editable: true,
                             property: "x",
                             setter: (arg, property, value: HotSpot) => {
@@ -224,7 +243,22 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                         },
                         {
                             name: "Y",
-                            type: "",
+                            type: (arg, spec) => {
+                                return new HSlider(
+                                    "",
+                                    {
+                                        min:0,
+                                        max: 100,
+                                        formatter: (x) => `${x}`
+                                    },
+                                    () => arg.y * 100,
+                                    (y) => {
+                                        if (spec.setter) {
+                                            spec.setter(y / 100, "y", arg)
+                                        }
+                                    }
+                                );
+                            },
                             editable: true,
                             property: "y",
                             setter: (arg, property, value: HotSpot) => {
@@ -237,7 +271,22 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                         },
                         {
                             name: "Radius",
-                            type: "",
+                            type: (arg, spec) => {
+                                return new HSlider(
+                                    "",
+                                    {
+                                        min:0,
+                                        max: 100,
+                                        formatter: (x) => `${x}`
+                                    },
+                                    () => arg.x * 100,
+                                    (x) => {
+                                        if (spec.setter) {
+                                            spec.setter(x / 100, "x", arg)
+                                        }
+                                    }
+                                );
+                            },
                             editable: true,
                             property: "radius",
                             setter: (arg, property, value) => {
@@ -247,6 +296,14 @@ export class HTMLHotSpotModifier extends HMTLModifier {
                                     }
                                 });
                             }
+                        },
+                        {
+                            "name": "Delete",
+                            property: "get",
+                            type: (arg, spec) => {
+                                return new Button("Delete", () => this.removeHotSpot(arg));
+                            },
+                            editable: false
                         }
                     ]
                 },

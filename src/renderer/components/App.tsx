@@ -1,18 +1,27 @@
 import { h } from "preact";
+import { reaction } from 'mobx';
+import Logger from "js-logger";
 
 import { Header } from './Header';
 import { ThemedWindowContent, Window } from "./Window";
 import { Store } from '..';
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { EditorPaneGroup } from './EditorPaneGroup';
 import { NotificationView } from './NotificationView/NotificationView';
-import { reaction } from 'mobx';
-import Logger from "js-logger";
+
+export let rootEngine: BABYLON.Engine;
 
 export const App = (): h.JSX.Element => {
     const [, setState] = useState({});
     const store = useContext(Store);
+    const canvasRef = useRef(null);
+    
     useEffect(() => {
+        if (canvasRef && canvasRef.current) {
+            rootEngine = new BABYLON.Engine(canvasRef.current, true);
+            // rootEngine.
+        }
+
         const disposer = reaction(
             () => [
                 // doesn't ever trigger, remove:
@@ -32,6 +41,7 @@ export const App = (): h.JSX.Element => {
     });
 
     return <Window>
+            <canvas width="0px" height="0px" style="width: 0px; height: 0px;" ref={canvasRef} />
             <Header
                 title={store.uistate.windowProperties.title}
                 leftToolbar={[

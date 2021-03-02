@@ -15,6 +15,7 @@ export class Branch extends StoryObject {
     public role = "internal.content.branch";
     public icon = "icon-switch";
     public activeConnector = 1;
+    public deletable = true;
     private _outConnectors = [
        [ new FlowConnectorOutPort(), new ReactionConnectorInPort("out1", () => this._switchConnectors(0))],
         [new FlowConnectorOutPort(),  new ReactionConnectorInPort("out1", () => this._switchConnectors(1))]

@@ -7,7 +7,7 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { useEffect, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
 
 /**
@@ -50,6 +50,7 @@ class VideoObject extends StoryObject {
             name:                   observable,
             userDefinedProperties:  observable,
             content:                observable,
+            autoPlay:               observable,
             playbackControls:       observable,
             connectors:             computed,
             menuTemplate:           computed,
@@ -74,7 +75,6 @@ class VideoObject extends StoryObject {
                 (sel: boolean) => {
                 runInAction(() => this.autoPlay = sel)
             }),
-            new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateVideoURL(arg)),
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
@@ -117,7 +117,7 @@ class VideoObject extends StoryObject {
         return () => <div class="editor-component"></div>
     }
 
-    public updateValue(val: boolean): void {
+    public updateValue(): void {
 
     }
 }

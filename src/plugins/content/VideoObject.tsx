@@ -4,11 +4,11 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { StoryGraph } from 'storygraph';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { checkboxField, connectionField, nameField } from '../helpers/plugInHelpers';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { useEffect, useState } from "preact/hooks";
-import { MenuTemplate, Text } from "preact-sidebar";
+import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
 
 /**
  * Our first little dummy PlugIn
@@ -24,6 +24,8 @@ class VideoObject extends StoryObject {
     public childNetwork?: StoryGraph;
     public content: IContent;
     public icon: string;
+    public playbackControls: boolean = false;
+    public autoPlay: boolean = false;
 
     public static defaultIcon = "icon-video"
 
@@ -48,6 +50,7 @@ class VideoObject extends StoryObject {
             name:                   observable,
             userDefinedProperties:  observable,
             content:                observable,
+            playbackControls:       observable,
             connectors:             computed,
             menuTemplate:           computed,
             updateName:             action,
@@ -59,13 +62,18 @@ class VideoObject extends StoryObject {
         const ret: MenuTemplate[] = [
             ...nameField(this),
             new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateVideoURL(arg)),
-            ...checkboxField(
-                this,   
-                () => true,
-                (selection: boolean) => {
-                    console.log(selection);
-                    runInAction(() => this.userDefinedProperties.filterType = selection), this.updateValueType();
-                }),
+            new CheckBox(
+                "show Controls",
+                () => this.playbackControls,
+                (sel: boolean) => {
+                runInAction(() => this.playbackControls = sel)
+            }),
+            new CheckBox(
+                "enable AutoPlay",
+                () => this.autoPlay,
+                (sel: boolean) => {
+                runInAction(() => this.autoPlay = sel)
+            }),
             new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateVideoURL(arg)),
             ...connectionField(this),
         ];
@@ -90,7 +98,13 @@ class VideoObject extends StoryObject {
                 setState({});
             }
 
-            const vid = <video id={this.id} class="video" src={content?.resource} autoplay="true"></video>;
+            const vid = <video
+                id={this.id}
+                class="video"
+                src={content?.resource}
+                autoPlay={this.autoPlay}
+                controls={this.playbackControls}
+            ></video>;
 
             return this.modifiers.reduce((p,v) => (
                 v.modify(p)
@@ -101,6 +115,10 @@ class VideoObject extends StoryObject {
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
         return () => <div class="editor-component"></div>
+    }
+
+    public updateValue(val: boolean): void {
+
     }
 }
 

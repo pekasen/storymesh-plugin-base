@@ -1,7 +1,7 @@
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { AbstractStoryObject } from './AbstractStoryObject';
 import { ConnectorDirection, ConnectorPort, ConnectorType, IConnectorPort, StoryGraph } from 'storygraph';
-import { Button, DropDown, MenuTemplate, Table, Text } from 'preact-sidebar';
+import { Button, CheckBox, DropDown, MenuTemplate, Table, Text } from 'preact-sidebar';
 import { useContext } from 'preact/hooks';
 import { Store } from '../../renderer';
 
@@ -11,6 +11,10 @@ interface IDefaultFieldsMethods {
 
 interface INameFieldMethods {
     updateName: (name: string) => void
+}
+
+interface IBooleanFieldMethods {
+    updateValue: (val: boolean) => void
 }
 
 interface IConnectorMethods {
@@ -156,6 +160,28 @@ export function dropDownField(
         //     value: value,
         //     valueReference: handler,
         //     options: options()
+        // }
+    ]
+}
+
+export function checkboxField(
+    target: AbstractStoryObject & IBooleanFieldMethods,
+    value: () => boolean,
+    handler: (selection: boolean) => void): MenuTemplate[] {
+    return [
+        new CheckBox(
+            "Name",
+            {
+                defaultValue: "Name"
+            },
+            value,
+            handler)
+        
+        // {
+        //     label: "Name",
+        //     type: "text",
+        //     value: () => target.name,
+        //     valueReference: (name: string) => target.updateName(name)
         // }
     ]
 }

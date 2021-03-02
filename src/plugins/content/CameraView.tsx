@@ -1,73 +1,95 @@
-import { DataConnectorOutPort, StoryGraph } from 'storygraph';
-import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
-import { exportClass } from '../helpers/exportClass';
-import { action, makeObservable, observable } from 'mobx';
-import { useContext, useRef } from 'preact/hooks';
-import { Store } from '../../renderer';
 import * as BABYLON from 'babylonjs';
 import "babylonjs-loaders";
-import { createModelSchema } from 'serializr';
-import { MenuTemplate } from 'preact-sidebar';
+import { createModelSchema, object } from 'serializr';
+import { DropDown, MenuTemplate } from 'preact-sidebar';
 import Logger from 'js-logger';
+import { action, makeObservable, observable } from 'mobx';
+import { useEffect, useRef } from 'preact/hooks';
+import { DataConnectorInPort, StoryGraph } from 'storygraph';
+import { StoryObject } from "../helpers/AbstractStoryObject";
+import { connectionField, nameField } from '../helpers/plugInHelpers';
+import { exportClass } from '../helpers/exportClass';
+import { rootEngine } from "../../renderer/components/App";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 
 class _CameraView extends StoryObject {
-    public content: any;
-    public childNetwork: undefined;
-    public name: string;
+
+    public name = "Camera View";
     public role = "internal.content.cameraview";
     public isContentNode = true;
     public userDefinedProperties: any;
     public icon: string;
-    
-    static defaultIcon = "icon-camera";
-    
-    public cameraIds: string[];
     public activeCamera: string;
-
-    constructor() {
-        super();
-        this.makeDefaultConnectors();
-
-        this.name = "Camera View";
-        this.icon = _CameraView.defaultIcon;
-        this.content = {};
-        this.activeCamera = "";
-        this.cameraIds = [];
-
-        makeObservable(this, {
-            name: observable,
-            content: observable.deep,
-            cameraIds: observable,
-            activeCamera: observable,
-            updateCameraIds: action,
-            updateName: action,
-            getComponent: false
-        });
-
+    static defaultIcon = "icon-camera";
+    private dataInPort = new DataConnectorInPort(
+        "data-in", 
+        (data: BABYLON.Scene | undefined) => {
+            Logger.info("received", data);
+            if (this._cachedScene === undefined && this._cachedScene != data) {
+                this._cachedScene = data;
+                this.logger.info("reassigning _cachedScene");
+                if (data.cameras.length >= 1) {
+                    this.activeCamera = data.cameras[0].id;
+                } else {
+                    // fallback if no camera is present
+                    this._cachedScene.createDefaultCamera();
+                }
+            }
+        }
+    );
+    private _cachedScene: BABYLON.Scene | undefined;
+    private logger = Logger.get("Camera View");
+    
+    public get cameraIds(): string[] {
+        if (this._cachedScene !== undefined) {
+            return this._cachedScene.cameras.map(cam => cam.id);
+        } else {
+            // try to get the scene
+            this.dataInPort.connections.forEach(edge => {
+                const [, portID] = StoryGraph.parseNodeId(edge.from);
+                this.notificationCenter?.push(portID, {
+                    type: "data-request",
+                    source: this.dataInPort,
+                    data: undefined
+                });
+            });
+            return ["pending"];
+        }
     }
 
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            ...dropDownField(
-                this,
-                () => this.cameraIds as string[],
+            new DropDown(
+                "Camera",
+                {
+                    options: this.cameraIds
+                },
                 () => this.activeCamera,
-                (selection) => this.updateActiveCamera(selection)
+                (camera) => this.updateActiveCamera(camera)
             ),
-
             ...connectionField(this),
          ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
         return ret;
     }
 
-    public pullData(): any {
-        // get parent network
-        const port = this.getPort() as DataConnectorOutPort<string >;
-        if (port && port.pull) return port.pull();
+    constructor() {
+        super();
+        this.makeDefaultConnectors();
+
+        this.icon = _CameraView.defaultIcon;
+        this.activeCamera = "";
+
+        makeObservable(this, {
+            name: observable,
+            // content: observable.deep,
+            activeCamera: observable,
+            updateName: action,
+            cameraIds: false,
+            getComponent: false
+        });
     }
 
     public updateName(name: string) {
@@ -77,51 +99,64 @@ class _CameraView extends StoryObject {
     public getComponent() {
         
         return () => {
-            const canvas = useRef(null);
-            const div = useRef(null);
-            const elem = <canvas id={`canvas-${this.id}`}  ref={canvas} height="auto" width="auto" />;
-            const elem2 = <div class="content canvas-content" id={this.id} ref={div} style="display: block; width=100%; height=100%" />;
+            const canvas = useRef<HTMLCanvasElement>();
+            const div = useRef<HTMLDivElement>();
 
-            elem2.props["children"] = [elem];
-            // const dimensions = (div.current as unknown as HTMLDivElement).getBoundingClientRect();
-            // elem.props["width"] = dimensions.width;
-            // elem.props["height"] = dimensions.height;
-
-            const engine = new BABYLON.Engine(canvas.current);
-            // above code works fine!
-            const pixelRatio = window.devicePixelRatio;
-            // Set the render engine to scale properly
-            engine.setHardwareScalingLevel(1 / pixelRatio)
-            const file = this.pullData() as string | undefined;
+            const elem2 = <div class="content canvas-content" id={this.id} ref={div} style="display: block; width=100%; height=100%" >
+                <canvas id={`canvas-${this.id}`}  ref={canvas} height="300" width="300" />
+            </div>;
             
-            if (file) {
-                Logger.info(file)
-                BABYLON.SceneLoader.ShowLoadingScreen = false;
-                BABYLON.SceneLoader.LoadAsync(
-                    file, "", engine
-                ).then((scene: BABYLON.Scene) => {
-                    // scene.debugLayer.show();
-                    scene.setActiveCameraByID("Camera");
-
-                    this.updateCameraIds(scene.cameras.map(e => e.id));
+            useEffect(() => {
+                // if scene is not cached locally, request it from connection
+                if (this._cachedScene === undefined) {
+                    this.dataInPort.connections.forEach(edge => {
+                        const [,conID] = StoryGraph.parseNodeId(edge.from);
+                        this.notificationCenter?.push(conID, {
+                            type: "data-request",
+                            source: this.dataInPort,
+                            data: undefined
+                        });
+                    });
+                }
+                // this code should be executed _after_ theeee scene is loaded?
+                this.logger.info("Found scene")
+                if (canvas !== undefined && canvas.current != null) {
+                    this.logger.info("Found canvas")
+                    canvas.current.addEventListener("resize", () => {
+                        this.logger.info(`Canvas resized to ${canvas.current?.getBoundingClientRect().width} and ${canvas.current?.getBoundingClientRect().width}.`)
+                    });
+                    // Set the render engine to scale properly
+                    const pixelRatio = window.devicePixelRatio;
+                    const camera = this._cachedScene.getCameraByID(this.activeCamera) ?? undefined;
                     
-                    engine.runRenderLoop(() => {
-                        scene.render();
+                    this.logger.info(`Using ${this.activeCamera} for rendering`, camera);
+                    
+                    rootEngine.setHardwareScalingLevel(1 / pixelRatio)
+                    rootEngine.runRenderLoop(() => {
+                        if (this._cachedScene) this._cachedScene.render();
                     });
 
-                    window.addEventListener("resize", () => {
+                    rootEngine.registerView(
+                        canvas.current,
+                        camera
+                    );
+
+                    const resizeHandler = () => {
                         // ev.currentTarget
-                        engine.resize();
-                    });
-                });
-            }
+                        rootEngine.resize();
+                    }
 
+                    // window.addEventListener("resize", resizeHandler);
+
+                    return () => {
+                        if (canvas.current) rootEngine.unRegisterView(canvas.current);
+                        window.removeEventListener("resize", resizeHandler);
+                    }
+                }
+            });
+            
             return this.modifiers.reduce((p, v) => (v.modify(p)), elem2);
         };
-    }
-
-    public updateCameraIds(ids: string[]) : void {
-        this.cameraIds = ids;
     }
 
     public updateActiveCamera(selection: string) : void {
@@ -132,28 +167,19 @@ class _CameraView extends StoryObject {
         return () => <div></div>
     }
 
-    private getPort() {
-        if (this.connections.length > 0) {
-            const registry = useContext(Store).storyContentObjectRegistry;
-            // get data edges for this node
-            const incoming = this.connections.
-                filter(edge => {
-                    const [id, port]: string[] = StoryGraph.parseNodeId(edge.to);
-                    return port.startsWith("data") && id === this.id;
-                });
-            // pull data from their scene
-            if (incoming.length === 1) {
-                const [id, port] = StoryGraph.parseNodeId(incoming[0].from);
-                const fromNode = registry.getValue(id);
-                const _port = fromNode?.connectors.get(port);
+    public get connectors() {
+        const sup = super.connectors;
+        sup.set(this.dataInPort.id, this.dataInPort);
 
-                if (_port)
-                    return _port
-            }
-        } else return;
+        return sup;
     }
 }
-createModelSchema(_CameraView, {});
+
+createModelSchema(_CameraView, {
+    dataInPort: object(ConnectorSchema),
+    activeCamera: true
+});
+
 export const plugInExport = exportClass(
     _CameraView,
     "Camera View",

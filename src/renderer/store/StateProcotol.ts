@@ -1,3 +1,4 @@
+import Logger from 'js-logger';
 import { action, runInAction } from 'mobx';
 import { NotificationStore } from './Notification';
 import { SelectedItemStore } from "./SelectedItemStore";
@@ -124,7 +125,7 @@ export class StateProcotol {
         if (this._index < (this._buffer.length - 1)) {
             this._index += 1;
             this._execute("undo");
-            console.log(this._index);
+            Logger.info(this._index);
         }
     }
 
@@ -132,7 +133,7 @@ export class StateProcotol {
         if (this._index > -1) {
             this._index -= 1;
             this._execute("redo");
-            console.log(this._index);
+            Logger.info(this._index);
         }
     }
 
@@ -184,7 +185,7 @@ export class StateProcotol {
         }
         // TODO: for each element calculate the final state
         
-        console.log("reverting", _changes);
+        Logger.info("reverting", _changes);
         const executer = () => {
             _changes.forEach(c => {
                 if (c.type) {
@@ -238,7 +239,7 @@ export class StateProcotol {
             const map = (object as Map<string | number | symbol, unknown>);
             runInAction(() => {
                 changes.forEach((change) => {
-                    console.log("map",map, change.key, change.value);
+                    Logger.info("map",map, change.key, change.value);
 
                     if (change.value !== undefined) {
                         map.set(change.key, change.value);
@@ -255,7 +256,7 @@ export class StateProcotol {
             pushLeft(this._buffer, this._scratch);
             this._scratch = [];
             this.busy = false;
-            console.log(this._buffer);
+            Logger.info(this._buffer);
         }, this._timeout);
     }
 

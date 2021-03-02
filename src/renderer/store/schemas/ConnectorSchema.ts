@@ -1,3 +1,4 @@
+import Logger from 'js-logger';
 import { createModelSchema, list, object, optional } from 'serializr';
 import { ConnectorPort, DataConnectorInPort, DataConnectorOutPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, ReactionConnectorInPort, ReactionConnectorOutPort } from 'storygraph';
 import { EdgeSchema } from './EdgeSchema';
@@ -10,7 +11,7 @@ export const ConnectorSchema = createModelSchema(ConnectorPort, {
     connections: list(object(EdgeSchema)),
     associated: true
 }, (context) => {
-    console.log("caught", context);
+    Logger.info("caught", context);
     // const { parentContext } = context;
     const { json } = context;
     switch (json.type) {

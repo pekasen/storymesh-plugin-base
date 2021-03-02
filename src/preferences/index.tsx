@@ -5,12 +5,13 @@ import { createModelSchema, deserialize, primitive, serialize } from "serializr"
 import { __prefPath } from "../constants";
 import { remote } from "electron";
 import { ipcRenderer } from "electron/renderer";
+import Logger from "js-logger";
 // const { windows } = remote;
 
 type Themes = "dark" | "light" | "eggplant";
 
 export class Preferences {
-    theme:  Themes = "eggplant";
+    theme: Themes = "eggplant";
     author = "NGWebS Default User";
     static availableThemes = ["dark", "light", "eggplant"];
 }
@@ -28,8 +29,12 @@ class PreferencesView extends Component<unknown, Preferences> {
 
     constructor(_: never) {
         super();
-        this.state = new Preferences();
-        this.readPrefDict();
+        const _prefs = this.readPrefDict();
+        if (_prefs !== undefined) {
+            this.state = _prefs;
+        } else {
+            this.state = new Preferences();
+        }
     }
 
 
@@ -43,7 +48,7 @@ class PreferencesView extends Component<unknown, Preferences> {
             );
             const _d = JSON.parse(data);
             const _e  = deserialize(Preferences, _d);
-            if (_e) this.setState(_e);
+            if (_e) return _e;
         }
     }
 
@@ -61,7 +66,7 @@ class PreferencesView extends Component<unknown, Preferences> {
 
     public render(_: never, {theme, author}: Preferences): JSX.Element {
 
-        console.log(this.state);
+        Logger.info(this.state);
         
         const FormGroupitem: FunctionalComponent = ({children}) => (
             <div class="form-group-item">{children}</div>
@@ -73,7 +78,7 @@ class PreferencesView extends Component<unknown, Preferences> {
                 <select class="form-control" onInput={(ev: Event) => {
                     const newValue = (ev.target as HTMLSelectElement).value;
                     if (options.findIndex((v) => v === newValue) !== -1) {
-                        console.log(newValue);
+                        Logger.info(newValue);
                         this.setState({ theme: newValue as Themes});
                     }
                 }}>

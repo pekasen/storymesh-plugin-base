@@ -168,5 +168,5 @@ export function patchMenu(): void {
     
     
     // Menu.setApplicationMenu(appMenu);
-    // console.log(appMenu);
+    // Logger.info(appMenu);
 }

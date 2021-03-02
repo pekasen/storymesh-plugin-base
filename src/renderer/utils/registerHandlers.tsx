@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron/renderer';
 import { readFile, writeFile } from "fs";
+import Logger from 'js-logger';
 import { deserialize, serialize } from 'serializr';
 import { rootStore } from '../index';
 import { RootStoreSchema } from "../store/rootStore";
@@ -11,7 +12,7 @@ export function registerHandlers(): void {
     ipcRenderer.on('save', (e, { file }) => {
         // rootStore.root.uistate.setFile(file);
         const json = serialize(RootStoreSchema, rootStore.root);
-        console.log(json)
+        Logger.info(json)
         if (file !== undefined) {
             rootStore.root.uistate.setFile(file)
         }
@@ -40,7 +41,7 @@ export function registerHandlers(): void {
                 deserialize(RootStoreSchema, parsedData, (err, result) => {
                     if (err) throw(err);
                     
-                    console.log("Heres what's loaded", result);
+                    Logger.info("Heres what's loaded", result);
                     rootStore.root.replace(result);
                 }, null);
             }
@@ -60,7 +61,7 @@ export function registerHandlers(): void {
     ipcRenderer.on('delete', () => {
         const selectedItemIds = rootStore.root.uistate.selectedItems.ids;
         const reg = rootStore.root.storyContentObjectRegistry;
-        console.log("delete", selectedItemIds);
+        Logger.info("delete", selectedItemIds);
         const loadedObject = rootStore.root.storyContentObjectRegistry.getValue(rootStore.root.uistate.loadedItem);
 
         selectedItemIds.forEach(selectedItemID => {

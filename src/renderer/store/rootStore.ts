@@ -90,7 +90,7 @@ export class RootStore {
         });
 
         deepObserve(this, (change): void => {
-            // console.log("changed state", path);
+            // Logger.info("changed state", path);
             this.protocol.persist(change);
         });
     }
@@ -131,9 +131,9 @@ export const RootStoreSchema = createModelSchema(
     }
 );
 
-// observe(this, (change) => console.log("changed state", change));
+// observe(this, (change) => Logger.info("changed state", change));
         // spy((change) => {
-        //     // console.log("changed state", change)
+        //     // Logger.info("changed state", change)
         //     if (change.type == "add" ||
         //         change.type == "splice" ||
         //         change.type == "update" ||
@@ -150,7 +150,7 @@ export const RootStoreSchema = createModelSchema(
         //             const _ret: unknown[] = [];
         //             Object.entries(o).forEach(value => {
         //                 const [key, val] = value;
-        //                 console.log(key);
+        //                 Logger.info(key);
 
         //                 if (val && typeof val === "object") {
         //                     _ret.push(...traverse(val));
@@ -162,10 +162,10 @@ export const RootStoreSchema = createModelSchema(
         //         }
                 
         //         const _r = traverse(this.storyContentObjectRegistry);
-        //         console.log(_r);
+        //         Logger.info(_r);
 
         //     },
         //     (arg, prev, r) => {
-        //         console.log("state", r);
+        //         Logger.info("state", r);
         //     }
         // )

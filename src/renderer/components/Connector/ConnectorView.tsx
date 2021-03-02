@@ -1,3 +1,4 @@
+import Logger from 'js-logger';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
 import { useContext } from 'preact/hooks';
@@ -42,7 +43,7 @@ export class ConnectorView extends Component<IConnectorViewProps> {
             ev.preventDefault();
 
             const _id = ev.dataTransfer?.getData("text");
-            console.log("received drop from", _id);
+            Logger.info("received drop from", _id);
             if (_id && obj) {
                 const [toId, toPort] = StoryGraph.parseNodeId(_id);
                 obj.addConnection(

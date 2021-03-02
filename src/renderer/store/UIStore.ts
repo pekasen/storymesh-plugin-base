@@ -4,6 +4,7 @@ import { WindowProperties } from './WindowProperties';
 import { ValueRegistry, ValueRegistrySchema } from '../utils/registry';
 import { SelectedItemStore, SelectedItemStoreSchema } from './SelectedItemStore';
 import { createModelSchema, list, object, primitive, setDefaultModelSchema } from 'serializr';
+import Logger from "js-logger";
 
 
 export class UIStore {
@@ -32,7 +33,7 @@ export class UIStore {
         this.file = file;
         const titleRG = /\w+(?=\.(json))/gm;
         const title = titleRG.exec(file);
-        console.log("Saved as", title);
+        Logger.info("Saved as", title);
         if(title && title[0]) {
             this.windowProperties.setTitle(
                 String(title[0])

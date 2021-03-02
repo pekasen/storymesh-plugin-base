@@ -14,6 +14,8 @@ import { UIStore } from "../../renderer/store/UIStore";
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
 import { MenuTemplate } from 'preact-sidebar';
 import { INGWebSProps, IPlugIn } from '../../renderer/utils/PlugInClassRegistry';
+import { useEffect, useState } from 'preact/hooks';
+import Logger from 'js-logger';
 
 /**
  * Our second little dummy PlugIn
@@ -39,6 +41,9 @@ export class Container extends StoryObject {
         this.role = "internal.content.container";
         this.isContentNode = false;
         this.childNetwork = new ObservableStoryGraph(this.id);
+        this.childNetwork.notificationCenter.subscribe(this.id+"/rerender", () => {
+            if (this._rerender) this._rerender();
+        });
         this.makeDefaultConnectors();
 
 
@@ -61,6 +66,20 @@ export class Container extends StoryObject {
         const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph, modifiers}) => {
             // const startNode = graph?
             // TODO: class name?
+
+            const [, setState] = useState({});
+
+            useEffect(() => {
+                this._rerender = () => {
+                    Logger.info(`${this.id} rerendering`);
+                    setState({});
+                };
+
+                return () => {
+                    this._rerender = undefined;
+                };
+            });
+            
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
             if ( this.startNode) {

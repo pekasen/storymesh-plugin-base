@@ -51,8 +51,11 @@
     .storywrapper .ngwebs-story a,
     .storywrapper .ngwebs-story span {
       font-size: 1rem; }
-    .storywrapper .ngwebs-story figcaption {
-      font-size: 0.7rem; }
+    .storywrapper .ngwebs-story figure img {
+      margin: 0; }
+    .storywrapper .ngwebs-story figure figcaption {
+      font-size: 0.8rem;
+      margin: 5px 0 0 0; }
     .storywrapper .ngwebs-story h1,
     .storywrapper .ngwebs-story h2,
     .storywrapper .ngwebs-story h3,

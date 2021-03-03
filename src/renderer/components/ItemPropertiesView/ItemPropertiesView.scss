@@ -35,6 +35,7 @@
         color: getValue(text);
       }
       &.slider-item {
+        display: block;
         label {
           line-height: 47px;
           margin: 1px 5px 5px 0;
@@ -114,7 +115,7 @@
       select {
         @include customize(theme) {
           color: getValue(menu-font);
-          background: getValue(text-background);
+          background: getValue(node-object-background);
         }
         border: none;
       }

@@ -145,7 +145,7 @@
       }
       &::-webkit-slider-runnable-track {
         @include customize(theme) {
-          background: getValue(text-background);
+          background: getValue(node-object-background);
         }
         transition: background 0.2s ease;
         border: 0;

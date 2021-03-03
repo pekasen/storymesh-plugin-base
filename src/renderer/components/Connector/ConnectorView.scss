@@ -1,74 +1,58 @@
 /* ==================== CONNECTOR ===================== */
 
 .story-object-view {
-  .flow {
+
+  .connector-container {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    &.in {
+      top: -8px;
+    }
+    &.out {
+      bottom: -8px;
+    }
+    span {
+      margin: 0 5px;
+    }
+  }
+
+  .flow, .reaction, .data {
     width: 16px;
     height: 16px;
-    display: inline-block;
-    position: absolute;
     z-index: 99;
     border-radius: 50%;
     transition: background .4s ease-in, border-color .4s ease-in;
-    @include customize(theme){
-      background: getValue(flow);
-    }
     border: 2px solid;
     @include customize(theme){
       border-color: getValue(menu-background);
     }
-    &.in {
-      top: -8px;
-      &:nth-of-type(1){
-        left: 50%;
-      }
-    }
-    &.out {
-      bottom: -8px;
-      &:nth-of-type(1){
-        left: 50%;
-      }
+  }
+  .flow {
+    @include customize(theme){
+      background: getValue(flow);
     }
   }
 
   .reaction {
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-    position: absolute;
-    z-index: 99;
-    border-radius: 50%;
-    transition: background .4s ease-in, border-color .4s ease-in;
     @include customize(theme){
       background: getValue(reaction);
     }
-    border: 2px solid;
-    @include customize(theme){
-      border-color: getValue(menu-background);
-    }
   }
   .data {
-    width: 16px;
-    height: 16px;
-    display: inline-block;
     position: absolute;
-    z-index: 99;
-    border-radius: 50%;
+    top: -100%;
     @include customize(theme){
       background: getValue(data);
     }
-    border: 2px solid;
-    @include customize(theme){
-      border-color: getValue(menu-background);
-    }
 
     &.in {
-      top: 50%;
-      left: -8px;
+      left: -12px;
     }
 
     &.out {
-      top: 50%;
-      right: -8px;
+      right: -12px;
     }
   }
 }

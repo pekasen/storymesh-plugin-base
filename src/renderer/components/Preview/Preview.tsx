@@ -1,4 +1,5 @@
 import { Component, createRef, FunctionComponent, h } from 'preact';
+import Logger from 'js-logger';
 import { INGWebSProps } from '../../utils/PlugInClassRegistry';
 import { VerticalPaneGroup, VerticalMiniPane, VerticalPane } from '../VerticalPane/VerticalPane';
 import { deepObserve, IDisposer } from 'mobx-utils';
@@ -6,7 +7,6 @@ import { useContext } from 'preact/hooks';
 import { Store } from '../..';
 import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { RootStore } from '../../store/rootStore';
-import Logger from 'js-logger';
 
 interface IPreviewWrapperProps extends INGWebSProps {
     topLevelObjectId: string

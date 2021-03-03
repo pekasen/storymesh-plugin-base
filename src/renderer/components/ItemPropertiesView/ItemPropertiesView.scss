@@ -57,7 +57,7 @@
         line-height: 25px;
         @include customize(theme) {
           color: getValue(menu-font);
-          background: getValue(text-background);
+          background: getValue(node-object-background);
         }
         border: 0;
       }
@@ -182,6 +182,11 @@
         background: getValue(node-object-background);
       }
       border: 0;
+      table, thead, tbody {
+        @include customize(theme) {
+          background: getValue(node-area-background);
+        }
+      }
     }
   }
   .btn {

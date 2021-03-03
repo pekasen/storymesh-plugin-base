@@ -2,7 +2,7 @@
 .item-gallery-container {
   height: 80px;
   @include customize(theme) {
-    background: getValue(node-object-background);
+    background: getValue(highlight-color-font);
   }
   transition: height 0.3s ease;
   border-radius: 7px;
@@ -43,7 +43,7 @@
     left: calc(50% - 20px);
     border-radius: 50%;
     @include customize(theme) {
-      background: getValue(node-object-background);
+      background: getValue(highlight-color-font);
     }
     & .icon {
       transition: transform 0.2s ease;

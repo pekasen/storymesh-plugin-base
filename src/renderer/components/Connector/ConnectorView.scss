@@ -41,18 +41,8 @@
     }
   }
   .data {
-    position: absolute;
-    top: -100%;
     @include customize(theme){
       background: getValue(data);
-    }
-
-    &.in {
-      left: -12px;
-    }
-
-    &.out {
-      right: -12px;
     }
   }
 }

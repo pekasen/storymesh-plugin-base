@@ -79,11 +79,19 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                     <span>{object.content?.resource}</span>
                 </div>
                 {
-                    Array.from(object.connectors).map(a => {
-                        const [, obj] = a as [string, ConnectorPort];
-                        Logger.info("connector", obj);
-                        return <ConnectorView class={`${obj.type} ${obj.direction}`} id={`${object.id}.${obj.id}`} />
-                    })
+                    ["in", "out"].map(direction => (
+                        <div class={`connector-container ${direction}`}>
+                        {
+                            Array.from(object.connectors)
+                            .filter(([, obj]) => obj.direction === direction)
+                            .map(a => {
+                                const [, obj] = a as [string, ConnectorPort];
+                                // Logger.info("connector", obj);
+                                return <ConnectorView class={`connector ${obj.type} ${obj.direction}`} id={`${object.id}.${obj.id}`} />
+                            })
+                        }
+                        </div>
+                    ))
                 }
             </div>
         </div>;

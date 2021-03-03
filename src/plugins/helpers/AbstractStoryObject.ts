@@ -84,7 +84,7 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             (connector as ConnectorPort).bindTo(notificationCenter, this.id);
         });
         notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
-            if (payload) {
+            if (payload && payload.data) {
                 Logger.info("binding", payload);
                 if (payload.data.add !== undefined) {
                     this.addConnections(payload.data.add);

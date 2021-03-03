@@ -11,7 +11,8 @@ Logger.useDefaults({
     defaultLevel: Logger.INFO,
     formatter: function(messages, context) {
         // prefix each log message with a timestamp.
-        messages.unshift(new Date().toUTCString())
+        if (context.name !== undefined) messages.unshift(context.name, ":");
+        messages.unshift(new Date().toUTCString());
     }
 });
 

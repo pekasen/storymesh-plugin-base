@@ -85,9 +85,25 @@
             background: getValue(node-object-background);
           }
         }
+        tbody {
+          tr:first-of-type {
+            td {
+              padding: 15px 0 5px 5px;
+            }
+          }
+        }
         td {
+          padding: 5px;
           > .form-group-item {
+            display: table-cell;
             margin: 0;
+            padding: 0;
+            .form-control {
+              padding: 0 5px;
+              @include customize(theme) {
+                background: getValue(node-area-background);
+              }
+            }
           }
           .slider-item {
             flex-wrap: nowrap;
@@ -110,6 +126,10 @@
         }
         th {
           height: 25px;
+          padding: 10px 5px;
+          border-right: 0;
+          border-bottom: 1px dashed;
+          font-size: 1.12em;
         }
       }
       select {

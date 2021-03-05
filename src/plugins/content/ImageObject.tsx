@@ -40,11 +40,12 @@ class _ImageObject extends StoryObject {
         this.content = {
             resource: "https://source.unsplash.com/random/1920x1080",
             contentType: "url",
-            altText: "This is an image",
+            altText: "This is an image"
         }
 
         this.userDefinedProperties = {
-            caption: "This is the image caption"
+            caption: "This is the image caption",
+            mediaSource: "Who made this?"
         }
         // this.menuTemplate = connectionField(this);
         this.icon = _ImageObject.defaultIcon;
@@ -58,7 +59,8 @@ class _ImageObject extends StoryObject {
             updateName: action,
             updateImageURL: action,
             updateAltText: action,
-            updateCaption: action
+            updateCaption: action,
+            updateMediaSource: action
         });
     }
 
@@ -66,6 +68,10 @@ class _ImageObject extends StoryObject {
         const ret: MenuTemplate[] = [
             ...nameField(this),
             new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateImageURL(arg)),
+            new Text("Alt text", {defaultValue: "This is an image"}, () => this.content.altText, (arg: string) => this.updateAltText(arg)),
+            new Text("Caption", {defaultValue: "This is the caption"}, () => this.userDefinedProperties.caption, (arg: string) => this.updateCaption(arg)),
+            new Text("Source", {defaultValue: "Who made dis?"}, () => this.userDefinedProperties.mediaSource, (arg: string) => this.updateMediaSource(arg)),
+
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
@@ -88,6 +94,10 @@ class _ImageObject extends StoryObject {
         this.userDefinedProperties.caption = caption;
     }
 
+    public updateMediaSource(mediaSource: string) {
+        this.userDefinedProperties.mediaSource = mediaSource;
+    }
+
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
 
@@ -97,22 +107,15 @@ class _ImageObject extends StoryObject {
                 setState({});
             }
 
-            const img = <div id={this.id} class="image">
-                <img src={content?.resource}></img>
-            </div>;
-
-            return (
-                <div class="imagewrapper">
+            const imgContainer = <div id={this.id} class="imagewrapper image">
                     <figure>
-                        {
-                            this.modifiers.reduce((p, v) => (
-                                v.modify(p)
-                            ), img)
-                        }
-                        <figcaption>{this.userDefinedProperties.caption}</figcaption>
+                        <img src={content?.resource} alt={this.content.altText} />
+                        <figcaption>{this.userDefinedProperties.caption} <span class="media-source">// {this.userDefinedProperties.mediaSource}</span></figcaption>
                     </figure>
-                </div>
-            );
+                </div>;
+                return this.modifiers.reduce((p, v) => (
+                        v.modify(p)
+                    ), imgContainer)
         }
         return Comp
     }

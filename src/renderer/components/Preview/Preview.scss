@@ -79,9 +79,11 @@
   margin-top: 50px;
 
   .ngwebs-story {
-    margin: 0 auto;
-    //max-width: 768px;
-    padding: 0 20px;
+    .ngwebs-story-container {
+      width: 100%;
+      display: grid;
+      place-items: center;
+    }
 
     .hero {
       display: flex;
@@ -114,6 +116,10 @@
       figcaption {
         font-size: 0.8rem;
         margin: 5px 0 0 0;
+        span.media-source {
+          font-size: 0.8rem;
+          color: #5d5c5c;
+        }
       }
     }
 
@@ -189,6 +195,13 @@
       width: 100%;
       height: auto;
       margin: 20px 0;
+    }
+
+    // VIDEO
+
+    video {
+      width: 100%;
+      height: auto;
     }
 
     // LIST

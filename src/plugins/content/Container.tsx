@@ -12,7 +12,7 @@ import { IStoryObject, StoryGraph } from 'storygraph';
 import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { UIStore } from "../../renderer/store/UIStore";
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
-import { MenuTemplate, Text, DropDown } from 'preact-sidebar';
+import { MenuTemplate, Text, DropDown, ColorPicker } from 'preact-sidebar';
 import { INGWebSProps, IPlugIn } from '../../renderer/utils/PlugInClassRegistry';
 import { useEffect, useState } from 'preact/hooks';
 import Logger from 'js-logger';
@@ -50,7 +50,8 @@ export class Container extends StoryObject {
         this.userDefinedProperties = {
             padding: "0 0 0 0",
             maxWidth: "auto",
-            placeItems: "center"
+            placeItems: "center",
+            backgroundColor: "#ffffff"
         };
         this.icon = Container.defaultIcon;
 
@@ -65,7 +66,8 @@ export class Container extends StoryObject {
             updateName: action,
             updatePadding: action,
             updateMaxWidth: action,
-            updatePlaceItems: action
+            updatePlaceItems: action,
+            updateBackgroundColor: action
         });
     }
 
@@ -92,7 +94,10 @@ export class Container extends StoryObject {
             if (this.startNode) {
                 path = graph?.traverse(registry, this.startNode.id, Array.from(this.startNode.connectors)[0][1].id)
                 if (path !== undefined) {
-                    div = <div style={`padding:${this.userDefinedProperties.padding};max-width:${this.userDefinedProperties.maxWidth};place-items:${this.userDefinedProperties.placeItems}`} id={id} class={"ngwebs-story-container"}>
+                    div = <div style={`padding:${this.userDefinedProperties.padding};
+                                       max-width:${this.userDefinedProperties.maxWidth};
+                                       place-items:${this.userDefinedProperties.placeItems};
+                                       background-color:${this.userDefinedProperties.backgroundColor}`} id={id} class={"ngwebs-story-container"}>
                         {
                             path.map(node => {
                                 // const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
@@ -159,6 +164,10 @@ export class Container extends StoryObject {
 
     public updatePlaceItems(placeItems: string): void {
         this.userDefinedProperties.placeItems = placeItems
+    }
+
+    public updateBackgroundColor(backgroundColor: string): void {
+        this.userDefinedProperties.backgroundColor = backgroundColor
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
@@ -229,6 +238,11 @@ export class Container extends StoryObject {
                 },
                 () => this.userDefinedProperties.placeItems,
                 (item) => this.updatePlaceItems(item)
+            ),
+            new ColorPicker(
+                "Background Color",
+                () => this.userDefinedProperties.backgroundColor,
+                (color) => this.updateBackgroundColor(color)
             ),
             ...connectionField(this),
         ];

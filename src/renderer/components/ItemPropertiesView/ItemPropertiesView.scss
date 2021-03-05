@@ -56,11 +56,22 @@
         padding: 0 5px;
         font-size: 12px;
         line-height: 25px;
+        border: 0;
         @include customize(theme) {
           color: getValue(menu-font);
           background: getValue(node-object-background);
         }
-        border: 0;
+        &:focus {
+          @include customize(theme) {
+            box-shadow:
+              0 1.4px 1.1px rgba(getValue(highlight-color), 0.034),
+              0 3.25px 2.6px rgba(getValue(highlight-color), 0.048),
+              0 6.2px 5px rgba(getValue(highlight-color), 0.06),
+              0 11px 8px rgba(getValue(highlight-color), 0.072);
+            border: 2px solid getValue(highlight-color);
+            box-sizing: border-box;
+          }
+        }
       }
       label,
       p {
@@ -85,12 +96,49 @@
             background: getValue(node-object-background);
           }
         }
+        thead{
+          tr:active {
+            @include customize(theme) {
+              background: getValue(highlight-color);
+              color: getValue(highlight-color-font);
+            }
+          }
+        }
+        tbody {
+          tr:first-of-type {
+            td {
+              padding: 15px 0 5px 5px;
+            }
+          }
+          tr:active {
+            @include customize(theme) {
+              background: getValue(highlight-color);
+              color: getValue(highlight-color-font);
+            }
+          }
+        }
         td {
+          padding: 5px;
           > .form-group-item {
+            display: table-cell;
             margin: 0;
+            padding: 0;
+            .form-control {
+              padding: 0 5px;
+              @include customize(theme) {
+                background: getValue(node-area-background);
+              }
+            }
           }
           .slider-item {
             flex-wrap: nowrap;
+            input[type="range"] {
+              &::-webkit-slider-runnable-track {
+                @include customize(theme) {
+                  background-color: getValue(node-object-background);
+                }
+              }
+            }
             span {
               min-width: 16px;
             }
@@ -110,6 +158,10 @@
         }
         th {
           height: 25px;
+          padding: 10px 5px;
+          border-right: 0;
+          border-bottom: 1px dashed;
+          font-size: 1.12em;
         }
       }
       select {
@@ -145,7 +197,7 @@
       }
       &::-webkit-slider-runnable-track {
         @include customize(theme) {
-          background: getValue(node-object-background);
+          background-color: getValue(node-area-background);
         }
         transition: background 0.2s ease;
         border: 0;
@@ -169,12 +221,12 @@
       }
       &:hover::-webkit-slider-runnable-track {
         @include customize(theme) {
-          background: getValue(text);
+          background-color: getValue(text);
         }
       }
       &:focus::-webkit-slider-runnable-track {
         @include customize(theme) {
-          background: getValue(text);
+          background-color: getValue(text);
         }
       }
     }
@@ -183,7 +235,9 @@
         background: getValue(node-object-background);
       }
       border: 0;
-      table, thead, tbody {
+      table,
+      thead,
+      tbody {
         @include customize(theme) {
           background: getValue(node-area-background);
         }

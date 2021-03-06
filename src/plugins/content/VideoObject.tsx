@@ -11,9 +11,6 @@ import { useState } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
 
 /**
- * Our first little dummy PlugIn
- * 
- * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
 class VideoObject extends StoryObject {
@@ -26,6 +23,7 @@ class VideoObject extends StoryObject {
     public icon: string;
     public playbackControls: boolean = false;
     public autoPlay: boolean = false;
+    public loopable: boolean = false;
 
     public static defaultIcon = "icon-video"
 
@@ -52,6 +50,7 @@ class VideoObject extends StoryObject {
             content:                observable,
             autoPlay:               observable,
             playbackControls:       observable,
+            loopable:               observable,
             connectors:             computed,
             menuTemplate:           computed,
             updateName:             action,
@@ -74,6 +73,12 @@ class VideoObject extends StoryObject {
                 () => this.autoPlay,
                 (sel: boolean) => {
                 runInAction(() => this.autoPlay = sel)
+            }),
+            new CheckBox(
+                "enable Looping",
+                () => this.loopable,
+                (sel: boolean) => {
+                runInAction(() => this.loopable = sel)
             }),
             ...connectionField(this),
         ];
@@ -104,6 +109,7 @@ class VideoObject extends StoryObject {
                 src={content?.resource}
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
+                loop={this.loopable}
             ></video>;
 
             return this.modifiers.reduce((p,v) => (

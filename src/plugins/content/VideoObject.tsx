@@ -8,7 +8,7 @@ import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { useState } from "preact/hooks";
-import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
+import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
 
 /**
  */
@@ -25,6 +25,7 @@ class VideoObject extends StoryObject {
     public autoPlay: boolean = false;
     public loopable: boolean = false;
     public static defaultIcon = "icon-video";  
+    public scrollThroughSpeed: number = 100;
 
     constructor() {
         super();
@@ -50,6 +51,7 @@ class VideoObject extends StoryObject {
             autoPlay:               observable,
             playbackControls:       observable,
             loopable:               observable,
+            scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
             updateName:             action,
@@ -65,19 +67,30 @@ class VideoObject extends StoryObject {
                 "show Controls",
                 () => this.playbackControls,
                 (sel: boolean) => {
-                runInAction(() => this.playbackControls = sel)
+                    runInAction(() => this.playbackControls = sel)
+            }),
+            new HSlider(
+                "Scroll-through speed",
+                {
+                    min: 100,
+                    max: 1000,
+                    formatter: (val: number) => `${val}`
+                },
+                () => this.scrollThroughSpeed,
+                (sel: number) => {
+                    runInAction(() => this.scrollThroughSpeed = sel)
             }),
             new CheckBox(
                 "enable AutoPlay",
                 () => this.autoPlay,
                 (sel: boolean) => {
-                runInAction(() => this.autoPlay = sel)
+                    runInAction(() => this.autoPlay = sel)
             }),
             new CheckBox(
                 "enable Looping",
                 () => this.loopable,
                 (sel: boolean) => {
-                runInAction(() => this.loopable = sel)
+                    runInAction(() => this.loopable = sel)
             }),
             ...connectionField(this),
         ];
@@ -102,7 +115,7 @@ class VideoObject extends StoryObject {
                 setState({});
             }
             
-            const playbackConst = 500;
+            const playbackConst = this.scrollThroughSpeed;
             const idVideo = this.id.concat(".preview");
             const videoWrapperId = this.id.concat(".video-height");
             const vid = <video          

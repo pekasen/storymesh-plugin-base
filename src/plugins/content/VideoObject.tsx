@@ -8,7 +8,7 @@ import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { useState } from "preact/hooks";
-import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
+import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
 
 /**
  */
@@ -24,8 +24,8 @@ class VideoObject extends StoryObject {
     public playbackControls: boolean = false;
     public autoPlay: boolean = false;
     public loopable: boolean = false;
-
-    public static defaultIcon = "icon-video"
+    public static defaultIcon = "icon-video";  
+    public scrollThroughSpeed: number = 100;
 
     constructor() {
         super();
@@ -37,13 +37,13 @@ class VideoObject extends StoryObject {
         this.makeDefaultConnectors();
         
         this.content = {
-            resource: "https://cdn.videvo.net/videvo_files/video/premium/2020-08/small_watermarked/Smart_City_Walking_preview.webm",
+            resource: "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm",
             contentType: "url",
             altText: "This is a video"
         }
         // this.menuTemplate = connectionField(this);
         this.icon = VideoObject.defaultIcon;
-
+     
         makeObservable(this,{
             name:                   observable,
             userDefinedProperties:  observable,
@@ -51,6 +51,7 @@ class VideoObject extends StoryObject {
             autoPlay:               observable,
             playbackControls:       observable,
             loopable:               observable,
+            scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
             updateName:             action,
@@ -66,19 +67,30 @@ class VideoObject extends StoryObject {
                 "show Controls",
                 () => this.playbackControls,
                 (sel: boolean) => {
-                runInAction(() => this.playbackControls = sel)
+                    runInAction(() => this.playbackControls = sel)
+            }),
+            new HSlider(
+                "Scroll-through speed",
+                {
+                    min: 100,
+                    max: 1000,
+                    formatter: (val: number) => `${val}`
+                },
+                () => this.scrollThroughSpeed,
+                (sel: number) => {
+                    runInAction(() => this.scrollThroughSpeed = sel)
             }),
             new CheckBox(
                 "enable AutoPlay",
                 () => this.autoPlay,
                 (sel: boolean) => {
-                runInAction(() => this.autoPlay = sel)
+                    runInAction(() => this.autoPlay = sel)
             }),
             new CheckBox(
                 "enable Looping",
                 () => this.loopable,
                 (sel: boolean) => {
-                runInAction(() => this.loopable = sel)
+                    runInAction(() => this.loopable = sel)
             }),
             ...connectionField(this),
         ];
@@ -93,7 +105,7 @@ class VideoObject extends StoryObject {
     public updateName(name: string): void {
         this.name = name;
     }
-
+    
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
 
@@ -102,19 +114,47 @@ class VideoObject extends StoryObject {
             this._rerender = () => {
                 setState({});
             }
-
-            const vid = <video
-                id={this.id}
+            
+            const playbackConst = this.scrollThroughSpeed;
+            const idVideo = this.id.concat(".preview");
+            const videoWrapperId = this.id.concat(".video-height");
+            const vid = <video          
+                id={idVideo}
                 class="video"
+                type="video/webm; codecs='vp8, vorbis'"
                 src={content?.resource}
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
                 loop={this.loopable}
+                autobuffer="autobuffer"
+                preload="preload"
+                onLoadedMetadata = { e => 
+                    {
+                        const setHeight = document.getElementById(videoWrapperId);          
+                        const videoElement = document.getElementById(idVideo) as HTMLVideoElement;                
+                        if (setHeight && videoElement) {
+                            setHeight.style.height = Math.floor(videoElement.duration) * playbackConst + "px";
+                        }                     
+                    }
+                }
             ></video>;
 
-            return this.modifiers.reduce((p,v) => (
-                v.modify(p)
-            ), vid);
+            function scrollPlay(): void {                  
+                var verticalPane = document.getElementsByClassName("vertical-pane")[3]; //@TODO: replace this with targeted DOM identifier
+                const videoElement = document.getElementById(idVideo) as HTMLVideoElement; 
+                var frameNumber  = verticalPane.scrollTop / playbackConst;
+                if (videoElement) 
+                    videoElement.currentTime  = frameNumber;
+                window.requestAnimationFrame(scrollPlay);                    
+            }
+            window.requestAnimationFrame(scrollPlay);
+
+            return <div id={videoWrapperId}> {
+                this.modifiers.reduce((p,v) => (
+                    v.modify(p)
+                ), vid)
+            }
+            </div>
         }
         return Comp
     }

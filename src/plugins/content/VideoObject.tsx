@@ -24,6 +24,7 @@ class VideoObject extends StoryObject {
     public playbackControls: boolean = false;
     public autoPlay: boolean = false;
     public loopable: boolean = false;
+    public scrollable: boolean = false;
     public static defaultIcon = "icon-video";  
     public scrollThroughSpeed: number = 100;
 
@@ -51,6 +52,7 @@ class VideoObject extends StoryObject {
             autoPlay:               observable,
             playbackControls:       observable,
             loopable:               observable,
+            scrollable:             observable,
             scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
@@ -68,18 +70,7 @@ class VideoObject extends StoryObject {
                 () => this.playbackControls,
                 (sel: boolean) => {
                     runInAction(() => this.playbackControls = sel)
-            }),
-            new HSlider(
-                "Scroll-through speed",
-                {
-                    min: 100,
-                    max: 1000,
-                    formatter: (val: number) => `${val}`
-                },
-                () => this.scrollThroughSpeed,
-                (sel: number) => {
-                    runInAction(() => this.scrollThroughSpeed = sel)
-            }),
+            }),           
             new CheckBox(
                 "enable AutoPlay",
                 () => this.autoPlay,
@@ -91,6 +82,23 @@ class VideoObject extends StoryObject {
                 () => this.loopable,
                 (sel: boolean) => {
                     runInAction(() => this.loopable = sel)
+            }),
+            new CheckBox(
+                "make Scrollable",
+                () => this.scrollable,
+                (sel: boolean) => {
+                    runInAction(() => this.scrollable = sel)
+            }),
+            new HSlider(
+                "Scroll-through speed",
+                {
+                    min: 100,
+                    max: 1000,
+                    formatter: (val: number) => `${val}`
+                },
+                () => this.scrollThroughSpeed,
+                (sel: number) => {
+                    runInAction(() => this.scrollThroughSpeed = sel)
             }),
             ...connectionField(this),
         ];
@@ -147,7 +155,8 @@ class VideoObject extends StoryObject {
                     videoElement.currentTime  = frameNumber;
                 window.requestAnimationFrame(scrollPlay);                    
             }
-            window.requestAnimationFrame(scrollPlay);
+            if (this.scrollable)
+                window.requestAnimationFrame(scrollPlay);
 
             return <div id={videoWrapperId}> {
                 this.modifiers.reduce((p,v) => (

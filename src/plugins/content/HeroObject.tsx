@@ -17,7 +17,7 @@ class _HeroObject extends StoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph;
-    public content: any; // extend in storygraph?
+    public content: IContent;
     public icon: string;
     public valueType: any;
     public isVideo: boolean = false;

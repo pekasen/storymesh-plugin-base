@@ -24,8 +24,12 @@ class VideoObject extends StoryObject {
     public playbackControls: boolean = false;
     public autoPlay: boolean = false;
     public loopable: boolean = false;
+    public scrollable: boolean = false;
     public static defaultIcon = "icon-video";  
     public scrollThroughSpeed: number = 100;
+    videoWrapperId = this.id.concat(".video-height");
+    idVideo = this.id.concat(".preview");
+    classList: string;
 
     constructor() {
         super();
@@ -35,6 +39,7 @@ class VideoObject extends StoryObject {
         this.isContentNode = true;
         this.userDefinedProperties = {};
         this.makeDefaultConnectors();
+        this.classList = "";
         
         this.content = {
             resource: "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm",
@@ -51,11 +56,13 @@ class VideoObject extends StoryObject {
             autoPlay:               observable,
             playbackControls:       observable,
             loopable:               observable,
+            scrollable:             observable,
             scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
             updateName:             action,
-            updateVideoURL:         action
+            updateVideoURL:         action,
+            updateScrollable:       action
         });
     }
 
@@ -68,18 +75,7 @@ class VideoObject extends StoryObject {
                 () => this.playbackControls,
                 (sel: boolean) => {
                     runInAction(() => this.playbackControls = sel)
-            }),
-            new HSlider(
-                "Scroll-through speed",
-                {
-                    min: 100,
-                    max: 1000,
-                    formatter: (val: number) => `${val}`
-                },
-                () => this.scrollThroughSpeed,
-                (sel: number) => {
-                    runInAction(() => this.scrollThroughSpeed = sel)
-            }),
+            }),           
             new CheckBox(
                 "enable AutoPlay",
                 () => this.autoPlay,
@@ -91,6 +87,23 @@ class VideoObject extends StoryObject {
                 () => this.loopable,
                 (sel: boolean) => {
                     runInAction(() => this.loopable = sel)
+            }),
+            new CheckBox(
+                "make Scrollable",
+                () => this.scrollable,
+                (sel: boolean) => {
+                    runInAction(() => this.updateScrollable(sel))
+            }),
+            new HSlider(
+                "Scroll-through speed",
+                {
+                    min: 100,
+                    max: 1000,
+                    formatter: (val: number) => `${val}`
+                },
+                () => this.scrollThroughSpeed,
+                (sel: number) => {
+                    runInAction(() => this.scrollThroughSpeed = sel)
             }),
             ...connectionField(this),
         ];
@@ -105,6 +118,28 @@ class VideoObject extends StoryObject {
     public updateName(name: string): void {
         this.name = name;
     }
+
+    public updateScrollable(newScrollable: boolean) {
+        this.scrollable = newScrollable;
+        const setHeight = document.getElementById(this.videoWrapperId);          
+        const videoElem = document.getElementById(this.idVideo);
+        const videoElement = document.getElementById(this.idVideo) as HTMLVideoElement;
+        console.log("videoElement", videoElement);
+        console.log("videoElement", setHeight);
+        if (this.scrollable) {                                            
+            if (setHeight && videoElement) {
+                this.classList.concat(" bound-to-scroll");
+                setHeight.style.height = Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px";
+                console.log("videoElement add");
+            }      
+        } else {
+            if (setHeight && videoElement) {
+                this.classList.replace(" bound-to-scroll", "");
+                setHeight.style.height = videoElement.height.toString() + "px";        
+                console.log("videoElement remove");                        
+            }      
+        }
+    }
     
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
@@ -116,11 +151,10 @@ class VideoObject extends StoryObject {
             }
             
             const playbackConst = this.scrollThroughSpeed;
-            const idVideo = this.id.concat(".preview");
-            const videoWrapperId = this.id.concat(".video-height");
+            const idVideo = this.idVideo;
             const vid = <video          
                 id={idVideo}
-                class="video"
+                class={this.classList}
                 type="video/webm; codecs='vp8, vorbis'"
                 src={content?.resource}
                 autoPlay={this.autoPlay}
@@ -128,15 +162,6 @@ class VideoObject extends StoryObject {
                 loop={this.loopable}
                 autobuffer="autobuffer"
                 preload="preload"
-                onLoadedMetadata = { e => 
-                    {
-                        const setHeight = document.getElementById(videoWrapperId);          
-                        const videoElement = document.getElementById(idVideo) as HTMLVideoElement;                
-                        if (setHeight && videoElement) {
-                            setHeight.style.height = Math.floor(videoElement.duration) * playbackConst + "px";
-                        }                     
-                    }
-                }
             ></video>;
 
             function scrollPlay(): void {                  
@@ -147,9 +172,10 @@ class VideoObject extends StoryObject {
                     videoElement.currentTime  = frameNumber;
                 window.requestAnimationFrame(scrollPlay);                    
             }
-            window.requestAnimationFrame(scrollPlay);
+            if (this.scrollable)
+                window.requestAnimationFrame(scrollPlay);
 
-            return <div id={videoWrapperId}> {
+            return <div id={this.videoWrapperId}> {
                 this.modifiers.reduce((p,v) => (
                     v.modify(p)
                 ), vid)

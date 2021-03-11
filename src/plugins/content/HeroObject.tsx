@@ -80,7 +80,7 @@ class _HeroObject extends StoryObject {
             new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateURL(url)),
             new Text("Alt-Text", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
             new Text("Headline", { defaultValue: "" }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
-            new HSlider("Headline Width", {
+            new HSlider("Maximum headline width", {
                 min: 0,
                 max: 100,
                 formatter: (val: number) => `${val}%`
@@ -162,14 +162,14 @@ class _HeroObject extends StoryObject {
             return (
                 <div class="hero">
                 <video autoplay="true" preload="preload" loop="true" muted src={content?.resource} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></video>
-                <h1 style={`width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
+                <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
             </div>
             );
             } else {
                 return (
                     <div class="hero">
                     <img src={content?.resource} alt={content?.altText} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></img>
-                    <h1 style={`width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
+                    <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
                 </div>
                 );
             }

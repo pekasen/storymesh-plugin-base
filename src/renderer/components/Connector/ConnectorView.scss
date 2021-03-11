@@ -26,7 +26,7 @@
     transition: background .4s ease-in, border-color .4s ease-in;
     border: 2px solid;
     @include customize(theme){
-      border-color: getValue(menu-background);
+      border-color: getValue(node-object-background);
     }
   }
   .flow {

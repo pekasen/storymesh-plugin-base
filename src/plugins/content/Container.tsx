@@ -51,7 +51,8 @@ export class Container extends StoryObject {
             padding: "0 0 0 0",
             maxWidth: "auto",
             placeItems: "center",
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            textColor: "#121212"
         };
         this.icon = Container.defaultIcon;
 
@@ -67,7 +68,8 @@ export class Container extends StoryObject {
             updatePadding: action,
             updateMaxWidth: action,
             updatePlaceItems: action,
-            updateBackgroundColor: action
+            updateBackgroundColor: action,
+            updateTextColor: action
         });
     }
 
@@ -97,7 +99,8 @@ export class Container extends StoryObject {
                     div = <div style={`padding:${this.userDefinedProperties.padding};
                                        max-width:${this.userDefinedProperties.maxWidth};
                                        place-items:${this.userDefinedProperties.placeItems};
-                                       background-color:${this.userDefinedProperties.backgroundColor}`} id={id} class={"ngwebs-story-container"}>
+                                       background-color:${this.userDefinedProperties.backgroundColor};
+                                       color:${this.userDefinedProperties.textColor}`} id={id} class={"ngwebs-story-container"}>
                         {
                             path.map(node => {
                                 // const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
@@ -168,6 +171,10 @@ export class Container extends StoryObject {
 
     public updateBackgroundColor(backgroundColor: string): void {
         this.userDefinedProperties.backgroundColor = backgroundColor
+    }
+
+    public updateTextColor(textColor: string): void {
+        this.userDefinedProperties.textColor = textColor
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
@@ -243,6 +250,11 @@ export class Container extends StoryObject {
                 "Background Color",
                 () => this.userDefinedProperties.backgroundColor,
                 (color) => this.updateBackgroundColor(color)
+            ),
+            new ColorPicker(
+                "Text Color",
+                () => this.userDefinedProperties.textColor,
+                (color) => this.updateTextColor(color)
             ),
             ...connectionField(this),
         ];

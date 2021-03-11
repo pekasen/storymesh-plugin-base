@@ -1,7 +1,17 @@
 .video {
-    position: fixed;
+    position: relative;
 }
 
 #video-height {
     display: block;
+}
+
+.bound-to-scroll {
+    position: relative;
+    width: 100%;
+    video {
+        position: sticky;
+        top: 0;
+        left: 0;
+    }
 }

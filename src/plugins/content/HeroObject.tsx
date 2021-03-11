@@ -8,7 +8,7 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { HSlider, MenuTemplate, Text } from "preact-sidebar";
+import { HSlider, MenuTemplate, Text, CheckBox } from "preact-sidebar";
 import Logger from "js-logger";
 
 class _HeroObject extends StoryObject {
@@ -17,9 +17,10 @@ class _HeroObject extends StoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph;
-    public content: IContent;
+    public content: any; // extend in storygraph?
     public icon: string;
     public valueType: any;
+    public isVideo: boolean = false;
 
     public static defaultIcon = "icon-star"
 
@@ -54,21 +55,29 @@ class _HeroObject extends StoryObject {
             name: observable,
             userDefinedProperties: observable,
             // connectors:             observable.shallow,
+            isVideo: observable,
             content: observable,
             updateName: action,
-            updateImageURL: action,
+            updateURL: action,
             updateAltText: action,
             updateHeadline: action,
             updateHeadlineWidth: action,
             updateFilterAmount: action,
-            updateValueType: action
+            updateValueType: action,
+            updateContentType: action
         });
     }
 
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateImageURL(url)),
+            new CheckBox(
+                "Is video?",
+                () => this.isVideo,
+                (val: boolean) => {
+                    runInAction(() => this.updateContentType(val))
+                }),
+            new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateURL(url)),
             new Text("Alt-Text", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
             new Text("Headline", { defaultValue: "" }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
             new HSlider("Headline Width", {
@@ -104,7 +113,7 @@ class _HeroObject extends StoryObject {
         return ret;
     }
 
-    public updateImageURL(newURL: string) {
+    public updateURL(newURL: string) {
         this.content.resource = newURL;
     }
 
@@ -138,14 +147,32 @@ class _HeroObject extends StoryObject {
         }
     }
 
+    public updateContentType(newContentType: boolean) {
+        this.isVideo = newContentType;
+        if(this.isVideo){
+            this.content.resource = "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm";
+        } else {
+            this.content.resource = "https://source.unsplash.com/random/1920x1080";
+        }
+    }   
+
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
+            if(this.isVideo){
             return (
                 <div class="hero">
+                <video autoplay="true" preload="preload" loop="true" muted src={content?.resource} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></video>
+                <h1 style={`width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
+            </div>
+            );
+            } else {
+                return (
+                    <div class="hero">
                     <img src={content?.resource} alt={content?.altText} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></img>
                     <h1 style={`width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
                 </div>
-            );
+                );
+            }
         }
         return Comp
     }

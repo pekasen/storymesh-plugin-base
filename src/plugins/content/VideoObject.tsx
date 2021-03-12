@@ -186,11 +186,12 @@ class VideoObject extends StoryObject {
                 cancelAnimationFrame(that.myReq);
             }
 
-            return <div id={this.videoWrapperId}> {
-                this.modifiers.reduce((p,v) => (
-                    v.modify(p)
-                ), vid)
-            }
+            return <div class="video-container"><div id={this.videoWrapperId}> {
+                    this.modifiers.reduce((p,v) => (
+                        v.modify(p)
+                    ), vid)
+                }
+                </div>
             </div>
         }
         return Comp

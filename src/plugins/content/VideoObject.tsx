@@ -27,6 +27,7 @@ class VideoObject extends StoryObject {
     public scrollable: boolean = false;
     public static defaultIcon = "icon-video";  
     public scrollThroughSpeed: number = 100;
+    myReq: number;
     videoWrapperId = this.id.concat(".video-height");
     idVideo = this.id.concat(".preview");
     classList: string;
@@ -40,6 +41,7 @@ class VideoObject extends StoryObject {
         this.userDefinedProperties = {};
         this.makeDefaultConnectors();
         this.classList = "";
+        this.myReq = 0;
         
         this.content = {
             resource: "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm",
@@ -120,7 +122,8 @@ class VideoObject extends StoryObject {
     }
 
     public updateScrollable(newScrollable: boolean) {
-        this.scrollable = newScrollable;
+        this.scrollable = newScrollable;        
+            
         const setHeight = document.getElementById(this.videoWrapperId);          
         const videoElem = document.getElementById(this.idVideo);
         const videoElement = document.getElementById(this.idVideo) as HTMLVideoElement;
@@ -150,7 +153,11 @@ class VideoObject extends StoryObject {
             
             const playbackConst = this.scrollThroughSpeed;
             const idVideo = this.idVideo;
-            console.log("idVideo", this.classList);
+            var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+            var that = this;
+
             const vid = <video          
                 id={idVideo}
                 class={this.classList}
@@ -163,16 +170,21 @@ class VideoObject extends StoryObject {
                 preload="preload"
             ></video>;
 
-            function scrollPlay(): void {                  
+            function scrollPlay(): void {        
                 var verticalPane = document.getElementsByClassName("vertical-pane")[3]; //@TODO: replace this with targeted DOM identifier
                 const videoElement = document.getElementById(idVideo) as HTMLVideoElement; 
                 var frameNumber  = verticalPane.scrollTop / playbackConst;
-                if (videoElement) 
-                    videoElement.currentTime  = frameNumber;
-                window.requestAnimationFrame(scrollPlay);                    
+                if (videoElement) {
+                    videoElement.currentTime = frameNumber;                    
+                    that.myReq = requestAnimationFrame(scrollPlay);         
+                } 
             }
-            if (this.scrollable)
-                window.requestAnimationFrame(scrollPlay);
+
+            if (this.scrollable) {
+                requestAnimationFrame(scrollPlay);
+            } else {
+                cancelAnimationFrame(that.myReq);
+            }
 
             return <div id={this.videoWrapperId}> {
                 this.modifiers.reduce((p,v) => (

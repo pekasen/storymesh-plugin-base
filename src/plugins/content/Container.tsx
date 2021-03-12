@@ -237,7 +237,7 @@ export class Container extends StoryObject {
         const ret: MenuTemplate[] = [
             ...nameField(this),
             new Text("Padding", { defaultValue: "0 0 0 0" }, () => this.userDefinedProperties.padding, (arg: string) => this.updatePadding(arg)),
-            new Text("Maximum width", { defaultValue: "" }, () => this.userDefinedProperties.maxWidth, (arg: string) => this.updateMaxWidth(arg)),
+            new Text("Maximum width", { defaultValue: "auto" }, () => this.userDefinedProperties.maxWidth, (arg: string) => this.updateMaxWidth(arg)),
             new DropDown(
                 "Place Items",
                 {

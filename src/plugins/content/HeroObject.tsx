@@ -21,6 +21,8 @@ class _HeroObject extends StoryObject {
     public icon: string;
     public valueType: any;
     public isVideo: boolean = false;
+    public maxFilterAmount: number = 100;
+    public variableFilterAmounts: any;
 
     public static defaultIcon = "icon-star"
 
@@ -42,6 +44,11 @@ class _HeroObject extends StoryObject {
             px: "px",
             deg: "deg"
         }
+        this.variableFilterAmounts = {
+            percent: 100,
+            degree: 360,
+            pixels: 50
+        }
         this.userDefinedProperties = {
             text: "Headline goes here",
             filterAmount: 0,
@@ -57,6 +64,9 @@ class _HeroObject extends StoryObject {
             // connectors:             observable.shallow,
             isVideo: observable,
             content: observable,
+            maxFilterAmount: observable,
+            variableFilterAmounts: observable,
+            valueType: observable,
             updateName: action,
             updateURL: action,
             updateAltText: action,
@@ -78,6 +88,7 @@ class _HeroObject extends StoryObject {
                     runInAction(() => this.updateContentType(val))
                 }),
             new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateURL(url)),
+            this.isVideo ? new Text("Some video Settings here", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)) : 
             new Text("Alt-Text", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
             new Text("Headline", { defaultValue: "" }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
             new HSlider("Maximum headline width", {
@@ -101,7 +112,7 @@ class _HeroObject extends StoryObject {
                 "Filter Amount",
                 {
                     min: 0,
-                    max: 100,
+                    max: this.maxFilterAmount,
                     formatter: (val: number) => `${val}${this.userDefinedProperties.filterValue}`
                 },
                 () => this.userDefinedProperties.filterAmount,
@@ -133,18 +144,21 @@ class _HeroObject extends StoryObject {
         this.userDefinedProperties.headlineWidth = headlineWidth;
     }
 
-    public updateFilterAmount(filterAmount: number) {
-        this.userDefinedProperties.filterAmount = filterAmount;
-    }
-
     public updateValueType(){
         if(this.userDefinedProperties.filterType === "hue-rotate"){
             this.userDefinedProperties.filterValue = this.valueType.deg;
+            this.maxFilterAmount = this.variableFilterAmounts.degree;
         } else if(this.userDefinedProperties.filterType === "blur"){
             this.userDefinedProperties.filterValue = this.valueType.px;
+            this.maxFilterAmount = this.variableFilterAmounts.pixels;
         } else {
             this.userDefinedProperties.filterValue = this.valueType.percent;
+            this.maxFilterAmount = this.variableFilterAmounts.percent;
         }
+    }
+
+    public updateFilterAmount(filterAmount: number) {
+        this.userDefinedProperties.filterAmount = filterAmount;
     }
 
     public updateContentType(newContentType: boolean) {
@@ -154,25 +168,26 @@ class _HeroObject extends StoryObject {
         } else {
             this.content.resource = "https://source.unsplash.com/random/1920x1080";
         }
-    }   
+    }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
-            if(this.isVideo){
-            return (
-                <div class="hero">
-                <video autoplay="true" preload="preload" loop="true" muted src={content?.resource} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></video>
-                <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
+
+            const headline = <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>;
+            const image = <img src={content?.resource} 
+                               alt={content?.altText} 
+                               style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+                               ></img>
+            const video = <video autoplay="true" 
+                                 preload="preload" 
+                                 loop="true" muted src={content?.resource} 
+                                 style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+                                 ></video>                   
+
+            return <div class="hero">
+                {this.isVideo ? video : image}
+                {headline}
             </div>
-            );
-            } else {
-                return (
-                    <div class="hero">
-                    <img src={content?.resource} alt={content?.altText} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></img>
-                    <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
-                </div>
-                );
-            }
         }
         return Comp
     }

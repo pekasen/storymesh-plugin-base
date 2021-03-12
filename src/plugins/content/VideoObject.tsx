@@ -128,15 +128,13 @@ class VideoObject extends StoryObject {
         console.log("videoElement", setHeight);
         if (this.scrollable) {                                            
             if (setHeight && videoElement) {
-                this.classList.concat(" bound-to-scroll");
+                this.classList = this.classList.concat(" bound-to-scroll").trim();
                 setHeight.style.height = Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px";
-                console.log("videoElement add");
             }      
         } else {
             if (setHeight && videoElement) {
-                this.classList.replace(" bound-to-scroll", "");
-                setHeight.style.height = videoElement.height.toString() + "px";        
-                console.log("videoElement remove");                        
+                this.classList = this.classList.replace("bound-to-scroll", "").trim();
+                setHeight.style.height = videoElement.height.toString() + "px";                     
             }      
         }
     }
@@ -152,6 +150,7 @@ class VideoObject extends StoryObject {
             
             const playbackConst = this.scrollThroughSpeed;
             const idVideo = this.idVideo;
+            console.log("idVideo", this.classList);
             const vid = <video          
                 id={idVideo}
                 class={this.classList}

@@ -160,7 +160,6 @@ class VideoObject extends StoryObject {
 
             const vid = <video          
                 id={idVideo}
-                class={this.classList}
                 type="video/webm; codecs='vp8, vorbis'"
                 src={content?.resource}
                 autoPlay={this.autoPlay}
@@ -186,7 +185,7 @@ class VideoObject extends StoryObject {
                 cancelAnimationFrame(that.myReq);
             }
 
-            return <div id={this.videoWrapperId}> {
+            return <div id={this.videoWrapperId} class={this.classList}> {
                 this.modifiers.reduce((p,v) => (
                     v.modify(p)
                 ), vid)

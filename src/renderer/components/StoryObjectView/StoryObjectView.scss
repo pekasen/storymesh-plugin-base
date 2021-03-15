@@ -15,14 +15,14 @@
     height: 1.8em;
     border-radius: 3px 3px 0 0;
     @include customize(theme) {
-      background: getValue(menu-background);
+      background: getValue(menu-background); //node-object-header?
     }
     line-height: 15px;
     font-size: 1.1em;
     vertical-align: middle;
     padding: 5px;
     @include customize(theme) {
-      color: getValue(border-color);
+      color: getValue(text);
     }
     position: relative;
     cursor: pointer;
@@ -46,7 +46,9 @@
       }
 
       &:hover + span {
-        border-color: #c9c9c9;
+        @include customize(theme) {
+          border-color: getValue(highlight-color);
+        }
       }
 
       &.minimized {
@@ -124,7 +126,7 @@
         background: getValue(highlight-color);
       }
       @include customize(theme) {
-        color: getValue(menu-background);
+        color: getValue(highlight-color-font);
       }
     }
     &::after {

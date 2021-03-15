@@ -8,7 +8,7 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { HSlider, MenuTemplate, Text } from "preact-sidebar";
+import { HSlider, MenuTemplate, Text, CheckBox } from "preact-sidebar";
 import Logger from "js-logger";
 
 class _HeroObject extends StoryObject {
@@ -20,6 +20,9 @@ class _HeroObject extends StoryObject {
     public content: IContent;
     public icon: string;
     public valueType: any;
+    public isVideo: boolean = false;
+    public maxFilterAmount: number = 100;
+    public variableFilterAmounts: any;
 
     public static defaultIcon = "icon-star"
 
@@ -41,6 +44,11 @@ class _HeroObject extends StoryObject {
             px: "px",
             deg: "deg"
         }
+        this.variableFilterAmounts = {
+            percent: 100,
+            degree: 360,
+            pixels: 50
+        }
         this.userDefinedProperties = {
             text: "Headline goes here",
             filterAmount: 0,
@@ -54,24 +62,36 @@ class _HeroObject extends StoryObject {
             name: observable,
             userDefinedProperties: observable,
             // connectors:             observable.shallow,
+            isVideo: observable,
             content: observable,
+            maxFilterAmount: observable,
+            variableFilterAmounts: observable,
+            valueType: observable,
             updateName: action,
-            updateImageURL: action,
+            updateURL: action,
             updateAltText: action,
             updateHeadline: action,
             updateHeadlineWidth: action,
             updateFilterAmount: action,
-            updateValueType: action
+            updateValueType: action,
+            updateContentType: action
         });
     }
 
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateImageURL(url)),
+            new CheckBox(
+                "Is video?",
+                () => this.isVideo,
+                (val: boolean) => {
+                    runInAction(() => this.updateContentType(val))
+                }),
+            new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateURL(url)),
+            this.isVideo ? new Text("Some video Settings here", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)) : 
             new Text("Alt-Text", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
             new Text("Headline", { defaultValue: "" }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
-            new HSlider("Headline Width", {
+            new HSlider("Maximum headline width", {
                 min: 0,
                 max: 100,
                 formatter: (val: number) => `${val}%`
@@ -92,7 +112,7 @@ class _HeroObject extends StoryObject {
                 "Filter Amount",
                 {
                     min: 0,
-                    max: 100,
+                    max: this.maxFilterAmount,
                     formatter: (val: number) => `${val}${this.userDefinedProperties.filterValue}`
                 },
                 () => this.userDefinedProperties.filterAmount,
@@ -104,7 +124,7 @@ class _HeroObject extends StoryObject {
         return ret;
     }
 
-    public updateImageURL(newURL: string) {
+    public updateURL(newURL: string) {
         this.content.resource = newURL;
     }
 
@@ -124,28 +144,50 @@ class _HeroObject extends StoryObject {
         this.userDefinedProperties.headlineWidth = headlineWidth;
     }
 
+    public updateValueType(){
+        if(this.userDefinedProperties.filterType === "hue-rotate"){
+            this.userDefinedProperties.filterValue = this.valueType.deg;
+            this.maxFilterAmount = this.variableFilterAmounts.degree;
+        } else if(this.userDefinedProperties.filterType === "blur"){
+            this.userDefinedProperties.filterValue = this.valueType.px;
+            this.maxFilterAmount = this.variableFilterAmounts.pixels;
+        } else {
+            this.userDefinedProperties.filterValue = this.valueType.percent;
+            this.maxFilterAmount = this.variableFilterAmounts.percent;
+        }
+    }
+
     public updateFilterAmount(filterAmount: number) {
         this.userDefinedProperties.filterAmount = filterAmount;
     }
 
-    public updateValueType(){
-        if(this.userDefinedProperties.filterType === "hue-rotate"){
-            this.userDefinedProperties.filterValue = this.valueType.deg;
-        } else if(this.userDefinedProperties.filterType === "blur"){
-            this.userDefinedProperties.filterValue = this.valueType.px;
+    public updateContentType(newContentType: boolean) {
+        this.isVideo = newContentType;
+        if(this.isVideo){
+            this.content.resource = "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm";
         } else {
-            this.userDefinedProperties.filterValue = this.valueType.percent;
+            this.content.resource = "https://source.unsplash.com/random/1920x1080";
         }
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
-            return (
-                <div class="hero">
-                    <img src={content?.resource} alt={content?.altText} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></img>
-                    <h1 style={`width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
-                </div>
-            );
+
+            const headline = <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>;
+            const image = <img src={content?.resource} 
+                               alt={content?.altText} 
+                               style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+                               ></img>
+            const video = <video autoplay="true" 
+                                 preload="preload" 
+                                 loop="true" muted src={content?.resource} 
+                                 style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+                                 ></video>                   
+
+            return <div class="hero">
+                {this.isVideo ? video : image}
+                {headline}
+            </div>
         }
         return Comp
     }

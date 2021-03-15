@@ -12,7 +12,7 @@ import { IStoryObject, StoryGraph } from 'storygraph';
 import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
 import { UIStore } from "../../renderer/store/UIStore";
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
-import { MenuTemplate } from 'preact-sidebar';
+import { MenuTemplate, Text, DropDown, ColorPicker } from 'preact-sidebar';
 import { INGWebSProps, IPlugIn } from '../../renderer/utils/PlugInClassRegistry';
 import { useEffect, useState } from 'preact/hooks';
 import Logger from 'js-logger';
@@ -30,10 +30,10 @@ export class Container extends StoryObject {
     public childNetwork: StoryGraph;
     public icon: string
     public content: undefined;
-    public startNode?:InputConnectorView;
+    public startNode?: InputConnectorView;
     public endNode?: OutputConnectorView;
     public static defaultIcon = "icon-doc"
-    
+
     constructor() {
         super();
 
@@ -41,13 +41,19 @@ export class Container extends StoryObject {
         this.role = "internal.content.container";
         this.isContentNode = false;
         this.childNetwork = new ObservableStoryGraph(this.id);
-        this.childNetwork.notificationCenter.subscribe(this.id+"/rerender", () => {
+        this.childNetwork.notificationCenter.subscribe(this.id + "/rerender", () => {
             if (this._rerender) this._rerender();
         });
         this.makeDefaultConnectors();
 
 
-        this.userDefinedProperties = {};
+        this.userDefinedProperties = {
+            padding: "0 0 0 0",
+            maxWidth: "auto",
+            placeItems: "center",
+            backgroundColor: "#ffffff",
+            textColor: "#121212"
+        };
         this.icon = Container.defaultIcon;
 
         makeObservable(this, {
@@ -58,12 +64,17 @@ export class Container extends StoryObject {
             childNetwork: observable.deep,
             connectors: computed,
             menuTemplate: computed,
-            updateName: action
+            updateName: action,
+            updatePadding: action,
+            updateMaxWidth: action,
+            updatePlaceItems: action,
+            updateBackgroundColor: action,
+            updateTextColor: action
         });
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph, modifiers}) => {
+        const Comp: FunctionComponent<INGWebSProps> = ({ id, registry, graph, modifiers }) => {
             // const startNode = graph?
             // TODO: class name?
 
@@ -79,37 +90,41 @@ export class Container extends StoryObject {
                     this._rerender = undefined;
                 };
             });
-            
+
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
-            if ( this.startNode) {
+            if (this.startNode) {
                 path = graph?.traverse(registry, this.startNode.id, Array.from(this.startNode.connectors)[0][1].id)
                 if (path !== undefined) {
-                    div = <div id={id} class={"ngwebs-story-container"}>
-                    {
-                        path.map(node => {
-                            // const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
-                            const _node = node as AbstractStoryObject & IPlugIn;
-                            if (_node.getComponent) {
-                                const Comp = _node.getComponent();
-                                return <Comp
-                                    registry={registry}
-                                    id={_node.id}
-                                    renderingProperties={_node.renderingProperties}
-                                    content={_node.content}
-                                    modifiers={_node.modifiers}
-                                    graph={_node.childNetwork}
-                                    userDefinedProperties={_node.userDefinedProperties}
-                                ></Comp>
-                            }
-                        }) || null }
+                    div = <div style={`padding:${this.userDefinedProperties.padding};
+                                       max-width:${this.userDefinedProperties.maxWidth};
+                                       place-items:${this.userDefinedProperties.placeItems};
+                                       background-color:${this.userDefinedProperties.backgroundColor};
+                                       color:${this.userDefinedProperties.textColor}`} id={id} class={"ngwebs-story-container"}>
+                        {
+                            path.map(node => {
+                                // const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
+                                const _node = node as AbstractStoryObject & IPlugIn;
+                                if (_node.getComponent) {
+                                    const Comp = _node.getComponent();
+                                    return <Comp
+                                        registry={registry}
+                                        id={_node.id}
+                                        renderingProperties={_node.renderingProperties}
+                                        content={_node.content}
+                                        modifiers={_node.modifiers}
+                                        graph={_node.childNetwork}
+                                        userDefinedProperties={_node.userDefinedProperties}
+                                    ></Comp>
+                                }
+                            }) || null}
                     </div>
 
                     if (modifiers) return modifiers.reduce((p, v) => {
                         return (v as AbstractStoryModifier).modify(p);
                     }, div)
                 }
-            } 
+            }
             return <div></div>
             // div = <div id={id} class={"ngwebs-story-container"}>
             //     {
@@ -132,7 +147,7 @@ export class Container extends StoryObject {
             //     }
             // </div>
 
-           
+
 
         }
         return Comp
@@ -140,6 +155,26 @@ export class Container extends StoryObject {
 
     public updateName(name: string): void {
         this.name = name
+    }
+
+    public updatePadding(padding: string): void {
+        this.userDefinedProperties.padding = padding
+    }
+
+    public updateMaxWidth(maxWidth: string): void {
+        this.userDefinedProperties.maxWidth = maxWidth
+    }
+
+    public updatePlaceItems(placeItems: string): void {
+        this.userDefinedProperties.placeItems = placeItems
+    }
+
+    public updateBackgroundColor(backgroundColor: string): void {
+        this.userDefinedProperties.backgroundColor = backgroundColor
+    }
+
+    public updateTextColor(textColor: string): void {
+        this.userDefinedProperties.textColor = textColor
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
@@ -201,13 +236,25 @@ export class Container extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            ...dropDownField(
-                this,
-                () => ["h1", "h2", "h3", "b", "p"],
-                () => "h1",
-                (selection: string) => {
-                    this.userDefinedProperties.class = selection
-                }
+            new Text("Padding", { defaultValue: "0 0 0 0" }, () => this.userDefinedProperties.padding, (arg: string) => this.updatePadding(arg)),
+            new Text("Maximum width", { defaultValue: "auto" }, () => this.userDefinedProperties.maxWidth, (arg: string) => this.updateMaxWidth(arg)),
+            new DropDown(
+                "Place Items",
+                {
+                    options: ["start", "center", "end"]
+                },
+                () => this.userDefinedProperties.placeItems,
+                (item) => this.updatePlaceItems(item)
+            ),
+            new ColorPicker(
+                "Background Color",
+                () => this.userDefinedProperties.backgroundColor,
+                (color) => this.updateBackgroundColor(color)
+            ),
+            new ColorPicker(
+                "Text Color",
+                () => this.userDefinedProperties.textColor,
+                (color) => this.updateTextColor(color)
             ),
             ...connectionField(this),
         ];

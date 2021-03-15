@@ -8,12 +8,9 @@ import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
 import { useState } from "preact/hooks";
-import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
+import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
 
 /**
- * Our first little dummy PlugIn
- * 
- * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
 class VideoObject extends StoryObject {
@@ -26,8 +23,14 @@ class VideoObject extends StoryObject {
     public icon: string;
     public playbackControls: boolean = false;
     public autoPlay: boolean = false;
-
-    public static defaultIcon = "icon-video"
+    public loopable: boolean = false;
+    public scrollable: boolean = false;
+    public static defaultIcon = "icon-video";  
+    public scrollThroughSpeed: number = 100;
+    myReq: number;
+    videoWrapperId = this.id.concat(".video-height");
+    idVideo = this.id.concat(".preview");
+    classList: string;
 
     constructor() {
         super();
@@ -37,25 +40,31 @@ class VideoObject extends StoryObject {
         this.isContentNode = true;
         this.userDefinedProperties = {};
         this.makeDefaultConnectors();
+        this.classList = "";
+        this.myReq = 0;
         
         this.content = {
-            resource: "https://cdn.videvo.net/videvo_files/video/premium/2020-08/small_watermarked/Smart_City_Walking_preview.webm",
+            resource: "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm",
             contentType: "url",
             altText: "This is a video"
         }
         // this.menuTemplate = connectionField(this);
         this.icon = VideoObject.defaultIcon;
-
+     
         makeObservable(this,{
             name:                   observable,
             userDefinedProperties:  observable,
             content:                observable,
             autoPlay:               observable,
             playbackControls:       observable,
+            loopable:               observable,
+            scrollable:             observable,
+            scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
             updateName:             action,
-            updateVideoURL:         action
+            updateVideoURL:         action,
+            updateScrollable:       action
         });
     }
 
@@ -67,13 +76,36 @@ class VideoObject extends StoryObject {
                 "show Controls",
                 () => this.playbackControls,
                 (sel: boolean) => {
-                runInAction(() => this.playbackControls = sel)
-            }),
+                    runInAction(() => this.playbackControls = sel)
+            }),           
             new CheckBox(
                 "enable AutoPlay",
                 () => this.autoPlay,
                 (sel: boolean) => {
-                runInAction(() => this.autoPlay = sel)
+                    runInAction(() => this.autoPlay = sel)
+            }),
+            new CheckBox(
+                "enable Looping",
+                () => this.loopable,
+                (sel: boolean) => {
+                    runInAction(() => this.loopable = sel)
+            }),
+            new CheckBox(
+                "make Scrollable",
+                () => this.scrollable,
+                (sel: boolean) => {
+                    runInAction(() => this.updateScrollable(sel))
+            }),
+            new HSlider(
+                "Scroll-through speed",
+                {
+                    min: 100,
+                    max: 1000,
+                    formatter: (val: number) => `${val}`
+                },
+                () => this.scrollThroughSpeed,
+                (sel: number) => {
+                    runInAction(() => this.scrollThroughSpeed = sel)
             }),
             ...connectionField(this),
         ];
@@ -89,6 +121,27 @@ class VideoObject extends StoryObject {
         this.name = name;
     }
 
+    public updateScrollable(newScrollable: boolean) {
+        this.scrollable = newScrollable;        
+            
+        const setHeight = document.getElementById(this.videoWrapperId);          
+        const videoElem = document.getElementById(this.idVideo);
+        const videoElement = document.getElementById(this.idVideo) as HTMLVideoElement;
+        console.log("videoElement", videoElement);
+        console.log("videoElement", setHeight);
+        if (this.scrollable) {                                            
+            if (setHeight && videoElement) {
+                this.classList = this.classList.concat(" bound-to-scroll").trim();
+                setHeight.style.height = Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px";
+            }      
+        } else {
+            if (setHeight && videoElement) {
+                this.classList = this.classList.replace("bound-to-scroll", "").trim();
+                setHeight.style.height = videoElement.height.toString() + "px";                     
+            }      
+        }
+    }
+    
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
 
@@ -97,18 +150,49 @@ class VideoObject extends StoryObject {
             this._rerender = () => {
                 setState({});
             }
+            
+            const playbackConst = this.scrollThroughSpeed;
+            const idVideo = this.idVideo;
+            var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+            var that = this;
 
-            const vid = <video
-                id={this.id}
-                class="video"
+            const vid = <video          
+                id={idVideo}
+                class={this.classList}
+                type="video/webm; codecs='vp8, vorbis'"
                 src={content?.resource}
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
+                loop={this.loopable}
+                autobuffer="autobuffer"
+                preload="preload"
             ></video>;
 
-            return this.modifiers.reduce((p,v) => (
-                v.modify(p)
-            ), vid);
+            function scrollPlay(): void {        
+                var verticalPane = document.getElementsByClassName("vertical-pane")[3]; //@TODO: replace this with targeted DOM identifier
+                const videoElement = document.getElementById(idVideo) as HTMLVideoElement; 
+                var frameNumber  = verticalPane.scrollTop / playbackConst;
+                if (videoElement) {
+                    videoElement.currentTime = frameNumber;                    
+                    that.myReq = requestAnimationFrame(scrollPlay);         
+                } 
+            }
+
+            if (this.scrollable) {
+                requestAnimationFrame(scrollPlay);
+            } else {
+                cancelAnimationFrame(that.myReq);
+            }
+
+            return <div class="video-container"><div id={this.videoWrapperId}> {
+                    this.modifiers.reduce((p,v) => (
+                        v.modify(p)
+                    ), vid)
+                }
+                </div>
+            </div>
         }
         return Comp
     }

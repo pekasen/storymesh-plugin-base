@@ -19,7 +19,7 @@
 
 .horizontal-pane-group {
   @include customize(color) {
-    background-color: getValue(node-area-background) !important;
+    background-color: getValue(node-area-background);
   }
 }
 

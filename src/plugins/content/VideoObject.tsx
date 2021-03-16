@@ -126,8 +126,7 @@ class VideoObject extends StoryObject {
             
         const videoWrapper = document.getElementById(this.videoWrapperId);         
         const videoElement = document.getElementById(this.idVideo) as HTMLVideoElement;
-        console.log("videoElement", videoElement);
-        console.log("videoElement", videoWrapper);
+      
         if (this.scrollable) {                                            
             if (videoWrapper && videoElement) {
                 this.classList = this.classList.concat(" bound-to-scroll").trim();
@@ -136,9 +135,11 @@ class VideoObject extends StoryObject {
         } else {
             if (videoWrapper && videoElement) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
-                videoWrapper.style.height = videoElement.height.toString() + "px";                     
+                videoWrapper.style.height = videoElement.height.toString() + "px";         
+                console.log("videoWrapper", videoWrapper?.clientHeight);            
             }      
         }
+        
     }
     
     public getComponent(): FunctionComponent<INGWebSProps> {

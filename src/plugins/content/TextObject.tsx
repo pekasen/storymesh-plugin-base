@@ -12,6 +12,7 @@ import Delta from "quill-delta";
 import Op from "quill-delta/dist/Op";
 import { MenuTemplate, RichText } from "preact-sidebar";
 import Logger from "js-logger";
+import LinkBreak from 'jsx-linebreak/preact';
 /**
  * Our first little dummy PlugIn
  * 
@@ -100,60 +101,35 @@ class _TextObject extends StoryObject {
         if (this.content) this.content.resource = text;
     }
 
-    // renderDelta (delta: Delta): h.JSX.Element {
-    //     return delta.ops.map((op: Op) => {
-    //       // handle newline chars
-      
-    //       // handle attributes
-    //       if (op.attributes !== undefined) {
-    //         return Object.keys(op.attributes).reduce((p, v) => {
-    //           switch(v) {
-    //           case "bold": return <b>{p}</b>;
-    //           case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
-    //           case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
-    //           }
-    //         }, op.insert);
-    //         // else handle text content
-    //       } else return op.insert
-    //     });
-    //   }
-
     public getComponent() {
         
         function renderDelta (delta: Delta) {
             if (!delta.ops) return <p></p>
             return delta.ops.map((op: Op) => {
-                // handle newline chars
-                if (op.insert !== undefined) {
-                    if (typeof op.insert === "string" && /\n/gm.test(op.insert)) {
-                        console.log("should break line", op.insert);
-                    }
-                    if (op.insert == '\n') {
-                        return <br></br>
-                    }
-                }
+                const insertWithLinebreaks = <LinkBreak>{op.insert}</LinkBreak>;
                 // handle attributes
                 if (op.attributes !== undefined) {
-                    return Object.keys(op.attributes).reduce((p, v) => {
+                    return Object.keys(op.attributes).reduce((p, v) => {  
+                       
                         switch(v) {
-                            case "bold": return <b>{p}</b>;
-                            case "italic": return <i>{p}</i>;
-                            case "underline": return <u>{p}</u>;
-                            case "blockquote": return <blockquote>{p}</blockquote>;                                
-                            case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{p}</a>;
-                            case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{p}</p>;
-                            case "code-block": return <code>{p}</code>;
+                            case "bold": return <b>{insertWithLinebreaks}</b>;
+                            case "italic": return <i>{insertWithLinebreaks}</i>;
+                            case "underline": return <u>{insertWithLinebreaks}</u>;
+                            case "blockquote": return <blockquote>{insertWithLinebreaks}</blockquote>;                                
+                            case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{insertWithLinebreaks}</a>;
+                            case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{insertWithLinebreaks}</p>;
+                            case "code-block": return <code>{insertWithLinebreaks}</code>;
                             case "header": {
                                 switch(op.attributes?.header) {
-                                    case 1: return <h1>{p}</h1>;
-                                    case 2: return <h2>{p}</h2>;
-                                    case 3: return <h3>{p}</h3>;
+                                    case 1: return <h1>{insertWithLinebreaks}</h1>;
+                                    case 2: return <h2>{insertWithLinebreaks}</h2>;
+                                    case 3: return <h3>{insertWithLinebreaks}</h3>;
                                 }                  
                             }
                         }
                     }, op.insert);
                     // else handle text content
-                } else return op.insert
+                } else return insertWithLinebreaks;
         });
         }  
 

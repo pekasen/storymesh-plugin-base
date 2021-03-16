@@ -124,20 +124,19 @@ class VideoObject extends StoryObject {
     public updateScrollable(newScrollable: boolean) {
         this.scrollable = newScrollable;        
             
-        const setHeight = document.getElementById(this.videoWrapperId);          
-        const videoElem = document.getElementById(this.idVideo);
+        const videoWrapper = document.getElementById(this.videoWrapperId);         
         const videoElement = document.getElementById(this.idVideo) as HTMLVideoElement;
         console.log("videoElement", videoElement);
-        console.log("videoElement", setHeight);
+        console.log("videoElement", videoWrapper);
         if (this.scrollable) {                                            
-            if (setHeight && videoElement) {
+            if (videoWrapper && videoElement) {
                 this.classList = this.classList.concat(" bound-to-scroll").trim();
-                setHeight.style.height = Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px";
+                videoWrapper.style.height = Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px";
             }      
         } else {
-            if (setHeight && videoElement) {
+            if (videoWrapper && videoElement) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
-                setHeight.style.height = videoElement.height.toString() + "px";                     
+                videoWrapper.style.height = videoElement.height.toString() + "px";                     
             }      
         }
     }

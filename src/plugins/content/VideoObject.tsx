@@ -160,7 +160,6 @@ class VideoObject extends StoryObject {
 
             const vid = <video          
                 id={idVideo}
-                class={this.classList}
                 type="video/webm; codecs='vp8, vorbis'"
                 src={content?.resource}
                 autoPlay={this.autoPlay}

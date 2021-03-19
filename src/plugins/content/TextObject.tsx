@@ -101,16 +101,14 @@ class _TextObject extends StoryObject {
         if (this.content) this.content.resource = text;
     }
 
-    public getComponent() {
-        
+    public getComponent() {        
         function renderDelta (delta: Delta) {
             if (!delta.ops) return <p></p>
-            return delta.ops.map((op: Op) => {
+            return delta.ops.map((op: Op) => {               
                 const insertWithLinebreaks = <LinkBreak>{op.insert}</LinkBreak>;
                 // handle attributes
                 if (op.attributes !== undefined) {
-                    return Object.keys(op.attributes).reduce((p, v) => {  
-                       
+                    return Object.keys(op.attributes).reduce((p, v) => {
                         switch(v) {
                             case "bold": return <b>{insertWithLinebreaks}</b>;
                             case "italic": return <i>{insertWithLinebreaks}</i>;
@@ -119,6 +117,9 @@ class _TextObject extends StoryObject {
                             case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{insertWithLinebreaks}</a>;
                             case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{insertWithLinebreaks}</p>;
                             case "code-block": return <code>{insertWithLinebreaks}</code>;
+                            case "list": return <li>{insertWithLinebreaks}</li>;
+                            case "strike": return <p style="text-decoration: line-through">{insertWithLinebreaks}</p>;
+                            case "superscript": return <p class="superscript">{insertWithLinebreaks}</p>;
                             case "header": {
                                 switch(op.attributes?.header) {
                                     case 1: return <h1>{insertWithLinebreaks}</h1>;
@@ -130,6 +131,7 @@ class _TextObject extends StoryObject {
                     }, op.insert);
                     // else handle text content
                 } else return insertWithLinebreaks;
+                
         });
         }  
 

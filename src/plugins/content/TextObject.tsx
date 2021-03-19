@@ -12,7 +12,8 @@ import Delta from "quill-delta";
 import Op from "quill-delta/dist/Op";
 import { MenuTemplate, RichText } from "preact-sidebar";
 import Logger from "js-logger";
-import LinkBreak from 'jsx-linebreak/preact';
+import { convertDeltaToHtml } from 'node-quill-converter';
+
 /**
  * Our first little dummy PlugIn
  * 
@@ -20,6 +21,7 @@ import LinkBreak from 'jsx-linebreak/preact';
  */
 class _TextObject extends StoryObject {
     public name: string;
+  
     public role: string;
     public isContentNode: boolean;
     public userDefinedProperties: {
@@ -101,46 +103,10 @@ class _TextObject extends StoryObject {
         if (this.content) this.content.resource = text;
     }
 
-    public getComponent() {        
-        function renderDelta (delta: Delta) {
-            if (!delta.ops) return <p></p>
-            return delta.ops.map((op: Op) => {               
-                const insertWithLinebreaks = <LinkBreak>{op.insert}</LinkBreak>;
-                // handle attributes
-                if (op.attributes !== undefined) {
-                    return Object.keys(op.attributes).reduce((p, v) => {
-                        switch(v) {
-                            case "bold": return <b>{insertWithLinebreaks}</b>;
-                            case "italic": return <i>{insertWithLinebreaks}</i>;
-                            case "underline": return <u>{insertWithLinebreaks}</u>;
-                            case "blockquote": return <blockquote>{insertWithLinebreaks}</blockquote>;                                
-                            case "link": return <a href={(op.attributes !== undefined && op.attributes.link !== undefined) ? op.attributes.link : null}>{insertWithLinebreaks}</a>;
-                            case "color": return <p style={`color: ${(op.attributes !== undefined && op.attributes.color !== undefined) ? op.attributes.color : null}`}>{insertWithLinebreaks}</p>;
-                            case "code-block": return <code>{insertWithLinebreaks}</code>;
-                            case "list": return <li>{insertWithLinebreaks}</li>;
-                            case "strike": return <p style="text-decoration: line-through">{insertWithLinebreaks}</p>;
-                            case "superscript": return <p class="superscript">{insertWithLinebreaks}</p>;
-                            case "header": {
-                                switch(op.attributes?.header) {
-                                    case 1: return <h1>{insertWithLinebreaks}</h1>;
-                                    case 2: return <h2>{insertWithLinebreaks}</h2>;
-                                    case 3: return <h3>{insertWithLinebreaks}</h3>;
-                                }                  
-                            }
-                        }
-                    }, op.insert);
-                    // else handle text content
-                } else return insertWithLinebreaks;
-                
-        });
-        }  
-
+    public getComponent() {    
         const Comp: FunctionComponent<INGWebSProps> = (args => {
-            Logger.info("rendering", args);
-
-            // @todo args.content.resource needs to change type
-            const p = <p>{renderDelta(new Delta(args.content?.resource as unknown as Op[]))}</p>
-            
+            let p: h.JSX.Element;
+            p = <span dangerouslySetInnerHTML={{ __html: convertDeltaToHtml(new Delta(args.content?.resource as unknown as Op[])) as string}} />
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));
             }, p);

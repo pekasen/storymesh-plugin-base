@@ -20,9 +20,11 @@ class _HeroObject extends StoryObject {
     public content: IContent;
     public icon: string;
     public valueType: any;
-    public isVideo: boolean = false;
+    public contentType: string;
     public maxFilterAmount: number = 100;
     public variableFilterAmounts: any;
+    public muted: boolean = true;
+    public loop: boolean = true;
 
     public static defaultIcon = "icon-star"
 
@@ -34,10 +36,12 @@ class _HeroObject extends StoryObject {
         this.isContentNode = true;
         this.makeDefaultConnectors();
 
+        this.contentType = "Image";
+
         this.content = {
             resource: "https://source.unsplash.com/random/1920x1080",
             contentType: "url",
-            altText: "This is an image",
+            altText: "",
         }
         this.valueType = {
             percent: "%",
@@ -50,9 +54,9 @@ class _HeroObject extends StoryObject {
             pixels: 50
         }
         this.userDefinedProperties = {
-            text: "Headline goes here",
+            text: "",
             filterAmount: 0,
-            headlineWidth: 100,
+            headlineWidth: "",
             filterType: "grayscale",
             filterValue: "%"
         }
@@ -62,11 +66,13 @@ class _HeroObject extends StoryObject {
             name: observable,
             userDefinedProperties: observable,
             // connectors:             observable.shallow,
-            isVideo: observable,
+            contentType: observable,
             content: observable,
             maxFilterAmount: observable,
             variableFilterAmounts: observable,
             valueType: observable,
+            muted: observable,
+            loop: observable,
             updateName: action,
             updateURL: action,
             updateAltText: action,
@@ -81,24 +87,19 @@ class _HeroObject extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new CheckBox(
-                "Is video?",
-                () => this.isVideo,
-                (val: boolean) => {
-                    runInAction(() => this.updateContentType(val))
-                }),
-            new Text("URL", { defaultValue: "" }, () => this.content.resource, (url: string) => this.updateURL(url)),
-            this.isVideo ? new Text("Some video Settings here", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)) : 
-            new Text("Alt-Text", { defaultValue: "" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
-            new Text("Headline", { defaultValue: "" }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
-            new HSlider("Maximum headline width", {
-                min: 0,
-                max: 100,
-                formatter: (val: number) => `${val}%`
-            },
-            () => this.userDefinedProperties.headlineWidth,
-            (headlineWidth: number) => this.updateHeadlineWidth(headlineWidth)
+            ...dropDownField(
+                this,
+                () => ["Image", "Video"],
+                () => this.userDefinedProperties.contentType,
+                (selection: string) => {
+                    Logger.info(selection);
+                    runInAction(() => this.contentType = selection), this.updateContentType(selection);
+                }
             ),
+            new Text("URL", { placeHolder: "" }, () => this.content.resource, (url: string) => this.updateURL(url)), 
+            new Text("Alt-Text", { placeHolder: "describe your image precisely" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
+            new Text("Headline", { placeHolder: "Enter a headline..." }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
+            new Text("Maximum headline width", { placeHolder: "insert value in px, percent or vw" }, () => this.userDefinedProperties.headlineWidth, (text: string) => this.updateHeadlineWidth(text)),
             ...dropDownField(
                 this,
                 () => ["grayscale", "invert", "hue-rotate", "blur", "contrast"],
@@ -121,6 +122,21 @@ class _HeroObject extends StoryObject {
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
+        if (this.contentType == "Video"){
+            ret.splice(3, 1,             
+                new CheckBox(
+                "Mute",
+                () => this.muted,
+                (sel: boolean) => {
+                    runInAction(() => this.muted = sel)
+            }), 
+            new CheckBox(
+                "Loop",
+                () => this.loop,
+                (sel: boolean) => {
+                    runInAction(() => this.loop = sel)
+            }),);
+        }
         return ret;
     }
 
@@ -140,7 +156,7 @@ class _HeroObject extends StoryObject {
         this.userDefinedProperties.text = text;
     }
 
-    public updateHeadlineWidth(headlineWidth: number) {
+    public updateHeadlineWidth(headlineWidth: string) {
         this.userDefinedProperties.headlineWidth = headlineWidth;
     }
 
@@ -161,9 +177,9 @@ class _HeroObject extends StoryObject {
         this.userDefinedProperties.filterAmount = filterAmount;
     }
 
-    public updateContentType(newContentType: boolean) {
-        this.isVideo = newContentType;
-        if(this.isVideo){
+    public updateContentType(newContentType: string) {
+        this.contentType = newContentType;
+        if(this.contentType === "Video"){
             this.content.resource = "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm";
         } else {
             this.content.resource = "https://source.unsplash.com/random/1920x1080";
@@ -173,19 +189,22 @@ class _HeroObject extends StoryObject {
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
 
-            const headline = <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>;
+            const headline = <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}`}>{this.userDefinedProperties.text}</h1>;
             const image = <img src={content?.resource} 
                                alt={content?.altText} 
                                style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
                                ></img>
             const video = <video autoplay="true" 
-                                 preload="preload" 
-                                 loop="true" muted src={content?.resource} 
+                                 preload="preload"
+                                 autobuffer="autobuffer"
+                                 muted={this.muted} 
+                                 loop={this.loop} 
+                                 src={content?.resource} 
                                  style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
                                  ></video>                   
 
             return <div class="hero">
-                {this.isVideo ? video : image}
+                {this.contentType == "Video" ? video : image}
                 {headline}
             </div>
         }

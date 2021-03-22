@@ -77,8 +77,7 @@ export class TransitionModifier extends HMTLModifier {
                 () => this.transitionProperty,
                 (selection: string) => {
                     Logger.info(selection);
-                    runInAction(() => this.transitionProperty = selection),
-                    updateMenu();
+                    runInAction(() => this.transitionProperty = selection)
                 }
             ),
             //TODO: Slider should be configurable to do half-steps
@@ -119,7 +118,6 @@ export class TransitionModifier extends HMTLModifier {
                     runInAction(() => this.overrideExistingValues = sel)
             }),
         ];
-        const updateMenu = () =>{
         switch (this.transitionProperty) {
             case "transform":
                 ret.splice(4, 0,
@@ -192,7 +190,6 @@ export class TransitionModifier extends HMTLModifier {
                     new Text("To", { placeHolder: "50%" }, () => this.stopValue, (arg: string) => this.updateStopValue(arg)))
                 break;
         }
-    }
         return ret;
     }
 

@@ -1,5 +1,5 @@
 import Logger from "js-logger";
-import { action, computed, makeObservable } from "mobx";
+import { action, computed, makeObservable, runInAction } from "mobx";
 import { Fragment, h } from "preact";
 import { Button, Display, IColumnSpecification, MenuTemplate, Table, Text } from "preact-sidebar";
 import { createModelSchema, list, object, primitive } from "serializr";
@@ -50,18 +50,19 @@ export class Branch extends StoryObject {
                         //         new Display("", () => arg.id)
                         //     )
                         // },
+                        // TODO: Here's still a bug that prevents the connectors name of beinging set
                         {
                             name: "Name",
                             property: "name",
                             editable: false,
                             type: (arg, spec) => {
-                                return new Text("", { defaultValue: "" }, () => arg.name, (name) => this.updateName(name))
+                                return new Text("", { defaultValue: "" }, () => arg.name, (name) => runInAction(() => arg.name = name))
                             },
-                            setter: (arg, property, value) => {
-                                if (typeof arg === "string" && property === "name") {
-                                    value.name = arg;
-                                }
-                            }
+                            // setter: (arg, property, value) => {
+                            //     if (typeof arg === "string" && property === "name") {
+                            //         value.name = arg;
+                            //     }
+                            // }
                         },
                         {
                             name: "Delete",

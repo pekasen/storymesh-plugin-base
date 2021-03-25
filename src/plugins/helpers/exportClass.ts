@@ -1,7 +1,7 @@
 import { makeObservable } from "mobx";
 import { IPlugInRegistryEntry } from '../../renderer/utils/PlugInClassRegistry';
 import { Class } from '../../renderer/utils/registry';
-import { AbstractStoryObject } from './AbstractStoryObject';
+import { StoryObject } from './AbstractStoryObject';
 
 /**
  * Pass the class and metadata to this function and assigned it to exported const plugInExprort in order to pump to the registry
@@ -11,7 +11,7 @@ import { AbstractStoryObject } from './AbstractStoryObject';
  * @param id 
  * @param icon 
  * @param {boolean} isPublic Is this Plugin public?
- * @returns {IPlugInRegistryEntry<AbstractStoryObject>} PlugIn to register
+ * @returns {IPlugInRegistryEntry<StoryObject>} PlugIn to register
  */
 export function exportClass<T>(
         target: Class<T>,

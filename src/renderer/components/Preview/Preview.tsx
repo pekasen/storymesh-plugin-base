@@ -5,7 +5,7 @@ import { VerticalPaneGroup, VerticalMiniPane, VerticalPane } from '../VerticalPa
 import { deepObserve, IDisposer } from 'mobx-utils';
 import { useContext } from 'preact/hooks';
 import { Store } from '../..';
-import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { StoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { RootStore } from '../../store/rootStore';
 
 interface IPreviewWrapperProps extends INGWebSProps {
@@ -82,7 +82,7 @@ export class Preview2 extends Component<IPreviewProps, IPreviewState> {
     render({ topLevelObjectId, registry }: IPreviewProps, { classes }: IPreviewState): h.JSX.Element {
         // const g = graph?.traverse(registry, (topLevelObjectId  + ".start"))
         // const children = graph?.nodes.map(id => registry.getValue(id)).filter(node => node !== undefined);
-        const topLevelObject = registry.getValue(topLevelObjectId) as AbstractStoryObject | undefined;
+        const topLevelObject = registry.getValue(topLevelObjectId) as StoryObject | undefined;
         if (!topLevelObject ) throw("BIGGY!");
         if (!topLevelObject.getComponent) throw("BIGGY!2");
         const Elem = topLevelObject.getComponent();

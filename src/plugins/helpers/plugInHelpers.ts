@@ -1,5 +1,5 @@
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
-import { AbstractStoryObject } from './AbstractStoryObject';
+import { StoryObject } from './AbstractStoryObject';
 import { ConnectorDirection, ConnectorPort, ConnectorType, IConnectorPort, StoryGraph } from 'storygraph';
 import { Button, CheckBox, DropDown, MenuTemplate, Table, Text } from 'preact-sidebar';
 import { useContext } from 'preact/hooks';
@@ -22,7 +22,7 @@ interface IConnectorMethods {
     removeConnector: (port: ConnectorPort) => void
 }
 
-export function connectionField(target: AbstractStoryObject & IDefaultFieldsMethods): MenuTemplate[] {
+export function connectionField(target: StoryObject & IDefaultFieldsMethods): MenuTemplate[] {
     interface IConnectionTableEntry {
         thisPort: string
         otherPort?: string
@@ -107,7 +107,7 @@ export function connectionField(target: AbstractStoryObject & IDefaultFieldsMeth
     ]
 }
 
-export function addConnectionPortField(target: AbstractStoryObject & IConnectorMethods): MenuTemplate[] {
+export function addConnectionPortField(target: StoryObject & IConnectorMethods): MenuTemplate[] {
     return [
         new Button("Add Port", () => target.addConnector("flow", "in"))
         // {
@@ -123,7 +123,7 @@ export function addConnectionPortField(target: AbstractStoryObject & IConnectorM
     ]
 }
 
-export function nameField(target: AbstractStoryObject & INameFieldMethods): MenuTemplate[] {
+export function nameField(target: StoryObject & INameFieldMethods): MenuTemplate[] {
     return [
         new Text(
             "Name",
@@ -143,7 +143,7 @@ export function nameField(target: AbstractStoryObject & INameFieldMethods): Menu
 }
 
 export function dropDownField(
-    target: AbstractStoryObject,
+    target: StoryObject,
     options: () => string[], //  = ["h1", "h2", "h3", "p", "b"]
     value: () => string,
     handler: (selection: string) => void
@@ -164,24 +164,24 @@ export function dropDownField(
     ]
 }
 
-export function checkboxField(
-    target: AbstractStoryObject & IBooleanFieldMethods,
-    value: () => boolean,
-    handler: (selection: boolean) => void): MenuTemplate[] {
-    return [
-        new CheckBox(
-            "Name",
-            {
-                defaultValue: "Name"
-            },
-            value,
-            handler)
+// export function checkboxField(
+//     target: AbstractStoryObject & IBooleanFieldMethods,
+//     value: () => boolean,
+//     handler: (selection: boolean) => void): MenuTemplate[] {
+//     return [
+//         new CheckBox(
+//             "Name",
+//             {
+//                 defaultValue: "Name"
+//             },
+//             value,
+//             handler)
         
-        // {
-        //     label: "Name",
-        //     type: "text",
-        //     value: () => target.name,
-        //     valueReference: (name: string) => target.updateName(name)
-        // }
-    ]
-}
+//         // {
+//         //     label: "Name",
+//         //     type: "text",
+//         //     value: () => target.name,
+//         //     valueReference: (name: string) => target.updateName(name)
+//         // }
+//     ]
+// }

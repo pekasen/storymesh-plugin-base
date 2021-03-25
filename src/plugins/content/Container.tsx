@@ -9,7 +9,7 @@ import { MoveableItem } from "../../renderer/store/MoveableItem";
 import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
 import { OutputConnectorView } from "./OutputConnectorView";
 import { IStoryObject, StoryGraph } from 'storygraph';
-import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
+import { StoryObject } from "../helpers/AbstractStoryObject";
 import { UIStore } from "../../renderer/store/UIStore";
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
 import { MenuTemplate, Text, DropDown, ColorPicker } from 'preact-sidebar';
@@ -103,8 +103,8 @@ export class Container extends StoryObject {
                                        color:${this.userDefinedProperties.textColor}`} id={id} class={"ngwebs-story-container"}>
                         {
                             path.map(node => {
-                                // const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
-                                const _node = node as AbstractStoryObject & IPlugIn;
+                                // const node = (registry.getValue(e) as unknown as IPlugIn & StoryObject);
+                                const _node = node as StoryObject & IPlugIn;
                                 if (_node.getComponent) {
                                     const Comp = _node.getComponent();
                                     return <Comp

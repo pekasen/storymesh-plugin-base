@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { Store } from '../..';
 import { Container } from '../../../plugins/content/Container';
-import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { StoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { RootStore } from '../../store/rootStore';
 import { DragReceiver } from "../DragReceiver";
@@ -14,7 +14,7 @@ import { MoveReceiver } from '../Moveable';
 import { StoryObjectView } from '../StoryObjectView/StoryObjectView';
 
 export interface IStoryObjectViewRendererProperties {
-    loadedObject: AbstractStoryObject
+    loadedObject: StoryObject
     store: RootStore
 }
 
@@ -164,7 +164,7 @@ export const StoryObjectViewRenderer: FunctionalComponent = () => {
             };
         })
         const makeNewInstance = (store: RootStore, input: string, loadedObject: IStoryObject, coords: { x: number; y: number; }) => {
-            const instance = store.pluginStore.getNewInstance(input) as AbstractStoryObject;
+            const instance = store.pluginStore.getNewInstance(input) as StoryObject;
     
             if (instance) {
                 loadedObject.childNetwork?.addNode(store.storyContentObjectRegistry, instance);
@@ -230,7 +230,7 @@ export const StoryObjectViewRenderer: FunctionalComponent = () => {
                     .map(id => store.storyContentObjectRegistry.getValue(id))
                     .map((object) => {
                         if (object) return <MoveReceiver registry={store.uistate.moveableItems} id={object.id} selectedItems={store.uistate.selectedItems}>
-                            <StoryObjectView store={store} object={object as AbstractStoryObject}>
+                            <StoryObjectView store={store} object={object as StoryObject}>
                                 <span class={`icon ${object.icon}`}>
                                     <p>{object.name}</p>
                                 </span> 

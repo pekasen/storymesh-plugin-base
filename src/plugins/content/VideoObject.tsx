@@ -29,6 +29,7 @@ class VideoObject extends StoryObject {
     public scrollThroughSpeed: number = 100;
     myReq: number;
     videoWrapperId = this.id.concat(".video-height");
+    videoWrapperHeight: number;
     idVideo = this.id.concat(".preview");
     classList: string;
 
@@ -42,7 +43,8 @@ class VideoObject extends StoryObject {
         this.makeDefaultConnectors();
         this.classList = "";
         this.myReq = 0;
-        
+        this.videoWrapperHeight = 0;
+
         this.content = {
             resource: "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm",
             contentType: "url",
@@ -130,16 +132,16 @@ class VideoObject extends StoryObject {
         if (this.scrollable) {                                            
             if (videoWrapper && videoElement) {
                 this.classList = this.classList.concat(" bound-to-scroll").trim();
-                videoWrapper.style.height = Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px";
+                this.videoWrapperHeight = (Math.floor(videoElement.duration) * this.scrollThroughSpeed);
+                console.log("videoWrapper", Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px;");        
             }      
         } else {
             if (videoWrapper && videoElement) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
-                videoWrapper.style.height = videoElement.height.toString() + "px";         
-                console.log("videoWrapper", videoWrapper?.clientHeight);            
+                this.videoWrapperHeight = videoElement.height;         
+                   
             }      
-        }
-        
+        }        
     }
     
     public getComponent(): FunctionComponent<INGWebSProps> {
@@ -160,8 +162,8 @@ class VideoObject extends StoryObject {
 
             const vid = <video          
                 id={idVideo}
-                class={this.classList}
                 type="video/webm; codecs='vp8, vorbis'"
+                class={this.classList}
                 src={content?.resource}
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
@@ -186,13 +188,12 @@ class VideoObject extends StoryObject {
                 cancelAnimationFrame(that.myReq);
             }
 
-            return <div class="video-container"><div id={this.videoWrapperId}> {
+            return <div id={this.videoWrapperId} style={"height: " + this.videoWrapperHeight}> {
                     this.modifiers.reduce((p,v) => (
                         v.modify(p)
                     ), vid)
                 }
                 </div>
-            </div>
         }
         return Comp
     }

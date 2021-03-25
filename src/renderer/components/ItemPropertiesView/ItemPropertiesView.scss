@@ -247,6 +247,21 @@
           background: getValue(node-area-background); //sidebar-card-table?
         }
       }
+      .form-group-item{
+        select, input.form-control {
+          @include customize(theme) {
+            background: getValue(node-area-background); //sidebar-card-table?
+          }
+        }
+      }
+      hr {
+        width: 100%;
+        border-style: dashed;
+        border-width: 1px;
+        @include customize(theme) {
+          border-color: getValue(node-area-background); //sidebar-card-table?
+        }
+      }
     }
   }
   .btn {

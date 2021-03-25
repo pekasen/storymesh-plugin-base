@@ -133,7 +133,7 @@ export class TransitionModifier extends HMTLModifier {
                     new Text("Start amount", { placeHolder: "100%, 20px, 50deg, ..." }, () => this.startAmount, (arg: string) => this.updateStartAmount(arg)),
                     new Text("Stop amount", { placeHolder: "100%, 20px, 50deg, ..." }, () => this.stopAmount, (arg: string) => this.updateStopAmount(arg)),
                     );
-                    return ret;
+                    break;
             case "filter":
                 ret.splice(4, 0,
                     ...dropDownField(
@@ -169,7 +169,7 @@ export class TransitionModifier extends HMTLModifier {
                         () => this.stopAmount,
                         (stopAmount: number) => this.updateStopAmount(stopAmount)
                     ))
-                return ret;
+                break;
             case "color":
                 case "background-color":
                     ret.splice(4, 0,
@@ -183,13 +183,16 @@ export class TransitionModifier extends HMTLModifier {
                             () => this.stopValue,
                             (color: string) => this.updateStopValue(color)
                         ))
-                    return ret;
+                    break;
             case "width":
                 ret.splice(4, 0,
                     new Text("From", { placeHolder: "100%" }, () => this.startValue, (arg: string) => this.updateStartValue(arg)),
                     new Text("To", { placeHolder: "50%" }, () => this.stopValue, (arg: string) => this.updateStopValue(arg)))
                 break;
+            default:
+                return ret;
         }
+            
         return ret;
     }
 

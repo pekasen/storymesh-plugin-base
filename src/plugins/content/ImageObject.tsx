@@ -7,9 +7,8 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { useEffect, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { MenuTemplate, Text } from "preact-sidebar";
-import { ThinSprite } from "babylonjs/Sprites/thinSprite";
 
 /**
  * Our first little dummy PlugIn
@@ -40,11 +39,11 @@ class _ImageObject extends StoryObject {
         this.content = {
             resource: "https://source.unsplash.com/random/1920x1080",
             contentType: "url",
-            altText: "This is an image"
+            altText: "Image description"
         }
 
         this.userDefinedProperties = {
-            caption: "This is the image caption",
+            caption: "This is the caption",
             mediaSource: "Who made this?"
         }
         // this.menuTemplate = connectionField(this);
@@ -68,9 +67,9 @@ class _ImageObject extends StoryObject {
         const ret: MenuTemplate[] = [
             ...nameField(this),
             new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateImageURL(arg)),
-            new Text("Alt text", {defaultValue: "This is an image"}, () => this.content.altText, (arg: string) => this.updateAltText(arg)),
-            new Text("Caption", {defaultValue: "This is the caption"}, () => this.userDefinedProperties.caption, (arg: string) => this.updateCaption(arg)),
-            new Text("Source", {defaultValue: "Who made dis?"}, () => this.userDefinedProperties.mediaSource, (arg: string) => this.updateMediaSource(arg)),
+            new Text("Alt text", { placeHolder: "Image description" }, () => this.content.altText, (arg: string) => this.updateAltText(arg)),
+            new Text("Caption", { placeHolder: "This is the caption" }, () => this.userDefinedProperties.caption, (arg: string) => this.updateCaption(arg)),
+            new Text("Source", { placeHolder: "Who made this?" }, () => this.userDefinedProperties.mediaSource, (arg: string) => this.updateMediaSource(arg)),
 
             ...connectionField(this),
         ];

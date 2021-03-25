@@ -119,6 +119,7 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
         }
     }
 
+    // TODO: implement 
     public arrayPosUp(): void {
         if (this.parent) {
             const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
@@ -128,6 +129,7 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
         }
     }
     
+    // TODO: implement 
     public arrayPosDown(): void {
         if (this.parent) {
             const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
@@ -163,40 +165,3 @@ export const ObservableStoryModifierSchema = createModelSchema(ObservableStoryMo
     role: true,
     parent: true
 });
-
-export type CSSUnit = "px" | "fr" | "em" | "rem" | "%" | "vh" | "vw";
-
-export class CSSUnitNumber {
-    private _value: number;
-    private _unit: CSSUnit;
-    private static _validUnits = [
-        "px", "fr", "em", "rem", "%", "vh", "vw"
-    ];
-
-    constructor(value?: number, unit?: CSSUnit) {
-        this._value = value ||  0;
-        this._unit = unit || "px";
-    }
-
-    public get value(): number {
-        return this._value;
-    }
-
-    public set value(value: number) {
-        this._value = value;
-    }
-
-    public get unit(): CSSUnit {
-        return this._unit;
-    }
-
-    public set unit(unit: CSSUnit) {
-        if (CSSUnitNumber.isValid(unit)) {
-            this._unit = unit;
-        } else throw("Unit not accepted.");
-    }
-
-    public static isValid(unit: string): boolean {
-        return CSSUnitNumber._validUnits.indexOf(unit) !== -1
-    }
-}

@@ -174,15 +174,18 @@ class _HeroObject extends StoryObject {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
 
             const headline = <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>;
-            const image = <img src={content?.resource} 
-                               alt={content?.altText} 
-                               style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
-                               ></img>
-            const video = <video autoplay="true" 
-                                 preload="preload" 
-                                 loop="true" muted src={content?.resource} 
-                                 style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
-                                 ></video>                   
+            const image = <img
+                src={content?.resource} 
+                alt={content?.altText} 
+                style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+            ></img>
+            const video = <video
+                autoPlay={true}
+                preload="preload" 
+                loop={true}
+                muted src={content?.resource} 
+                style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+            ></video>                   
 
             return <div class="hero">
                 {this.isVideo ? video : image}

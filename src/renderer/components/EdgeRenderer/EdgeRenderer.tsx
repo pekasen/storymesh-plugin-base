@@ -3,7 +3,7 @@ import { Component, FunctionalComponent, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { IStoryObject } from 'storygraph';
 import { Store } from '../..';
-import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { StoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { MoveableItem } from '../../store/MoveableItem';
 import { Line, Rect, Svg, SVG } from '@svgdotjs/svg.js';
 import { RootStore } from '../../store/rootStore';
@@ -235,7 +235,7 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
         }        
     }
 
-    executeChangesToEdges(loadedObject: AbstractStoryObject): void {        
+    executeChangesToEdges(loadedObject: StoryObject): void {        
         this.clearEdges();     
         loadedObject.childNetwork?.edges.forEach(edge => {
             if (edge && edge.from && edge.to) {
@@ -273,7 +273,7 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
         });
     }
 
-    removeClassFromAllEdges(loadedObject: AbstractStoryObject, className: string): void {
+    removeClassFromAllEdges(loadedObject: StoryObject, className: string): void {
         loadedObject.childNetwork?.edges.forEach(edge => {
             if (edge && edge.from && edge.to) {
                 const edgeLine = this.edges.get(edge.id);    

@@ -109,3 +109,4 @@ dist/constants*
 
 # TernJS port file
 .tern-port
+multicamera-test.gltf

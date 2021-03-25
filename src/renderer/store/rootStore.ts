@@ -6,7 +6,7 @@ import { createModelSchema, deserialize, object } from "serializr";
 import { IStoryObject } from 'storygraph/dist/StoryGraph/IStoryObject';
 import { __prefPath } from "../../constants";
 import { Container } from "../../plugins/content/Container";
-import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { StoryObject } from '../../plugins/helpers/AbstractStoryObject';
 import { AbstractStoryModifier } from "../../plugins/helpers/AbstractModifier";
 import { Preferences } from "../../preferences";
 import { AutoValueRegistrySchema, ClassRegistry, ValueRegistry } from '../utils/registry';
@@ -24,8 +24,8 @@ export interface IRootStoreProperties {
 
 export class RootStore {
     uistate: UIStore
-    storyContentObjectRegistry: ValueRegistry<AbstractStoryObject>
-    pluginStore: PlugInStore<AbstractStoryObject | AbstractStoryModifier>;
+    storyContentObjectRegistry: ValueRegistry<StoryObject>
+    pluginStore: PlugInStore<StoryObject | AbstractStoryModifier>;
     notifications: NotificationStore;
     protocol: StateProcotol;
     userPreferences: Preferences;
@@ -46,7 +46,7 @@ export class RootStore {
         /**
          * In this registry we store our instantiated StoryObjects
          */
-        this.storyContentObjectRegistry = new ValueRegistry<AbstractStoryObject>();
+        this.storyContentObjectRegistry = new ValueRegistry<StoryObject>();
         /**
          * In this registry we store our templates and plugin classes
          */
@@ -57,14 +57,14 @@ export class RootStore {
         const plugins = plugInLoader2("plugins/content");
         const modifiers = plugInLoader2("plugins/modifiers");
 
-        plugins.forEach((plug: IPlugInRegistryEntry<AbstractStoryObject>) => this.pluginStore.setPlugIn(plug.id, plug));
+        plugins.forEach((plug: IPlugInRegistryEntry<StoryObject>) => this.pluginStore.setPlugIn(plug.id, plug));
         modifiers.forEach(plug => this.pluginStore.setPlugIn(plug.id, plug));
     
         /**
          * If we are in a empty and untitled document, make a root storyobject
          */
         if (this.uistate.untitledDocument) {
-            const emptyStory = this.pluginStore.getNewInstance("internal.content.container") as AbstractStoryObject;
+            const emptyStory = this.pluginStore.getNewInstance("internal.content.container") as StoryObject;
             if (emptyStory) {
                 this.storyContentObjectRegistry.register(
                     emptyStory

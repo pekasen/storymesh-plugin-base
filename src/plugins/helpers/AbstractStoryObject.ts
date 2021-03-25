@@ -1,7 +1,7 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
-import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort, ConnectorPort } from 'storygraph';
+import { StoryGraph, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { IPlugIn, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { Card, MenuTemplate } from "preact-sidebar";
@@ -11,94 +11,72 @@ import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 import { rootStore } from '../../renderer';
 import { AbstractStoryModifier } from "./AbstractModifier";
-import { IEdgeEvent } from "storygraph/dist/StoryGraph/IEdgeEvent";
-import { NotificationCenter, INotificationData } from "storygraph/dist/StoryGraph/NotificationCenter";
+import { NotificationCenter } from "storygraph/dist/StoryGraph/NotificationCenter";
 import { EdgeSchema } from "../../renderer/store/schemas/EdgeSchema";
 import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
-import Logger from "js-logger";
+import Logger, { ILogger } from "js-logger";
+import { StoryObject as StoryObject0 } from "storygraph"
 
-/**
- * Our second little dummy PlugIn
- * 
- * 
- */
-// @
-export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
+export class StoryObject extends StoryObject0 implements IPlugIn{
+    
+    public id: string = v4();
+    public metaData: IMetaData = {
+        createdAt: new Date(Date.now()),
+        name: "NGWebS default user",
+        tags: []
+    };
+    public renderingProperties: IRenderingProperties = {
+        width: 100,
+        order: 1,
+        collapsable: false
+    };
+    public subscriptions = [
+        {
+            id: this.id+"/rerender",        // notificationCenter.subscribe(this.id+"/rerender"
+            hook: () => {
+                if (this._rerender !== undefined) this._rerender();
+            }
+        },
+    ];
+    public connections: IEdge[] = [];
+    public modifiers: AbstractStoryModifier[] = [];
+    public deletable: boolean = true;
+    public logger: ILogger = Logger.get(this.id);
 
-    public id: string;
-    public metaData: IMetaData;
-    public connections: IEdge[];
+    public name!: string;
+    public role!: string;
     public parent?: string;
-    public renderingProperties: IRenderingProperties;
-    public modifiers: AbstractStoryModifier[];
-    public deletable: boolean;
-    public abstract name: string;
-    public abstract role: string;
-    public abstract isContentNode: boolean;
-    public abstract userDefinedProperties: any;
-    public abstract childNetwork?: StoryGraph;
-    public abstract icon: string
-    public abstract content?: any;
+    public icon!: string;
+    public isContentNode!: boolean;
+    public notificationCenter?: NotificationCenter;
+    public childNetwork?: StoryGraph | undefined;
+    public content?: any;
+    public userDefinedProperties: any;
+
     protected _connectors = new Map<string, IConnectorPort>();
     protected _rerender?: (() => void);
-    
-    constructor() {
-        this.id = v4();
-        this.renderingProperties = {
-            width: 100,
-            order: 1,
-            collapsable: false
-        };
-        this.modifiers = [];
-        this.connections = [];
-        this.metaData = {
-            createdAt: new Date(Date.now()),
-            name: "NGWebS default user",
-            tags: []
-        };
-        this.deletable = true;
 
+    constructor() {
+        super();
+        
         makeObservable(this, {
             id: false,
             metaData:               observable,
             connections:            observable,
             modifiers:              observable.deep,
-            // cannot makr connectors as computed as it will fuck up everything and the world.
+            // cannot make connectors as computed as it will fuck up everything and the world.
             // connectors:             computed,
             addConnection:          action,
             addModifier:            action,
             removeModifier:         action
         });
     }
-    notificationCenter?: NotificationCenter | undefined;
+
     
     public addConnections(edges: IEdge[]): void {
         // store locally
         this.connections.push(...edges);
     }
-
-    public bindTo(notificationCenter: NotificationCenter): void {
-        this.notificationCenter = notificationCenter;
-        this.connectors.forEach((connector) => {
-            Logger.info("binding", connector, notificationCenter);
-            (connector as ConnectorPort).bindTo(notificationCenter, this.id);
-        });
-        notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
-            if (payload && payload.data) {
-                Logger.info("binding", payload);
-                if (payload.data.add !== undefined) {
-                    this.addConnections(payload.data.add);
-                }
-                if (payload.data.remove !== undefined) {
-                    this.removeConnections(payload.data.remove);
-                }
-            }
-        });
-        notificationCenter.subscribe(this.id+"/rerender", () => {
-            if (this._rerender !== undefined) this._rerender();
-        })
-    }
-
 
     /**
      * 
@@ -125,7 +103,6 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             }
         }
     }
-
     public removeConnections(edges: IEdge[]): void {
         edges.forEach((edge) => {
             const _index = this.connections.findIndex((_edge) => (_edge.id === edge.id));
@@ -136,31 +113,33 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             } else console.warn(`edge not found in node ${this.id}`);  
         });
     }
-
     public addModifier(modifier: AbstractStoryModifier): void {
         modifier.updateParent(this.id);
         this.modifiers.push(modifier);
     }
-
     public removeModifier(modifier: AbstractStoryModifier): void {
         this.modifiers.splice(
             this.modifiers.indexOf(modifier), 1
         );
     }
-
     public willDeregister(registry: IRegistry): void {
         if (this.childNetwork) this.childNetwork.willDeregister(registry)
+    }
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = new Map(this._connectors);
+        this.modifiers.forEach(modifier => {
+            modifier.requestConnectors().forEach(([label, connector]) => {
+                if (connector.needsBinding() && this.notificationCenter !== undefined) {
+                    connector.bindTo(this.notificationCenter, this.id);
+                }
+                map.set(label, connector);
+            });
+        });
+        return map
     }
 
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [];
-        // if (this.modifiers.length !== 0) {
-        //     // ret.push(
-        //     //     ...this.modifiers.
-        //     //     map(e => e.menuTemplate).
-        //     //     reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => (p.concat(...e)))
-        //     // );
-        // }
         ret.push(
             ...this.modifiers.map(modifier => (
                 new Card(modifier.name, {
@@ -171,13 +150,26 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         return ret;
     }
 
-    public get connectors(): Map<string, IConnectorPort> {
-        return this._connectors;
+    public getComponent(): FunctionComponent<INGWebSProps> {
+        throw new Error('Method not implemented.');
     }
 
-    public abstract getComponent?(): FunctionComponent<INGWebSProps>
+    public getEditorComponent(): FunctionComponent<INGWebSProps> {
+        throw new Error('Method not implemented.');
+    }
 
-    public abstract getEditorComponent(): FunctionComponent<INGWebSProps> 
+    public isBound(): void {
+        // throw new Error("Method not implemented.");
+        this.logger.log("READY TO ROLL");
+    }
+
+    public mountTo(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public isMounted(): void {
+        throw new Error("Method not implemented.");
+    }
 
     protected makeDefaultConnectors(): void {
         const _in = new FlowConnectorInPort();
@@ -201,35 +193,6 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
                 e.id, e
             );
         });
-    }
-}
-
-export class StoryObject extends AbstractStoryObject {
-    public name!: string;
-    public role!: string;
-    public isContentNode!: boolean;
-    public userDefinedProperties: any;
-    public childNetwork?: StoryGraph | undefined;
-    public icon!: string;
-    public content?: any;
-    
-    public get connectors(): Map<string, IConnectorPort> {
-        const map = new Map(super.connectors);
-        this.modifiers.forEach(modifier => {
-            modifier.requestConnectors().forEach(([label, connector]) => {
-                if (connector.needsBinding() && this.notificationCenter !== undefined) {
-                    connector.bindTo(this.notificationCenter, this.id);
-                }
-                map.set(label, connector);
-            });
-        });
-        return map
-    }
-    public getComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
-    }
-    public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
     }
 }
 

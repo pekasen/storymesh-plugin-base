@@ -1,6 +1,6 @@
 import { IReactionDisposer, reaction } from 'mobx';
 import { Component, h } from 'preact';
-import { AbstractStoryObject } from '../../../plugins/helpers/AbstractStoryObject';
+import { StoryObject } from '../../../plugins/helpers/AbstractStoryObject';
 import { AbstractStoryModifier } from '../../../plugins/helpers/AbstractModifier';
 import { RootStore } from '../../store/rootStore';
 import { ConnectorView } from '../Connector/ConnectorView';
@@ -104,6 +104,6 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
 }
 interface StoryObjectViewProperties {
     store: RootStore;
-    object: AbstractStoryObject;
+    object: StoryObject;
     children: h.JSX.Element;
 }

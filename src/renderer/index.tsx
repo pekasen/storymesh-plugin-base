@@ -3,7 +3,7 @@ import { App } from "./components/App";
 import { render, h, createContext } from "preact";
 import { registerHandlers } from './utils/registerHandlers';
 import { RootStore } from './store/rootStore';
-import { AbstractStoryObject } from '../plugins/helpers/AbstractStoryObject';
+import { StoryObject } from '../plugins/helpers/AbstractStoryObject';
 import Logger from "js-logger";
 
 // setup logger
@@ -18,7 +18,7 @@ Logger.useDefaults({
 
 export const rootStore = {
     root: new RootStore(),
-    _loadingCache: new Map<string, AbstractStoryObject>()
+    _loadingCache: new Map<string, StoryObject>()
 };
 export const Store = createContext(rootStore.root);
 

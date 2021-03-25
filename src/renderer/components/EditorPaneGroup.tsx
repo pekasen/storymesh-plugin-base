@@ -10,7 +10,7 @@ import { StoryComponentGallery } from './StoryComponentGalleryView/StoryComponen
 import { GalleryItemView } from './GalleryItemView';
 import { Store } from '..';
 import { useContext, useEffect, useState } from 'preact/hooks';
-import { AbstractStoryObject } from '../../plugins/helpers/AbstractStoryObject';
+import { StoryObject } from '../../plugins/helpers/AbstractStoryObject';
 
 export const EditorPaneGroup: FunctionalComponent = () => {
     const [, setState] = useState({});

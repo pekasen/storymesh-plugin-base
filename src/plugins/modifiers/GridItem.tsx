@@ -77,36 +77,6 @@ export class CSSGriditemModifier extends CSSModifier {
     public get menuTemplate(): MenuTemplate[] {
         return [
             ...super.menuTemplate,
-            // {
-            //     label: "Row Start",
-            //     type: "text",
-            //     value: () => this.data.inline["grid-row"],
-            //     valueReference: (value: string) => {
-            //         // validate user input
-            //         runInAction(() => this.data.inline["grid-row"] = value)
-            //         // const test = /\d+px/gm;
-            //         // if (test.test(value)) {
-            //         // }
-            //     }
-            // },
-            // {
-            //     label: "Column Start",
-            //     type: "text",
-            //     value: () => this.data.inline["grid-column"],
-            //     valueReference: (value: string) => {
-            //         // validate user input
-            //         runInAction(() => this.data.inline["grid-column"] = value)
-            //         // const test = /\d+px/gm;
-            //         // if (test.test(value)) {
-            //         // }
-            //     }
-            // },
-            // {
-            //     label: "Class",
-            //     value: () => this.data.classes.join(" "),
-            //     valueReference: (value: string) => runInAction(() => this.data.classes = value.split(" ")),
-            //     type: "text"
-            // },
             ...["XS", "SM", "MD", "LG", "XL"].map(e => (
                 this.makeSlider(e as Size)
             )),
@@ -135,22 +105,6 @@ export class CSSGriditemModifier extends CSSModifier {
                 runInAction(() => this.data.classMap.set(key, num))
             }
         )
-        
-        // {
-        //     label: key + " Width",
-        //     value: () => this.data.classMap.get(key),
-        //     valueReference: (value: string) => {
-        //         const num = Number(value);
-
-        //         runInAction(() => this.data.classMap.set(key, num))
-        //     },
-        //     type: "hslider",
-        //     options: {
-        //         min: 1,
-        //         max: 12,
-        //         formatter: (val: number) => `${val} Column${(val === 1) ? "" : "s"}`
-        //     }
-        // }
     }
 }
 

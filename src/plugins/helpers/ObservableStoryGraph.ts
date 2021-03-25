@@ -19,6 +19,7 @@ export class ObservableStoryGraph extends StoryGraph {
 }
 
 export const ObservableStoryGraphSchema = createModelSchema(ObservableStoryGraph,{
+    parent: primitive(),
     nodes: list(primitive()),
     edges: list(object(EdgeSchema), {
         // afterDeserialize: (cb, err, newValue) => {

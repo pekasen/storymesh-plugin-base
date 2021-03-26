@@ -1,4 +1,4 @@
-import { FunctionComponent, h } from "preact";
+import { createRef, FunctionComponent, h } from "preact";
 import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { StoryGraph } from 'storygraph';
@@ -7,7 +7,7 @@ import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema } from 'serializr';
-import { useState } from "preact/hooks";
+import { useRef, useState, useEffect } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
 
 /**
@@ -32,6 +32,8 @@ class VideoObject extends StoryObject {
     videoWrapperHeight: number;
     idVideo = this.id.concat(".preview");
     classList: string;
+    videoElement = createRef();
+    videoWrapper = createRef();
 
     constructor() {
         super();
@@ -67,7 +69,7 @@ class VideoObject extends StoryObject {
             updateName:             action,
             updateVideoURL:         action,
             updateScrollable:       action
-        });
+        });       
     }
 
     public get menuTemplate(): MenuTemplate[] {
@@ -107,7 +109,11 @@ class VideoObject extends StoryObject {
                 },
                 () => this.scrollThroughSpeed,
                 (sel: number) => {
-                    runInAction(() => this.scrollThroughSpeed = sel)
+                    runInAction(() => 
+                    {
+                        this.scrollThroughSpeed = sel; 
+                        this.updateScrollable(this.scrollable);
+                    })
             }),
             ...connectionField(this),
         ];
@@ -124,44 +130,32 @@ class VideoObject extends StoryObject {
     }
 
     public updateScrollable(newScrollable: boolean) {
-        this.scrollable = newScrollable;        
-            
-        const videoWrapper = document.getElementById(this.videoWrapperId);         
-        const videoElement = document.getElementById(this.idVideo) as HTMLVideoElement;
-      
+        this.scrollable = newScrollable;    
         if (this.scrollable) {                                            
-            if (videoWrapper && videoElement) {
+            if (this.videoElement && this.videoElement.current) {
                 this.classList = this.classList.concat(" bound-to-scroll").trim();
-                this.videoWrapperHeight = (Math.floor(videoElement.duration) * this.scrollThroughSpeed);
-                console.log("videoWrapper", Math.floor(videoElement.duration) * this.scrollThroughSpeed + "px;");        
+                this.videoWrapperHeight = (Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed);
+                console.log("videoWrapper", Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed + "px;");        
             }      
         } else {
-            if (videoWrapper && videoElement) {
+            if (this.videoElement && this.videoElement.current) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
-                this.videoWrapperHeight = videoElement.height;         
-                   
+                this.videoWrapperHeight = this.videoElement.current.height;    
             }      
         }        
     }
     
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-
-            const [, setState] = useState({});
-
+            const [, setState] = useState({});    
             this._rerender = () => {
                 setState({});
-            }
-            
-            const playbackConst = this.scrollThroughSpeed;
-            const idVideo = this.idVideo;
-            var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-            var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+            };
+           
             var that = this;
-
             const vid = <video          
-                id={idVideo}
+                id={that.idVideo}
+                ref={that.videoElement} 
                 type="video/webm; codecs='vp8, vorbis'"
                 class={this.classList}
                 src={content?.resource}
@@ -172,23 +166,25 @@ class VideoObject extends StoryObject {
                 preload="preload"
             ></video>;
 
-            function scrollPlay(): void {        
-                var verticalPane = document.getElementsByClassName("vertical-pane")[3]; //@TODO: replace this with targeted DOM identifier
-                const videoElement = document.getElementById(idVideo) as HTMLVideoElement; 
-                var frameNumber  = verticalPane.scrollTop / playbackConst;
-                if (videoElement) {
-                    videoElement.currentTime = frameNumber;                    
-                    that.myReq = requestAnimationFrame(scrollPlay);         
-                } 
-            }
+            useEffect(() => {
+                var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+                if (this.scrollable) {
+                    requestAnimationFrame(scrollPlay);
+                } else {
+                    cancelAnimationFrame(this.myReq);
+                }
+                var that = this;
+                function scrollPlay(): void {  
+                    if (that.videoElement && that.videoElement.current) {
+                        that.videoElement.current.currentTime = Math.round(that.videoWrapper.current.parentNode.scrollTop / that.scrollThroughSpeed);    
+                        that.myReq = requestAnimationFrame(scrollPlay);         
+                    } 
+                }    
+            }, [that.scrollable]);     
 
-            if (this.scrollable) {
-                requestAnimationFrame(scrollPlay);
-            } else {
-                cancelAnimationFrame(that.myReq);
-            }
-
-            return <div id={this.videoWrapperId} style={"height: " + this.videoWrapperHeight}> {
+            return <div id={this.videoWrapperId} ref={that.videoWrapper} style={"height: " + this.videoWrapperHeight}> {
                     this.modifiers.reduce((p,v) => (
                         v.modify(p)
                     ), vid)
@@ -197,6 +193,8 @@ class VideoObject extends StoryObject {
         }
         return Comp
     }
+
+    
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
         return () => <div class="editor-component"></div>

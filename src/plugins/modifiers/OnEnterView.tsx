@@ -7,7 +7,7 @@ import { MenuTemplate } from "preact-sidebar";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
 
-export class OnEnter {
+export class OnEnterView {
     protected _name: string | undefined;    
     public reactionOut = new ReactionConnectorOutPort("reaction-out");
     public debug = false;    
@@ -30,27 +30,27 @@ export class OnEnter {
     }
 }
 
-class OnEnterModifierData {
-    onEnter: OnEnter;
+class OnEnterViewModifierData {
+    onEnterView: OnEnterView;
     [key: string]: unknown;
 
     constructor() {
-        this.onEnter = new OnEnter();
+        this.onEnterView = new OnEnterView();
 
         makeObservable(this, {
-            onEnter: observable
+            onEnterView: observable
         })
     }
 }
 
-export interface IHTMLOnEnterModifierProperties {
-    wrapperObject: HTMLOnEnterModifier
+export interface IHTMLOnEnterViewModifierProperties {
+    wrapperObject: HTMLOnEnterViewModifier
 }
 
-export class HTMLOnEnterModifier extends HMTLModifier {
-    public name = "OnEnter Modifier"
-    public role = "internal.modifier.OnEnter";
-    public data = new OnEnterModifierData();
+export class HTMLOnEnterViewModifier extends HMTLModifier {
+    public name = "OnEnterView Modifier"
+    public role = "internal.modifier.OnEnterView";
+    public data = new OnEnterViewModifierData();
     observer: IntersectionObserver | undefined;
     
     constructor() {
@@ -63,18 +63,18 @@ export class HTMLOnEnterModifier extends HMTLModifier {
 
     public modify(element: h.JSX.Element): h.JSX.Element {       
 
-        class WrapperComponent extends Component<IHTMLOnEnterModifierProperties> {            
+        class WrapperComponent extends Component<IHTMLOnEnterViewModifierProperties> {            
             elemRef = createRef();
-            wrapper: HTMLOnEnterModifier;
+            wrapper: HTMLOnEnterViewModifier;
             
-            constructor(props: IHTMLOnEnterModifierProperties) {
+            constructor(props: IHTMLOnEnterViewModifierProperties) {
                 super();
                 this.wrapper = props.wrapperObject;
                 let thatWrapper = this.wrapper;
                 function onEntry(entry: IntersectionObserverEntry[]) {
                     entry.forEach((change) => {
                         if (change.isIntersecting) {
-                            thatWrapper.data.onEnter.reactionOut.notify();
+                            thatWrapper.data.onEnterView.reactionOut.notify();
                             // TODO: why doesn't this work with the HeroObject?
                         } 
                     });
@@ -114,29 +114,29 @@ export class HTMLOnEnterModifier extends HMTLModifier {
         return super.getRenderingProperties;
     }
 
-    // TODO: reaction outputs are not deleted if OnEnter is deleted
+    // TODO: reaction outputs are not deleted if OnEnterView is deleted
     public requestConnectors(): [string, IConnectorPort][] {        
-        const out = this.data.onEnter.reactionOut;
-        out.name = this.data.onEnter.name;
+        const out = this.data.onEnterView.reactionOut;
+        out.name = this.data.onEnterView.name;
         return [[out.id, out]];        
     }
 }
 
-export const OnEnterSchema = createModelSchema(OnEnter, {
+export const OnEnterViewSchema = createModelSchema(OnEnterView, {
     name: true,
     reactionOut: object(ConnectorSchema)
 });
 
-export const HTMLOnEnterModifierSchema = createModelSchema(HTMLOnEnterModifier, {
-    data: object(OnEnterModifierData),
+export const HTMLOnEnterViewModifierSchema = createModelSchema(HTMLOnEnterViewModifier, {
+    data: object(OnEnterViewModifierData),
     name: true,
     role: true
 });
 
 export const plugInExport = exportClass(
-    HTMLOnEnterModifier,
-    "OnEnter",
-    "internal.modifier.OnEnter",
-    "icon-mouse",
+    HTMLOnEnterViewModifier,
+    "OnEnterView",
+    "internal.modifier.OnEnterView",
+    "icon-eye",
     true
 );

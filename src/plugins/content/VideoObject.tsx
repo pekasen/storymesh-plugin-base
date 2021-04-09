@@ -131,33 +131,37 @@ class VideoObject extends StoryObject {
 
     public updateScrollable(newScrollable: boolean) {
         this.scrollable = newScrollable;    
+        console.log("wrapper", this.videoElement, this.videoElement.current);
         if (this.scrollable) {                                            
             if (this.videoElement && this.videoElement.current) {
                 this.classList = this.classList.concat(" bound-to-scroll").trim();
                 this.videoWrapperHeight = (Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed);
-                console.log("videoWrapper", Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed + "px;");        
+                console.log("videoWrapper", Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed + "px;");
+                console.log("classlist", this.videoElement.current.classList); 
             }      
         } else {
             if (this.videoElement && this.videoElement.current) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
                 this.videoWrapperHeight = this.videoElement.current.height;    
+                console.log("classlist", this.classList );
             }      
         }        
     }
     
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
+            console.log("vidref", this.videoElement);
             const [, setState] = useState({});    
             this._rerender = () => {
                 setState({});
             };
            
+            
             var that = this;
             const vid = <video          
-                id={that.idVideo}
-                ref={that.videoElement} 
+                id={this.idVideo}
+                ref={this.videoElement} 
                 type="video/webm; codecs='vp8, vorbis'"
-                class={this.classList}
                 src={content?.resource}
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
@@ -166,25 +170,30 @@ class VideoObject extends StoryObject {
                 preload="preload"
             ></video>;
 
+            console.log("wrapper", that.videoElement);
             useEffect(() => {
                 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                             window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+               
+                var that = this;
+                function scrollPlay(): void {
+                    if (that.videoElement && that.videoElement.current) {
+                        console.log((that.videoWrapper.current.rect.bottom - that.videoElement.current.rect.bottom));
+                        that.videoElement.current.currentTime = 
+                            Math.round((that.videoWrapper.current.rect.bottom - that.videoElement.current.rect.bottom) 
+                                / that.scrollThroughSpeed);    
+                        that.myReq = requestAnimationFrame(scrollPlay);         
+                    } 
+                }  
                 if (this.scrollable) {
                     requestAnimationFrame(scrollPlay);
                 } else {
                     cancelAnimationFrame(this.myReq);
-                }
-                var that = this;
-                function scrollPlay(): void {  
-                    if (that.videoElement && that.videoElement.current) {
-                        that.videoElement.current.currentTime = Math.round(that.videoWrapper.current.parentNode.scrollTop / that.scrollThroughSpeed);    
-                        that.myReq = requestAnimationFrame(scrollPlay);         
-                    } 
-                }    
-            }, [that.scrollable]);     
+                }                 
+            }, [this.scrollable]);     
 
-            return <div id={this.videoWrapperId} ref={that.videoWrapper} style={"height: " + this.videoWrapperHeight}> {
+            return <div id={this.videoWrapperId} ref={that.videoWrapper} class={this.classList} style={"height: " + this.videoWrapperHeight}> {
                     this.modifiers.reduce((p,v) => (
                         v.modify(p)
                     ), vid)

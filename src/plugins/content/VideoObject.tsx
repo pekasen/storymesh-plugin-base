@@ -131,19 +131,17 @@ class VideoObject extends StoryObject {
 
     public updateScrollable(newScrollable: boolean) {
         this.scrollable = newScrollable;    
-        console.log("wrapper", this.videoElement, this.videoElement.current);
         if (this.scrollable) {                                            
             if (this.videoElement && this.videoElement.current) {
-                this.classList = this.classList.concat(" bound-to-scroll").trim();
+                if (!this.classList.includes("bound-to-scroll")) {
+                    this.classList = this.classList.concat(" bound-to-scroll").trim();
+                }
                 this.videoWrapperHeight = (Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed);
-                console.log("videoWrapper", Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed + "px;");
-                console.log("classlist", this.videoElement.current.classList); 
             }      
         } else {
             if (this.videoElement && this.videoElement.current) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
                 this.videoWrapperHeight = this.videoElement.current.height;    
-                console.log("classlist", this.classList );
             }      
         }        
     }
@@ -156,7 +154,8 @@ class VideoObject extends StoryObject {
                 setState({});
             };
            
-            
+            this.videoElement = createRef(); // TODO why does this help? why is the reference otherwise null here?
+            this.videoWrapper = createRef();
             var that = this;
             const vid = <video          
                 id={this.idVideo}
@@ -179,10 +178,12 @@ class VideoObject extends StoryObject {
                 var that = this;
                 function scrollPlay(): void {
                     if (that.videoElement && that.videoElement.current) {
-                        console.log((that.videoWrapper.current.rect.bottom - that.videoElement.current.rect.bottom));
-                        that.videoElement.current.currentTime = 
-                            Math.round((that.videoWrapper.current.rect.bottom - that.videoElement.current.rect.bottom) 
-                                / that.scrollThroughSpeed);    
+                        console.log(that.videoElement.current.duration -
+                            Math.round((that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().top) 
+                                / that.scrollThroughSpeed));
+                        that.videoElement.current.currentTime = that.videoElement.current.duration -
+                            Math.round((that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().top) 
+                                / that.scrollThroughSpeed); // TODO fix offset
                         that.myReq = requestAnimationFrame(scrollPlay);         
                     } 
                 }  
@@ -202,8 +203,6 @@ class VideoObject extends StoryObject {
         }
         return Comp
     }
-
-    
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
         return () => <div class="editor-component"></div>

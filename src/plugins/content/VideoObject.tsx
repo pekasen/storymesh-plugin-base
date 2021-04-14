@@ -29,7 +29,6 @@ class VideoObject extends StoryObject {
     public scrollThroughSpeed: number = 100;
     myReq: number;
     videoWrapperId = this.id.concat(".video-height");
-    videoWrapperHeight: number;
     idVideo = this.id.concat(".preview");
     classList: string;
     videoElement = createRef();
@@ -45,7 +44,6 @@ class VideoObject extends StoryObject {
         this.makeDefaultConnectors();
         this.classList = "";
         this.myReq = 0;
-        this.videoWrapperHeight = 0;
 
         this.content = {
             resource: "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm",
@@ -136,23 +134,24 @@ class VideoObject extends StoryObject {
                 if (!this.classList.includes("bound-to-scroll")) {
                     this.classList = this.classList.concat(" bound-to-scroll").trim();
                 }
-                this.videoWrapperHeight = (Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed);
             }      
         } else {
             if (this.videoElement && this.videoElement.current) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
-                this.videoWrapperHeight = this.videoElement.current.height;    
             }      
-        }        
+        }       
     }
     
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            console.log("vidref", this.videoElement);
             const [, setState] = useState({});    
             this._rerender = () => {
                 setState({});
             };
+
+            function lerp (start: number, end: number, amt: number){
+                return (1-amt)*start+amt*end;
+            }
            
             this.videoElement = createRef(); // TODO why does this help? why is the reference otherwise null here?
             this.videoWrapper = createRef();
@@ -169,7 +168,6 @@ class VideoObject extends StoryObject {
                 preload="preload"
             ></video>;
 
-            console.log("wrapper", that.videoElement);
             useEffect(() => {
                 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                             window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -177,13 +175,11 @@ class VideoObject extends StoryObject {
                
                 var that = this;
                 function scrollPlay(): void {
-                    if (that.videoElement && that.videoElement.current) {
-                        console.log(that.videoElement.current.duration -
-                            Math.round((that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().top) 
-                                / that.scrollThroughSpeed));
+                    if (that.videoElement && that.videoElement.current && that.scrollable) {
                         that.videoElement.current.currentTime = that.videoElement.current.duration -
-                            Math.round((that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().top) 
-                                / that.scrollThroughSpeed); // TODO fix offset
+                        (that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().bottom) 
+                            / that.scrollThroughSpeed; 
+                        that.videoWrapper.current.style.height = Math.floor(that.videoElement.current.duration * that.scrollThroughSpeed + that.videoElement.current.getBoundingClientRect().height);
                         that.myReq = requestAnimationFrame(scrollPlay);         
                     } 
                 }  
@@ -194,7 +190,7 @@ class VideoObject extends StoryObject {
                 }                 
             }, [this.scrollable]);     
 
-            return <div id={this.videoWrapperId} ref={that.videoWrapper} class={this.classList} style={"height: " + this.videoWrapperHeight}> {
+            return <div id={this.videoWrapperId} ref={that.videoWrapper} class={this.classList}> {
                     this.modifiers.reduce((p,v) => (
                         v.modify(p)
                     ), vid)

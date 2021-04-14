@@ -158,11 +158,10 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
         );
 
         document.addEventListener("ConnectorDragStart", (customEvent: Event) => {
-            //Logger.info("ConnectorDragStart");
             const e = customEvent as CustomEvent;
             const mouseMove = (ev: MouseEvent) => 
             { 
-                this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY);               
+                this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY, e.detail.class);              
             }
             document.addEventListener("drag", mouseMove);
             
@@ -220,12 +219,14 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
         this.selectionRectangle = undefined;
     }
 
-    drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number): void {
+    drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number, type: string): void {
         if (this.looseNoodle && this.looseNoodle.length > 1) {                                    
             this.redrawEdgeCurve(this.looseNoodle, x, y, mouseX, mouseY);
         } else {
             this.looseNoodle = this.drawEdgeCurve(x, y, mouseX, mouseY);           
         }
+
+        this.looseNoodle[0].addClass(type);
     }    
 
     deleteNoodle(noodle: Line[] | undefined): void {

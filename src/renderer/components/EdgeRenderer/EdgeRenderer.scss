@@ -10,7 +10,21 @@ line {
     stroke-width: 2px;
     transition: stroke-width .1s ease-in;
   }
-
+  &.flow {
+    @include customize(theme) {
+      stroke: getValue(flow);
+    }
+  }
+  &.data {
+    @include customize(theme) {
+      stroke: getValue(data);
+    }
+  }
+  &.reaction {
+    @include customize(theme) {
+      stroke: getValue(reaction);
+    }
+  }
   &.selected {
     stroke-width: 4;
     stroke-dasharray: 4;

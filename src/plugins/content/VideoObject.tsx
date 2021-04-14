@@ -148,10 +148,6 @@ class VideoObject extends StoryObject {
             this._rerender = () => {
                 setState({});
             };
-
-            function lerp (start: number, end: number, amt: number){
-                return (1-amt)*start+amt*end;
-            }
            
             this.videoElement = createRef(); // TODO why does this help? why is the reference otherwise null here?
             this.videoWrapper = createRef();

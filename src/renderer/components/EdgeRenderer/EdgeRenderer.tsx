@@ -33,6 +33,8 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
     looseNoodle?: Line[];
     selectionRectangle?: Rect;
     svg: Svg;
+    collapsibleClass: string; 
+    nodeEditorID: string;
 
     constructor({ store }: { store: RootStore}) {
         super();
@@ -41,6 +43,8 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
         this.edges = new Map();
         this.mutationTargetNode = undefined;
         this.edgeRendererID = "edge-renderer";
+        this.collapsibleClass = "toggle-content";
+        this.nodeEditorID = "node-editor";
         let nestedDisposeReaction: IReactionDisposer;
         // Options for the observer (which mutations to observe)
         this.mutationsConfig_LoadedItem = { subtree: true, attributeFilter: [ "id" ] };
@@ -120,14 +124,19 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
                 if (!loadedObject)
                     throw ("Undefined loaded object");
                 
-                // Callback function to execute when mutations are observed
-                const callback = (() => {
-                    this.executeChangesToEdges(loadedObject);
-                });
-
-                // Create an observer instance linked to the callback function
-                this.mutationObserver_CollapseItem = new MutationObserver(callback);
-
+                    const that = this;
+                    // Create an observer instance linked to the callback function
+                    this.mutationObserver_CollapseItem = new MutationObserver(function (m) {                       
+                        try {
+                                const elem = m[0].target as HTMLElement;
+                                if (elem && elem.className.includes(that.collapsibleClass)) {
+                                    that.executeChangesToEdges(loadedObject);
+                            } 
+                        } catch {
+                            // do nothing, just ignore any undefined stuff
+                        }
+                      });
+    
                 // Start observing the target node for configured mutations
                 this.mutationObserver_CollapseItem.observe(this.mutationTargetNode as Node, this.mutationsConfig_CollapseItem);                
             }
@@ -158,11 +167,10 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
         );
 
         document.addEventListener("ConnectorDragStart", (customEvent: Event) => {
-            //Logger.info("ConnectorDragStart");
             const e = customEvent as CustomEvent;
             const mouseMove = (ev: MouseEvent) => 
             { 
-                this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY);               
+                this.drawLooseNoodle(e.detail.x, e.detail.y, ev.clientX, ev.clientY, e.detail.class);              
             }
             document.addEventListener("drag", mouseMove);
             
@@ -220,12 +228,14 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
         this.selectionRectangle = undefined;
     }
 
-    drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number): void {
+    drawLooseNoodle(x: number, y: number, mouseX: number, mouseY: number, type: string): void {
         if (this.looseNoodle && this.looseNoodle.length > 1) {                                    
             this.redrawEdgeCurve(this.looseNoodle, x, y, mouseX, mouseY);
         } else {
             this.looseNoodle = this.drawEdgeCurve(x, y, mouseX, mouseY);           
         }
+
+        this.looseNoodle[0].addClass(type);
     }    
 
     deleteNoodle(noodle: Line[] | undefined): void {
@@ -237,21 +247,28 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
 
     executeChangesToEdges(loadedObject: StoryObject): void {        
         this.clearEdges();     
+        let connFrom, connTo: HTMLElement | null;
+        let posFrom, posTo: DOMRect;
+        let edgeLine: Line[] | undefined;
         loadedObject.childNetwork?.edges.forEach(edge => {
             if (edge && edge.from && edge.to) {
-                let edgeLine = this.edges.get(edge.id);  
-                const connFrom = document.getElementById(edge.from);
-                const connTo = document.getElementById(edge.to);
+                edgeLine = this.edges.get(edge.id);  
+                connFrom = document.getElementById(edge.from);
+                connTo = document.getElementById(edge.to);
                 if (connFrom && connTo) {
-                    const posFrom = connFrom.getBoundingClientRect();
-                    const posTo = connTo.getBoundingClientRect();
+                    posFrom = connFrom.getBoundingClientRect();
+                    posTo = connTo.getBoundingClientRect();
                     if (edgeLine) {                                    
                         this.redrawEdgeCurve(edgeLine, posFrom.x + posFrom.width/2, posFrom.y + posFrom.height/2, posTo.x + posTo.width/2, posTo.y + posTo.height/2);
                     } else {
                         edgeLine = this.drawEdgeCurve(posFrom.x + posFrom.width/2, posFrom.y + posFrom.height/2, posTo.x + posTo.width/2, posTo.y + posTo.height/2);
                         this.edges.set(edge.id, edgeLine);
                         if (edgeLine && edgeLine.length > 1) { 
-                             edgeLine[0].click((e: MouseEvent) => {
+                            const connectorTypeClass = connFrom.className.split(" ")[1] as string;                            
+                            if(!edgeLine[0].hasClass(connectorTypeClass)) {
+                                edgeLine[0].addClass(connectorTypeClass);
+                            }
+                            edgeLine[0].click((e: MouseEvent) => {
                                 if (e.shiftKey) {
                                     this.store.uistate.selectedItems.addToSelectedItems(edge.id);
                                 } else {
@@ -315,9 +332,9 @@ export class EdgeRenderer2 extends Component<{store: RootStore}> {
     }
 
     componentDidMount(): void {
-        const obj = document.getElementById(this.edgeRendererID);
+        const obj = document.getElementById(this.nodeEditorID);
         // Select the node that will be observed for mutations
-        this.mutationTargetNode = document.getElementById('node-editor') as HTMLElement;
+        this.mutationTargetNode = obj as HTMLElement;
         if (obj) {
             this.svg = SVG().addTo(obj).size(1000, 1000);
         }

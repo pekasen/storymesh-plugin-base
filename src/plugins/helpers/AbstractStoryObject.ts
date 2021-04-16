@@ -93,7 +93,7 @@ export class StoryObject extends StoryObject0 implements IPlugIn{
             const parentNetwork = registry.getValue(this.parent)?.childNetwork;
             if (parentNetwork) {
                 const newEdge: IEdge = {
-                    id: (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
+                    id: "edge." + v4(), // (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
                     from: ((isIncoming) ? `${id}.${theirport}` : `${this.id}.${myport}`),
                     to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
                     // parent: parentNetwork

@@ -171,8 +171,8 @@ class VideoObject extends StoryObject {
                
                 var that = this;
                 function scrollPlay(): void {
-                    if (that.videoElement && that.videoElement.current && that.scrollable) {
-                        that.videoElement.current.currentTime = that.videoElement.current.duration -
+                    if (that.videoElement && that.videoElement.current && that.scrollable && !isNaN(that.videoElement.current.duration)) { //TODO: check why duration is sometimes NaN
+                        that.videoElement.current.currentTime =  that.videoElement.current.duration -
                         (that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().bottom) 
                             / that.scrollThroughSpeed; 
                         that.videoWrapper.current.style.height = Math.floor(that.videoElement.current.duration * that.scrollThroughSpeed + that.videoElement.current.getBoundingClientRect().height);

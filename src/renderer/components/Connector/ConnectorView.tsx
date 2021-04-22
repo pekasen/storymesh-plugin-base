@@ -79,7 +79,8 @@ export class ConnectorView extends Component<IConnectorViewProps> {
                     const event = new CustomEvent("ConnectorDragStart", {
                         detail: {
                             x: xSpan,
-                            y: ySpan
+                            y: ySpan,
+                            class: this.class
                         }
                     });
                     document.dispatchEvent(event);

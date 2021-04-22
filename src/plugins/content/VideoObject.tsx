@@ -29,7 +29,6 @@ class VideoObject extends StoryObject {
     public scrollThroughSpeed: number = 100;
     myReq: number;
     videoWrapperId = this.id.concat(".video-height");
-    videoWrapperHeight: number;
     idVideo = this.id.concat(".preview");
     classList: string;
     videoElement = createRef();
@@ -45,7 +44,6 @@ class VideoObject extends StoryObject {
         this.makeDefaultConnectors();
         this.classList = "";
         this.myReq = 0;
-        this.videoWrapperHeight = 0;
 
         this.content = {
             resource: "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm",
@@ -133,16 +131,15 @@ class VideoObject extends StoryObject {
         this.scrollable = newScrollable;    
         if (this.scrollable) {                                            
             if (this.videoElement && this.videoElement.current) {
-                this.classList = this.classList.concat(" bound-to-scroll").trim();
-                this.videoWrapperHeight = (Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed);
-                console.log("videoWrapper", Math.floor(this.videoElement.current.duration) * this.scrollThroughSpeed + "px;");        
+                if (!this.classList.includes("bound-to-scroll")) {
+                    this.classList = this.classList.concat(" bound-to-scroll").trim();
+                }
             }      
         } else {
             if (this.videoElement && this.videoElement.current) {
                 this.classList = this.classList.replace("bound-to-scroll", "").trim();
-                this.videoWrapperHeight = this.videoElement.current.height;    
             }      
-        }        
+        }       
     }
     
     public getComponent(): FunctionComponent<INGWebSProps> {
@@ -152,12 +149,13 @@ class VideoObject extends StoryObject {
                 setState({});
             };
            
+            this.videoElement = createRef(); // TODO why does this help? why is the reference otherwise null here?
+            this.videoWrapper = createRef();
             var that = this;
             const vid = <video          
-                id={that.idVideo}
-                ref={that.videoElement} 
+                id={this.idVideo}
+                ref={this.videoElement} 
                 type="video/webm; codecs='vp8, vorbis'"
-                class={this.classList}
                 src={content?.resource}
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
@@ -170,21 +168,25 @@ class VideoObject extends StoryObject {
                 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                             window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+               
+                var that = this;
+                function scrollPlay(): void {
+                    if (that.videoElement && that.videoElement.current && that.scrollable && !isNaN(that.videoElement.current.duration)) { //TODO: check why duration is sometimes NaN
+                        that.videoElement.current.currentTime =  that.videoElement.current.duration -
+                        (that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().bottom) 
+                            / that.scrollThroughSpeed; 
+                        that.videoWrapper.current.style.height = Math.floor(that.videoElement.current.duration * that.scrollThroughSpeed + that.videoElement.current.getBoundingClientRect().height);
+                        that.myReq = requestAnimationFrame(scrollPlay);         
+                    } 
+                }  
                 if (this.scrollable) {
                     requestAnimationFrame(scrollPlay);
                 } else {
                     cancelAnimationFrame(this.myReq);
-                }
-                var that = this;
-                function scrollPlay(): void {  
-                    if (that.videoElement && that.videoElement.current) {
-                        that.videoElement.current.currentTime = Math.round(that.videoWrapper.current.parentNode.scrollTop / that.scrollThroughSpeed);    
-                        that.myReq = requestAnimationFrame(scrollPlay);         
-                    } 
-                }    
-            }, [that.scrollable]);     
+                }                 
+            }, [this.scrollable]);     
 
-            return <div id={this.videoWrapperId} ref={that.videoWrapper} style={"height: " + this.videoWrapperHeight}> {
+            return <div id={this.videoWrapperId} ref={that.videoWrapper} class={this.classList}> {
                     this.modifiers.reduce((p,v) => (
                         v.modify(p)
                     ), vid)
@@ -193,8 +195,6 @@ class VideoObject extends StoryObject {
         }
         return Comp
     }
-
-    
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
         return () => <div class="editor-component"></div>

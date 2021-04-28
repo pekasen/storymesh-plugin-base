@@ -22,7 +22,7 @@ export class MoveSender extends Component<IMoveableProps> {
         children.props["onDragStart"] = (e: DragEvent) => {
             e.preventDefault();
         }
-        children.props["id"] = id;
+        children.props["id"] = id.concat(".child");
         children.props["onMouseDown"] = (e: MouseEvent) => {
             e = e || window.event;
 

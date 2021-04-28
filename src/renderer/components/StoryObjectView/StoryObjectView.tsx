@@ -69,13 +69,13 @@ export class StoryObjectView extends Component<StoryObjectViewProperties> {
                             // toggle?.classList.toggle('minimized');
                             // contentArea?.classList.toggle('hidden');
                         }}
-                            class={`toggle-content ${(item?.collapsed) ? "minimized" : ""}`} id="toggle-content">
+                            class={`toggle-content ${(item?.collapsed) ? "minimized" : ""}`}>
                             <span class="span-top"></span>
                             <span class="span-bottom"></span>
                         </div>
                     </div>
                 </MoveSender>
-                <div class={`area-content ${(item?.collapsed) ? "hidden" : ""}`} id="area-content">
+                <div class={`area-content ${(item?.collapsed) ? "hidden" : ""}`}>
                     <span>{object.content?.resource}</span>
                 </div>
                 {

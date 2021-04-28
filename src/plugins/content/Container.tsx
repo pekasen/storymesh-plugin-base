@@ -30,8 +30,8 @@ export class Container extends StoryObject {
     public childNetwork: StoryGraph;
     public icon: string
     public content: undefined;
-    public startNode?: InputConnectorView;
-    public endNode?: OutputConnectorView;
+    public startNode?: string;
+    public endNode?: string;
     public static defaultIcon = "icon-doc"
 
     constructor() {
@@ -94,7 +94,10 @@ export class Container extends StoryObject {
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
             if (this.startNode) {
-                path = graph?.traverse(registry, this.startNode.id, Array.from(this.startNode.connectors)[0][1].id)
+                const startNode = registry.getValue(this.startNode);
+                if (!startNode) throw("BIG ERROR");
+                
+                path = graph?.traverse(registry, this.startNode, Array.from(startNode.connectors)[0][1].id)
                 if (path !== undefined) {
                     div = <div style={`padding:${this.userDefinedProperties.padding};
                                        max-width:${this.userDefinedProperties.maxWidth};
@@ -222,15 +225,18 @@ export class Container extends StoryObject {
     }
 
     public setup(registry: IRegistry, uistate: UIStore): void {
-        this.startNode = new InputConnectorView();
-        this.endNode = new OutputConnectorView();
+        const startNode = new InputConnectorView();
+        const endNode = new OutputConnectorView();
+        this.startNode = startNode.id;
+        this.endNode = endNode.id;
 
-        this.childNetwork.addNode(registry, this.startNode);
-        this.childNetwork.addNode(registry, this.endNode);
-        uistate.moveableItems.register(new MoveableItem(this.startNode.id, 50, 50));
-        uistate.moveableItems.register(new MoveableItem(this.endNode.id, 50, 350));
-        this.startNode.setup(this.id, registry);
-        this.endNode.setup(this.id, registry);
+        this.childNetwork.addNode(registry, startNode);
+        this.childNetwork.addNode(registry, endNode);
+        uistate.moveableItems.register(new MoveableItem(this.startNode, 50, 50));
+        uistate.moveableItems.register(new MoveableItem(this.endNode, 50, 350));
+        
+        startNode.setup(this.id, registry);
+        endNode.setup(this.id, registry);
     }
 
     public get menuTemplate(): MenuTemplate[] {
@@ -264,7 +270,9 @@ export class Container extends StoryObject {
 }
 
 createModelSchema(Container, {
-    childNetwork: object(ObservableStoryGraphSchema)
+    childNetwork: object(ObservableStoryGraphSchema),
+    startNode: true,
+    endNode: true
 });
 
 export const plugInExport = exportClass(

@@ -7,9 +7,10 @@ import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
+import { createModelSchema, object } from 'serializr';
 import { HSlider, MenuTemplate, Text, CheckBox } from "preact-sidebar";
 import Logger from "js-logger";
+import { ContentSchema } from "../../renderer/store/schemas/ContentSchema";
 
 class _HeroObject extends StoryObject {
     public name: string;
@@ -216,7 +217,9 @@ class _HeroObject extends StoryObject {
     }
 }
 
-createModelSchema(_HeroObject, {})
+createModelSchema(_HeroObject, {
+    content: object(ContentSchema)
+})
 
 export const plugInExport = exportClass(
     _HeroObject,

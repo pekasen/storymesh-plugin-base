@@ -6,9 +6,10 @@ import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
+import { createModelSchema, object } from 'serializr';
 import { useState } from "preact/hooks";
 import { MenuTemplate, Text } from "preact-sidebar";
+import { ContentSchema } from "../../renderer/store/schemas/ContentSchema";
 
 /**
  * Our first little dummy PlugIn
@@ -124,7 +125,9 @@ class _ImageObject extends StoryObject {
     }
 }
 
-createModelSchema(_ImageObject, {})
+createModelSchema(_ImageObject, {
+    content: object(ContentSchema)
+})
 
 export const plugInExport = exportClass(
     _ImageObject,

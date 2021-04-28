@@ -208,7 +208,8 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
     isContentNode: primitive(),
     userDefinedProperties: object(UserDefinedPropertiesSchema),
     metaData: object(MetaDataSchema),
-    content: optional(object(ContentSchema)),
+     // TODO: if this property is present in the ModelSchema, it cannot be overwritten by extending model schemas.
+    // content: optional(object(ContentSchema)),
     parent: optional(primitive()),
     connections: list(object(EdgeSchema)),
     _connectors: map(object(ConnectorSchema)),

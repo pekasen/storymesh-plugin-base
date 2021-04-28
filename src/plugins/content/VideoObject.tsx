@@ -6,9 +6,10 @@ import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
+import { createModelSchema, object } from 'serializr';
 import { useRef, useState, useEffect } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
+import { ContentSchema } from "../../renderer/store/schemas/ContentSchema";
 
 /**
  */
@@ -205,7 +206,9 @@ class VideoObject extends StoryObject {
     }
 }
 
-createModelSchema(VideoObject, {})
+createModelSchema(VideoObject, {
+    content: object(ContentSchema)
+})
 
 export const plugInExport = exportClass(
     VideoObject,

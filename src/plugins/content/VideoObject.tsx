@@ -6,7 +6,7 @@ import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema, object } from 'serializr';
+import { createModelSchema, object, primitive } from 'serializr';
 import { useRef, useState, useEffect } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
 import { ContentSchema } from "../../renderer/store/schemas/ContentSchema";
@@ -22,18 +22,21 @@ class VideoObject extends StoryObject {
     public childNetwork?: StoryGraph;
     public content: IContent;
     public icon: string;
+    // TODO: may be refactor these properties into a seperate object, e.g. userDefinedProperties?
     public playbackControls: boolean = false;
     public autoPlay: boolean = false;
     public loopable: boolean = false;
     public scrollable: boolean = false;
-    public static defaultIcon = "icon-video";  
     public scrollThroughSpeed: number = 100;
-    myReq: number;
-    videoWrapperId = this.id.concat(".video-height");
-    idVideo = this.id.concat(".preview");
-    classList: string;
-    videoElement = createRef();
-    videoWrapper = createRef();
+    public static defaultIcon = "icon-video";  
+
+    // TODO: are these all supposed to be private? I added the keyword…
+    private myReq: number;
+    private videoWrapperId = this.id.concat(".video-height");
+    private idVideo = this.id.concat(".preview");
+    private classList: string;
+    private videoElement = createRef();
+    private videoWrapper = createRef();
 
     constructor() {
         super();
@@ -207,7 +210,11 @@ class VideoObject extends StoryObject {
 }
 
 createModelSchema(VideoObject, {
-    content: object(ContentSchema)
+    content: object(ContentSchema),
+    autoPlay: true,
+    loopable: true,
+    scrollable: true,
+    playbackControls: true
 })
 
 export const plugInExport = exportClass(

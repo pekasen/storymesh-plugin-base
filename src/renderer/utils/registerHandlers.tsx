@@ -2,8 +2,11 @@ import { ipcRenderer } from 'electron/renderer';
 import { readFile, writeFile } from "fs";
 import Logger from 'js-logger';
 import { deserialize, serialize } from 'serializr';
+import { StoryObject } from 'storygraph';
+import { StoryObjectSchema } from '../../plugins/helpers/AbstractStoryObject';
 import { rootStore } from '../index';
 import { RootStoreSchema } from "../store/rootStore";
+import { IValue, ValueRegistrySchema } from './registry';
 
 /**
  * registers file-event handlers
@@ -87,4 +90,23 @@ export function registerHandlers(): void {
     ipcRenderer.on("redo", () => {
         rootStore.root.protocol.redo();
     });
+
+    ipcRenderer.on("export", (e, { file }) => {
+        const json = serialize(ValueRegistrySchema(StoryObjectSchema), rootStore.root.storyContentObjectRegistry);
+        Logger.info(json)
+        if (file !== undefined) {
+            rootStore.root.uistate.setFile(file)
+        }
+        writeFile(
+            file,
+            JSON.stringify(json),
+            (err) => {
+                if (err) throw(err); // if the selected file does not exist, raise hell!
+                else {
+                    const { root } = rootStore;
+                    root.notifications.postNotification("Export complete", null, "normal", 5);
+                }
+            }
+        );
+    })
 }

@@ -5,7 +5,8 @@ import {
     handleSaveEvent, 
     handleLoadEvent,
     handleNewDocumentEvent,
-    handleDeleteEvent
+    handleDeleteEvent,
+    handleExportEvent
 } from "./event-handlers/save-handler";
 import { handleRedo, handleUndo } from "./event-handlers/stateHandlers";
 
@@ -64,6 +65,11 @@ export function patchMenu(): void {
                 label: "Load",
                 accelerator: "CommandOrControl+O",
                 click: handleLoadEvent
+            },
+            {
+                label: "Export",
+                accelerator: "CommandOrControl+E",
+                click: handleExportEvent
             },
             isMac ? { role: "close" } : { role: "quit" },
         ]

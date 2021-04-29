@@ -1,6 +1,5 @@
-import { TouchBarScrubber } from "electron";
 import Logger from "js-logger";
-import { h } from "preact";
+import { createRef, h } from "preact";
 import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
@@ -10,17 +9,18 @@ import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
 import { HSlider, MenuTemplate, Text, CheckBox, ColorPicker, Divider, DropDown } from "preact-sidebar";
+import { createUseStyles } from 'preact-jss-hook';
 
-export class TransitionModifier extends HMTLModifier {
+export class FilterModifier extends HMTLModifier {
 
     public name: string = "";
-    public role: string = "internal.modifier.transition";
+    public role: string = "internal.modifier.filter";
     public data: any = {
         toggle: true
     }
-    public transitionProperty: string; // transform, color, width, ...
-    public transitionDuration: number;
-    public transitionDelay: number;
+    public filterProperty: string; // transform, color, width, ...
+    public filterDuration: number;
+    public filterDelay: number;
     public cssTimingFunction: string; // linear, ease-in, ...
     public overrideExistingValues: boolean = false;
     public startValue: string; // 50%, 360deg, #e5e5e5, ...
@@ -31,24 +31,25 @@ export class TransitionModifier extends HMTLModifier {
     public maxFilterAmount: number = 100;
     public startAmount: any;
     public stopAmount: any;
+    refElement = createRef();
 
     constructor() {
         super();
 
-        this.transitionProperty = "";
+        this.filterProperty = "";
         this.startValue = "";
         this.stopValue = "";
-        this.transitionDuration = 1;
-        this.transitionDelay = 0;
+        this.filterDuration = 1;
+        this.filterDelay = 0;
         this.cssTimingFunction = "ease";
         this.transformOption = "rotate";
         this.filterOption = "grayscale";
         this.valueType = "";
 
         makeObservable(this, {
-            transitionProperty: observable,
-            transitionDuration: observable,
-            transitionDelay: observable,
+            filterProperty: observable,
+            filterDuration: observable,
+            filterDelay: observable,
             startValue: observable,
             stopValue: observable,
             cssTimingFunction: observable,
@@ -56,13 +57,13 @@ export class TransitionModifier extends HMTLModifier {
             filterOption: observable,
             valueType: observable,
             maxFilterAmount: observable,
-            updateTransitionProperty: action,
+            updateFilterProperty: action,
             updateStartValue: action,
             updateStopValue: action,
             updateStartAmount: action,
             updateStopAmount: action,
-            updateTransitionDuration: action,
-            updateTransitionDelay: action,
+            updateFilterDuration: action,
+            updateFilterDelay: action,
             updateValueType: action
         });
     }
@@ -74,10 +75,10 @@ export class TransitionModifier extends HMTLModifier {
             ...dropDownField(
                 this,
                 () => ["transform", "filter", "background-color", "color", "width"],
-                () => this.transitionProperty,
+                () => this.filterProperty,
                 (selection: string) => {
                     Logger.info(selection);
-                    runInAction(() => this.transitionProperty = selection)
+                    runInAction(() => this.filterProperty = selection)
                 }
             ),
             //TODO: Slider should be configurable to do half-steps
@@ -89,8 +90,8 @@ export class TransitionModifier extends HMTLModifier {
                     max: 10,
                     formatter: (val: number) => `${val}s`
                 },
-                () => this.transitionDuration,
-                (transitionDuration: number) => this.updateTransitionDuration(transitionDuration)
+                () => this.filterDuration,
+                (filterDuration: number) => this.updateFilterDuration(filterDuration)
             ),
             new HSlider(
                 "Delay",
@@ -99,8 +100,8 @@ export class TransitionModifier extends HMTLModifier {
                     max: 10,
                     formatter: (val: number) => `${val}s`
                 },
-                () => this.transitionDelay,
-                (transitionDelay: number) => this.updateTransitionDelay(transitionDelay)
+                () => this.filterDelay,
+                (filterDelay: number) => this.updateFilterDelay(filterDelay)
             ),
             ...dropDownField(
                 this,
@@ -118,7 +119,7 @@ export class TransitionModifier extends HMTLModifier {
                     runInAction(() => this.overrideExistingValues = sel)
             }),
         ];
-        switch (this.transitionProperty) {
+        switch (this.filterProperty) {
             case "transform":
                 ret.splice(4, 0,
                     ...dropDownField(
@@ -196,8 +197,8 @@ export class TransitionModifier extends HMTLModifier {
         return ret;
     }
 
-    public updateTransitionProperty(newProperty: string) {
-        this.transitionProperty = newProperty;
+    public updateFilterProperty(newProperty: string) {
+        this.filterProperty = newProperty;
     }
 
     public updateStartValue(newStartValue: string) {
@@ -216,12 +217,12 @@ export class TransitionModifier extends HMTLModifier {
         this.stopAmount = newStopAmount;
     }
 
-    public updateTransitionDuration(transitionDuration: number) {
-        this.transitionDuration = transitionDuration;
+    public updateFilterDuration(filterDuration: number) {
+        this.filterDuration = filterDuration;
     }
 
-    public updateTransitionDelay(transitionDelay: number) {
-        this.transitionDelay = transitionDelay;
+    public updateFilterDelay(filterDelay: number) {
+        this.filterDelay = filterDelay;
     }
 
     //TODO: Update value types for transforms as well
@@ -250,10 +251,10 @@ export class TransitionModifier extends HMTLModifier {
         this._connector.handleNotification = this._trigger;
         let cssStartOutput: string;
         let cssEndOutput: string;
-        if(this.transitionProperty == "color" || this.transitionProperty == "background-color" || this.transitionProperty == "width"){
+        if(this.filterProperty == "color" || this.filterProperty == "background-color" || this.filterProperty == "width"){
             cssStartOutput = this.startValue;
             cssEndOutput = this.stopValue;
-        } else if(this.transitionProperty == "filter"){
+        } else if(this.filterProperty == "filter"){
             cssStartOutput = `${this.filterOption}(${this.startAmount}${this.valueType})`;
             cssEndOutput = `${this.filterOption}(${this.stopAmount}${this.valueType})`;
         } else {
@@ -262,25 +263,22 @@ export class TransitionModifier extends HMTLModifier {
             cssStartOutput = `${this.transformOption}(${this.startAmount})`;
             cssEndOutput = `${this.transformOption}(${this.stopAmount})`;
         }
-        const Style = () => <style type="text/css" scoped>{`#_${this.id} {
-    transition: ${this.transitionProperty} ${this.transitionDuration}s ${this.cssTimingFunction} ${this.transitionDelay > 0 ? this.transitionDelay + "s" : ""};
-}
 
-#_${this.id}.inactive {
-    ${this.transitionProperty}: ${cssStartOutput} ${this.overrideExistingValues ? "!important" : ""};
-}
-#_${this.id}.active {
-    ${this.transitionProperty}: ${cssEndOutput} ${this.overrideExistingValues ? "!important" : ""};
-}
+        const useStyles = createUseStyles({
+            filterBase: {
+                transition: this.filterProperty + " " + this.filterDuration + "s " + this.cssTimingFunction + " " + (this.filterDelay > 0 ? this.filterDelay + "s" : ""),                
+            },
+            active: JSON.parse('{"' + this.filterProperty + ' ": "' + cssStartOutput.toString() + '" }'),
+            inactive: JSON.parse('{"' + this.filterProperty + ' ": "' + cssEndOutput.toString() + '" }'),     
+          });          
 
-`}</style>
+       const { classes } = useStyles();
 
-        return <div>
-            <Style />
-            <div id={`_${this.id}`} class={(this.data.toggle) ? "inactive" : "active"}>
+        return <div ref={this.refElement}>
+            <div id={`_${this.id}`} class={`${classes.filterBase} ${((this.data.toggle) ? classes.inactive : classes.active )}`}>
                 {element}
             </div>
-        </div>
+        </div> 
     }
 
     requestConnectors(): [string, IConnectorPort][] {
@@ -288,14 +286,14 @@ export class TransitionModifier extends HMTLModifier {
     }
 }
 
-export const TransitionModifierSchema = createModelSchema(TransitionModifier, {
+export const FilterModifierSchema = createModelSchema(FilterModifier, {
     _connector: object(ConnectorSchema)
 });
 
 export const plugInExport = exportClass(
-    TransitionModifier,
-    "Transition",
-    "internal.modifier.transition",
-    "icon-speaker",
+    FilterModifier,
+    "Filter",
+    "internal.modifier.filter",
+    "icon-mouse",
     true
 );

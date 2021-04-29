@@ -42,3 +42,14 @@ export const handleDeleteEvent =  (menuItem: MenuItem, window: BrowserWindow | u
         window.webContents.send('delete');
     }
 };
+
+export const handleExportEvent = (menuItem: MenuItem, window: BrowserWindow | undefined): void => {
+    if (window) {
+        dialog.showSaveDialog(window, {
+            title: "Export",
+            filters: [{name: "NGWebS Project", extensions: ["json"]}]
+        }).then((v) => {
+            window.webContents.send('export', { file: v.filePath })
+        });
+    }
+}

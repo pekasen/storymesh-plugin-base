@@ -1,5 +1,5 @@
 import Logger from "js-logger";
-import { createRef, h } from "preact";
+import { h } from "preact";
 import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
@@ -18,7 +18,6 @@ export class FilterModifier extends HMTLModifier {
     public data: any = {
         toggle: true
     }
-    public filterProperty: string; // transform, color, width, ...
     public filterDuration: number;
     public filterDelay: number;
     public cssTimingFunction: string; // linear, ease-in, ...
@@ -31,14 +30,14 @@ export class FilterModifier extends HMTLModifier {
     public maxFilterAmount: number = 100;
     public startAmount: any;
     public stopAmount: any;
-    refElement = createRef();
 
     constructor() {
         super();
 
-        this.filterProperty = "";
         this.startValue = "";
         this.stopValue = "";
+        this.startAmount = "";
+        this.stopAmount = "";
         this.filterDuration = 1;
         this.filterDelay = 0;
         this.cssTimingFunction = "ease";
@@ -47,17 +46,17 @@ export class FilterModifier extends HMTLModifier {
         this.valueType = "";
 
         makeObservable(this, {
-            filterProperty: observable,
             filterDuration: observable,
             filterDelay: observable,
             startValue: observable,
             stopValue: observable,
+            startAmount: observable,
+            stopAmount: observable,
             cssTimingFunction: observable,
             transformOption: observable,
             filterOption: observable,
             valueType: observable,
             maxFilterAmount: observable,
-            updateFilterProperty: action,
             updateStartValue: action,
             updateStopValue: action,
             updateStartAmount: action,
@@ -72,15 +71,6 @@ export class FilterModifier extends HMTLModifier {
         const ret: MenuTemplate[] = [
             ...super.menuTemplate,
             ...nameField(this),
-            ...dropDownField(
-                this,
-                () => ["transform", "filter", "background-color", "color", "width"],
-                () => this.filterProperty,
-                (selection: string) => {
-                    Logger.info(selection);
-                    runInAction(() => this.filterProperty = selection)
-                }
-            ),
             //TODO: Slider should be configurable to do half-steps
             new Divider(""),
             new HSlider(
@@ -118,87 +108,42 @@ export class FilterModifier extends HMTLModifier {
                 (sel: boolean) => {
                     runInAction(() => this.overrideExistingValues = sel)
             }),
+            ...dropDownField(
+                this,
+                () => ["grayscale", "invert", "hue-rotate", "blur", "contrast", "opacity"],
+                () => this.filterOption,
+                (selection: string) => {
+                    Logger.info(selection);
+                    runInAction(() => this.filterOption = selection),
+                    this.updateValueType();
+                    this.updateStartValue(selection);
+                    this.updateStopValue(selection);
+                    console.log(this.valueType);
+                }
+            ),
+            new HSlider(
+                "From",
+                {
+                    min: 0,
+                    max: this.maxFilterAmount,
+                    formatter: (val: number) => `${val}${this.valueType}`
+                },
+                () => this.startAmount,
+                (startAmount: number) => this.updateStartAmount(startAmount)
+            ),
+            new HSlider(
+                "To",
+                {
+                    min: 0,
+                    max: this.maxFilterAmount,
+                    formatter: (val: number) => `${val}${this.valueType}`
+                },
+                () => this.stopAmount,
+                (stopAmount: number) => this.updateStopAmount(stopAmount)
+            )
         ];
-        switch (this.filterProperty) {
-            case "transform":
-                ret.splice(4, 0,
-                    ...dropDownField(
-                        this,
-                        () => ["translateX", "translateY", "rotate", "scale", "skewX", "skewY"],
-                        () => this.transformOption,
-                        (selection: string) => {
-                            Logger.info(selection);
-                            runInAction(() => this.transformOption = selection);
-                        }
-                    ),
-                    new Text("Start amount", { placeHolder: "100%, 20px, 50deg, ..." }, () => this.startAmount, (arg: string) => this.updateStartAmount(arg)),
-                    new Text("Stop amount", { placeHolder: "100%, 20px, 50deg, ..." }, () => this.stopAmount, (arg: string) => this.updateStopAmount(arg)),
-                    );
-                    break;
-            case "filter":
-                ret.splice(4, 0,
-                    ...dropDownField(
-                        this,
-                        () => ["grayscale", "invert", "hue-rotate", "blur", "contrast", "opacity"],
-                        () => this.filterOption,
-                        (selection: string) => {
-                            Logger.info(selection);
-                            runInAction(() => this.filterOption = selection),
-                            this.updateValueType();
-                            this.updateStartValue(selection);
-                            this.updateStopValue(selection);
-                            console.log(this.valueType);
-                        }
-                    ),
-                    new HSlider(
-                        "From",
-                        {
-                            min: 0,
-                            max: this.maxFilterAmount,
-                            formatter: (val: number) => `${val}${this.valueType}`
-                        },
-                        () => this.startAmount,
-                        (startAmount: number) => this.updateStartAmount(startAmount)
-                    ),
-                    new HSlider(
-                        "To",
-                        {
-                            min: 0,
-                            max: this.maxFilterAmount,
-                            formatter: (val: number) => `${val}${this.valueType}`
-                        },
-                        () => this.stopAmount,
-                        (stopAmount: number) => this.updateStopAmount(stopAmount)
-                    ))
-                break;
-            case "color":
-                case "background-color":
-                    ret.splice(4, 0,
-                        new ColorPicker(
-                            "From color",
-                            () => this.startValue,
-                            (color: string) => this.updateStartValue(color)
-                        ),
-                        new ColorPicker(
-                            "To color",
-                            () => this.stopValue,
-                            (color: string) => this.updateStopValue(color)
-                        ))
-                    break;
-            case "width":
-                ret.splice(4, 0,
-                    new Text("From", { placeHolder: "100%" }, () => this.startValue, (arg: string) => this.updateStartValue(arg)),
-                    new Text("To", { placeHolder: "50%" }, () => this.stopValue, (arg: string) => this.updateStopValue(arg)))
-                break;
-            default:
-                return ret;
-        }
             
         return ret;
-    }
-
-    public updateFilterProperty(newProperty: string) {
-        this.filterProperty = newProperty;
     }
 
     public updateStartValue(newStartValue: string) {
@@ -225,7 +170,6 @@ export class FilterModifier extends HMTLModifier {
         this.filterDelay = filterDelay;
     }
 
-    //TODO: Update value types for transforms as well
     public updateValueType() {
         if (this.filterOption === "hue-rotate") {
             this.valueType = "deg";
@@ -251,34 +195,22 @@ export class FilterModifier extends HMTLModifier {
         this._connector.handleNotification = this._trigger;
         let cssStartOutput: string;
         let cssEndOutput: string;
-        if(this.filterProperty == "color" || this.filterProperty == "background-color" || this.filterProperty == "width"){
-            cssStartOutput = this.startValue;
-            cssEndOutput = this.stopValue;
-        } else if(this.filterProperty == "filter"){
-            cssStartOutput = `${this.filterOption}(${this.startAmount}${this.valueType})`;
-            cssEndOutput = `${this.filterOption}(${this.stopAmount}${this.valueType})`;
-        } else {
-            //TODO: Add multi value shorthands (skew, matrix, ...)?
-            //TODO: Re-add {this.valueType}
-            cssStartOutput = `${this.transformOption}(${this.startAmount})`;
-            cssEndOutput = `${this.transformOption}(${this.stopAmount})`;
-        }
+        cssStartOutput = `${this.filterOption}(${this.startAmount}${this.valueType})`;
+        cssEndOutput = `${this.filterOption}(${this.stopAmount}${this.valueType})`;
 
         const useStyles = createUseStyles({
             filterBase: {
-                transition: this.filterProperty + " " + this.filterDuration + "s " + this.cssTimingFunction + " " + (this.filterDelay > 0 ? this.filterDelay + "s" : ""),                
+                transition: this.filterDuration + "s " + this.cssTimingFunction + " " + (this.filterDelay > 0 ? this.filterDelay + "s" : ""),                
             },
-            active: JSON.parse('{"' + this.filterProperty + ' ": "' + cssStartOutput.toString() + '" }'),
-            inactive: JSON.parse('{"' + this.filterProperty + ' ": "' + cssEndOutput.toString() + '" }'),     
+            active: JSON.parse('{"filter": "' + cssStartOutput.toString() + '" }'),
+            inactive: JSON.parse('{"filter": "' + cssEndOutput.toString() + '" }'),  
           });          
 
        const { classes } = useStyles();
 
-        return <div ref={this.refElement}>
-            <div id={`_${this.id}`} class={`${classes.filterBase} ${((this.data.toggle) ? classes.inactive : classes.active )}`}>
+        return <div id={`_${this.id}`} class={`${classes.filterBase} ${((this.data.toggle) ? classes.inactive : classes.active )}`}>
                 {element}
             </div>
-        </div> 
     }
 
     requestConnectors(): [string, IConnectorPort][] {

@@ -7,10 +7,12 @@ import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { createModelSchema, object } from 'serializr';
 import { MenuTemplate, Text } from 'preact-sidebar';
-import * as BABYLON from 'babylonjs';
-import Logger from 'js-logger';
 import { rootEngine } from '../../renderer/components/App';
 import { ConnectorSchema } from '../../renderer/store/schemas/ConnectorSchema';
+import * as BABYLON from 'babylonjs';
+import "babylonjs-loaders";
+import { Engine } from 'babylonjs/Engines/engine';
+import { NotificationCenter } from 'storygraph/dist/StoryGraph/NotificationCenter';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 
 export interface ISceneContent {
@@ -18,31 +20,29 @@ export interface ISceneContent {
     cached: boolean
     cache: BABYLON.Scene | undefined
 }
-class _Scene extends StoryObject {
+class Scene extends StoryObject {
     
     public name = "Scene";
     public role = "internal.content.scene";
     public icon = "icon-box";
     public isContentNode = true;
     public userDefinedProperties: unknown;
+    public dataOutCallback = () => {
+        if (!this.content.cached) 
+            this.getScene(rootEngine as unknown as Engine);
+        return this.content
+    }
     public dataOut = new DataConnectorOutPort("data-out",
-        () => {
-            if (!this.content.cached) 
-                this.getScene(rootEngine);
-            return this.content
-        }
+        this.dataOutCallback
     );
     public content: ISceneContent = {
         file: "",
         cache: undefined,
         cached: false
-    }
-    private logger = Logger.get("Scene PlugIn");
+    };
 
     constructor() {
         super();
-
-        // this.makeDefaultConnectors();
 
         makeObservable(
             this, {
@@ -51,8 +51,6 @@ class _Scene extends StoryObject {
             content: observable,
             updateContent: action
         });
-
-        // if content is already, see if we can load it
     }
 
     public get menuTemplate(): MenuTemplate[] {
@@ -105,22 +103,13 @@ class _Scene extends StoryObject {
     public updateContent(file?: string) {
         const _file = file;
         this.logger.info("Trying to load", _file);
-        // Logger.info("Not loading because",
-        //     [file ,
-        //         file !== this.content.file ,
-        //         file.endsWith(".gltf") ,
-        //         existsSync(file)
-        //     ])
-        // ;
 
         if (
             file &&
-            // file !== this.content.file &&
-            file.endsWith(".gltf") 
-            // existsSync(file)
+            file.endsWith(".gltf")
         ) {
             this.content.file = file;
-            if (rootEngine) this.getScene(rootEngine);
+            if (rootEngine) this.getScene(rootEngine as unknown as Engine);
         } 
     }
 
@@ -130,13 +119,19 @@ class _Scene extends StoryObject {
 
         return sup;
     }
+
+    public bindTo(notificationCenter: NotificationCenter) {
+        super.bindTo(notificationCenter);
+        this.dataOut.callback = this.dataOutCallback;
+    }
 }
 
 createModelSchema(Scene, {
+    dataOut: object(ConnectorSchema),
     content: object(ContentSchema)
 })
 export const plugInExport = exportClass(
-    _Scene,
+    Scene,
     "Scene",
     "internal.content.scene",
     "icon-box",

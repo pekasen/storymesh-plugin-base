@@ -1,18 +1,21 @@
 import { FunctionComponent, h } from "preact";
-import { runInAction } from "mobx";
 import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
+import { createModelSchema, list, map, ModelSchema, object, optional, primitive } from 'serializr';
 import Delta from "quill-delta";
-import Op from "quill-delta/dist/Op";
 import { MenuTemplate, RichText } from "preact-sidebar";
-import Logger from "js-logger";
 import { convertDeltaToHtml } from 'node-quill-converter';
+import Op from "quill-delta/dist/Op";
+
+interface ITextObjectContent {
+    resource: Delta
+    altText: string
+    contentType: "text"
+}
 
 /**
  * Our first little dummy PlugIn
@@ -20,14 +23,14 @@ import { convertDeltaToHtml } from 'node-quill-converter';
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 class _TextObject extends StoryObject {
+    
     public name: string;
-  
     public role: string;
     public isContentNode: boolean;
     public userDefinedProperties: {
         tag: string
     };
-    public content: IContent;
+    public content: ITextObjectContent;
     public childNetwork?: StoryGraph | undefined;
     public icon: string;
     public static defaultIcon = "icon-newspaper";
@@ -44,7 +47,7 @@ class _TextObject extends StoryObject {
         };
         this.makeDefaultConnectors();
         this.content = {
-            resource: "Type here...",
+            resource: new Delta(),
             altText: "empty",
             contentType: "text"
         };
@@ -99,25 +102,61 @@ class _TextObject extends StoryObject {
         this.name = newValue;
     }
 
-    public updateText(text: string) {
+    public updateText(text: Delta) {
         if (this.content) this.content.resource = text;
     }
 
     public getComponent() {    
         const Comp: FunctionComponent<INGWebSProps> = (args => {
             let p: h.JSX.Element;
+            // TODO: is that supposed to be like that?
             p = <span dangerouslySetInnerHTML={{ __html: convertDeltaToHtml(new Delta(args.content?.resource as unknown as Op[])) as string}} />
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));
             }, p);
         });
+
         return Comp
     }
 }
 
+const AttributeSchema: ModelSchema<any> = {
+    factory: () => ({}),
+    props: {
+        "*": true
+    }
+}
+
+const OpSchema: ModelSchema<Op> = {
+    factory: () => ({}),
+    props: {
+        insert: optional(primitive()),
+        delete: optional(primitive()),
+        retain: optional(primitive()),
+        attributes: optional(object(AttributeSchema))
+    }
+};
+
+createModelSchema(Delta, {
+    ops: list(object(OpSchema))
+});
+
+const TextContentSchema: ModelSchema<ITextObjectContent> = {
+    factory: () => ({
+        resource: new Delta(),
+        altText: "",
+        contentType: "text"
+    }),
+    props: {
+        resource: object(Delta),
+        altText: primitive(),
+        contentType: primitive()
+    }
+}
+
 createModelSchema(_TextObject,{
-    
-})
+    content: object(TextContentSchema)
+});
 
 export const plugInExport = exportClass(
     _TextObject,

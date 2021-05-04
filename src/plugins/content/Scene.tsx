@@ -11,6 +11,7 @@ import * as BABYLON from 'babylonjs';
 import Logger from 'js-logger';
 import { rootEngine } from '../../renderer/components/App';
 import { ConnectorSchema } from '../../renderer/store/schemas/ConnectorSchema';
+import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 
 export interface ISceneContent {
     file: string
@@ -131,8 +132,8 @@ class _Scene extends StoryObject {
     }
 }
 
-createModelSchema(_Scene, {
-    dataOut: object(ConnectorSchema)
+createModelSchema(Scene, {
+    content: object(ContentSchema)
 })
 export const plugInExport = exportClass(
     _Scene,

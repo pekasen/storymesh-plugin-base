@@ -18,13 +18,14 @@ export class FilterModifier extends HMTLModifier {
     public data: any = {
         toggle: true
     }
-    public filterDuration: number;
-    public filterDelay: number;
+    public isAnimated: boolean;
+    public hasAnimationLoop: boolean;
+    public animationDuration: number;
+    public animationDelay: number;
+    public animationOption: string; // blinker, ...
     public cssTimingFunction: string; // linear, ease-in, ...
-    public overrideExistingValues: boolean = false;
     public startValue: string; // 50%, 360deg, #e5e5e5, ...
     public stopValue: any;
-    public transformOption: string; // rotate, scale, translateX, ...
     public filterOption: string; // grayscale, blur, ...
     public valueType: any; // %, deg, px
     public maxFilterAmount: number = 100;
@@ -38,31 +39,36 @@ export class FilterModifier extends HMTLModifier {
         this.stopValue = "";
         this.startAmount = "";
         this.stopAmount = "";
-        this.filterDuration = 1;
-        this.filterDelay = 0;
+        this.animationDuration = 1;
+        this.animationDelay = 0;
+        this.animationOption = "hue-rotate";
         this.cssTimingFunction = "ease";
-        this.transformOption = "rotate";
         this.filterOption = "grayscale";
         this.valueType = "";
+        this.isAnimated = false;
+        this.hasAnimationLoop = false;
 
         makeObservable(this, {
-            filterDuration: observable,
-            filterDelay: observable,
+            animationDuration: observable,
+            animationDelay: observable,
+            animationOption: observable,
             startValue: observable,
             stopValue: observable,
             startAmount: observable,
             stopAmount: observable,
             cssTimingFunction: observable,
-            transformOption: observable,
             filterOption: observable,
             valueType: observable,
             maxFilterAmount: observable,
+            isAnimated: observable,
+            hasAnimationLoop: observable,
+            updateAnimation: action,
             updateStartValue: action,
             updateStopValue: action,
             updateStartAmount: action,
             updateStopAmount: action,
-            updateFilterDuration: action,
-            updateFilterDelay: action,
+            updateAnimationDuration: action,
+            updateAnimationDelay: action,
             updateValueType: action
         });
     }
@@ -73,52 +79,79 @@ export class FilterModifier extends HMTLModifier {
             ...nameField(this),
             //TODO: Slider should be configurable to do half-steps
             new Divider(""),
-            new HSlider(
-                "Duration",
-                {
-                    min: 0.5,
-                    max: 10,
-                    formatter: (val: number) => `${val}s`
-                },
-                () => this.filterDuration,
-                (filterDuration: number) => this.updateFilterDuration(filterDuration)
-            ),
-            new HSlider(
-                "Delay",
-                {
-                    min: 0,
-                    max: 10,
-                    formatter: (val: number) => `${val}s`
-                },
-                () => this.filterDelay,
-                (filterDelay: number) => this.updateFilterDelay(filterDelay)
-            ),
-            ...dropDownField(
-                this,
-                () => ["ease", "ease-in", "ease-out", "ease-in-out" , "linear"],
-                () => this.cssTimingFunction,
-                (selection: string) => {
-                    Logger.info(selection);
-                    runInAction(() => this.cssTimingFunction = selection);
-                }
-            ),
-            new CheckBox(
-                "Override existing css?",
-                () => this.overrideExistingValues,
-                (sel: boolean) => {
-                    runInAction(() => this.overrideExistingValues = sel)
-            }),
             ...dropDownField(
                 this,
                 () => ["grayscale", "invert", "hue-rotate", "blur", "contrast", "opacity"],
                 () => this.filterOption,
                 (selection: string) => {
                     Logger.info(selection);
-                    runInAction(() => this.filterOption = selection),
+                    runInAction(() => this.filterOption = selection);
                     this.updateValueType();
                     this.updateStartValue(selection);
                     this.updateStopValue(selection);
                     console.log(this.valueType);
+                }
+            ),
+            new HSlider(
+                "Filter amount",
+                {
+                    min: 0,
+                    max: this.maxFilterAmount,
+                    formatter: (val: number) => `${val}${this.valueType}`
+                },
+                () => this.startAmount,
+                (startAmount: number) => this.updateStartAmount(startAmount)
+            ),
+            new Divider(""),
+            new CheckBox(
+                "Is animated",
+                () => this.isAnimated,
+                (sel: boolean) => {
+                    runInAction(() => this.isAnimated = sel)
+                }),
+            new CheckBox(
+                "Has animation loop",
+                () => this.hasAnimationLoop,
+                (sel: boolean) => {
+                    runInAction(() => this.hasAnimationLoop = sel)
+                }),
+            new HSlider(
+                "Animation cycle length",
+                {
+                    min: 0.5,
+                    max: 10,
+                    formatter: (val: number) => `${val}s`
+                },
+                () => this.animationDuration,
+                (animationDuration: number) => this.updateAnimationDuration(animationDuration)
+            ),
+            new HSlider(
+                "Animation delay",
+                {
+                    min: 0,
+                    max: 10,
+                    formatter: (val: number) => `${val}s`
+                },
+                () => this.animationDelay,
+                (animationDelay: number) => this.updateAnimationDelay(animationDelay)
+            ),
+            ...dropDownField(
+                this,
+                () => ["blinker", "hue-rotate"],
+                () => this.animationOption,
+                (selection: string) => {
+                    Logger.info(selection);
+                    runInAction(() => this.animationOption = selection);
+                    this.updateValueType();
+                }
+            ),
+            ...dropDownField(
+                this,
+                () => ["ease", "ease-in", "ease-out", "ease-in-out", "linear"],
+                () => this.cssTimingFunction,
+                (selection: string) => {
+                    Logger.info(selection);
+                    runInAction(() => this.cssTimingFunction = selection);
                 }
             ),
             new HSlider(
@@ -142,8 +175,12 @@ export class FilterModifier extends HMTLModifier {
                 (stopAmount: number) => this.updateStopAmount(stopAmount)
             )
         ];
-            
+
         return ret;
+    }
+
+    public updateAnimation(newIsAnimated: boolean) {
+        this.isAnimated = newIsAnimated;
     }
 
     public updateStartValue(newStartValue: string) {
@@ -162,12 +199,12 @@ export class FilterModifier extends HMTLModifier {
         this.stopAmount = newStopAmount;
     }
 
-    public updateFilterDuration(filterDuration: number) {
-        this.filterDuration = filterDuration;
+    public updateAnimationDuration(animationDuration: number) {
+        this.animationDuration = animationDuration;
     }
 
-    public updateFilterDelay(filterDelay: number) {
-        this.filterDelay = filterDelay;
+    public updateAnimationDelay(animationDelay: number) {
+        this.animationDelay = animationDelay;
     }
 
     public updateValueType() {
@@ -187,7 +224,8 @@ export class FilterModifier extends HMTLModifier {
         Logger.info("Trigger fired", this);
         this.data.toggle = !this.data.toggle
         // request rerendering
-        this._connector.notificationCenter?.push(this._connector.parent + "/rerender")
+        this._connector.notificationCenter?.push(this._connector.parent + "/rerender");
+        this.isAnimated = true;
     }
     private _connector = new ReactionConnectorInPort("reaction-in", this._trigger);
 
@@ -199,18 +237,37 @@ export class FilterModifier extends HMTLModifier {
         cssEndOutput = `${this.filterOption}(${this.stopAmount}${this.valueType})`;
 
         const useStyles = createUseStyles({
-            filterBase: {
-                transition: this.filterDuration + "s " + this.cssTimingFunction + " " + (this.filterDelay > 0 ? this.filterDelay + "s" : ""),                
+            '@keyframes blinker': {
+                from: { opacity: 1 },
+                to: { opacity: 0 },
             },
-            active: JSON.parse('{"filter": "' + cssStartOutput.toString() + '" }'),
-            inactive: JSON.parse('{"filter": "' + cssEndOutput.toString() + '" }'),  
-          });          
+            '@keyframes hue-rotate': {
+                '0%': {
+                    filter: "hue-rotate(0deg)"
+                },
+                "50%": {
+                    filter: "hue-rotate(100deg)"
+                },
+                "100%": {
+                    filter: "hue-rotate(0deg)"
+                }
+            },
+            animated: {
+                "animation-name": "$" + this.animationOption,
+                "animation-duration": this.animationDuration + "s",
+                "animation-delay": this.animationDelay + "s",
+                "animation-timing-function": this.cssTimingFunction,
+                "animation-iteration-count": (this.hasAnimationLoop ? "infinite" : "1")
+            },
+            active: JSON.parse('{"filter": "' + cssStartOutput + '" }'),
+            inactive: JSON.parse('{"filter": "' + cssEndOutput + '" }'),
+        });
 
-       const { classes } = useStyles();
+        const { classes } = useStyles();
 
-        return <div id={`_${this.id}`} class={`${classes.filterBase} ${((this.data.toggle) ? classes.inactive : classes.active )}`}>
-                {element}
-            </div>
+        return <div id={`_${this.id}`} class={`${((this.isAnimated) ? classes.animated : "")} ${((this.data.toggle) ? classes.inactive : classes.active)}`}>
+            {element}
+        </div>
     }
 
     requestConnectors(): [string, IConnectorPort][] {
@@ -226,6 +283,6 @@ export const plugInExport = exportClass(
     FilterModifier,
     "Filter",
     "internal.modifier.filter",
-    "icon-mouse",
+    "icon-eye",
     true
 );

@@ -13,7 +13,7 @@ import { createUseStyles } from 'preact-jss-hook';
 
 export class FilterModifier extends HMTLModifier {
 
-    public name: string = "";
+    public name: string = "Filter";
     public role: string = "internal.modifier.filter";
     public data: any = {
         toggle: true
@@ -238,18 +238,18 @@ export class FilterModifier extends HMTLModifier {
 
         const useStyles = createUseStyles({
             '@keyframes blinker': {
-                from: { opacity: 1 },
-                to: { opacity: 0 },
+                from: { opacity: this.startAmount + this.valueType},
+                to: { opacity: this.stopAmount + this.valueType }
             },
             '@keyframes hue-rotate': {
                 '0%': {
-                    filter: "hue-rotate(0deg)"
+                    filter: "hue-rotate(" + this.startAmount + this.valueType + ")"
                 },
                 "50%": {
                     filter: "hue-rotate(100deg)"
                 },
                 "100%": {
-                    filter: "hue-rotate(0deg)"
+                    filter: "hue-rotate(" + this.stopAmount + this.valueType + ")"
                 }
             },
             animated: {

@@ -11,10 +11,10 @@ import { HMTLModifier } from "../helpers/HTMLModifier";
 import { HSlider, MenuTemplate, Text, CheckBox, ColorPicker, Divider, DropDown } from "preact-sidebar";
 import { createUseStyles } from 'preact-jss-hook';
 
-export class FilterModifier extends HMTLModifier {
+export class AnimationModifier extends HMTLModifier {
 
-    public name: string = "Filter";
-    public role: string = "internal.modifier.filter";
+    public name: string = "";
+    public role: string = "internal.modifier.animation";
     public data: any = {
         toggle: true
     }
@@ -22,13 +22,12 @@ export class FilterModifier extends HMTLModifier {
     public hasAnimationLoop: boolean;
     public animationDuration: number;
     public animationDelay: number;
-    public animationOption: string; // blinker, ...
+    public animationType: string; // blinker, ...
     public cssTimingFunction: string; // linear, ease-in, ...
     public startValue: string; // 50%, 360deg, #e5e5e5, ...
     public stopValue: any;
-    public filterOption: string; // grayscale, blur, ...
     public valueType: any; // %, deg, px
-    public maxFilterAmount: number = 100;
+    public maxAnimationAmount: number = 100;
     public startAmount: any;
     public stopAmount: any;
 
@@ -41,9 +40,8 @@ export class FilterModifier extends HMTLModifier {
         this.stopAmount = "";
         this.animationDuration = 1;
         this.animationDelay = 0;
-        this.animationOption = "hue-rotate";
+        this.animationType = "blinker";
         this.cssTimingFunction = "ease";
-        this.filterOption = "grayscale";
         this.valueType = "";
         this.isAnimated = false;
         this.hasAnimationLoop = false;
@@ -51,15 +49,14 @@ export class FilterModifier extends HMTLModifier {
         makeObservable(this, {
             animationDuration: observable,
             animationDelay: observable,
-            animationOption: observable,
+            animationType: observable,
             startValue: observable,
             stopValue: observable,
             startAmount: observable,
             stopAmount: observable,
             cssTimingFunction: observable,
-            filterOption: observable,
             valueType: observable,
-            maxFilterAmount: observable,
+            maxAnimationAmount: observable,
             isAnimated: observable,
             hasAnimationLoop: observable,
             updateAnimation: action,
@@ -68,7 +65,7 @@ export class FilterModifier extends HMTLModifier {
             updateStartAmount: action,
             updateStopAmount: action,
             updateAnimationDuration: action,
-            updateAnimationDelay: action,
+            updateAnimationDelay: action,            
             updateValueType: action
         });
     }
@@ -79,24 +76,11 @@ export class FilterModifier extends HMTLModifier {
             ...nameField(this),
             //TODO: Slider should be configurable to do half-steps
             new Divider(""),
-            ...dropDownField(
-                this,
-                () => ["grayscale", "invert", "hue-rotate", "blur", "contrast", "opacity"],
-                () => this.filterOption,
-                (selection: string) => {
-                    Logger.info(selection);
-                    runInAction(() => this.filterOption = selection);
-                    this.updateValueType();
-                    this.updateStartValue(selection);
-                    this.updateStopValue(selection);
-                    console.log(this.valueType);
-                }
-            ),
             new HSlider(
-                "Filter amount",
+                "Animation amount",
                 {
                     min: 0,
-                    max: this.maxFilterAmount,
+                    max: this.maxAnimationAmount,
                     formatter: (val: number) => `${val}${this.valueType}`
                 },
                 () => this.startAmount,
@@ -137,11 +121,11 @@ export class FilterModifier extends HMTLModifier {
             ),
             ...dropDownField(
                 this,
-                () => ["blinker", "hue-rotate"],
-                () => this.animationOption,
+                () => ["blinker", "boop-left", "boop-right", "tada", "wobble"],
+                () => this.animationType,
                 (selection: string) => {
                     Logger.info(selection);
-                    runInAction(() => this.animationOption = selection);
+                    runInAction(() => this.animationType = selection);
                     this.updateValueType();
                 }
             ),
@@ -158,7 +142,7 @@ export class FilterModifier extends HMTLModifier {
                 "From",
                 {
                     min: 0,
-                    max: this.maxFilterAmount,
+                    max: this.maxAnimationAmount,
                     formatter: (val: number) => `${val}${this.valueType}`
                 },
                 () => this.startAmount,
@@ -168,7 +152,7 @@ export class FilterModifier extends HMTLModifier {
                 "To",
                 {
                     min: 0,
-                    max: this.maxFilterAmount,
+                    max: this.maxAnimationAmount,
                     formatter: (val: number) => `${val}${this.valueType}`
                 },
                 () => this.stopAmount,
@@ -208,16 +192,10 @@ export class FilterModifier extends HMTLModifier {
     }
 
     public updateValueType() {
-        if (this.filterOption === "hue-rotate") {
-            this.valueType = "deg";
-            this.maxFilterAmount = 360;
-        } else if (this.filterOption === "blur") {
-            this.valueType = "px";
-            this.maxFilterAmount = 50;
-        } else {
+        if (this.animationType === "blink") {
             this.valueType = "%";
-            this.maxFilterAmount = 100;
-        }
+            this.maxAnimationAmount = 100;
+        } 
     }
 
     private _trigger = () => {
@@ -231,41 +209,94 @@ export class FilterModifier extends HMTLModifier {
 
     public modify(element: h.JSX.Element): h.JSX.Element {
         this._connector.handleNotification = this._trigger;
-        let cssStartOutput: string;
-        let cssEndOutput: string;
-        cssStartOutput = `${this.filterOption}(${this.startAmount}${this.valueType})`;
-        cssEndOutput = `${this.filterOption}(${this.stopAmount}${this.valueType})`;
 
         const useStyles = createUseStyles({
             '@keyframes blinker': {
-                from: { opacity: this.startAmount + this.valueType},
-                to: { opacity: this.stopAmount + this.valueType }
+                from: { opacity: this.startAmount + '%' },
+                to: { opacity: this.stopAmount + '%' },
+            },
+            '@keyframes boop-right': {
+                from: { transform: "translate(20px,0px)  rotate(3deg)" },
+                to: { transform: "translate(120px,0px)  rotate(13deg)" },
+            },
+            '@keyframes boop-left': {
+                from: { transform: "translate(-20px,0px)  rotate(-3deg)" },
+                to: { transform: "translate(-120px,0px)  rotate(-13deg)" },
             },
             '@keyframes hue-rotate': {
-                '0%': {
-                    filter: "hue-rotate(" + this.startAmount + this.valueType + ")"
+                from: { transform: "translate(20px,0px)  rotate(3deg)" },
+                to: { transform: "translate(120px,0px)  rotate(13deg)" },
+            },
+            '@keyframes wobble': {
+                "0%": {
+                    transform: "translate(0px,0px)  rotate(0deg)"
                 },
-                "50%": {
-                    filter: "hue-rotate(100deg)"
+                "15%": {
+                    transform: "translate(-25px,0px)  rotate(-5deg)"
+                },
+                "30%": {
+                    transform: "translate(20px,0px)  rotate(3deg)"
+                },
+                "45%": {
+                    transform: "translate(-15px,0px)  rotate(-3deg)"
+                },
+                "60%": {
+                    transform: "translate(10px,0px)  rotate(2deg)"
+                },
+                "75%": {
+                    transform: "translate(-5px,0px)  rotate(-1deg)"
                 },
                 "100%": {
-                    filter: "hue-rotate(" + this.stopAmount + this.valueType + ")"
+                    transform: "translate(-5px,0px)  rotate(-1deg)"
+                }
+            },
+            '@keyframes tada': {
+                '0%': {
+                    transform: 'rotate(0deg) scaleX(1.00) scaleY(1.00)',
+                },
+                '10%': {
+                    transform: 'rotate(-3deg) scaleX(0.80) scaleY(0.80)',
+                },
+                '20%': {
+                    transform: 'rotate(-3deg) scaleX(0.80) scaleY(0.80)',
+                },
+                '30%': {
+                    transform: 'rotate(3deg) scaleX(1.20) scaleY(1.20)',
+                },
+                '40%': {
+                    transform: 'rotate(-3deg) scaleX(1.20) scaleY(1.20)',
+                },
+                '50%': {
+                    transform: 'rotate(3deg) scaleX(1.20) scaleY(1.20)',
+                },
+                '60%': {
+                    transform: 'rotate(-3deg) scaleX(1.20) scaleY(1.20)',
+                },
+                '70%': {
+                    transform: 'rotate(3deg) scaleX(1.20) scaleY(1.20)',
+                },
+                '80%': {
+                    transform: 'rotate(-3deg) scaleX(1.20) scaleY(1.20)',
+                },
+                '90%': {
+                    transform: 'rotate(3deg) scaleX(1.20) scaleY(1.20)',
+                },
+                '100%': {
+                    transform: 'rotate(0deg) scaleX(1.20) scaleY(1.20)'
                 }
             },
             animated: {
-                "animation-name": "$" + this.animationOption,
+                "animation-name": "$" + this.animationType,
                 "animation-duration": this.animationDuration + "s",
                 "animation-delay": this.animationDelay + "s",
                 "animation-timing-function": this.cssTimingFunction,
                 "animation-iteration-count": (this.hasAnimationLoop ? "infinite" : "1")
-            },
-            active: JSON.parse('{"filter": "' + cssStartOutput + '" }'),
-            inactive: JSON.parse('{"filter": "' + cssEndOutput + '" }'),
+            }
         });
 
         const { classes } = useStyles();
 
-        return <div id={`_${this.id}`} class={`${((this.isAnimated) ? classes.animated : "")} ${((this.data.toggle) ? classes.inactive : classes.active)}`}>
+        return <div id={`_${this.id}`} class={`${((this.isAnimated) ? classes.animated : "")}`}>
             {element}
         </div>
     }
@@ -275,14 +306,14 @@ export class FilterModifier extends HMTLModifier {
     }
 }
 
-export const FilterModifierSchema = createModelSchema(FilterModifier, {
+export const AnimationModifierSchema = createModelSchema(AnimationModifier, {
     _connector: object(ConnectorSchema)
 });
 
 export const plugInExport = exportClass(
-    FilterModifier,
-    "Filter",
-    "internal.modifier.filter",
-    "icon-eye",
+    AnimationModifier,
+    "Animation",
+    "internal.modifier.animation",
+    "icon-mouse",
     true
 );

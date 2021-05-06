@@ -12,7 +12,7 @@ import { IStoryObject, StoryGraph } from 'storygraph';
 import { StoryObject } from "../helpers/AbstractStoryObject";
 import { UIStore } from "../../renderer/store/UIStore";
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
-import { MenuTemplate } from 'preact-sidebar';
+import { MenuTemplate, Text, DropDown, ColorPicker } from 'preact-sidebar';
 import { INGWebSProps, IPlugIn } from '../../renderer/utils/PlugInClassRegistry';
 import { useEffect, useState } from 'preact/hooks';
 import Logger from 'js-logger';
@@ -47,7 +47,13 @@ export class Container extends StoryObject {
         this.makeDefaultConnectors();
 
 
-        this.userDefinedProperties = {};
+        this.userDefinedProperties = {
+            padding: "0 0 0 0",
+            maxWidth: "auto",
+            placeItems: "center",
+            backgroundColor: "",
+            textColor: ""
+        };
         this.icon = Container.defaultIcon;
 
         makeObservable(this, {
@@ -59,6 +65,11 @@ export class Container extends StoryObject {
             connectors: computed,
             menuTemplate: computed,
             updateName: action,
+            updatePadding: action,
+            updateMaxWidth: action,
+            updatePlaceItems: action,
+            updateBackgroundColor: action,
+            updateTextColor: action
         });
     }
 
@@ -149,6 +160,26 @@ export class Container extends StoryObject {
         this.name = name
     }
 
+    public updatePadding(padding: string): void {
+        this.userDefinedProperties.padding = padding
+    }
+
+    public updateMaxWidth(maxWidth: string): void {
+        this.userDefinedProperties.maxWidth = maxWidth
+    }
+
+    public updatePlaceItems(placeItems: string): void {
+        this.userDefinedProperties.placeItems = placeItems
+    }
+
+    public updateBackgroundColor(backgroundColor: string): void {
+        this.userDefinedProperties.backgroundColor = backgroundColor
+    }
+
+    public updateTextColor(textColor: string): void {
+        this.userDefinedProperties.textColor = textColor
+    }
+
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
         // TODO: implement mock-drawing of the containers content!
         // TODO: draw using SVGs!
@@ -211,6 +242,26 @@ export class Container extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
+            new Text("Padding", { defaultValue: "0 0 0 0" }, () => this.userDefinedProperties.padding, (arg: string) => this.updatePadding(arg)),
+            new Text("Maximum width", { defaultValue: "auto" }, () => this.userDefinedProperties.maxWidth, (arg: string) => this.updateMaxWidth(arg)),
+            new DropDown(
+                "Place Items",
+                {
+                    options: ["start", "center", "end"]
+                },
+                () => this.userDefinedProperties.placeItems,
+                (item) => this.updatePlaceItems(item)
+            ),
+            new ColorPicker(
+                "Background Color",
+                () => this.userDefinedProperties.backgroundColor,
+                (color) => this.updateBackgroundColor(color)
+            ),
+            new ColorPicker(
+                "Text Color",
+                () => this.userDefinedProperties.textColor,
+                (color) => this.updateTextColor(color)
+            ),
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);

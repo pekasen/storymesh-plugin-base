@@ -13,7 +13,7 @@ import { createUseStyles } from 'preact-jss-hook';
 
 export class AnimationModifier extends HMTLModifier {
 
-    public name: string = "";
+    public name: string = "Animation";
     public role: string = "internal.modifier.animation";
     public data: any = {
         toggle: true
@@ -216,12 +216,14 @@ export class AnimationModifier extends HMTLModifier {
                 to: { opacity: this.stopAmount + '%' },
             },
             '@keyframes boop-right': {
-                from: { transform: "translate(20px,0px)  rotate(3deg)" },
-                to: { transform: "translate(120px,0px)  rotate(13deg)" },
+                "0%": { transform: "translate(20px,0px)  rotate(3deg)" },
+                "50%": { transform: "translate(120px,0px)  rotate(13deg)" },
+                "100%": { transform: "translate(0px,0px)  rotate(0deg)" },
             },
             '@keyframes boop-left': {
-                from: { transform: "translate(-20px,0px)  rotate(-3deg)" },
-                to: { transform: "translate(-120px,0px)  rotate(-13deg)" },
+                "0%": { transform: "translate(-20px,0px)  rotate(-3deg)" },
+                "50%": { transform: "translate(-120px,0px)  rotate(-13deg)" },
+                "100%": { transform: "translate(0px,0px)  rotate(0deg)" },
             },
             '@keyframes hue-rotate': {
                 from: { transform: "translate(20px,0px)  rotate(3deg)" },
@@ -314,6 +316,6 @@ export const plugInExport = exportClass(
     AnimationModifier,
     "Animation",
     "internal.modifier.animation",
-    "icon-mouse",
+    "icon-eye",
     true
 );

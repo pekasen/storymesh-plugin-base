@@ -28,7 +28,8 @@
   height: 100%;
   margin: 0;
   padding: 0;
-  margin-top: 50px; }
+  margin-top: 50px;
+  background: #fff; }
   .storywrapper .ngwebs-story {
     /* ========== THEME TYPEWRITER ========== */ }
     .storywrapper .ngwebs-story .ngwebs-story-container {

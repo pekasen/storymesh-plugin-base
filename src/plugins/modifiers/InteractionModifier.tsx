@@ -67,7 +67,7 @@ class WrapperComponent extends Component<IHTMLInteractionModifierProperties> {
 }
 
 export class HTMLInteractionModifier extends HMTLModifier {
-    public name = "Interaction Modifier"
+    public name = "Interaction"
     public role = "internal.modifier.InteractionModifier";
     public data = new InteractionModifierData();
     intersectionObserver: IntersectionObserver | undefined;
@@ -196,7 +196,7 @@ export const HTMLInteractionModifierSchema = createModelSchema(HTMLInteractionMo
 
 export const plugInExport = exportClass(
     HTMLInteractionModifier,
-    "InteractionModifier",
+    "Interaction",
     "internal.modifier.InteractionModifier",
     "icon-mouse",
     true

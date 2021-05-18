@@ -27,6 +27,7 @@ class VideoObject extends StoryObject {
     public autoPlay: boolean = false;
     public loopable: boolean = false;
     public scrollable: boolean = false;
+    public muted: boolean = false;
     public scrollThroughSpeed: number = 100;
     public static defaultIcon = "icon-video";  
 
@@ -65,6 +66,7 @@ class VideoObject extends StoryObject {
             playbackControls:       observable,
             loopable:               observable,
             scrollable:             observable,
+            muted:             observable,
             scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
@@ -95,6 +97,12 @@ class VideoObject extends StoryObject {
                 () => this.loopable,
                 (sel: boolean) => {
                     runInAction(() => this.loopable = sel)
+            }),
+            new CheckBox(
+                "Muted",
+                () => this.muted,
+                (sel: boolean) => {
+                    runInAction(() => this.muted = sel)
             }),
             new CheckBox(
                 "make Scrollable",
@@ -164,6 +172,7 @@ class VideoObject extends StoryObject {
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
                 loop={this.loopable}
+                muted={this.muted}
                 autobuffer="autobuffer"
                 preload="preload"
             ></video>;

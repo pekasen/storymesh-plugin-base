@@ -27,6 +27,7 @@ class VideoObject extends StoryObject {
     public autoPlay: boolean = false;
     public loopable: boolean = false;
     public scrollable: boolean = false;
+    public muted: boolean = false;
     public scrollThroughSpeed: number = 100;
     public static defaultIcon = "icon-video";  
 
@@ -65,6 +66,7 @@ class VideoObject extends StoryObject {
             playbackControls:       observable,
             loopable:               observable,
             scrollable:             observable,
+            muted:             observable,
             scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
@@ -95,6 +97,12 @@ class VideoObject extends StoryObject {
                 () => this.loopable,
                 (sel: boolean) => {
                     runInAction(() => this.loopable = sel)
+            }),
+            new CheckBox(
+                "Muted",
+                () => this.muted,
+                (sel: boolean) => {
+                    runInAction(() => this.muted = sel)
             }),
             new CheckBox(
                 "make Scrollable",
@@ -164,6 +172,7 @@ class VideoObject extends StoryObject {
                 autoPlay={this.autoPlay}
                 controls={this.playbackControls}
                 loop={this.loopable}
+                muted={this.muted}
                 autobuffer="autobuffer"
                 preload="preload"
             ></video>;
@@ -175,8 +184,8 @@ class VideoObject extends StoryObject {
                
                 var that = this;
                 function scrollPlay(): void {
-                    if (that.videoElement && that.videoElement.current && that.scrollable) {
-                        that.videoElement.current.currentTime = that.videoElement.current.duration -
+                    if (that.videoElement && that.videoElement.current && that.scrollable && !isNaN(that.videoElement.current.duration)) { //TODO: check why duration is sometimes NaN
+                        that.videoElement.current.currentTime =  that.videoElement.current.duration -
                         (that.videoWrapper.current.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().bottom) 
                             / that.scrollThroughSpeed; 
                         that.videoWrapper.current.style.height = Math.floor(that.videoElement.current.duration * that.scrollThroughSpeed + that.videoElement.current.getBoundingClientRect().height);

@@ -1,4 +1,3 @@
-import { TouchBarScrubber } from "electron";
 import Logger from "js-logger";
 import { h } from "preact";
 import { runInAction } from "mobx";
@@ -10,6 +9,7 @@ import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
 import { HSlider, MenuTemplate, Text, CheckBox, ColorPicker, Divider, DropDown } from "preact-sidebar";
+import { createUseStyles } from 'preact-jss-hook';
 
 export class TransitionModifier extends HMTLModifier {
 
@@ -254,33 +254,27 @@ export class TransitionModifier extends HMTLModifier {
             cssStartOutput = this.startValue;
             cssEndOutput = this.stopValue;
         } else if(this.transitionProperty == "filter"){
-            cssStartOutput = `${this.startValue}(${this.startAmount}${this.valueType})`;
-            cssEndOutput = `${this.stopValue}(${this.stopAmount}${this.valueType})`;
+            cssStartOutput = `${this.filterOption}(${this.startAmount}${this.valueType})`;
+            cssEndOutput = `${this.filterOption}(${this.stopAmount}${this.valueType})`;
         } else {
             //TODO: Add multi value shorthands (skew, matrix, ...)?
             //TODO: Re-add {this.valueType}
             cssStartOutput = `${this.transformOption}(${this.startAmount})`;
             cssEndOutput = `${this.transformOption}(${this.stopAmount})`;
         }
-        const Style = () => <style type="text/css" scoped>{`#_${this.id} {
-    transition: ${this.transitionProperty} ${this.transitionDuration}s ${this.cssTimingFunction} ${this.transitionDelay > 0 ? this.transitionDelay + "s" : ""};
-}
+        const useStyles = createUseStyles({
+            filterBase: {
+                transition: this.transitionProperty + " " + this.transitionDuration + "s " + this.cssTimingFunction + " " + (this.transitionDelay > 0 ? this.transitionDelay + "s" : ""),                
+            },
+            active: JSON.parse('{"' + this.transitionProperty + ' ": "' + cssStartOutput.toString() + '" }'),
+            inactive: JSON.parse('{"' + this.transitionProperty + ' ": "' + cssEndOutput.toString() + '" }'),     
+          });          
 
-#_${this.id}.inactive {
-    ${this.transitionProperty}: ${cssStartOutput} ${this.overrideExistingValues ? "!important" : ""};
-}
-#_${this.id}.active {
-    ${this.transitionProperty}: ${cssEndOutput} ${this.overrideExistingValues ? "!important" : ""};
-}
+       const { classes } = useStyles();
 
-`}</style>
-
-        return <div>
-            <Style />
-            <div id={`_${this.id}`} class={(this.data.toggle) ? "inactive" : "active"}>
+       return <div id={`_${this.id}`} class={`${classes.filterBase} ${((this.data.toggle) ? classes.inactive : classes.active )}`}>
                 {element}
             </div>
-        </div>
     }
 
     requestConnectors(): [string, IConnectorPort][] {

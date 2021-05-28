@@ -19,7 +19,7 @@ export const EditorPaneGroup: FunctionalComponent = () => {
 
     useEffect(() => {
         const disposer = reaction(
-            () => [store.storyContentObjectRegistry.registry.size, store.uistate.loadedItem],
+            () => [store.storyContentObjectRegistry, store.storyContentObjectRegistry.registry.size, store.uistate.loadedItem],
             () => setState({})
         );
 

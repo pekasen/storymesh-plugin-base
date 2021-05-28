@@ -195,9 +195,9 @@ class _HeroObject extends StoryObject {
                                alt={content?.altText} 
                                style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
                                ></img>
-            const video = <video autoplay="true" 
+            const video = <video autoPlay={true}
                                  preload="preload"
-                                 autobuffer="autobuffer"
+                                //  autobuffer="autobuffer"
                                  muted={this.muted} 
                                  loop={this.loop} 
                                  src={content?.resource} 

@@ -2,9 +2,9 @@ import { action, makeObservable, observable } from "mobx";
 import { h } from "preact";
 import { createModelSchema } from "serializr";
 import { v4 } from "uuid";
-import { MenuTemplate } from "preact-sidebar";
 import { IConnectorPort, IStoryModifier, ModifierType } from "storygraph";
 import { VReg } from "storymesh-plugin-support";
+import { ButtonGroup, Display, MenuTemplate } from "preact-sidebar";
 
 function isStoryModifierType(type: string): boolean {
     const modifierTypes = ["css-class", "css-inline", "css-hybrid"];
@@ -50,71 +50,57 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
     
     public get menuTemplate(): MenuTemplate[] {
         return [
-            {
-                label: "Name",
-                type: "display",
-                value: () => this.name,
-                valueReference: (name: string) => this.updateName(name)
-            },
-            {
-                label: "",
-                type: "buttongroup",
-                value: () => undefined,
-                valueReference: () => undefined,
-                options: {
-                    callbacks: [
-                        {
-                            label: "delete",
-                            valueReference: () => {
-                                this.deleteMe();
-                            }
-                        },
-                        {
-                            label: "up",
+            // {
+            //     label: "Name",
+            //     type: "display",
+            //     value: () => this.name,
+            //     valueReference: (name: string) => this.updateName(name)
+            // },
+            new Display("Name", () => this.name),
+            new ButtonGroup("Default", {
+                callbacks: [
+                    {
+                        label: "delete",
+                        trigger: () => this.deleteMe()
+                    },
+                    {
+                        label: "up",
+                        trigger: () => undefined
+                    },
+                    {
+                        label: "down",
+                        trigger: () => undefined
+                    },
+                ]
+            })
+            // {
+            //     label: "",
+            //     type: "buttongroup",
+            //     value: () => undefined,
+            //     valueReference: () => undefined,
+            //     options: {
+            //         callbacks: [
+            //             {
+            //                 label: "delete",
+            //                 valueReference: () => {
+            //                     this.deleteMe();
+            //                 }
+            //             },
+            //             {
+            //                 label: "up",
     
-                            valueReference: () => {
-                                // this.deleteMe();
-                            }
-                        },
-                        {
-                            label: "down",
-                            valueReference: () => {
-                                // this.deleteMe();
-                            }
-                        }
-                    ]
-                }
-            }
-            // {
-            //     label: "delete",
-            //     type: "button",
-            //     value: () => undefined,
-            //     valueReference: () => {
-            //         this.deleteMe();
+            //                 valueReference: () => {
+            //                     // this.deleteMe();
+            //                 }
+            //             },
+            //             {
+            //                 label: "down",
+            //                 valueReference: () => {
+            //                     // this.deleteMe();
+            //                 }
+            //             }
+            //         ]
             //     }
-            // },
-            // {
-            //     label: "up",
-            //     type: "button",
-            //     value: () => undefined,
-            //     valueReference: () => {
-            //         // this.deleteMe();
-            //     }
-            // },
-            // {
-            //     label: "down",
-            //     type: "button",
-            //     value: () => undefined,
-            //     valueReference: () => {
-            //         // this.deleteMe();
-            //     }
-            // }
-            // {
-            //     label: "Type",
-            //     type: "dropdown",
-            //     value: () => this.type,
-            //     valueReference: (type: ModifierType) => this.updateType(type),
-            //     options: ["css-class", "css-inline", "css-hybrid"]
             // }
         ]
     }
@@ -177,40 +163,3 @@ export const ObservableStoryModifierSchema = createModelSchema(ObservableStoryMo
     role: true,
     parent: true
 });
-
-export type CSSUnit = "px" | "fr" | "em" | "rem" | "%" | "vh" | "vw";
-
-export class CSSUnitNumber {
-    private _value: number;
-    private _unit: CSSUnit;
-    private static _validUnits = [
-        "px", "fr", "em", "rem", "%", "vh", "vw"
-    ];
-
-    constructor(value?: number, unit?: CSSUnit) {
-        this._value = value ||  0;
-        this._unit = unit || "px";
-    }
-
-    public get value(): number {
-        return this._value;
-    }
-
-    public set value(value: number) {
-        this._value = value;
-    }
-
-    public get unit(): CSSUnit {
-        return this._unit;
-    }
-
-    public set unit(unit: CSSUnit) {
-        if (CSSUnitNumber.isValid(unit)) {
-            this._unit = unit;
-        } else throw("Unit not accepted.");
-    }
-
-    public static isValid(unit: string): boolean {
-        return CSSUnitNumber._validUnits.indexOf(unit) !== -1
-    }
-}

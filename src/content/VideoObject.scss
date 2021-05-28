@@ -1,0 +1,11 @@
+.bound-to-scroll {
+    position: relative;
+    width: 100%;
+    video {
+        position: sticky;
+        object-fit: cover;
+        height: 100vh !important; //Why is this overridden?!
+        top: 0;
+        left: 0;
+    }
+}

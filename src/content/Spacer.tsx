@@ -1,13 +1,13 @@
 import { FunctionComponent, h } from "preact";
-import { MenuTemplate } from "preact-sidebar";
 import { INGWebSProps } from "../helpers/INGWebSProps";
-
+import { HSliderMenuItem, MenuTemplate } from "preact-sidebar";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { createModelSchema } from 'serializr';
+
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
 
 class _Spacer extends StoryObject {
 
@@ -61,14 +61,14 @@ class _Spacer extends StoryObject {
             ...nameField(this),
             {
                 label: "Vertical Space",
-                type: "hslider",
+                type: HSliderMenuItem,
                 options: {
                     min: 0,
                     max: 100,
                     formatter: (val: number) => `${val}%`
                 },
-                value: () => this.userDefinedProperties.vspace,
-                valueReference: (vspace: number) => this.updateVSpace(vspace)
+                getter: () => this.userDefinedProperties.vspace,
+                setter: (vspace: number) => this.updateVSpace(vspace)
             },
             ...connectionField(this)
         ];

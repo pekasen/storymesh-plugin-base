@@ -19,6 +19,7 @@ export class ObservableStoryGraph extends StoryGraph {
 }
 
 export const ObservableStoryGraphSchema = createModelSchema(ObservableStoryGraph,{
+    parent: primitive(),
     nodes: list(primitive()),
     edges: list(object(EdgeSchema), {
         // afterDeserialize: (cb, err, newValue) => {
@@ -48,7 +49,7 @@ export const ObservableStoryGraphSchema = createModelSchema(ObservableStoryGraph
         //     // }, 150)
         //     // // graph.connect(undefined, newValue);
         //     // // catches edges
-        //     // console.log("caught", newValue, context);
+        //     // Logger.info("caught", newValue, context);
         //     // cb(err, newValue);
         //     cb(err, newValue);
         // }

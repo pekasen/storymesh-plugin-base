@@ -31,10 +31,10 @@ export class Container extends StoryObject {
     public childNetwork: StoryGraph;
     public icon: string
     public content: undefined;
-    public startNode?:InputConnectorView;
-    public endNode?: OutputConnectorView;
+    public startNode?: string;
+    public endNode?: string;
     public static defaultIcon = "icon-doc"
-    
+
     constructor() {
         super();
 
@@ -42,10 +42,19 @@ export class Container extends StoryObject {
         this.role = "internal.content.container";
         this.isContentNode = false;
         this.childNetwork = new ObservableStoryGraph(this.id);
+        this.childNetwork.notificationCenter.subscribe(this.id + "/rerender", () => {
+            if (this._rerender) this._rerender();
+        });
         this.makeDefaultConnectors();
 
 
-        this.userDefinedProperties = {};
+        this.userDefinedProperties = {
+            padding: "0 0 0 0",
+            maxWidth: "auto",
+            placeItems: "center",
+            backgroundColor: "",
+            textColor: ""
+        };
         this.icon = Container.defaultIcon;
 
         makeObservable(this, {
@@ -56,44 +65,70 @@ export class Container extends StoryObject {
             childNetwork: observable.deep,
             connectors: computed,
             menuTemplate: computed,
-            updateName: action
+            updateName: action,
+            updatePadding: action,
+            updateMaxWidth: action,
+            updatePlaceItems: action,
+            updateBackgroundColor: action,
+            updateTextColor: action
         });
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({id, registry, graph, modifiers}) => {
+        const Comp: FunctionComponent<INGWebSProps> = ({ id, registry, graph, modifiers }) => {
             // const startNode = graph?
             // TODO: class name?
+
+            const [, setState] = useState({});
+
+            useEffect(() => {
+                this._rerender = () => {
+                    Logger.info(`${this.id} rerendering`);
+                    setState({});
+                };
+
+                return () => {
+                    this._rerender = undefined;
+                };
+            });
+
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
-            if ( this.startNode) {
-                path = graph?.traverse(registry, this.startNode.id, Array.from(this.startNode.connectors)[0][1].id)
+            if (this.startNode) {
+                const startNode = registry.getValue(this.startNode);
+                if (!startNode) throw("BIG ERROR");
+                
+                path = graph?.traverse(registry, this.startNode, Array.from(startNode.connectors)[0][1].id)
                 if (path !== undefined) {
-                    div = <div id={id} class={"ngwebs-story-container"}>
-                    {
-                        path.map(node => {
-                            // const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
-                            const _node = node as AbstractStoryObject & PlugIn;
-                            if (_node.getComponent) {
-                                const Comp = _node.getComponent();
-                                return <Comp
-                                    registry={registry}
-                                    id={_node.id}
-                                    renderingProperties={_node.renderingProperties}
-                                    content={_node.content}
-                                    modifiers={_node.modifiers}
-                                    graph={_node.childNetwork}
-                                    userDefinedProperties={_node.userDefinedProperties}
-                                ></Comp>
-                            }
-                        }) || null }
+                    div = <div style={`padding:${this.userDefinedProperties.padding};
+                                       max-width:${this.userDefinedProperties.maxWidth};
+                                       place-items:${this.userDefinedProperties.placeItems};
+                                       ${this.userDefinedProperties.backgroundColor.length ? "background-color:" + this.userDefinedProperties.backgroundColor : ""};
+                                       ${this.userDefinedProperties.textColor.length ? "color:" + this.userDefinedProperties.textColor : ""}`} id={id} class={"ngwebs-story-container"}>
+                        {
+                            path.map(node => {
+                                // const node = (registry.getValue(e) as unknown as IPlugIn & StoryObject);
+                                const _node = node as StoryObject & IPlugIn;
+                                if (_node.getComponent) {
+                                    const Comp = _node.getComponent();
+                                    return <Comp
+                                        registry={registry}
+                                        id={_node.id}
+                                        renderingProperties={_node.renderingProperties}
+                                        content={_node.content}
+                                        modifiers={_node.modifiers}
+                                        graph={_node.childNetwork}
+                                        userDefinedProperties={_node.userDefinedProperties}
+                                    ></Comp>
+                                }
+                            }) || null}
                     </div>
 
                     if (modifiers) return modifiers.reduce((p, v) => {
                         return (v as AbstractStoryModifier).modify(p);
                     }, div)
                 }
-            } 
+            }
             return <div></div>
             // div = <div id={id} class={"ngwebs-story-container"}>
             //     {
@@ -116,7 +151,6 @@ export class Container extends StoryObject {
             //     }
             // </div>
 
-           
 
         }
         return Comp
@@ -124,6 +158,26 @@ export class Container extends StoryObject {
 
     public updateName(name: string): void {
         this.name = name
+    }
+
+    public updatePadding(padding: string): void {
+        this.userDefinedProperties.padding = padding
+    }
+
+    public updateMaxWidth(maxWidth: string): void {
+        this.userDefinedProperties.maxWidth = maxWidth
+    }
+
+    public updatePlaceItems(placeItems: string): void {
+        this.userDefinedProperties.placeItems = placeItems
+    }
+
+    public updateBackgroundColor(backgroundColor: string): void {
+        this.userDefinedProperties.backgroundColor = backgroundColor
+    }
+
+    public updateTextColor(textColor: string): void {
+        this.userDefinedProperties.textColor = textColor
     }
 
     public getEditorComponent(): FunctionComponent<INGWebSProps> {
@@ -170,28 +224,43 @@ export class Container extends StoryObject {
         // </div>
     }
 
-    public setup(registry: VReg, uistate: UIStore): void {
-        this.startNode = new InputConnectorView();
-        this.endNode = new OutputConnectorView();
+    public setup(registry: IRegistry, uistate: UIStore): void {
+        const startNode = new InputConnectorView();
+        const endNode = new OutputConnectorView();
+        this.startNode = startNode.id;
+        this.endNode = endNode.id;
 
-        this.childNetwork.addNode(registry, this.startNode);
-        this.childNetwork.addNode(registry, this.endNode);
-        uistate.moveableItems.register(new MoveableItem(this.startNode.id, 50, 50));
-        uistate.moveableItems.register(new MoveableItem(this.endNode.id, 50, 350));
-        this.startNode.setup(this.id, registry);
-        this.endNode.setup(this.id, registry);
+        this.childNetwork.addNode(registry, startNode);
+        this.childNetwork.addNode(registry, endNode);
+        uistate.moveableItems.register(new MoveableItem(this.startNode, 50, 50));
+        uistate.moveableItems.register(new MoveableItem(this.endNode, 50, 350));
+        
+        startNode.setup(this.id, registry);
+        endNode.setup(this.id, registry);
     }
 
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            ...dropDownField(
-                this,
-                () => ["h1", "h2", "h3", "b", "p"],
-                () => "h1",
-                (selection: string) => {
-                    this.userDefinedProperties.class = selection
-                }
+            new Text("Padding", { defaultValue: "0 0 0 0" }, () => this.userDefinedProperties.padding, (arg: string) => this.updatePadding(arg)),
+            new Text("Maximum width", { defaultValue: "auto" }, () => this.userDefinedProperties.maxWidth, (arg: string) => this.updateMaxWidth(arg)),
+            new DropDown(
+                "Place Items",
+                {
+                    options: ["start", "center", "end"]
+                },
+                () => this.userDefinedProperties.placeItems,
+                (item) => this.updatePlaceItems(item)
+            ),
+            new ColorPicker(
+                "Background Color",
+                () => this.userDefinedProperties.backgroundColor,
+                (color) => this.updateBackgroundColor(color)
+            ),
+            new ColorPicker(
+                "Text Color",
+                () => this.userDefinedProperties.textColor,
+                (color) => this.updateTextColor(color)
             ),
             ...connectionField(this),
         ];
@@ -201,7 +270,9 @@ export class Container extends StoryObject {
 }
 
 createModelSchema(Container, {
-    childNetwork: object(ObservableStoryGraphSchema)
+    childNetwork: object(ObservableStoryGraphSchema),
+    startNode: true,
+    endNode: true
 });
 
 export const plugInExport = exportClass(

@@ -58,6 +58,10 @@ export class HotSpot {
     public get name(): string {
         return `${this._name}${(HotSpot.numOfInstances > 0) ? "-" + HotSpot.numOfInstances : ""}`
     }
+
+    public set name(name: string) {
+        this._name = name
+    }
 }
 
 class CircleHotSpot extends HotSpot {
@@ -70,7 +74,7 @@ class CircleHotSpot extends HotSpot {
     }
 
     public set name(name: string) {
-        this._name = name
+        this._name = name;
     }
 
     constructor(x?:number, y?: number, r?: number) {
@@ -97,10 +101,10 @@ class CircleHotSpot extends HotSpot {
             const relY = height * this.y;
             const relR = Math.sqrt(width * width + height * height) * this.radius;
 
-            console.log("circle dims", {x: relX, y: relY, r: relR});
+            Logger.info("circle dims", {x: relX, y: relY, r: relR});
             
             return <circle class={(this.debug) ? "debug" : undefined} cx={relX} cy={relY} r={relR} onClick={() => {
-                console.log("Sending notification to", this.reactionOut);
+                Logger.info("Sending notification to", this.reactionOut);
                 this.reactionOut.notify();
             }}/>
         } else return <circle />
@@ -193,64 +197,125 @@ export class HTMLHotSpotModifier extends HMTLModifier {
     public get menuTemplate(): MenuTemplate[] {
         return [
             ...super.menuTemplate,
-            {
-                label: "Hotspots",
-                type: "hotspot-table",
-                value: () => this.data.hotspots,
-                valueReference: () => (null),
-                options: {
+            new Table<CircleHotSpot>(
+                "Hotspots",
+                {
                     columns: [
                         {
                             name: "Name",
-                            type: "string",
+                            type: "",
                             editable: true,
-                            property: "name"
+                            property: "name",
+                            setter: (arg, property, value: HotSpot) => {
+                                runInAction(() => {
+                                    if (typeof arg === "string") {
+                                        value.name = arg;
+                                    }
+                                });
+                            }
                         },
                         {
                             name: "X",
-                            type: "number",
+                            type: (arg, spec) => {
+                                return new HSlider(
+                                    "",
+                                    {
+                                        min:0,
+                                        max: 100,
+                                        formatter: (x) => `${x}%`
+                                    },
+                                    () => arg.x * 100,
+                                    (x) => {
+                                        if (spec.setter) {
+                                            spec.setter(x / 100, "x", arg)
+                                        }
+                                    }
+                                );
+                            },
                             editable: true,
-                            property: "x"
+                            property: "x",
+                            setter: (arg, property, value: HotSpot) => {
+                                runInAction(() => {
+                                    if (typeof arg === "number") {
+                                        value.x = arg;
+                                    }
+                                });
+                            }
                         },
                         {
                             name: "Y",
-                            type: "number",
+                            type: (arg, spec) => {
+                                return new HSlider(
+                                    "",
+                                    {
+                                        min:0,
+                                        max: 100,
+                                        formatter: (x) => `${x}%`
+                                    },
+                                    () => arg.y * 100,
+                                    (y) => {
+                                        if (spec.setter) {
+                                            spec.setter(y / 100, "y", arg)
+                                        }
+                                    }
+                                );
+                            },
                             editable: true,
-                            property: "y"
-                        },
-                        {
-                            name: "R",
-                            type: "number",
-                            editable: true,
-                            property: "radius"
-                        },
-                        {
-                            name: "delete",
-                            type: "button",
-                            editable: true,
-                            property: (e: HotSpot) => {
-                                this.removeHotSpot(e);
+                            property: "y",
+                            setter: (arg, property, value: HotSpot) => {
+                                runInAction(() => {
+                                    if (typeof arg === "number") {
+                                        value.y = arg;
+                                    }
+                                });
                             }
+                        },
+                        {
+                            name: "Radius",
+                            type: (arg, spec) => {
+                                return new HSlider(
+                                    "",
+                                    {
+                                        min:0,
+                                        max: 100,
+                                        formatter: (x) => `${x}%`
+                                    },
+                                    () => arg.x * 100,
+                                    (x) => {
+                                        if (spec.setter) {
+                                            spec.setter(x / 100, "x", arg)
+                                        }
+                                    }
+                                );
+                            },
+                            editable: true,
+                            property: "radius",
+                            setter: (arg, property, value) => {
+                                runInAction(() => {
+                                    if (typeof arg === "number") {
+                                        value.radius = arg;
+                                    }
+                                });
+                            }
+                        },
+                        {
+                            "name": "Delete",
+                            property: "get",
+                            type: (arg, spec) => {
+                                return new Button("Delete", () => this.removeHotSpot(arg));
+                            },
+                            editable: false
                         }
                     ]
-                }
-            },
-            {
-                label: "Add HotSpot",
-                type: "button",
-                value: () => undefined,
-                valueReference: () => this.addHotSpot(new CircleHotSpot())
-            },
-            {
-                label: "Toggle DEBUG",
-                type: "button",
-                value: () => undefined,
-                valueReference: () => {
-                    runInAction(() => {
-                        this.data.hotspots.forEach(e => e.debug = !e.debug);
-                    });
-                }
-            }
+                },
+                () => this.data.hotspots as CircleHotSpot[]
+            ),
+            new Button("Add HotSpot", () => this.addHotSpot(new CircleHotSpot())),
+            new Button("Toggle Vis.", () => {
+                runInAction(() => {
+                    this.data.hotspots.forEach(e => e.debug = !e.debug);
+                });
+            })
         ];
     }
 

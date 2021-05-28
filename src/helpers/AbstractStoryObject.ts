@@ -66,42 +66,18 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             metaData:               observable,
             connections:            observable,
             modifiers:              observable.deep,
-            // cannot makr connectors as computed as it will fuck up everything and the world.
+            // cannot make connectors as computed as it will fuck up everything and the world.
             // connectors:             computed,
             addConnection:          action,
             addModifier:            action,
             removeModifier:         action
         });
     }
-    notificationCenter?: NotificationCenter | undefined;
     
     public addConnections(edges: IEdge[]): void {
         // store locally
         this.connections.push(...edges);
     }
-
-    public bindTo(notificationCenter: NotificationCenter): void {
-        this.notificationCenter = notificationCenter;
-        this.connectors.forEach((connector) => {
-            console.log("binding", connector, notificationCenter);
-            (connector as ConnectorPort).bindTo(notificationCenter, this.id);
-        });
-        notificationCenter.subscribe(this.id, (payload?: INotificationData<IEdgeEvent>) => {
-            if (payload) {
-                console.log("binding", payload);
-                if (payload.data.add !== undefined) {
-                    this.addConnections(payload.data.add);
-                }
-                if (payload.data.remove !== undefined) {
-                    this.removeConnections(payload.data.remove);
-                }
-            }
-        });
-        notificationCenter.subscribe(this.id+"/rerender", () => {
-            if (this._rerender !== undefined) this._rerender();
-        })
-    }
-
 
     /**
      * 
@@ -118,62 +94,83 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
             const parentNetwork = registry.getValue(this.parent)?.childNetwork;
             if (parentNetwork) {
                 const newEdge: IEdge = {
-                    id: (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
+                    id: "edge." + v4(), // (isIncoming) ? `edge.${id}.${this.id}` : `edge.${this.id}.${id}`,
                     from: ((isIncoming) ? `${id}.${theirport}` : `${this.id}.${myport}`),
                     to: ((isIncoming) ? `${this.id}.${myport}` : `${id}.${theirport}`),
                     // parent: parentNetwork
                 };
-                console.log("new Edge", newEdge);
+                Logger.info("new Edge", newEdge);
                 parentNetwork.connect(registry, [newEdge]);
             }
         }
     }
-
     public removeConnections(edges: IEdge[]): void {
         edges.forEach((edge) => {
             const _index = this.connections.findIndex((_edge) => (_edge.id === edge.id));
             if (_index !== -1) {
                 if (this.connections.splice(_index, 1)[0].id === edge.id) {
-                    console.log(`edge removed from node ${this.id}`);
+                    Logger.info(`edge removed from node ${this.id}`);
                 } else console.warn(`edge not removed in node ${this.id}`);
             } else console.warn(`edge not found in node ${this.id}`);  
         });
     }
-
     public addModifier(modifier: AbstractStoryModifier): void {
         modifier.updateParent(this.id);
         this.modifiers.push(modifier);
     }
-
     public removeModifier(modifier: AbstractStoryModifier): void {
         this.modifiers.splice(
             this.modifiers.indexOf(modifier), 1
         );
     }
-
     public willDeregister(registry: IRegistry): void {
         if (this.childNetwork) this.childNetwork.willDeregister(registry)
+    }
+    public get connectors(): Map<string, IConnectorPort> {
+        const map = new Map(this._connectors);
+        this.modifiers.forEach(modifier => {
+            modifier.requestConnectors().forEach(([label, connector]) => {
+                if (connector.needsBinding() && this.notificationCenter !== undefined) {
+                    connector.bindTo(this.notificationCenter, this.id);
+                }
+                map.set(label, connector);
+            });
+        });
+        return map
     }
 
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [];
-        if (this.modifiers.length !== 0) {
-            ret.push(
-                ...this.modifiers.
-                map(e => e.menuTemplate).
-                reduce((p: MenuTemplate[], e: MenuTemplate[]) => (p.concat(...e)))
-            );
-        }
+        ret.push(
+            ...this.modifiers.map(modifier => (
+                new Card(modifier.name, {
+                    items: modifier.menuTemplate
+                })
+            ))
+        );
         return ret;
     }
 
-    public get connectors(): Map<string, IConnectorPort> {
-        return this._connectors;
+    public getComponent(): FunctionComponent<INGWebSProps> {
+        throw new Error('Method not implemented.');
     }
 
-    public abstract getComponent?(): FunctionComponent<INGWebSProps>
+    public getEditorComponent(): FunctionComponent<INGWebSProps> {
+        throw new Error('Method not implemented.');
+    }
 
-    public abstract getEditorComponent(): FunctionComponent<INGWebSProps> 
+    public isBound(): void {
+        // throw new Error("Method not implemented.");
+        this.logger.log("READY TO ROLL");
+    }
+
+    public mountTo(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public isMounted(): void {
+        throw new Error("Method not implemented.");
+    }
 
     protected makeDefaultConnectors(): void {
         const _in = new FlowConnectorInPort();
@@ -200,41 +197,11 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
     }
 }
 
-export class StoryObject extends AbstractStoryObject {
-    public name!: string;
-    public role!: string;
-    public isContentNode!: boolean;
-    public userDefinedProperties: any;
-    public childNetwork?: StoryGraph | undefined;
-    public icon!: string;
-    public content?: any;
-    
-    public get connectors(): Map<string, IConnectorPort> {
-        const map = new Map(super.connectors);
-        this.modifiers.forEach(modifier => {
-            modifier.requestConnectors().forEach(([label, connector]) => {
-                if (connector.needsBinding() && this.notificationCenter !== undefined) {
-                    connector.bindTo(this.notificationCenter, this.id);
-                }
-                map.set(label, connector);
-            });
-        });
-        return map
-    }
-    public getComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
-    }
-    public getEditorComponent(): FunctionComponent<INGWebSProps> {
-        throw new Error('Method not implemented.');
-    }
-}
-
 export const StoryObjectSchema = createModelSchema(StoryObject, {
     id: identifier(
         (id: string, obj) => {
-            // TODO: loading from deserialized JSON should be handled in the original VReg
             const reg = rootStore._loadingCache;
-            console.log("registering @valuecache", obj,reg.set(id, obj))
+            Logger.info("registering @valuecache", obj,reg.set(id, obj))
         }
     ),
     name: primitive(),
@@ -243,6 +210,8 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
     userDefinedProperties: object(UserDefinedPropertiesSchema),
     metaData: object(MetaDataSchema),
     content: optional(object(ContentSchema)),
+     // TODO: if this property is present in the ModelSchema, it cannot be overwritten by extending model schemas.
+    // content: optional(object(ContentSchema)),
     parent: optional(primitive()),
     connections: list(object(EdgeSchema)),
     _connectors: map(object(ConnectorSchema)),

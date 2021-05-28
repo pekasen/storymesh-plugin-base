@@ -19,6 +19,11 @@ class _HeroObject extends StoryObject {
     public content: IContent;
     public icon: string;
     public valueType: any;
+    public contentType: string;
+    public maxFilterAmount: number = 100;
+    public variableFilterAmounts: any;
+    public muted: boolean = true;
+    public loop: boolean = true;
 
     public static defaultIcon = "icon-star"
 
@@ -30,20 +35,27 @@ class _HeroObject extends StoryObject {
         this.isContentNode = true;
         this.makeDefaultConnectors();
 
+        this.contentType = "Image";
+
         this.content = {
             resource: "https://source.unsplash.com/random/1920x1080",
             contentType: "url",
-            altText: "This is an image",
+            altText: "",
         }
         this.valueType = {
             percent: "%",
             px: "px",
             deg: "deg"
         }
+        this.variableFilterAmounts = {
+            percent: 100,
+            degree: 360,
+            pixels: 50
+        }
         this.userDefinedProperties = {
-            text: "Headline goes here",
+            text: "",
             filterAmount: 0,
-            headlineWidth: 100,
+            headlineWidth: "",
             filterType: "grayscale",
             filterValue: "%"
         }
@@ -53,76 +65,81 @@ class _HeroObject extends StoryObject {
             name: observable,
             userDefinedProperties: observable,
             // connectors:             observable.shallow,
+            contentType: observable,
             content: observable,
+            maxFilterAmount: observable,
+            variableFilterAmounts: observable,
+            valueType: observable,
+            muted: observable,
+            loop: observable,
             updateName: action,
-            updateImageURL: action,
+            updateURL: action,
             updateAltText: action,
             updateHeadline: action,
             updateHeadlineWidth: action,
             updateFilterAmount: action,
-            updateValueType: action
+            updateValueType: action,
+            updateContentType: action
         });
     }
 
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            {
-                label: "url",
-                value: () => this.content.resource,
-                valueReference: (url: string) => this.updateImageURL(url),
-                type: "text"
-            },
-            {
-                label: "Alt-Text",
-                type: "text",
-                value: () => this.content.altText,
-                valueReference: (altText: string) => { this.updateAltText(altText) }
-            },
-            {
-                label: "Headline",
-                type: "textarea",
-                value: () => this.userDefinedProperties.text,
-                valueReference: (text: string) => { this.updateHeadline(text) }
-            },
-            {
-                label: "Headline width",
-                type: "hslider",
-                options: {
-                    min: 0,
-                    max: 100,
-                    formatter: (val: number) => `${val}%`
-                },
-                value: () => this.userDefinedProperties.headlineWidth,
-                valueReference: (headlineWidth: number) => this.updateHeadlineWidth(headlineWidth)
-            },
+            ...dropDownField(
+                this,
+                () => ["Image", "Video"],
+                () => this.userDefinedProperties.contentType,
+                (selection: string) => {
+                    Logger.info(selection);
+                    runInAction(() => this.contentType = selection), this.updateContentType(selection);
+                }
+            ),
+            new Text("URL", { placeHolder: "" }, () => this.content.resource, (url: string) => this.updateURL(url)), 
+            new Text("Alt-Text", { placeHolder: "describe your image precisely" }, () => this.content.altText, (text: string) => this.updateAltText(text)),
+            new Text("Headline", { placeHolder: "Enter a headline..." }, () => this.userDefinedProperties.text, (text: string) => this.updateHeadline(text)),
+            new Text("Maximum headline width", { placeHolder: "insert value in px, percent or vw" }, () => this.userDefinedProperties.headlineWidth, (text: string) => this.updateHeadlineWidth(text)),
             ...dropDownField(
                 this,
                 () => ["grayscale", "invert", "hue-rotate", "blur", "contrast"],
                 () => this.userDefinedProperties.filterType,
                 (selection: string) => {
-                    console.log(selection);
+                    Logger.info(selection);
                     runInAction(() => this.userDefinedProperties.filterType = selection), this.updateValueType();
                 }
             ),
-            {
-                label: "Filter Amount",
-                type: "hslider",
-                options: {
+            new HSlider(
+                "Filter Amount",
+                {
                     min: 0,
-                    max: 100,
+                    max: this.maxFilterAmount,
                     formatter: (val: number) => `${val}${this.userDefinedProperties.filterValue}`
                 },
-                value: () => this.userDefinedProperties.filterAmount,
-                valueReference: (filterAmount: number) => this.updateFilterAmount(filterAmount)
-            },
+                () => this.userDefinedProperties.filterAmount,
+                (filterAmount: number) => this.updateFilterAmount(filterAmount)
+            ),
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
+        if (this.contentType == "Video"){
+            ret.splice(3, 1,             
+                new CheckBox(
+                "Mute",
+                () => this.muted,
+                (sel: boolean) => {
+                    runInAction(() => this.muted = sel)
+            }), 
+            new CheckBox(
+                "Loop",
+                () => this.loop,
+                (sel: boolean) => {
+                    runInAction(() => this.loop = sel)
+            }),);
+        }
         return ret;
     }
 
-    public updateImageURL(newURL: string) {
+    public updateURL(newURL: string) {
         this.content.resource = newURL;
     }
 
@@ -138,32 +155,57 @@ class _HeroObject extends StoryObject {
         this.userDefinedProperties.text = text;
     }
 
-    public updateHeadlineWidth(headlineWidth: number) {
+    public updateHeadlineWidth(headlineWidth: string) {
         this.userDefinedProperties.headlineWidth = headlineWidth;
+    }
+
+    public updateValueType(){
+        if(this.userDefinedProperties.filterType === "hue-rotate"){
+            this.userDefinedProperties.filterValue = this.valueType.deg;
+            this.maxFilterAmount = this.variableFilterAmounts.degree;
+        } else if(this.userDefinedProperties.filterType === "blur"){
+            this.userDefinedProperties.filterValue = this.valueType.px;
+            this.maxFilterAmount = this.variableFilterAmounts.pixels;
+        } else {
+            this.userDefinedProperties.filterValue = this.valueType.percent;
+            this.maxFilterAmount = this.variableFilterAmounts.percent;
+        }
     }
 
     public updateFilterAmount(filterAmount: number) {
         this.userDefinedProperties.filterAmount = filterAmount;
     }
 
-    public updateValueType(){
-        if(this.userDefinedProperties.filterType === "hue-rotate"){
-            this.userDefinedProperties.filterValue = this.valueType.deg;
-        } else if(this.userDefinedProperties.filterType === "blur"){
-            this.userDefinedProperties.filterValue = this.valueType.px;
+    public updateContentType(newContentType: string) {
+        this.contentType = newContentType;
+        if(this.contentType === "Video"){
+            this.content.resource = "https://dl5.webmfiles.org/big-buck-bunny_trailer.webm";
         } else {
-            this.userDefinedProperties.filterValue = this.valueType.percent;
+            this.content.resource = "https://source.unsplash.com/random/1920x1080";
         }
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
-            return (
-                <div class="hero">
-                    <img src={content?.resource} alt={content?.altText} style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}></img>
-                    <h1 style={`width:${this.userDefinedProperties.headlineWidth}%`}>{this.userDefinedProperties.text}</h1>
-                </div>
-            );
+
+            const headline = <h1 style={`max-width:${this.userDefinedProperties.headlineWidth}`}>{this.userDefinedProperties.text}</h1>;
+            const image = <img src={content?.resource} 
+                               alt={content?.altText} 
+                               style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+                               ></img>
+            const video = <video autoPlay={true}
+                                 preload="preload"
+                                //  autobuffer="autobuffer"
+                                 muted={this.muted} 
+                                 loop={this.loop} 
+                                 src={content?.resource} 
+                                 style={`filter:${this.userDefinedProperties.filterType}(${this.userDefinedProperties.filterAmount}${this.userDefinedProperties.filterValue});`}
+                                 ></video>                   
+
+            return <div class="hero">
+                {this.contentType == "Video" ? video : image}
+                {headline}
+            </div>
         }
         return Comp
     }
@@ -173,7 +215,9 @@ class _HeroObject extends StoryObject {
     }
 }
 
-createModelSchema(_HeroObject, {})
+createModelSchema(_HeroObject, {
+    content: object(ContentSchema)
+})
 
 export const plugInExport = exportClass(
     _HeroObject,

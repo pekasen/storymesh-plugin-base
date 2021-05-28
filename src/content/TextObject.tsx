@@ -1,14 +1,20 @@
-import { FunctionalComponent, FunctionComponent, h } from "preact";
-import { MenuTemplate } from "preact-sidebar";
+import { FunctionComponent, h } from "preact";
+import { action, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
-import { action, makeObservable, observable, runInAction } from 'mobx';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { createModelSchema } from 'serializr';
-
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
-import { INGWebSProps } from "../helpers/INGWebSProps";
+import { createModelSchema, list, map, ModelSchema, object, optional, primitive } from 'serializr';
+import Delta from "quill-delta";
+import { MenuTemplate, RichText } from "preact-sidebar";
+import { convertDeltaToHtml } from 'node-quill-converter';
+import Op from "quill-delta/dist/Op";
+
+interface ITextObjectContent {
+    resource: Delta
+    altText: string
+    contentType: "text"
+}
 
 /**
  * Our first little dummy PlugIn
@@ -23,7 +29,7 @@ class _TextObject extends StoryObject {
     public userDefinedProperties: {
         tag: string
     };
-    public content: IContent;
+    public content: ITextObjectContent;
     public childNetwork?: StoryGraph | undefined;
     public icon: string;
     public static defaultIcon = "icon-newspaper";
@@ -40,7 +46,7 @@ class _TextObject extends StoryObject {
         };
         this.makeDefaultConnectors();
         this.content = {
-            resource: "Type here...",
+            resource: new Delta(),
             altText: "empty",
             contentType: "text"
         };
@@ -62,21 +68,22 @@ class _TextObject extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            {
-                label: "Content",
-                type: "textarea",
-                value: () => this.content.resource,
-                valueReference: (text: string) => {this.updateText(text)}
-            },
-            ...dropDownField(
-                this,
-                () => ["h1", "h2", "h3", "b", "p"],
-                () => this.userDefinedProperties.tag,
-                (selection: string) => {
-                    console.log(selection);
-                    runInAction(() => this.userDefinedProperties.tag = selection);
-                }
-            ),
+            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg)),
+            // {
+            //     label: "Content",
+            //     type: "textarea",
+            //     value: () => this.content.resource,
+            //     valueReference: (text: string) => {this.updateText(text)}
+            // },
+            //...dropDownField(
+            //    this,
+            //    () => ["h1", "h2", "h3", "b", "p"],
+            //    () => this.userDefinedProperties.tag,
+            //    (selection: string) => {
+            //        Logger.info(selection);
+            //        runInAction(() => this.userDefinedProperties.tag = selection);
+            //    }
+            //),
             ...connectionField(this)
         ];
         if (super.menuTemplate) ret.push(...super.menuTemplate);
@@ -94,43 +101,61 @@ class _TextObject extends StoryObject {
         this.name = newValue;
     }
 
-    public updateText(text: string) {
+    public updateText(text: Delta) {
         if (this.content) this.content.resource = text;
     }
 
-    public getComponent() {
+    public getComponent() {    
         const Comp: FunctionComponent<INGWebSProps> = (args => {
-            console.log("rendering", args);
-
-            const elemMap = new Map<string, FunctionalComponent>([
-                ["h1", ({children, ...props}) => (<h1 {...props}>{children}</h1>)],
-                ["h2", ({children, ...props}) => (<h2 {...props}>{children}</h2>)],
-                ["h3", ({children, ...props}) => (<h3 {...props}>{children}</h3>)],
-                ["b", ({children, ...props}) => (<b {...props}>{children}</b>)],
-                ["p", ({children, ...props}) => (<p {...props}>{children}</p>)],
-            ]);
-            let Elem: FunctionalComponent | undefined;
-
-            if (args.userDefinedProperties && args.userDefinedProperties.tag) {
-                Elem = elemMap.get(args.userDefinedProperties.tag);
-            }
-            if (!Elem) {
-                Elem = ({children, ...props}) => (<p {...props}>{children}</p>)
-            }
-            const p = <Elem>{args.content?.resource}</Elem>;
-            p.props.contenteditable = true;
-            
+            let p: h.JSX.Element;
+            // TODO: is that supposed to be like that?
+            p = <span dangerouslySetInnerHTML={{ __html: convertDeltaToHtml(new Delta(args.content?.resource as unknown as Op[])) as string}} />
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));
             }, p);
         });
+
         return Comp
     }
 }
 
+const AttributeSchema: ModelSchema<any> = {
+    factory: () => ({}),
+    props: {
+        "*": true
+    }
+}
+
+const OpSchema: ModelSchema<Op> = {
+    factory: () => ({}),
+    props: {
+        insert: optional(primitive()),
+        delete: optional(primitive()),
+        retain: optional(primitive()),
+        attributes: optional(object(AttributeSchema))
+    }
+};
+
+createModelSchema(Delta, {
+    ops: list(object(OpSchema))
+});
+
+const TextContentSchema: ModelSchema<ITextObjectContent> = {
+    factory: () => ({
+        resource: new Delta(),
+        altText: "",
+        contentType: "text"
+    }),
+    props: {
+        resource: object(Delta),
+        altText: primitive(),
+        contentType: primitive()
+    }
+}
+
 createModelSchema(_TextObject,{
-    
-})
+    content: object(TextContentSchema)
+});
 
 export const plugInExport = exportClass(
     _TextObject,

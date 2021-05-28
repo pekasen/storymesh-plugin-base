@@ -4,7 +4,7 @@ import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
-import { MenuTemplate } from "preact-sidebar";
+import { Button, HSlider, MenuTemplate, Table } from "preact-sidebar";
 
 import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 

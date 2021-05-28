@@ -1,12 +1,16 @@
 {
   "devDependencies": {
+    "@types/uuid": "^8.3.0",
+    "serializr": "^2.0.5",
     "tslib": "^2.2.0",
     "typescript": "^4.3.2"
   },
   "dependencies": {
     "mobx": "^6.3.2",
     "preact": "^10.5.13",
-    "serializer": "^0.0.3",
+    "preact-sidebar": "file:../preact-sidebar",
+    "storygraph": "file:../storygraph",
+    "storymesh-plugin-support": "file:../storymesh-plugin-support",
     "uuid": "^8.3.2"
   }
 }

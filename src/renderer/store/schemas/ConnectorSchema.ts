@@ -26,4 +26,4 @@ export const ConnectorSchema = createModelSchema(ConnectorPort, {
             else return new ReactionConnectorOutPort("reaction-out");
     }
     return new ConnectorPort("flow", "in");
-})
+});

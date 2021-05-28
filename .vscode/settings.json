@@ -1,7 +1,0 @@
-{
-    "eslint.alwaysShowStatus": true,
-    "eslint.lintTask.enable": true,
-    "eslint.validate": [
-        "typescript", "typescriptreact"
-    ]
-}

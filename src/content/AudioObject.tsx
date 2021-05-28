@@ -1,15 +1,16 @@
 import { createRef, FunctionComponent, h } from "preact";
-import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { createModelSchema, object, primitive } from 'serializr';
+import { useRef, useState, useEffect } from "preact/hooks";
+import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
 import { StoryGraph } from 'storygraph';
+
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema, object, primitive } from 'serializr';
-import { useRef, useState, useEffect } from "preact/hooks";
-import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
 import { ContentSchema } from "../../renderer/store/schemas/ContentSchema";
+import { INGWebSProps } from "../helpers/INGWebSProps";
 
 /**
  */

@@ -27,6 +27,7 @@ class VideoObject extends StoryObject {
     public autoPlay: boolean = false;
     public loopable: boolean = false;
     public scrollable: boolean = false;
+    public setAsContainerBackground: boolean = false;
     public muted: boolean = false;
     public scrollThroughSpeed: number = 100;
     public static defaultIcon = "icon-video";  
@@ -66,7 +67,8 @@ class VideoObject extends StoryObject {
             playbackControls:       observable,
             loopable:               observable,
             scrollable:             observable,
-            muted:             observable,
+            setAsContainerBackground: observable,
+            muted:                  observable,
             scrollThroughSpeed:     observable,
             connectors:             computed,
             menuTemplate:           computed,
@@ -79,21 +81,23 @@ class VideoObject extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateVideoURL(arg)),
+            new Text("URL", {defaultValue: ""}, 
+                () => this.content.resource, 
+                (arg: string) => this.updateVideoURL(arg)),
             new CheckBox(
-                "show Controls",
+                "Show Controls",
                 () => this.playbackControls,
                 (sel: boolean) => {
                     runInAction(() => this.playbackControls = sel)
             }),           
             new CheckBox(
-                "enable AutoPlay",
+                "Enable AutoPlay",
                 () => this.autoPlay,
                 (sel: boolean) => {
                     runInAction(() => this.autoPlay = sel)
             }),
             new CheckBox(
-                "enable Looping",
+                "Enable Looping",
                 () => this.loopable,
                 (sel: boolean) => {
                     runInAction(() => this.loopable = sel)
@@ -105,10 +109,16 @@ class VideoObject extends StoryObject {
                     runInAction(() => this.muted = sel)
             }),
             new CheckBox(
-                "make Scrollable",
+                "Make Scrollable",
                 () => this.scrollable,
                 (sel: boolean) => {
                     runInAction(() => this.updateScrollable(sel))
+            }),
+            new CheckBox(
+                "Set as container background",
+                () => this.setAsContainerBackground,
+                (sel: boolean) => {
+                    runInAction(() => this.setAsContainerBackground = sel)
             }),
             new HSlider(
                 "Scroll-through speed",
@@ -153,7 +163,7 @@ class VideoObject extends StoryObject {
             }      
         }       
     }
-    
+
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
             const [, setState] = useState({});    

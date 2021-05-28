@@ -108,6 +108,7 @@ export class Branch extends StoryObject {
     }
 
     public removeConnector(connector: FlowConnectorOutPort) {
+        this.logger.warn("Removing connector", this);
         const index = this._outConnectors.map(e => e[0]).indexOf(connector);
         if (index !== -1) {
             this._outConnectors.splice(index, 1);

@@ -2,7 +2,7 @@ import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
 import { exportClass } from '../helpers/exportClass';
 import { ConnectorPort, IConnectorPort, IEdge } from 'storygraph';
-import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
+import { MenuTemplate } from "preact-sidebar";
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { makeObservable, observable, action } from 'mobx';
@@ -40,8 +40,8 @@ export class OutputConnectorView extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             ...connectionField(this)
         ];

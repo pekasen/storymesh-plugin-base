@@ -1,5 +1,6 @@
 import { FunctionComponent, h } from "preact";
-import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { MenuTemplate } from "preact-sidebar";
+import { INGWebSProps } from "../helpers/INGWebSProps";
 
 import { action, computed, makeObservable, observable } from 'mobx';
 import { FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
@@ -55,8 +56,8 @@ class _Spacer extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             {
                 label: "Vertical Space",

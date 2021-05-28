@@ -1,19 +1,23 @@
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
-import { createModelSchema, object } from 'serializr';
-import { exportClass } from '../helpers/exportClass';
-import { FunctionComponent, h } from "preact";
-import { InputConnectorView } from "./InputConnectorView";
-import { IPlugIn, INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
+import {  MenuTemplate } from "preact-sidebar";
+import { PlugIn, VReg } from "storymesh-plugin-support";
 import { makeObservable, observable, action, computed } from 'mobx';
-import { MoveableItem } from "../../renderer/store/MoveableItem";
-import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
-import { OutputConnectorView } from "./OutputConnectorView";
+import { createModelSchema, object } from 'serializr';
+import { FunctionComponent, h } from "preact";
 import { IStoryObject, StoryGraph } from 'storygraph';
-import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
-import { UIStore } from "../../renderer/store/UIStore";
-import { AbstractStoryModifier } from '../helpers/AbstractModifier';
 
+import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
+import { InputConnectorView } from "./InputConnectorView";
+import { OutputConnectorView } from "./OutputConnectorView";
+
+import { MoveableItem } from "../../renderer/store/MoveableItem";
+import { UIStore } from "../../renderer/store/UIStore";
+
+import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { exportClass } from '../helpers/exportClass';
+import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
+import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
+import { AbstractStoryModifier } from '../helpers/AbstractModifier';
+import { INGWebSProps } from "../helpers/INGWebSProps";
 /**
  * Our second little dummy PlugIn
  * 
@@ -69,7 +73,7 @@ export class Container extends StoryObject {
                     {
                         path.map(node => {
                             // const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
-                            const _node = node as AbstractStoryObject & IPlugIn;
+                            const _node = node as AbstractStoryObject & PlugIn;
                             if (_node.getComponent) {
                                 const Comp = _node.getComponent();
                                 return <Comp
@@ -166,7 +170,7 @@ export class Container extends StoryObject {
         // </div>
     }
 
-    public setup(registry: IRegistry, uistate: UIStore): void {
+    public setup(registry: VReg, uistate: UIStore): void {
         this.startNode = new InputConnectorView();
         this.endNode = new OutputConnectorView();
 
@@ -178,8 +182,8 @@ export class Container extends StoryObject {
         this.endNode.setup(this.id, registry);
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             ...dropDownField(
                 this,

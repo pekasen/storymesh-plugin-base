@@ -1,9 +1,10 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, object, primitive } from "serializr";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-import { exportClass } from "../../helpers/exportClass";
-import { CSSModifier, CSSModifierData, CSSStatement } from "../../helpers/CSSModifier";
 import { IConnectorPort, ModifierType } from "storygraph";
+import { MenuTemplate } from "preact-sidebar";
+
+import { exportClass } from "../helpers/exportClass";
+import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
 
 interface IGridContainerInlineStatements extends CSSStatement {
     "grid-gap": string;
@@ -51,7 +52,7 @@ export class CSSGridContainerModifier extends CSSModifier {
         })
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
+    public get menuTemplate(): MenuTemplate[] {
         return [
             ...super.menuTemplate,
             // {

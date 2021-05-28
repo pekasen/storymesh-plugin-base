@@ -1,19 +1,24 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
-import { action, computed, makeObservable, observable } from 'mobx';
-import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ReactionConnectorOutPort, ReactionConnectorInPort, ConnectorPort } from 'storygraph';
+import { action, makeObservable, observable } from 'mobx';
+import { MenuTemplate } from "preact-sidebar";
+import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
-import { IPlugIn, IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
+
 import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, map, object, optional, primitive, serialize } from 'serializr';
+import { AbstractStoryModifier } from "./AbstractModifier";
+
+import { IEdgeEvent } from "storygraph/dist/StoryGraph/IEdgeEvent";
+import { NotificationCenter, INotificationData } from "storygraph/dist/StoryGraph/NotificationCenter";
+
+import { EdgeSchema } from "../../renderer/store/schemas/EdgeSchema";
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { UserDefinedPropertiesSchema } from '../../renderer/store/schemas/UserDefinedPropertiesSchema';
 import { MetaDataSchema } from '../../renderer/store/schemas/MetaDataSchema';
 import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
-import { rootStore } from '../../renderer';
-import { AbstractStoryModifier } from "./AbstractModifier";
-import { IEdgeEvent } from "storygraph/dist/StoryGraph/IEdgeEvent";
-import { NotificationCenter, INotificationData } from "storygraph/dist/StoryGraph/NotificationCenter";
-import { EdgeSchema } from "../../renderer/store/schemas/EdgeSchema";
-import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
+
+import { INGWebSProps } from "./INGWebSProps";
+import { PReg } from "storymesh-plugin-support";
 
 /**
  * Our second little dummy PlugIn
@@ -150,13 +155,13 @@ export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
         if (this.childNetwork) this.childNetwork.willDeregister(registry)
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [];
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [];
         if (this.modifiers.length !== 0) {
             ret.push(
                 ...this.modifiers.
                 map(e => e.menuTemplate).
-                reduce((p: IMenuTemplate[], e: IMenuTemplate[]) => (p.concat(...e)))
+                reduce((p: MenuTemplate[], e: MenuTemplate[]) => (p.concat(...e)))
             );
         }
         return ret;
@@ -227,6 +232,7 @@ export class StoryObject extends AbstractStoryObject {
 export const StoryObjectSchema = createModelSchema(StoryObject, {
     id: identifier(
         (id: string, obj) => {
+            // TODO: loading from deserialized JSON should be handled in the original VReg
             const reg = rootStore._loadingCache;
             console.log("registering @valuecache", obj,reg.set(id, obj))
         }
@@ -247,7 +253,7 @@ export const StoryObjectSchema = createModelSchema(StoryObject, {
             return serialize(schema, value);
         },
         (jsonValue, context, callback) => {
-            const instance = rootStore.root.pluginStore.getNewInstance(jsonValue.role);
+            const instance = PReg.instance().get(jsonValue.role);
             if (!instance) throw("Big time failure !!11 while fetching schema for" + jsonValue.role);
             console.log("getting schema for", instance.constructor.name);
             const _schema = getDefaultModelSchema(instance.constructor);

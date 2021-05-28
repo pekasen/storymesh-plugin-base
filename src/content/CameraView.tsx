@@ -1,7 +1,7 @@
 import { DataConnectorInPort, DataConnectorOutPort, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
-import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry';
+import { MenuTemplate } from "preact-sidebar";
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { action, makeObservable, observable } from 'mobx';

@@ -1,5 +1,5 @@
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-
+import { MenuTemplate } from "preact-sidebar";
+// TODO: is this depreacated and can be removed?
 export interface IMenuItemRenderer {
-    render(item: IMenuTemplate): preact.JSX.Element;
+    render(item: MenuTemplate): preact.JSX.Element;
 }

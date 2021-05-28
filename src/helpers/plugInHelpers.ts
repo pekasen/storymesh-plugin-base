@@ -1,4 +1,4 @@
-import { IMenuTemplate } from '../../renderer/utils/PlugInClassRegistry'
+import { MenuTemplate } from "preact-sidebar";
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 import { AbstractStoryObject } from './AbstractStoryObject';
 import { ConnectorDirection, ConnectorPort, ConnectorType } from 'storygraph';
@@ -16,7 +16,7 @@ interface IConnectorMethods {
     removeConnector: (port: ConnectorPort) => void
 }
 
-export function connectionField(target: AbstractStoryObject & IDefaultFieldsMethods): IMenuTemplate[] {
+export function connectionField(target: AbstractStoryObject & IDefaultFieldsMethods): MenuTemplate[] {
     return [
         {
             label: "Connections",
@@ -31,7 +31,7 @@ export function connectionField(target: AbstractStoryObject & IDefaultFieldsMeth
     ]
 }
 
-export function addConnectionPortField(target: AbstractStoryObject & IConnectorMethods): IMenuTemplate[] {
+export function addConnectionPortField(target: AbstractStoryObject & IConnectorMethods): MenuTemplate[] {
     return [
         {
             label: "Add Port",
@@ -46,7 +46,7 @@ export function addConnectionPortField(target: AbstractStoryObject & IConnectorM
     ]
 }
 
-export function nameField(target: AbstractStoryObject & INameFieldMethods): IMenuTemplate[] {
+export function nameField(target: AbstractStoryObject & INameFieldMethods): MenuTemplate[] {
     return [
         {
             label: "Name",
@@ -62,7 +62,7 @@ export function dropDownField(
     options: () => string[], //  = ["h1", "h2", "h3", "p", "b"]
     value: () => string,
     handler: (selection: string) => void
-    ) : IMenuTemplate[] {
+    ) : MenuTemplate[] {
     return [
         {
             label: "Style",

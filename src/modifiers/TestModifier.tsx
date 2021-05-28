@@ -1,9 +1,10 @@
 import { h } from "preact";
 import { createModelSchema, object } from "serializr";
 import { IConnectorPort, ReactionConnectorInPort } from "storygraph";
-import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
+
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 export class TestModifier extends HMTLModifier {
 
     public name = "Transition"

@@ -1,13 +1,14 @@
 import { FunctionComponent, h } from "preact";
-import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-import { runInAction } from "mobx";
-import { action, makeObservable, observable } from 'mobx';
+import { MenuTemplate } from "preact-sidebar";
+import { action, makeObservable, observable, runInAction } from 'mobx';
 import { StoryGraph } from 'storygraph';
+import { createModelSchema } from 'serializr';
+
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
+import { INGWebSProps } from "../helpers/INGWebSProps";
 
 class _HeroObject extends StoryObject {
     public name: string;
@@ -63,8 +64,8 @@ class _HeroObject extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             {
                 label: "url",

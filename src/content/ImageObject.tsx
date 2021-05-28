@@ -1,14 +1,15 @@
 import { FunctionComponent, h } from "preact";
-import { INGWebSProps, IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-
+import { MenuTemplate } from "preact-sidebar";
+import { createModelSchema } from 'serializr';
+import { useState } from "preact/hooks";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
-import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
+
+import { INGWebSProps } from "../helpers/INGWebSProps";
+import { StoryObject } from '../helpers/AbstractStoryObject';
 import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
-import { useEffect, useState } from "preact/hooks";
 
 /**
  * Our first little dummy PlugIn
@@ -55,8 +56,8 @@ class _ImageObject extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             {
                 label: "url",

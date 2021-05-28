@@ -1,13 +1,14 @@
 import { FunctionalComponent, FunctionComponent, h } from "preact";
-import { runInAction } from "mobx";
-import { IMenuTemplate, INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
-import { action, makeObservable, observable } from 'mobx';
+import { MenuTemplate } from "preact-sidebar";
 import { StoryGraph } from 'storygraph';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
+import { createModelSchema } from 'serializr';
+
 import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { exportClass } from '../helpers/exportClass';
-import { createModelSchema } from 'serializr';
+import { INGWebSProps } from "../helpers/INGWebSProps";
 
 /**
  * Our first little dummy PlugIn
@@ -58,8 +59,8 @@ class _TextObject extends StoryObject {
         });
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
-        const ret: IMenuTemplate[] = [
+    public get menuTemplate(): MenuTemplate[] {
+        const ret: MenuTemplate[] = [
             ...nameField(this),
             {
                 label: "Content",

@@ -1,10 +1,10 @@
 import { action, makeObservable, observable } from "mobx";
 import { h } from "preact";
 import { createModelSchema } from "serializr";
-import { IConnectorPort, IStoryModifier, ModifierType } from "storygraph";
 import { v4 } from "uuid";
-import { rootStore } from "../../renderer";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { MenuTemplate } from "preact-sidebar";
+import { IConnectorPort, IStoryModifier, ModifierType } from "storygraph";
+import { VReg } from "storymesh-plugin-support";
 
 function isStoryModifierType(type: string): boolean {
     const modifierTypes = ["css-class", "css-inline", "css-hybrid"];
@@ -19,7 +19,7 @@ export abstract class AbstractStoryModifier implements IStoryModifier {
     public abstract type: ModifierType;
     public abstract role: string;
     public abstract parent?: string;
-    public abstract get menuTemplate(): IMenuTemplate[];
+    public abstract get menuTemplate(): MenuTemplate[];
     public abstract get getRenderingProperties(): any;
     public abstract modify(element: h.JSX.Element): h.JSX.Element;
 
@@ -29,7 +29,7 @@ export abstract class AbstractStoryModifier implements IStoryModifier {
 
     public deleteMe(): void {
         if (this.parent) {
-            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            const _parent = VReg.instance().get(this.parent);
             if (_parent) {
                 _parent.removeModifier(this);
             }
@@ -48,7 +48,7 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
     public role = "";
     public parent: string | undefined;
     
-    public get menuTemplate(): IMenuTemplate[] {
+    public get menuTemplate(): MenuTemplate[] {
         return [
             {
                 label: "Name",
@@ -135,7 +135,7 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
 
     public arrayPosUp(): void {
         if (this.parent) {
-            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            const _parent = VReg.instance().get(this.parent);
             if (_parent) {
                 _parent.removeModifier(this);
             }
@@ -144,7 +144,7 @@ export class ObservableStoryModifier<T> extends AbstractStoryModifier {
     
     public arrayPosDown(): void {
         if (this.parent) {
-            const _parent = rootStore.root.storyContentObjectRegistry.getValue(this.parent);
+            const _parent = VReg.instance().get(this.parent);
             if (_parent) {
                 _parent.removeModifier(this);
             }

@@ -2,10 +2,11 @@ import { action, makeObservable, observable, runInAction } from "mobx";
 import { Component, createRef, h, RefObject } from "preact";
 import { createModelSchema, list, object } from "serializr";
 import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
-import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
 import { exportClass } from "../helpers/exportClass";
 import { HMTLModifier } from "../helpers/HTMLModifier";
+import { MenuTemplate } from "preact-sidebar";
+
+import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
 
 export class HotSpot {
     protected _name: string | undefined;    
@@ -189,7 +190,7 @@ export class HTMLHotSpotModifier extends HMTLModifier {
         )
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
+    public get menuTemplate(): MenuTemplate[] {
         return [
             ...super.menuTemplate,
             {

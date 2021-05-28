@@ -1,6 +1,6 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, map, object, primitive } from "serializr";
-import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
+import { MenuTemplate } from "preact-sidebar";
 import { exportClass } from "../helpers/exportClass";
 import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
 import { IConnectorPort, ModifierType } from "storygraph";
@@ -74,7 +74,7 @@ export class CSSGriditemModifier extends CSSModifier {
         })
     }
 
-    public get menuTemplate(): IMenuTemplate[] {
+    public get menuTemplate(): MenuTemplate[] {
         return [
             ...super.menuTemplate,
             // {
@@ -121,7 +121,7 @@ export class CSSGriditemModifier extends CSSModifier {
         return super.getRenderingProperties;
     }
 
-    private makeSlider(key: Size): IMenuTemplate {
+    private makeSlider(key: Size): MenuTemplate {
         return {
             label: key + " Width",
             value: () => this.data.classMap.get(key),

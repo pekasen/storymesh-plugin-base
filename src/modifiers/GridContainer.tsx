@@ -1,8 +1,8 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, object, primitive } from "serializr";
 import { IMenuTemplate } from "../../renderer/utils/PlugInClassRegistry";
-import { exportClass } from "../helpers/exportClass";
-import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
+import { exportClass } from "../../helpers/exportClass";
+import { CSSModifier, CSSModifierData, CSSStatement } from "../../helpers/CSSModifier";
 import { IConnectorPort, ModifierType } from "storygraph";
 
 interface IGridContainerInlineStatements extends CSSStatement {

@@ -1,8 +1,9 @@
-import {  MenuTemplate } from "preact-sidebar";
+import { FunctionComponent, h } from "preact";
+import { useState, useEffect } from "preact/hooks";
+import {  ColorPicker, DropDown, MenuTemplate, Text } from "preact-sidebar";
 import { PlugIn, VReg } from "storymesh-plugin-support";
 import { makeObservable, observable, action, computed } from 'mobx';
 import { createModelSchema, object } from 'serializr';
-import { FunctionComponent, h } from "preact";
 import { IStoryObject, StoryGraph } from 'storygraph';
 
 import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
@@ -12,10 +13,10 @@ import { OutputConnectorView } from "./OutputConnectorView";
 import { MoveableItem } from "../../renderer/store/MoveableItem";
 import { UIStore } from "../../renderer/store/UIStore";
 
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
+import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { exportClass } from '../helpers/exportClass';
 import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
-import { AbstractStoryObject, StoryObject } from "../helpers/AbstractStoryObject";
+import { StoryObject } from "../helpers/AbstractStoryObject";
 import { AbstractStoryModifier } from '../helpers/AbstractModifier';
 import { INGWebSProps } from "../helpers/INGWebSProps";
 /**
@@ -95,7 +96,7 @@ export class Container extends StoryObject {
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
             if (this.startNode) {
-                const startNode = registry.getValue(this.startNode);
+                const startNode = registry.get(this.startNode);
                 if (!startNode) throw("BIG ERROR");
                 
                 path = graph?.traverse(registry, this.startNode, Array.from(startNode.connectors)[0][1].id)

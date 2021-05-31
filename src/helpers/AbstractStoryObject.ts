@@ -1,7 +1,7 @@
 import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
-import { MenuTemplate } from "preact-sidebar";
+import { Card, MenuTemplate } from "preact-sidebar";
 import { StoryObject as StoryObject0, StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 

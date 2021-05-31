@@ -9,6 +9,7 @@ import Delta from "quill-delta";
 import { MenuTemplate, RichText } from "preact-sidebar";
 import { convertDeltaToHtml } from 'node-quill-converter';
 import Op from "quill-delta/dist/Op";
+import { INGWebSProps } from "../helpers/INGWebSProps";
 
 interface ITextObjectContent {
     resource: Delta

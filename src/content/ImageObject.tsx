@@ -1,6 +1,6 @@
 import { FunctionComponent, h } from "preact";
-import { MenuTemplate } from "preact-sidebar";
-import { createModelSchema } from 'serializr';
+import { MenuTemplate, Text } from "preact-sidebar";
+import { createModelSchema, object } from 'serializr';
 import { useState } from "preact/hooks";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';

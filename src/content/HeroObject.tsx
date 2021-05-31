@@ -1,8 +1,8 @@
 import { FunctionComponent, h } from "preact";
-import { MenuTemplate } from "preact-sidebar";
+import { CheckBox, HSlider, MenuTemplate, Text } from "preact-sidebar";
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import { StoryGraph } from 'storygraph';
-import { createModelSchema } from 'serializr';
+import { createModelSchema, object } from 'serializr';
 
 import { StoryObject } from '../helpers/AbstractStoryObject';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';

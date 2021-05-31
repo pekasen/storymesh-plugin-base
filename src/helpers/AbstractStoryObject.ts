@@ -2,7 +2,7 @@ import { FunctionComponent } from "preact";
 import { v4 } from "uuid";
 import { action, makeObservable, observable } from 'mobx';
 import { MenuTemplate } from "preact-sidebar";
-import { StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ConnectorPort } from 'storygraph';
+import { StoryObject as StoryObject0, StoryGraph, IStoryObject, IConnectorPort, IEdge, IMetaData, IRenderingProperties, FlowConnectorInPort, FlowConnectorOutPort, DataConnectorInPort, ConnectorPort } from 'storygraph';
 import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
 
 import { createModelSchema, custom, deserialize, getDefaultModelSchema, identifier, list, map, object, optional, primitive, serialize } from 'serializr';
@@ -19,6 +19,7 @@ import { ContentSchema } from '../../renderer/store/schemas/ContentSchema';
 
 import { INGWebSProps } from "./INGWebSProps";
 import { PReg } from "storymesh-plugin-support";
+import { Logger } from "js-logger";
 
 /**
  * Our second little dummy PlugIn
@@ -26,41 +27,48 @@ import { PReg } from "storymesh-plugin-support";
  * 
  */
 // @
-export abstract class AbstractStoryObject implements IPlugIn, IStoryObject{
+export class StoryObject extends StoryObject0 implements IPlugIn {
+    
+    public id: string = v4();
+    public metaData: IMetaData = {
+        createdAt: new Date(Date.now()),
+        name: "NGWebS default user",
+        tags: []
+    };
+    public renderingProperties: IRenderingProperties = {
+        width: 100,
+        order: 1,
+        collapsable: false
+    };
+    public subscriptions = [
+        {
+            id: this.id+"/rerender",        // notificationCenter.subscribe(this.id+"/rerender"
+            hook: () => {
+                if (this._rerender !== undefined) this._rerender();
+            }
+        },
+    ];
+    public connections: IEdge[] = [];
+    public modifiers: AbstractStoryModifier[] = [];
+    public deletable: boolean = true;
+    public logger: ILogger = Logger.get(this.id);
 
-    public id: string;
-    public metaData: IMetaData;
-    public connections: IEdge[];
+    public name!: string;
+    public role!: string;
     public parent?: string;
-    public renderingProperties: IRenderingProperties;
-    public modifiers: AbstractStoryModifier[];
-    public deletable: boolean;
-    public abstract name: string;
-    public abstract role: string;
-    public abstract isContentNode: boolean;
-    public abstract userDefinedProperties: any;
-    public abstract childNetwork?: StoryGraph;
-    public abstract icon: string
-    public abstract content?: any;
+    public icon!: string;
+    public isContentNode!: boolean;
+    public notificationCenter?: NotificationCenter;
+    public childNetwork?: StoryGraph | undefined;
+    public content?: any;
+    public userDefinedProperties: any;
+
     protected _connectors = new Map<string, IConnectorPort>();
     protected _rerender?: (() => void);
-    
-    constructor() {
-        this.id = v4();
-        this.renderingProperties = {
-            width: 100,
-            order: 1,
-            collapsable: false
-        };
-        this.modifiers = [];
-        this.connections = [];
-        this.metaData = {
-            createdAt: new Date(Date.now()),
-            name: "NGWebS default user",
-            tags: []
-        };
-        this.deletable = true;
 
+    constructor() {
+        super();
+        
         makeObservable(this, {
             id: false,
             metaData:               observable,

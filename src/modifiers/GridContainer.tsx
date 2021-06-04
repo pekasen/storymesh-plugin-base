@@ -1,11 +1,7 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, object, primitive } from "serializr";
 import { HSlider, MenuTemplate } from "preact-sidebar";
-import { IConnectorPort, ModifierType } from "storygraph";
-
-import { exportClass } from "../helpers/exportClass";
-import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
-
+import { IConnectorPort, ModifierType, exportClass, CSSModifier, CSSModifierData, CSSStatement } from "storygraph";
 interface IGridContainerInlineStatements extends CSSStatement {
     "grid-gap": string;
 }

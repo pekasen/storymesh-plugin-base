@@ -1,5 +1,5 @@
 import { Container } from "./Container";
-import { exportClass } from "../helpers/exportClass";
+import { exportClass } from "storygraph";
 
 export class Story extends Container {
     role = "internal.content.story";

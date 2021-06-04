@@ -1,13 +1,8 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { Component, createRef, h } from "preact";
-import { createModelSchema, list, object } from "serializr";
-import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
-import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
+import { createModelSchema, object } from "serializr";
+import { dropDownField, nameField, HTMLModifier, exportClass, ConnectorSchema, ReactionConnectorOutPort, IConnectorPort } from "storygraph";
 import { MenuTemplate } from "preact-sidebar";
-import { exportClass } from "../helpers/exportClass";
-import { HMTLModifier } from "../helpers/HTMLModifier";
-import { dropDownField, nameField } from "../helpers/plugInHelpers";
-
 export class InteractionModifier {
     protected _name: string | undefined;
     public reactionOut = new ReactionConnectorOutPort("reaction-out");
@@ -66,7 +61,7 @@ class WrapperComponent extends Component<IHTMLInteractionModifierProperties> {
     }
 }
 
-export class HTMLInteractionModifier extends HMTLModifier {
+export class HTMLInteractionModifier extends HTMLModifier {
     public name = "Interaction"
     public role = "internal.modifier.InteractionModifier";
     public data = new InteractionModifierData();

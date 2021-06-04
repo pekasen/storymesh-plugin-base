@@ -3,15 +3,11 @@ import { h } from "preact";
 import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
-import { IConnectorPort, ReactionConnectorInPort } from "storygraph";
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
-import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
-import { exportClass } from "../helpers/exportClass";
-import { HMTLModifier } from "../helpers/HTMLModifier";
-import { HSlider, MenuTemplate, Text, CheckBox, ColorPicker, Divider, DropDown } from "preact-sidebar";
+import { HTMLModifier, exportClass, IConnectorPort, ReactionConnectorInPort, ConnectorSchema, dropDownField, nameField } from "storygraph";
+import { HSlider, MenuTemplate, CheckBox, Divider } from "preact-sidebar";
 import { createUseStyles } from 'preact-jss-hook';
 
-export class FilterModifier extends HMTLModifier {
+export class FilterModifier extends HTMLModifier {
 
     public name: string = "Filter";
     public role: string = "internal.modifier.filter";

@@ -1,10 +1,6 @@
-import { StoryObject } from "../helpers/AbstractStoryObject";
 import { h } from "preact";
-import { exportClass } from '../helpers/exportClass';
-import { ConnectorPort, IConnectorPort, IEdge } from 'storygraph';
+import { connectionField, IRegistry, nameField, exportClass, StoryObject, ConnectorPort, IConnectorPort, IEdge } from 'storygraph';
 import { MenuTemplate } from "preact-sidebar";
-import { IRegistry } from 'storygraph/dist/StoryGraph/IRegistry';
-import { connectionField, nameField } from '../helpers/plugInHelpers';
 import { makeObservable, observable, action } from 'mobx';
 import { createModelSchema } from 'serializr';
 import { Container } from "./Container";
@@ -73,7 +69,7 @@ export class OutputConnectorView extends StoryObject {
 
     private updateConnectors(): void {
         if (!this.parent) return;
-        const parentNode = this.registry?.getValue(this.parent) as Container;
+        const parentNode = this.registry?.get(this.parent) as Container;
         if (!parentNode) return;
         parentNode.connectors.forEach((connector) => {
             const _conn = (connector as ConnectorPort);

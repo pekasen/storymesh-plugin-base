@@ -1,9 +1,7 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, map, object, primitive } from "serializr";
 import { HSlider, MenuTemplate } from "preact-sidebar";
-import { exportClass } from "../helpers/exportClass";
-import { CSSModifier, CSSModifierData, CSSStatement } from "../helpers/CSSModifier";
-import { IConnectorPort, ModifierType } from "storygraph";
+import { IConnectorPort, ModifierType, CSSModifier, exportClass, CSSModifierData, CSSStatement } from "storygraph";
 
 interface IGridItemInlineStatements extends CSSStatement {
     "grid-row": string;

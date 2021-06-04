@@ -1,15 +1,8 @@
 import { FunctionComponent, h } from "preact";
 import { CheckBox, HSlider, MenuTemplate, Text } from "preact-sidebar";
 import { action, makeObservable, observable, runInAction } from 'mobx';
-import { StoryGraph } from 'storygraph';
+import { INGWebSProps, exportClass,StoryGraph, StoryObject, IContent, connectionField, dropDownField, nameField, ContentSchema } from 'storygraph';
 import { createModelSchema, object } from 'serializr';
-
-import { StoryObject } from '../helpers/AbstractStoryObject';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, dropDownField, nameField } from '../helpers/plugInHelpers';
-import { exportClass } from '../helpers/exportClass';
-import { INGWebSProps } from "../helpers/INGWebSProps";
-
 class _HeroObject extends StoryObject {
     public name: string;
     public role: string;
@@ -91,7 +84,6 @@ class _HeroObject extends StoryObject {
                 () => ["Image", "Video"],
                 () => this.userDefinedProperties.contentType,
                 (selection: string) => {
-                    Logger.info(selection);
                     runInAction(() => this.contentType = selection), this.updateContentType(selection);
                 }
             ),
@@ -104,7 +96,6 @@ class _HeroObject extends StoryObject {
                 () => ["grayscale", "invert", "hue-rotate", "blur", "contrast"],
                 () => this.userDefinedProperties.filterType,
                 (selection: string) => {
-                    Logger.info(selection);
                     runInAction(() => this.userDefinedProperties.filterType = selection), this.updateValueType();
                 }
             ),

@@ -1,15 +1,9 @@
 import { createRef, FunctionComponent, h } from "preact";
-import { INGWebSProps } from "../../renderer/utils/PlugInClassRegistry";
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import { StoryGraph } from 'storygraph';
-import { StoryObject } from '../helpers/AbstractStoryObject';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, nameField } from '../helpers/plugInHelpers';
-import { exportClass } from '../helpers/exportClass';
-import { createModelSchema, object, primitive } from 'serializr';
-import { useRef, useState, useEffect } from "preact/hooks";
-import { MenuTemplate, Text, CheckBox, HSliderMenuItem, HSlider } from "preact-sidebar";
-import { ContentSchema } from "../../renderer/store/schemas/ContentSchema";
+import { INGWebSProps, exportClass, StoryGraph, ContentSchema, StoryObject, IContent, connectionField, nameField } from 'storygraph';
+import { createModelSchema, object } from 'serializr';
+import { useState, useEffect } from "preact/hooks";
+import { MenuTemplate, Text, CheckBox, HSlider } from "preact-sidebar";
 
 /**
  */
@@ -183,7 +177,7 @@ class VideoObject extends StoryObject {
                 controls={this.playbackControls}
                 loop={this.loopable}
                 muted={this.muted}
-                autobuffer="autobuffer"
+                // autobuffer={true}
                 preload="preload"
             ></video>;
 

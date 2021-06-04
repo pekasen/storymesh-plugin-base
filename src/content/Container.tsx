@@ -1,24 +1,17 @@
 import { FunctionComponent, h } from "preact";
 import { useState, useEffect } from "preact/hooks";
 import {  ColorPicker, DropDown, MenuTemplate, Text } from "preact-sidebar";
-import { PlugIn, VReg } from "storymesh-plugin-support";
 import { makeObservable, observable, action, computed } from 'mobx';
 import { createModelSchema, object } from 'serializr';
-import { IStoryObject, StoryGraph } from 'storygraph';
-
-import { IRegistry } from "storygraph/dist/StoryGraph/IRegistry";
+import { IRegistry, INGWebSProps, AbstractStoryModifier, StoryObject, ObservableStoryGraph, ObservableStoryGraphSchema, exportClass, connectionField, nameField, IStoryObject, StoryGraph } from 'storygraph';
 import { InputConnectorView } from "./InputConnectorView";
 import { OutputConnectorView } from "./OutputConnectorView";
 
+// TODO: refactor this so it is unnecessary,
 import { MoveableItem } from "../../renderer/store/MoveableItem";
 import { UIStore } from "../../renderer/store/UIStore";
 
-import { connectionField, nameField } from '../helpers/plugInHelpers';
-import { exportClass } from '../helpers/exportClass';
-import { ObservableStoryGraph, ObservableStoryGraphSchema } from '../helpers/ObservableStoryGraph';
-import { StoryObject } from "../helpers/AbstractStoryObject";
-import { AbstractStoryModifier } from '../helpers/AbstractModifier';
-import { INGWebSProps } from "../helpers/INGWebSProps";
+import { StoryPlugIn } from "storymesh-plugin-support/dist/classes/PlugIn";
 /**
  * Our second little dummy PlugIn
  * 
@@ -283,3 +276,12 @@ export const plugInExport = exportClass(
     Container.defaultIcon,
     true
 );
+
+export const ContainerPlugIn: StoryPlugIn = {
+    name: "Container",
+    id: "internal.content.container",
+    public: true,
+    icon: Container.defaultIcon,
+    package: {},
+    constructor: Container
+}

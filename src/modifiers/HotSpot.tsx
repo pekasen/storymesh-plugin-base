@@ -1,13 +1,8 @@
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { Component, createRef, h, RefObject } from "preact";
 import { createModelSchema, list, object } from "serializr";
-import { ReactionConnectorOutPort, IConnectorPort } from "storygraph";
-import { exportClass } from "../helpers/exportClass";
-import { HMTLModifier } from "../helpers/HTMLModifier";
+import { ReactionConnectorOutPort, IConnectorPort, ConnectorSchema, exportClass, HTMLModifier, ModifierPlugIn } from "storygraph";
 import { Button, HSlider, MenuTemplate, Table } from "preact-sidebar";
-
-import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
-
 export class HotSpot {
     protected _name: string | undefined;    
     public x: number;
@@ -100,11 +95,8 @@ class CircleHotSpot extends HotSpot {
             const relX = width * this.x;
             const relY = height * this.y;
             const relR = Math.sqrt(width * width + height * height) * this.radius;
-
-            Logger.info("circle dims", {x: relX, y: relY, r: relR});
             
             return <circle class={(this.debug) ? "debug" : undefined} cx={relX} cy={relY} r={relR} onClick={() => {
-                Logger.info("Sending notification to", this.reactionOut);
                 this.reactionOut.notify();
             }}/>
         } else return <circle />
@@ -133,7 +125,7 @@ class HotSpotModifierData {
         })
     }
 }
-export class HTMLHotSpotModifier extends HMTLModifier {
+export class HTMLHotSpotModifier extends HTMLModifier {
     public name = "Hot-o-Spot-o"
     public role = "internal.modifier.hotspot";
     public data = new HotSpotModifierData();
@@ -361,3 +353,9 @@ export const plugInExport = exportClass(
     "icon-speaker",
     true
 );
+
+export const HotSpotPlugIn: ModifierPlugIn = {
+    name: "HotSpot",
+    id: "internal.modifier.hotspot",
+    constructor: HotSpot
+}

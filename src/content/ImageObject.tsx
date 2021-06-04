@@ -5,12 +5,8 @@ import { useState } from "preact/hooks";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-
-import { INGWebSProps } from "../helpers/INGWebSProps";
-import { StoryObject } from '../helpers/AbstractStoryObject';
-import { connectionField, nameField } from '../helpers/plugInHelpers';
-import { exportClass } from '../helpers/exportClass';
-
+import { connectionField, nameField, exportClass, StoryObject, INGWebSProps, ContentSchema } from 'storygraph';
+i
 /**
  * Our first little dummy PlugIn
  * 

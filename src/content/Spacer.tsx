@@ -1,14 +1,8 @@
 import { FunctionComponent, h } from "preact";
-import { INGWebSProps } from "../helpers/INGWebSProps";
 import { HSliderMenuItem, MenuTemplate } from "preact-sidebar";
 import { action, computed, makeObservable, observable } from 'mobx';
-import { FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
+import { exportClass, connectionField, nameField, StoryObject, INGWebSProps, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { createModelSchema } from 'serializr';
-
-import { StoryObject } from '../helpers/AbstractStoryObject';
-import { connectionField, nameField } from '../helpers/plugInHelpers';
-import { exportClass } from '../helpers/exportClass';
-
 class _Spacer extends StoryObject {
 
     static defaultIcon = "icon-arrow-combo";

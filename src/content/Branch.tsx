@@ -1,13 +1,9 @@
 import Logger from "js-logger";
 import { action, computed, makeObservable, runInAction } from "mobx";
 import { Fragment, h } from "preact";
-import { Button, Display, IColumnSpecification, MenuTemplate, Table, Text } from "preact-sidebar";
+import { Button, MenuTemplate, Table, Text } from "preact-sidebar";
 import { createModelSchema, list, object, primitive } from "serializr";
-import { FlowConnectorInPort, FlowConnectorOutPort, ReactionConnectorInPort } from "storygraph";
-import { ConnectorSchema } from "../../renderer/store/schemas/ConnectorSchema";
-import { StoryObject } from "../helpers/AbstractStoryObject";
-import { exportClass } from "../helpers/exportClass";
-import { nameField, connectionField } from "../helpers/plugInHelpers";
+import { nameField, connectionField, exportClass, StoryObject, ConnectorSchema, FlowConnectorInPort, FlowConnectorOutPort, ReactionConnectorInPort } from "storygraph";
 
 export class Branch extends StoryObject {
     public name = "Branch";
@@ -108,7 +104,6 @@ export class Branch extends StoryObject {
     }
 
     public removeConnector(connector: FlowConnectorOutPort) {
-        this.logger.warn("Removing connector", this);
         const index = this._outConnectors.map(e => e[0]).indexOf(connector);
         if (index !== -1) {
             this._outConnectors.splice(index, 1);

@@ -12,7 +12,6 @@
     "preact-jss-hook": "^2.1.2",
     "preact-sidebar": "file:../preact-sidebar",
     "storygraph": "file:../storygraph",
-    "storymesh-plugin-support": "file:../storymesh-plugin-support",
     "uuid": "^8.3.2"
   }
 }

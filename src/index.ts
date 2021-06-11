@@ -1,4 +1,4 @@
-import { PlugInPack } from "storymesh-plugin-support";
+import { PlugInPack } from "storygraph";
 import { Container, ContainerPlugIn } from "./content/Container";
 import { HotSpot, HotSpotPlugIn } from "./modifiers/HotSpot";
 
@@ -21,5 +21,5 @@ export {
     PlugInExports,
     ContainerPlugIn,
     HotSpot,
-
+    Container
 }

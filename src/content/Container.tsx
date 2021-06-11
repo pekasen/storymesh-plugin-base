@@ -1,17 +1,17 @@
 import { FunctionComponent, h } from "preact";
 import { useState, useEffect } from "preact/hooks";
-import {  ColorPicker, DropDown, MenuTemplate, Text } from "preact-sidebar";
+import { ColorPicker, DropDown, MenuTemplate, Text } from "preact-sidebar";
 import { makeObservable, observable, action, computed } from 'mobx';
 import { createModelSchema, object } from 'serializr';
-import { IRegistry, INGWebSProps, AbstractStoryModifier, StoryObject, ObservableStoryGraph, ObservableStoryGraphSchema, exportClass, connectionField, nameField, IStoryObject, StoryGraph } from 'storygraph';
+import { IRegistry, INGWebSProps, AbstractStoryModifier, StoryObject, StoryGraphSchema, exportClass, connectionField, nameField, IStoryObject, StoryGraph } from 'storygraph';
 import { InputConnectorView } from "./InputConnectorView";
 import { OutputConnectorView } from "./OutputConnectorView";
+import { StoryPlugIn } from "storygraph/dist/StoryGraph/registry/PlugIn";
 
 // TODO: refactor this so it is unnecessary,
-import { MoveableItem } from "../../renderer/store/MoveableItem";
-import { UIStore } from "../../renderer/store/UIStore";
+// import { MoveableItem } from "../../renderer/store/MoveableItem";
+// import { UIStore } from "../../renderer/store/UIStore";
 
-import { StoryPlugIn } from "storymesh-plugin-support/dist/classes/PlugIn";
 /**
  * Our second little dummy PlugIn
  * 
@@ -35,7 +35,7 @@ export class Container extends StoryObject {
         this.name = "Container";
         this.role = "internal.content.container";
         this.isContentNode = false;
-        this.childNetwork = new ObservableStoryGraph(this.id);
+        this.childNetwork = new StoryGraph(this.id);
         this.childNetwork.notificationCenter.subscribe(this.id + "/rerender", () => {
             if (this._rerender) this._rerender();
         });
@@ -77,7 +77,7 @@ export class Container extends StoryObject {
 
             useEffect(() => {
                 this._rerender = () => {
-                    Logger.info(`${this.id} rerendering`);
+                    // Logger.info(`${this.id} rerendering`);
                     setState({});
                 };
 
@@ -218,7 +218,7 @@ export class Container extends StoryObject {
         // </div>
     }
 
-    public setup(registry: IRegistry, uistate: UIStore): void {
+    public setup(registry: IRegistry) : void {
         const startNode = new InputConnectorView();
         const endNode = new OutputConnectorView();
         this.startNode = startNode.id;
@@ -226,8 +226,8 @@ export class Container extends StoryObject {
 
         this.childNetwork.addNode(registry, startNode);
         this.childNetwork.addNode(registry, endNode);
-        uistate.moveableItems.register(new MoveableItem(this.startNode, 50, 50));
-        uistate.moveableItems.register(new MoveableItem(this.endNode, 50, 350));
+        // uistate.moveableItems.register(new MoveableItem(this.startNode, 50, 50));
+        // uistate.moveableItems.register(new MoveableItem(this.endNode, 50, 350));
         
         startNode.setup(this.id, registry);
         endNode.setup(this.id, registry);
@@ -264,7 +264,7 @@ export class Container extends StoryObject {
 }
 
 createModelSchema(Container, {
-    childNetwork: object(ObservableStoryGraphSchema),
+    childNetwork: object(StoryGraphSchema),
     startNode: true,
     endNode: true
 });
@@ -282,6 +282,7 @@ export const ContainerPlugIn: StoryPlugIn = {
     id: "internal.content.container",
     public: true,
     icon: Container.defaultIcon,
-    package: {},
+
+    // package: {},
     constructor: Container
 }

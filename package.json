@@ -1,4 +1,5 @@
 {
+  "name": "storymesh-plugin-base",
   "devDependencies": {
     "@types/uuid": "^8.3.0",
     "serializr": "^2.0.5",
@@ -13,5 +14,21 @@
     "preact-sidebar": "file:../preact-sidebar",
     "storygraph": "file:../storygraph",
     "uuid": "^8.3.2"
-  }
+  },
+  "description": "StoryMesh's Base PlugIns",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pekasen/storymesh-plugin-base.git"
+  },
+  "author": "Ph. Kessling",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pekasen/storymesh-plugin-base/issues"
+  },
+  "homepage": "https://github.com/pekasen/storymesh-plugin-base#readme"
 }

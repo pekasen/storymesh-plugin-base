@@ -20,6 +20,7 @@ import { StoryPlugIn } from "storygraph/dist/StoryGraph/registry/PlugIn";
 export class Container extends StoryObject {
     public name: string;
     public role: string;
+    public height: string;
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork: StoryGraph;
@@ -34,6 +35,7 @@ export class Container extends StoryObject {
 
         this.name = "Container";
         this.role = "internal.content.container";
+        this.height = "auto";
         this.isContentNode = false;
         this.childNetwork = new StoryGraph(this.id);
         this.childNetwork.notificationCenter.subscribe(this.id + "/rerender", () => {
@@ -92,7 +94,8 @@ export class Container extends StoryObject {
                 
                 path = graph?.traverse(registry, this.startNode, Array.from(startNode.connectors)[0][1].id)
                 if (path !== undefined) {
-                    div = <div style={`padding:${this.userDefinedProperties.padding};
+                    div = <div style={`height:${this.height};
+                                       padding:${this.userDefinedProperties.padding};
                                        max-width:${this.userDefinedProperties.maxWidth};
                                        place-items:${this.userDefinedProperties.placeItems};
                                        ${this.userDefinedProperties.backgroundColor.length ? "background-color:" + this.userDefinedProperties.backgroundColor : ""};

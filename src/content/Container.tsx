@@ -72,19 +72,17 @@ export class Container extends StoryObject {
         const Comp: FunctionComponent<INGWebSProps> = ({ id, registry, graph, modifiers }) => {
             // const startNode = graph?
             // TODO: class name?
+            // useEffect(() => {
+            //     const [, setState] = useState({});
+            //     this._rerender = () => {
+            //         // Logger.info(`${this.id} rerendering`);
+            //         setState({});
+            //     };
 
-            const [, setState] = useState({});
-
-            useEffect(() => {
-                this._rerender = () => {
-                    // Logger.info(`${this.id} rerendering`);
-                    setState({});
-                };
-
-                return () => {
-                    this._rerender = undefined;
-                };
-            });
+            //     return () => {
+            //         this._rerender = undefined;
+                // };
+            // });
 
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
@@ -102,7 +100,7 @@ export class Container extends StoryObject {
                         {
                             path.map(node => {
                                 // const node = (registry.getValue(e) as unknown as IPlugIn & StoryObject);
-                                const _node = node as StoryObject & IPlugIn;
+                                const _node = node as StoryObject;
                                 if (_node.getComponent) {
                                     const Comp = _node.getComponent();
                                     return <Comp
@@ -124,28 +122,6 @@ export class Container extends StoryObject {
                 }
             }
             return <div></div>
-            // div = <div id={id} class={"ngwebs-story-container"}>
-            //     {
-            //         graph?.nodes.map(e => {
-            //             const node = (registry.getValue(e) as unknown as IPlugIn & AbstractStoryObject);
-
-            //             if (node.getComponent) {
-            //                 const Comp = node.getComponent();
-            //                 return <Comp
-            //                     registry={registry}
-            //                     id={node.id}
-            //                     renderingProperties={node.renderingProperties}
-            //                     content={node.content}
-            //                     modifiers={node.modifiers}
-            //                     graph={node.childNetwork}
-            //                     userDefinedProperties={node.userDefinedProperties}
-            //                 ></Comp>
-            //             }
-            //         }) || null
-            //     }
-            // </div>
-
-
         }
         return Comp
     }

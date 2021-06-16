@@ -4,7 +4,7 @@ import { action, makeObservable, observable, runInAction } from 'mobx';
 import { INGWebSProps, exportClass,StoryGraph, StoryObject, IContent, connectionField, dropDownField, nameField, ContentSchema } from 'storygraph';
 import { createModelSchema, object } from 'serializr';
 import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
-class _HeroObject extends StoryObject {
+export class _HeroObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;

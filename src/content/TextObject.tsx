@@ -19,7 +19,7 @@ interface ITextObjectContent {
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
-class _TextObject extends StoryObject {
+export class _TextObject extends StoryObject {
     
     public name: string;
     public role: string;

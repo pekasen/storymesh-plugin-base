@@ -12,7 +12,7 @@ interface IGridItemModifierData extends CSSModifierData {
     inline: IGridItemInlineStatements;
 }
 
-export class GridItemInlineStatements implements IGridItemInlineStatements {
+class GridItemInlineStatements implements IGridItemInlineStatements {
     "grid-row" = "";
     "grid-column" = "";
 

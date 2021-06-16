@@ -10,7 +10,7 @@ import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn
 /**
  */
 // @observable
-class VideoObject extends StoryObject {
+export class VideoObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;

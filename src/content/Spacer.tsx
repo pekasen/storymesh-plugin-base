@@ -4,7 +4,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import { exportClass, connectionField, nameField, StoryObject, INGWebSProps, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { createModelSchema } from 'serializr';
 import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
-class _Spacer extends StoryObject {
+export class _Spacer extends StoryObject {
 
     static defaultIcon = "icon-arrow-combo";
 

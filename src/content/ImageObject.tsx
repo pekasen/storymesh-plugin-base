@@ -4,7 +4,7 @@ import { createModelSchema, object } from 'serializr';
 import { useState } from "preact/hooks";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
+// import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField, exportClass, StoryObject, INGWebSProps, ContentSchema } from 'storygraph';
 import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
@@ -20,7 +20,7 @@ class _ImageObject extends StoryObject {
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph;
-    public content: IContent;
+    // public content: IContent;
     public icon: string;
 
     public static defaultIcon = "icon-picture"

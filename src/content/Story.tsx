@@ -13,7 +13,7 @@ export class Story extends Container {
 
 export const plugInExport = exportClass(Story, "Story", "internal.content.story", "", false);
 
-export const StoryContanierPlugIn: StoryPlugIn = {
+export const StoryContainerPlugIn: StoryPlugIn = {
     name: "Story",
     id: "internal.content.story",
     public: true,

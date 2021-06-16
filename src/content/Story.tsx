@@ -15,7 +15,7 @@ export const plugInExport = exportClass(Story, "Story", "internal.content.story"
 
 export const StoryContanierPlugIn: StoryPlugIn = {
     name: "Story",
-    id: "internal.content.spacer",
+    id: "internal.content.story",
     public: true,
     icon: Story.defaultIcon,
 

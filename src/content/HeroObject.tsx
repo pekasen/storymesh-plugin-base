@@ -3,6 +3,7 @@ import { CheckBox, HSlider, MenuTemplate, Text } from "preact-sidebar";
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import { INGWebSProps, exportClass,StoryGraph, StoryObject, IContent, connectionField, dropDownField, nameField, ContentSchema } from 'storygraph';
 import { createModelSchema, object } from 'serializr';
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 class _HeroObject extends StoryObject {
     public name: string;
     public role: string;
@@ -217,3 +218,13 @@ export const plugInExport = exportClass(
     _HeroObject.defaultIcon,
     true
 );
+
+export const HeroPlugIn: StoryPlugIn = {
+    name: "Hero",
+    id: "internal.content.branch",
+    public: true,
+    icon:     _HeroObject.defaultIcon,
+
+    // package: {},
+    constructor: _HeroObject
+}

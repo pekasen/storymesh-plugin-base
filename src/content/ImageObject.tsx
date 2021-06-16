@@ -6,6 +6,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
 import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField, exportClass, StoryObject, INGWebSProps, ContentSchema } from 'storygraph';
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 i
 /**
  * Our first little dummy PlugIn
@@ -63,7 +64,7 @@ class _ImageObject extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new Text("URL", {defaultValue: ""}, () => this.content.resource, (arg: string) => this.updateImageURL(arg)),
+            new Text("URL", { defaultValue: "" }, () => this.content.resource, (arg: string) => this.updateImageURL(arg)),
             new Text("Alt text", { placeHolder: "Image description" }, () => this.content.altText, (arg: string) => this.updateAltText(arg)),
             new Text("Caption", { placeHolder: "This is the caption" }, () => this.userDefinedProperties.caption, (arg: string) => this.updateCaption(arg)),
             new Text("Source", { placeHolder: "Who made this?" }, () => this.userDefinedProperties.mediaSource, (arg: string) => this.updateMediaSource(arg)),
@@ -104,14 +105,14 @@ class _ImageObject extends StoryObject {
             }
 
             const imgContainer = <div id={this.id} class="imagewrapper image">
-                    <figure>
-                        <img src={content?.resource} alt={this.content.altText} />
-                        <figcaption>{this.userDefinedProperties.caption} <span class="media-source">// {this.userDefinedProperties.mediaSource}</span></figcaption>
-                    </figure>
-                </div>;
-                return this.modifiers.reduce((p, v) => (
-                        v.modify(p)
-                    ), imgContainer)
+                <figure>
+                    <img src={content?.resource} alt={this.content.altText} />
+                    <figcaption>{this.userDefinedProperties.caption} <span class="media-source">// {this.userDefinedProperties.mediaSource}</span></figcaption>
+                </figure>
+            </div>;
+            return this.modifiers.reduce((p, v) => (
+                v.modify(p)
+            ), imgContainer)
         }
         return Comp
     }
@@ -132,3 +133,13 @@ export const plugInExport = exportClass(
     _ImageObject.defaultIcon,
     true
 );
+
+export const ImagePlugIn: StoryPlugIn = {
+    name: "Image",
+    id: "internal.content.video",
+    public: true,
+    icon: _ImageObject.defaultIcon,
+
+    // package: {},
+    constructor: _ImageObject
+}

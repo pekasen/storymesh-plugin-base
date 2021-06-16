@@ -3,6 +3,7 @@ import { HSliderMenuItem, MenuTemplate } from "preact-sidebar";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { exportClass, connectionField, nameField, StoryObject, INGWebSProps, FlowConnectorInPort, FlowConnectorOutPort, IConnectorPort, StoryGraph } from 'storygraph';
 import { createModelSchema } from 'serializr';
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 class _Spacer extends StoryObject {
 
     static defaultIcon = "icon-arrow-combo";
@@ -79,7 +80,7 @@ class _Spacer extends StoryObject {
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({userDefinedProperties}) => {
+        const Comp: FunctionComponent<INGWebSProps> = ({ userDefinedProperties }) => {
             return <div class="spacer" style={`height:${userDefinedProperties.vspace}vh; width: 100%;`}></div>
         }
         return Comp
@@ -95,4 +96,14 @@ export const plugInExport = exportClass(
     "internal.content.spacer",
     _Spacer.defaultIcon,
     true
-)
+);
+
+export const SpacerPlugIn: StoryPlugIn = {
+    name: "Spacer",
+    id: "internal.content.spacer",
+    public: true,
+    icon: _Spacer.defaultIcon,
+
+    // package: {},
+    constructor: _Spacer
+}

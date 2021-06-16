@@ -3,7 +3,7 @@ import { h } from "preact";
 import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
-import { HTMLModifier, exportClass, IConnectorPort, ReactionConnectorInPort, ConnectorSchema, dropDownField, nameField } from "storygraph";
+import { HTMLModifier, exportClass, IConnectorPort, ReactionConnectorInPort, ConnectorSchema, dropDownField, nameField, ModifierPlugIn } from "storygraph";
 import { HSlider, MenuTemplate, CheckBox, Divider } from "preact-sidebar";
 import { createUseStyles } from 'preact-jss-hook';
 
@@ -14,6 +14,7 @@ export class FilterModifier extends HTMLModifier {
     public data: any = {
         toggle: true
     }
+    public static defaultIcon = "icon-eye";
     public isAnimated: boolean;
     public hasAnimationLoop: boolean;
     public animationDuration: number;
@@ -282,3 +283,13 @@ export const plugInExport = exportClass(
     "icon-eye",
     true
 );
+
+export const FilterPlugIn: ModifierPlugIn = {
+    name: "Filter",
+    id: "internal.content.filter",
+    public: true,
+    icon: FilterModifier.defaultIcon,
+
+    // package: {},
+    constructor: FilterModifier
+}

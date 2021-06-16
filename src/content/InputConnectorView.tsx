@@ -4,6 +4,7 @@ import { MenuTemplate } from "preact-sidebar";
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema } from 'serializr';
 import { Container } from "../content/Container";
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 export class InputConnectorView extends StoryObject {
     
@@ -94,6 +95,7 @@ export class InputConnectorView extends StoryObject {
     }
 }
 createModelSchema(InputConnectorView, {});
+
 export const plugInExport = exportClass(
     InputConnectorView,
     "InputConnectorView",
@@ -101,3 +103,13 @@ export const plugInExport = exportClass(
     InputConnectorView.defaultIcon,
     false
 );
+
+export const InputConnectorViewPlugIn: StoryPlugIn = {
+    name: "InputConnectorView",
+    id: "internal.content.inputconnectorview",
+    public: true,
+    icon:     InputConnectorView.defaultIcon,
+
+    // package: {},
+    constructor: InputConnectorView
+}

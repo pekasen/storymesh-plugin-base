@@ -5,6 +5,7 @@ import { createModelSchema, object } from 'serializr';
 import { useState, useEffect } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox, HSlider } from "preact-sidebar";
 import { Container } from "./Container";
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 /**
  */
@@ -228,3 +229,13 @@ export const plugInExport = exportClass(
     VideoObject.defaultIcon,
     true
 );
+
+export const VideoPlugIn: StoryPlugIn = {
+    name: "Video",
+    id: "internal.content.video",
+    public: true,
+    icon:     VideoObject.defaultIcon,
+
+    // package: {},
+    constructor: VideoObject
+}

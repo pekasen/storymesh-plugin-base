@@ -4,6 +4,7 @@ import { Fragment, h } from "preact";
 import { Button, MenuTemplate, Table, Text } from "preact-sidebar";
 import { createModelSchema, list, object, primitive } from "serializr";
 import { nameField, connectionField, exportClass, StoryObject, ConnectorSchema, FlowConnectorInPort, FlowConnectorOutPort, ReactionConnectorInPort } from "storygraph";
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 export class Branch extends StoryObject {
     public name = "Branch";
@@ -12,6 +13,7 @@ export class Branch extends StoryObject {
     public icon = "icon-switch";
     public activeConnector = 1;
     public deletable = true;
+    public static defaultIcon = "icon-doc";
     private _outConnectors = [
        [ new FlowConnectorOutPort(), new ReactionConnectorInPort("out1", () => this._switchConnectors(0))],
         [new FlowConnectorOutPort(),  new ReactionConnectorInPort("out1", () => this._switchConnectors(1))]
@@ -149,3 +151,13 @@ export const plugInExport = exportClass(
     "icon-switch",
     true
 );
+
+export const BranchPlugIn: StoryPlugIn = {
+    name: "Branch",
+    id: "internal.content.branch",
+    public: true,
+    icon:     Branch.defaultIcon,
+
+    // package: {},
+    constructor: Branch
+}

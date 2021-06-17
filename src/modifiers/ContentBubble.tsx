@@ -17,14 +17,16 @@ export class _ContentBubble extends HTMLModifier {
     public static defaultIcon = "icon-eye";
     public padding: number;
     public textColor: string;
-    public backgroundColor: string;
+    public backgroundColor: any;
+    public backgroundOpacity: number;
 
     constructor() {
         super();
 
         this.padding = 10;
         this.textColor = "#fff";
-        this.backgroundColor = "#242424";
+        this.backgroundColor = "#252525";
+        this.backgroundOpacity = 1;
 
         makeObservable(this, {
             padding: observable,
@@ -56,11 +58,21 @@ export class _ContentBubble extends HTMLModifier {
                 () => this.backgroundColor,
                 (color: string) => this.updateBackgroundColor(color)
             ),
+            new HSlider(
+                "Background Opacity",
+                {
+                    min: 0,
+                    max: 1,
+                    formatter: (val: number) => `${val}`
+                },
+                () => this.backgroundOpacity,
+                (opacity: number) => this.updateBackgroundOpacity(opacity)
+            ),
             new ColorPicker(
                 "Text Color",
                 () => this.textColor,
                 (color: string) => this.updateTextColor(color)
-            ))
+            )
         ];
      
         return ret;
@@ -74,9 +86,25 @@ export class _ContentBubble extends HTMLModifier {
         this.textColor = newProperty;
     }
 
+    public convertToRGB (c: string){
+            let result = /^#?([a-fd]{2})([a-fd]{2})([a-fd]{2})$/i.exec(c);
+            if(result){
+                let r = parseInt(result[1], 16);
+                let g = parseInt(result[2], 16);
+                let b = parseInt(result[3], 16);
+                let returnValue = `${r}, ${g}, ${b}`;
+
+                return returnValue;
+            }
+    }    
+
     //TODO: convert HEX to RGB to change alpha-value
     public updateBackgroundColor(newProperty: string) {
-        this.backgroundColor = newProperty;
+        this.backgroundColor = this.convertToRGB(newProperty);
+    }
+
+    public updateBackgroundOpacity(newProperty: number) {
+        this.backgroundOpacity = (newProperty);
     }
 
     private _trigger = () => {
@@ -92,14 +120,14 @@ export class _ContentBubble extends HTMLModifier {
         const useStyles = createUseStyles({
             contentBackground: {
                 padding: `${this.padding}px`,
-                backgroundColor: `${this.backgroundColor}`,
+                backgroundColor: `rgba(${this.backgroundColor}, ${this.backgroundOpacity.toString()})`,
                 color: `${this.textColor}`           
             },
           });          
 
        const { classes } = useStyles();
 
-       return <div id={`_${this.id}`} class={`${classes.contentBackground} ${((this.data.toggle) ? classes.inactive : classes.active )}`}>
+       return <div id={`_${this.id}`} class={`${classes.contentBackground}`}>
                 {element}
             </div>
     }

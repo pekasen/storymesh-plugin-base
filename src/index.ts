@@ -16,6 +16,7 @@ import { CSSGridContainerModifier, CSSGridContainerModifierPlugIn } from "./modi
 import { CSSGridItemModifier, CSSGriditemModifierPlugIn } from "./modifiers/GridItem";
 import { HTMLInteractionModifier, HTMLInteractionModifierPlugIn } from "./modifiers/InteractionModifier";
 // import { TransitionModifier, TransitionModifierPlugIn } from "./modifiers/TransitionModifier";
+import { _ContentBubble, ContentBubblePlugIn } from "./modifiers/ContentBubble";
 
 const PlugInExports: PlugInPack = {
     name: "storymesh base",
@@ -43,7 +44,8 @@ const PlugInExports: PlugInPack = {
         CSSGridContainerModifierPlugIn,
         CSSGriditemModifierPlugIn,
         HTMLInteractionModifierPlugIn,
-        // TransitionModifierPlugIn
+        // TransitionModifierPlugIn,
+        // ContentBubblePlugIn
     ]
 }
 
@@ -66,6 +68,7 @@ export {
     CSSGriditemModifierPlugIn,
     HTMLInteractionModifierPlugIn,
     // TransitionModifierPlugIn,
+    // ContentBubblePlugIn,
     HotSpot,
     Container,
     AudioObject,
@@ -83,4 +86,5 @@ export {
     CSSGridItemModifier,
     HTMLInteractionModifier,
     // TransitionModifier
+    // _ContentBubble
 }

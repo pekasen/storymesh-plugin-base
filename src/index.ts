@@ -10,6 +10,8 @@ import { _Spacer, SpacerPlugIn } from "./content/Spacer";
 import { Story, StoryContainerPlugIn } from "./content/Story";
 import { _TextObject, TextPlugIn } from "./content/TextObject";
 import { VideoObject, VideoPlugIn } from "./content/VideoObject";
+import { _ImageObject, ImagePlugIn } from "./content/ImageObject";
+import { _CustomCode, CustomCodePlugIn } from "./content/CustomCode";
 // import { AnimationModifier, AnimationPlugIn } from "./modifiers/Animation";
 // import { FilterModifier, FilterPlugIn } from "./modifiers/Filter";
 import { CSSGridContainerModifier, CSSGridContainerModifierPlugIn } from "./modifiers/GridContainer";
@@ -39,6 +41,8 @@ const PlugInExports: PlugInPack = {
         StoryContainerPlugIn,
         TextPlugIn,
         VideoPlugIn,
+        ImagePlugIn,
+        CustomCodePlugIn,
         // AnimationPlugIn,
         // FilterPlugIn,
         CSSGridContainerModifierPlugIn,
@@ -62,6 +66,8 @@ export {
     StoryContainerPlugIn,
     TextPlugIn,
     VideoPlugIn,
+    ImagePlugIn,
+    CustomCodePlugIn,
     // AnimationPlugIn,
     // FilterPlugIn,
     CSSGridContainerModifierPlugIn,
@@ -80,6 +86,8 @@ export {
     Story,
     _TextObject,
     VideoObject,
+    _ImageObject,
+    _CustomCode,
     // AnimationModifier,
     // FilterModifier,
     CSSGridContainerModifier,

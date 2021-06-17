@@ -190,7 +190,7 @@ export const plugInExport = exportClass(
 );
 
 export const ContentBubblePlugIn: ModifierPlugIn = {
-    name: "Object Background",
+    name: "Content Bubble",
     id: "internal.content.contentbubble",
     public: true,
     icon: _ContentBubble.defaultIcon,

@@ -14,7 +14,7 @@ import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
-class _ImageObject extends StoryObject {
+export class _ImageObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;

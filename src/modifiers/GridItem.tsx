@@ -131,7 +131,7 @@ export const plugInExport = exportClass(
 );
 
 export const CSSGriditemModifierPlugIn: ModifierPlugIn = {
-    name: "CSSGridItemModifier",
+    name: "Grid Item",
     id: "internal.content.griditem",
     public: true,
     icon: CSSGridItemModifier.defaultIcon,

@@ -129,7 +129,7 @@ export const plugInExport = exportClass(
 
 
 export const CSSGridContainerModifierPlugIn: ModifierPlugIn = {
-    name: "CSSGridContainerModifier",
+    name: "Grid Container",
     id: "internal.content.CSSGridContainerModifier",
     public: true,
     icon: CSSGridContainerModifier.defaultIcon,

@@ -12,9 +12,9 @@ import { _TextObject, TextPlugIn } from "./content/TextObject";
 import { VideoObject, VideoPlugIn } from "./content/VideoObject";
 // import { AnimationModifier, AnimationPlugIn } from "./modifiers/Animation";
 // import { FilterModifier, FilterPlugIn } from "./modifiers/Filter";
-// import { CSSGridContainerModifier, CSSGridContainerModifierPlugIn } from "./modifiers/GridContainer";
-// import { CSSGridItemModifier, CSSGriditemModifierPlugIn } from "./modifiers/GridItem";
-// import { HTMLInteractionModifier, HTMLInteractionModifierPlugIn } from "./modifiers/InteractionModifier";
+import { CSSGridContainerModifier, CSSGridContainerModifierPlugIn } from "./modifiers/GridContainer";
+import { CSSGridItemModifier, CSSGriditemModifierPlugIn } from "./modifiers/GridItem";
+import { HTMLInteractionModifier, HTMLInteractionModifierPlugIn } from "./modifiers/InteractionModifier";
 // import { TransitionModifier, TransitionModifierPlugIn } from "./modifiers/TransitionModifier";
 
 const PlugInExports: PlugInPack = {
@@ -40,9 +40,9 @@ const PlugInExports: PlugInPack = {
         VideoPlugIn,
         // AnimationPlugIn,
         // FilterPlugIn,
-        // CSSGridContainerModifierPlugIn,
-        // CSSGriditemModifierPlugIn,
-        // HTMLInteractionModifierPlugIn,
+        CSSGridContainerModifierPlugIn,
+        CSSGriditemModifierPlugIn,
+        HTMLInteractionModifierPlugIn,
         // TransitionModifierPlugIn
     ]
 }
@@ -62,9 +62,9 @@ export {
     VideoPlugIn,
     // AnimationPlugIn,
     // FilterPlugIn,
-    // CSSGridContainerModifierPlugIn,
-    // CSSGriditemModifierPlugIn,
-    // HTMLInteractionModifierPlugIn,
+    CSSGridContainerModifierPlugIn,
+    CSSGriditemModifierPlugIn,
+    HTMLInteractionModifierPlugIn,
     // TransitionModifierPlugIn,
     HotSpot,
     Container,
@@ -79,8 +79,8 @@ export {
     VideoObject,
     // AnimationModifier,
     // FilterModifier,
-    // CSSGridContainerModifier,
-    // CSSGridItemModifier,
-    // HTMLInteractionModifier,
+    CSSGridContainerModifier,
+    CSSGridItemModifier,
+    HTMLInteractionModifier,
     // TransitionModifier
 }

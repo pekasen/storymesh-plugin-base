@@ -4,8 +4,9 @@ import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
 import { exportClass, HTMLModifier, IConnectorPort, ReactionConnectorInPort, ConnectorSchema, dropDownField, nameField, ModifierPlugIn } from "storygraph";
-import { HSlider, MenuTemplate, ColorPicker, Divider } from "preact-sidebar";
+import { HSlider, DropDown, MenuTemplate, ColorPicker, Divider } from "preact-sidebar";
 import { createUseStyles } from 'preact-jss-hook';
+import { GridContainerInlineStatementsSchema } from "./GridContainer";
 
 export class _ContentBubble extends HTMLModifier {
 
@@ -20,6 +21,7 @@ export class _ContentBubble extends HTMLModifier {
     public backgroundColor: any;
     public backgroundOpacity: number;
     public borderRadius: number;
+    public placeItems: string;
 
     constructor() {
         super();
@@ -29,6 +31,7 @@ export class _ContentBubble extends HTMLModifier {
         this.backgroundColor = "#252525";
         this.backgroundOpacity = 1;
         this.borderRadius = 0;
+        this.placeItems = 'center';
 
         makeObservable(this, {
             padding: observable,
@@ -36,11 +39,13 @@ export class _ContentBubble extends HTMLModifier {
             backgroundColor: observable,
             backgroundOpacity: observable,
             borderRadius: observable,
+            placeItems: observable,
             updatePadding: action,
             updateTextColor: action,
             updateBackgroundColor: action,
             updateBackgroundOpacity: action,
-            updateBorderRadius: action
+            updateBorderRadius: action,
+            updatePlaceItems: action
         });
     }
 
@@ -88,7 +93,15 @@ export class _ContentBubble extends HTMLModifier {
                 "Text Color",
                 () => this.textColor,
                 (color: string) => this.updateTextColor(color)
-            )
+            ),
+            new DropDown(
+                "Place Items",
+                {
+                    options: ["start", "center", "end"]
+                },
+                () => this.placeItems,
+                (item) => this.updatePlaceItems(item)
+            ),
         ];
      
         return ret;
@@ -127,6 +140,10 @@ export class _ContentBubble extends HTMLModifier {
         this.backgroundOpacity = (newProperty);
     }
 
+    public updatePlaceItems(placeItems: string): void {
+        this.placeItems = placeItems
+    }
+
     private _trigger = () => {
         Logger.info("Trigger fired", this);
         this.data.toggle = !this.data.toggle
@@ -142,7 +159,9 @@ export class _ContentBubble extends HTMLModifier {
                 padding: `${this.padding}px`,
                 borderRadius: `${this.borderRadius}%`,
                 backgroundColor: `rgba(${this.backgroundColor}, ${this.backgroundOpacity.toString()})`,
-                color: `${this.textColor}`           
+                color: `${this.textColor}`,
+                display: "grid",
+                placeItems: `${this.placeItems}`          
             },
           });          
 

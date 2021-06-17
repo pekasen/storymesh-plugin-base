@@ -19,22 +19,28 @@ export class _ContentBubble extends HTMLModifier {
     public textColor: string;
     public backgroundColor: any;
     public backgroundOpacity: number;
+    public borderRadius: number;
 
     constructor() {
         super();
 
-        this.padding = 10;
+        this.padding = 0;
         this.textColor = "#fff";
         this.backgroundColor = "#252525";
         this.backgroundOpacity = 1;
+        this.borderRadius = 0;
 
         makeObservable(this, {
             padding: observable,
             textColor: observable,
             backgroundColor: observable,
+            backgroundOpacity: observable,
+            borderRadius: observable,
             updatePadding: action,
             updateTextColor: action,
-            updateBackgroundColor: action
+            updateBackgroundColor: action,
+            updateBackgroundOpacity: action,
+            updateBorderRadius: action
         });
     }
 
@@ -52,6 +58,16 @@ export class _ContentBubble extends HTMLModifier {
                 },
                 () => this.padding,
                 (padding: number) => this.updatePadding(padding)
+            ),
+            new HSlider(
+                "Border Radius",
+                {
+                    min: 0,
+                    max: 100,
+                    formatter: (val: number) => `${val}%`
+                },
+                () => this.borderRadius,
+                (radius: number) => this.updateBorderRadius(radius)
             ),
             new ColorPicker(
                 "Background color",
@@ -80,6 +96,10 @@ export class _ContentBubble extends HTMLModifier {
 
     public updatePadding(newProperty: number) {
         this.padding = newProperty;
+    }
+
+    public updateBorderRadius(newProperty: number) {
+        this.borderRadius = newProperty;
     }
 
     public updateTextColor(newProperty: string) {
@@ -120,6 +140,7 @@ export class _ContentBubble extends HTMLModifier {
         const useStyles = createUseStyles({
             contentBackground: {
                 padding: `${this.padding}px`,
+                borderRadius: `${this.borderRadius}%`,
                 backgroundColor: `rgba(${this.backgroundColor}, ${this.backgroundOpacity.toString()})`,
                 color: `${this.textColor}`           
             },

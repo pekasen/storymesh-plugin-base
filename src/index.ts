@@ -15,11 +15,11 @@ const PlugInExports: PlugInPack = {
         ContainerPlugIn,
         HotSpotPlugIn
     ]
-}
+};
 
 export {
     PlugInExports,
     ContainerPlugIn,
     HotSpot,
     Container
-}
+};

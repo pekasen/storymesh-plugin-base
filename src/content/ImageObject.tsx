@@ -4,22 +4,23 @@ import { createModelSchema, object } from 'serializr';
 import { useState } from "preact/hooks";
 import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph } from 'storygraph';
-import { IContent } from 'storygraph/dist/StoryGraph/IContent';
+// import { IContent } from 'storygraph/dist/StoryGraph/IContent';
 import { connectionField, nameField, exportClass, StoryObject, INGWebSProps, ContentSchema } from 'storygraph';
-i
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
+
 /**
  * Our first little dummy PlugIn
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
-class _ImageObject extends StoryObject {
+export class _ImageObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
     public userDefinedProperties: any;
     public childNetwork?: StoryGraph;
-    public content: IContent;
+    // public content: IContent;
     public icon: string;
 
     public static defaultIcon = "icon-picture"
@@ -132,3 +133,13 @@ export const plugInExport = exportClass(
     _ImageObject.defaultIcon,
     true
 );
+
+export const ImagePlugIn: StoryPlugIn = {
+    name: "Image",
+    id: "internal.content.image",
+    public: true,
+    icon:     _ImageObject.defaultIcon,
+
+    // package: {},
+    constructor: _ImageObject
+}

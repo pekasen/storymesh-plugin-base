@@ -1,7 +1,7 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, object, primitive } from "serializr";
 import { HSlider, MenuTemplate } from "preact-sidebar";
-import { IConnectorPort, ModifierType, exportClass, CSSModifier, CSSModifierData, CSSStatement } from "storygraph";
+import { IConnectorPort, ModifierType, exportClass, CSSModifier, CSSModifierData, CSSStatement, ModifierPlugIn } from "storygraph";
 interface IGridContainerInlineStatements extends CSSStatement {
     "grid-gap": string;
 }
@@ -39,7 +39,7 @@ export class CSSGridContainerModifier extends CSSModifier {
     public role = "internal.modifier.gridcontainer";
     public data: GridContainer = new GridContainer();
     public type: ModifierType = "css-hybrid";
-
+    public static defaultIcon = "icon-eye";
     constructor() {
         super();
 
@@ -126,3 +126,14 @@ export const plugInExport = exportClass(
     "icon-speaker",
     true
 );
+
+
+export const CSSGridContainerModifierPlugIn: ModifierPlugIn = {
+    name: "Grid Container",
+    id: "internal.content.CSSGridContainerModifier",
+    public: true,
+    icon: CSSGridContainerModifier.defaultIcon,
+
+    // package: {},
+    constructor: CSSGridContainerModifier
+}

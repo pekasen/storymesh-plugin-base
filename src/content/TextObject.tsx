@@ -6,6 +6,7 @@ import Delta from "quill-delta";
 import { MenuTemplate, RichText } from "preact-sidebar";
 import { convertDeltaToHtml } from 'node-quill-converter';
 import Op from "quill-delta/dist/Op";
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 interface ITextObjectContent {
     resource: Delta
@@ -18,7 +19,7 @@ interface ITextObjectContent {
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
-class _TextObject extends StoryObject {
+export class _TextObject extends StoryObject {
     
     public name: string;
     public role: string;
@@ -161,3 +162,13 @@ export const plugInExport = exportClass(
     _TextObject.defaultIcon,
     true
 );
+
+export const TextPlugIn: StoryPlugIn = {
+    name: "Text",
+    id: "internal.content.text",
+    public: true,
+    icon: _TextObject.defaultIcon,
+
+    // package: {},
+    constructor: _TextObject
+}

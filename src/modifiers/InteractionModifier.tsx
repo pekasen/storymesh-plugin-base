@@ -1,7 +1,7 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { Component, createRef, h } from "preact";
 import { createModelSchema, object } from "serializr";
-import { dropDownField, nameField, HTMLModifier, exportClass, ConnectorSchema, ReactionConnectorOutPort, IConnectorPort } from "storygraph";
+import { dropDownField, nameField, HTMLModifier, exportClass, ConnectorSchema, ReactionConnectorOutPort, IConnectorPort, ModifierPlugIn } from "storygraph";
 import { MenuTemplate } from "preact-sidebar";
 export class InteractionModifier {
     protected _name: string | undefined;
@@ -67,6 +67,7 @@ export class HTMLInteractionModifier extends HTMLModifier {
     public data = new InteractionModifierData();
     intersectionObserver: IntersectionObserver | undefined;
     public interactionOption: string;
+    public static defaultIcon = "icon-mouse";
 
     constructor() {
         super();
@@ -196,3 +197,13 @@ export const plugInExport = exportClass(
     "icon-mouse",
     true
 );
+
+export const HTMLInteractionModifierPlugIn: ModifierPlugIn = {
+    name: "Interaction",
+    id: "internal.content.interactionmodifier",
+    public: true,
+    icon: HTMLInteractionModifier.defaultIcon,
+
+    // package: {},
+    constructor: HTMLInteractionModifier
+}

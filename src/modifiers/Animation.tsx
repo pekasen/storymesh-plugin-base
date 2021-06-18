@@ -6,6 +6,7 @@ import { createModelSchema, object } from "serializr";
 import { HTMLModifier, exportClass, ConnectorSchema, IConnectorPort, ReactionConnectorInPort, dropDownField, nameField } from "storygraph";
 import { HSlider, MenuTemplate, CheckBox, Divider } from "preact-sidebar";
 import { createUseStyles } from 'preact-jss-hook';
+import { ModifierPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 export class AnimationModifier extends HTMLModifier {
 
@@ -14,6 +15,7 @@ export class AnimationModifier extends HTMLModifier {
     public data: any = {
         toggle: true
     }
+    public static defaultIcon = "icon-eye";
     public isAnimated: boolean;
     public hasAnimationLoop: boolean;
     public animationDuration: number;
@@ -315,3 +317,13 @@ export const plugInExport = exportClass(
     "icon-eye",
     true
 );
+
+export const AnimationPlugIn: ModifierPlugIn = {
+    name: "Animation",
+    id: "internal.content.animation",
+    public: true,
+    icon: AnimationModifier.defaultIcon,
+
+    // package: {},
+    constructor: AnimationModifier
+}

@@ -3,7 +3,7 @@ import { h } from "preact";
 import { runInAction } from "mobx";
 import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
-import { exportClass, HTMLModifier, IConnectorPort, ReactionConnectorInPort, ConnectorSchema, dropDownField, nameField } from "storygraph";
+import { exportClass, HTMLModifier, IConnectorPort, ReactionConnectorInPort, ConnectorSchema, dropDownField, nameField, ModifierPlugIn } from "storygraph";
 import { HSlider, MenuTemplate, Text, CheckBox, ColorPicker, Divider } from "preact-sidebar";
 import { createUseStyles } from 'preact-jss-hook';
 
@@ -14,6 +14,7 @@ export class TransitionModifier extends HTMLModifier {
     public data: any = {
         toggle: true
     }
+    public static defaultIcon = "icon-eye";
     public transitionProperty: string; // transform, color, width, ...
     public transitionDuration: number;
     public transitionDelay: number;
@@ -289,3 +290,13 @@ export const plugInExport = exportClass(
     "icon-speaker",
     true
 );
+
+export const TransitionModifierPlugIn: ModifierPlugIn = {
+    name: "Transition",
+    id: "internal.content.transition",
+    public: true,
+    icon: TransitionModifier.defaultIcon,
+
+    // package: {},
+    constructor: TransitionModifier
+}

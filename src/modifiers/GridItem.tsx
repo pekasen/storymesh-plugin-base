@@ -1,7 +1,7 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { createModelSchema, list, map, object, primitive } from "serializr";
 import { HSlider, MenuTemplate } from "preact-sidebar";
-import { IConnectorPort, ModifierType, CSSModifier, exportClass, CSSModifierData, CSSStatement } from "storygraph";
+import { IConnectorPort, ModifierType, CSSModifier, exportClass, CSSModifierData, CSSStatement, ModifierPlugIn } from "storygraph";
 
 interface IGridItemInlineStatements extends CSSStatement {
     "grid-row": string;
@@ -12,7 +12,7 @@ interface IGridItemModifierData extends CSSModifierData {
     inline: IGridItemInlineStatements;
 }
 
-export class GridItemInlineStatements implements IGridItemInlineStatements {
+class GridItemInlineStatements implements IGridItemInlineStatements {
     "grid-row" = "";
     "grid-column" = "";
 
@@ -58,11 +58,12 @@ export class GridItem implements IGridItemModifierData {
     }
 }
 
-export class CSSGriditemModifier extends CSSModifier {
+export class CSSGridItemModifier extends CSSModifier {
     public name = "Grid item"
     public role = "internal.modifier.griditem";
     public type: ModifierType = "css-class";
     public data: GridItem = new GridItem();
+    public static defaultIcon = "icon-eye";
 
     constructor() {
         super();
@@ -117,14 +118,24 @@ export const CSSGriditemModifierDataSchema = createModelSchema(GridItem, {
     classMap: map(primitive())
 });
 
-export const CSSGriditemModifierSchema = createModelSchema(CSSGriditemModifier, {
+export const CSSGriditemModifierSchema = createModelSchema(CSSGridItemModifier, {
     data: object(CSSGriditemModifierDataSchema)
 });
 
 export const plugInExport = exportClass(
-    CSSGriditemModifier,
+    CSSGridItemModifier,
     "Grid Item",
     "internal.modifier.griditem",
     "icon-speaker",
     true
 );
+
+export const CSSGriditemModifierPlugIn: ModifierPlugIn = {
+    name: "Grid Item",
+    id: "internal.content.griditem",
+    public: true,
+    icon: CSSGridItemModifier.defaultIcon,
+
+    // package: {},
+    constructor: CSSGridItemModifier
+}

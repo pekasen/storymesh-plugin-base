@@ -4,6 +4,7 @@ import { MenuTemplate } from "preact-sidebar";
 import { makeObservable, observable, action } from 'mobx';
 import { createModelSchema } from 'serializr';
 import { Container } from "./Container";
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 export class OutputConnectorView extends StoryObject {
     public name: string;
@@ -97,3 +98,13 @@ export const plugInExport = exportClass(
     OutputConnectorView.defaultIcon,
     false
 );
+
+export const OutputConnectorViewPlugIn: StoryPlugIn = {
+    name: "OutputConnectorView",
+    id: "internal.content.outputconnectorview",
+    public: true,
+    icon:     OutputConnectorView.defaultIcon,
+
+    // package: {},
+    constructor: OutputConnectorView
+}

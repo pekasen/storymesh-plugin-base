@@ -5,11 +5,12 @@ import { createModelSchema, object } from 'serializr';
 import { useState, useEffect } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox, HSlider } from "preact-sidebar";
 import { Container } from "./Container";
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 /**
  */
 // @observable
-class VideoObject extends StoryObject {
+export class VideoObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -228,3 +229,13 @@ export const plugInExport = exportClass(
     VideoObject.defaultIcon,
     true
 );
+
+export const VideoPlugIn: StoryPlugIn = {
+    name: "Video",
+    id: "internal.content.video",
+    public: true,
+    icon:     VideoObject.defaultIcon,
+
+    // package: {},
+    constructor: VideoObject
+}

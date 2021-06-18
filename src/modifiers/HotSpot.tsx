@@ -10,6 +10,7 @@ export class HotSpot {
     public reactionOut = new ReactionConnectorOutPort("reaction-out");
     public debug = false;
     protected static numOfInstances = 1;
+    public static defaultIcon = "icon-mouse";
 
     constructor(x?: number, y?: number) {
         this.x = x ?? 0.5;
@@ -357,5 +358,9 @@ export const plugInExport = exportClass(
 export const HotSpotPlugIn: ModifierPlugIn = {
     name: "HotSpot",
     id: "internal.modifier.hotspot",
-    constructor: HotSpot
+    public: true,
+    icon: HotSpot.defaultIcon,
+
+    // package: {},
+    constructor: HTMLHotSpotModifier
 }

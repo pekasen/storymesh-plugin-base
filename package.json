@@ -9,9 +9,11 @@
   "dependencies": {
     "js-logger": "^1.6.1",
     "mobx": "^6.3.2",
+    "node-quill-converter": "^0.3.3",
     "preact": "^10.5.13",
     "preact-jss-hook": "^2.1.2",
     "preact-sidebar": "file:../preact-sidebar",
+    "quill-delta": "^4.2.2",
     "storygraph": "file:../storygraph",
     "uuid": "^8.3.2"
   },

@@ -4,11 +4,12 @@ import { createModelSchema, object } from 'serializr';
 import { useState } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
 import { StoryObject, IContent, StoryGraph, INGWebSProps, ContentSchema, exportClass, connectionField, nameField } from 'storygraph';
+import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 
 /**
  */
 // @observable
-class AudioObject extends StoryObject {
+export class AudioObject extends StoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -151,3 +152,13 @@ export const plugInExport = exportClass(
     AudioObject.defaultIcon,
     true
 );
+
+export const AudioPlugIn: StoryPlugIn = {
+    name: "Audio",
+    id: "internal.content.audio",
+    public: true,
+    icon:     AudioObject.defaultIcon,
+
+    // package: {},
+    constructor: AudioObject
+}

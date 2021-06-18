@@ -73,8 +73,12 @@ export class _CustomCode extends StoryObject {
                 setState({});
             }
 
+            const parser = new DOMParser();
+
+            const document = parser.parseFromString(this.userDefinedProperties.contents, 'text/html');
+
             const codeContainer = <div id={this.id} class="custom-code">
-                    {this.userDefinedProperties.contents}
+                    {document}
                 </div>;
                 return this.modifiers.reduce((p, v) => (
                         v.modify(p)
@@ -94,8 +98,8 @@ createModelSchema(_CustomCode, {
 
 export const plugInExport = exportClass(
     _CustomCode,
-    "Image",
-    "internal.content.image",
+    "Custom Code",
+    "internal.content.customcode",
     _CustomCode.defaultIcon,
     true
 );

@@ -107,7 +107,7 @@ export const plugInExport = exportClass(
 export const InputConnectorViewPlugIn: StoryPlugIn = {
     name: "InputConnectorView",
     id: "internal.content.inputconnectorview",
-    public: true,
+    public: false,
     icon:     InputConnectorView.defaultIcon,
 
     // package: {},

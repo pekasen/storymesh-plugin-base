@@ -102,7 +102,7 @@ export const plugInExport = exportClass(
 export const OutputConnectorViewPlugIn: StoryPlugIn = {
     name: "OutputConnectorView",
     id: "internal.content.outputconnectorview",
-    public: true,
+    public: false,
     icon:     OutputConnectorView.defaultIcon,
 
     // package: {},

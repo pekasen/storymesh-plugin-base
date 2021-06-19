@@ -1,16 +1,16 @@
 import { createRef, FunctionComponent, h } from "preact";
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import { INGWebSProps, exportClass, StoryGraph, ContentSchema, StoryObject, IContent, connectionField, nameField } from 'storygraph';
+import { StoryPlugIn, INGWebSProps, exportClass, StoryGraph, ContentSchema, IContent, connectionField, nameField } from 'storygraph';
 import { createModelSchema, object } from 'serializr';
-import { useState, useEffect } from "preact/hooks";
+import { useEffect } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox, HSlider } from "preact-sidebar";
 import { Container } from "./Container";
-import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
+import { ObservableStoryObject } from "../helpers/ObservableStoryObject";
 
 /**
  */
 // @observable
-export class VideoObject extends StoryObject {
+export class VideoObject extends ObservableStoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -152,10 +152,10 @@ export class VideoObject extends StoryObject {
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ registry, content }) => {
-            const [, setState] = useState({});
-            this._rerender = () => {
-                setState({});
-            };
+            // const [, setState] = useState({});
+            // this._rerender = () => {
+            //     setState({});
+            // };
 
             this.videoElement = createRef(); // TODO why does this help? why is the reference otherwise null here?
 
@@ -181,7 +181,7 @@ export class VideoObject extends StoryObject {
                 function scrollPlay(): void {
                     if (that.parent) {
                         that.videoWrapper = document.getElementById(that.parent);
-                        const parentNode = registry?.get(that.parent) as Container;
+                        const parentNode = registry?.get(that.parent) as unknown as Container;
                         if (that.videoElement && that.videoElement.current && that.scrollableBackground && that.videoWrapper && !isNaN(that.videoElement.current.duration)) { //TODO: check why duration is sometimes NaN
                             that.videoElement.current.currentTime = that.videoElement.current.duration -
                                 (that.videoWrapper?.getBoundingClientRect().bottom - that.videoElement.current.getBoundingClientRect().bottom)

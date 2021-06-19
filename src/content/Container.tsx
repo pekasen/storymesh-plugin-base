@@ -8,6 +8,7 @@ import { InputConnectorView } from "./InputConnectorView";
 import { OutputConnectorView } from "./OutputConnectorView";
 import { StoryPlugIn } from "storygraph/dist/StoryGraph/registry/PlugIn";
 import { ObservableStoryGraph } from "../helpers/ObservableStoryGraph";
+import { ObservableStoryObject } from "../helpers/ObservableStoryObject";
 
 // TODO: refactor this so it is unnecessary,
 // import { MoveableItem } from "../../renderer/store/MoveableItem";
@@ -18,7 +19,7 @@ import { ObservableStoryGraph } from "../helpers/ObservableStoryGraph";
  * 
  * 
  */
-export class Container extends StoryObject {
+export class Container extends ObservableStoryObject {
     public name: string;
     public role: string;
     public height: string;

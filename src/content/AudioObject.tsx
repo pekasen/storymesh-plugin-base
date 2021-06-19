@@ -3,13 +3,13 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import { createModelSchema, object } from 'serializr';
 import { useState } from "preact/hooks";
 import { MenuTemplate, Text, CheckBox } from "preact-sidebar";
-import { StoryObject, IContent, StoryGraph, INGWebSProps, ContentSchema, exportClass, connectionField, nameField } from 'storygraph';
-import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
+import { StoryPlugIn, IContent, StoryGraph, INGWebSProps, ContentSchema, exportClass, connectionField, nameField } from 'storygraph';
+import { ObservableStoryObject } from "../helpers/ObservableStoryObject";
 
 /**
  */
 // @observable
-export class AudioObject extends StoryObject {
+export class AudioObject extends ObservableStoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -100,10 +100,10 @@ export class AudioObject extends StoryObject {
     
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({content}) => {
-            const [, setState] = useState({});    
-            this._rerender = () => {
-                setState({});
-            };
+            // const [, setState] = useState({});    
+            // this._rerender = () => {
+            //     setState({});
+            // };
            
             this.audioElement = createRef(); // TODO why does this help? why is the reference otherwise null here?
             this.audioWrapper = createRef();

@@ -7,6 +7,7 @@ import { IRegistry, INGWebSProps, AbstractStoryModifier, StoryObject, StoryGraph
 import { InputConnectorView } from "./InputConnectorView";
 import { OutputConnectorView } from "./OutputConnectorView";
 import { StoryPlugIn } from "storygraph/dist/StoryGraph/registry/PlugIn";
+import { ObservableStoryGraph } from "../helpers/ObservableStoryGraph";
 
 // TODO: refactor this so it is unnecessary,
 // import { MoveableItem } from "../../renderer/store/MoveableItem";
@@ -37,7 +38,7 @@ export class Container extends StoryObject {
         this.role = "internal.content.container";
         this.height = "auto";
         this.isContentNode = false;
-        this.childNetwork = new StoryGraph(this.id);
+        this.childNetwork = new ObservableStoryGraph(this.id);
         this.childNetwork.notificationCenter.subscribe(this.id + "/rerender", () => {
             if (this._rerender) this._rerender();
         });
@@ -74,8 +75,8 @@ export class Container extends StoryObject {
         const Comp: FunctionComponent<INGWebSProps> = ({ id, registry, graph, modifiers }) => {
             // const startNode = graph?
             // TODO: class name?
+            // const [, setState] = useState({});
             // useEffect(() => {
-            //     const [, setState] = useState({});
             //     this._rerender = () => {
             //         // Logger.info(`${this.id} rerendering`);
             //         setState({});
@@ -83,7 +84,7 @@ export class Container extends StoryObject {
 
             //     return () => {
             //         this._rerender = undefined;
-                // };
+            //     };
             // });
 
             let path: IStoryObject[] | undefined;

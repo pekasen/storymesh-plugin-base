@@ -200,7 +200,7 @@ export const plugInExport = exportClass(
 
 export const HTMLInteractionModifierPlugIn: ModifierPlugIn = {
     name: "Interaction",
-    id: "internal.content.interactionmodifier",
+    id: "internal.modifier.interactionmodifier",
     public: true,
     icon: HTMLInteractionModifier.defaultIcon,
 

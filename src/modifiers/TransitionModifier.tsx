@@ -293,7 +293,7 @@ export const plugInExport = exportClass(
 
 export const TransitionModifierPlugIn: ModifierPlugIn = {
     name: "Transition",
-    id: "internal.content.transition",
+    id: "internal.modifier.transition",
     public: true,
     icon: TransitionModifier.defaultIcon,
 

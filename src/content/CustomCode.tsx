@@ -36,6 +36,7 @@ export class _CustomCode extends StoryObject {
 
         this.userDefinedProperties = {
             contents: "",
+            compiled: ""
         }
         // this.menuTemplate = connectionField(this);
         this.icon = _CustomCode.defaultIcon;
@@ -52,8 +53,7 @@ export class _CustomCode extends StoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            //TODO: Use Textarea
-            new Text("Code", {defaultValue: ""}, () => this.userDefinedProperties.contents, (arg: string) => this.updateContents(arg)),
+            new TextArea("Code", () => this.userDefinedProperties.contents, (arg: string) => this.updateContents(arg)),
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
@@ -61,11 +61,14 @@ export class _CustomCode extends StoryObject {
     }
 
     public updateContents(newContent: string) {
-        this.userDefinedProperties.contents = newContent;
+        const parser = new DOMParser();
+        const compiledStuff = parser.parseFromString(newContent, 'text/html');
+        console.log(compiledStuff);
+        this.userDefinedProperties.compiled = compiledStuff;
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
-        const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
+        const Comp: FunctionComponent<INGWebSProps> = ({}) => {
 
             const [, setState] = useState({});
 
@@ -73,12 +76,8 @@ export class _CustomCode extends StoryObject {
                 setState({});
             }
 
-            const parser = new DOMParser();
-
-            const document = parser.parseFromString(this.userDefinedProperties.contents, 'text/html');
-
             const codeContainer = <div id={this.id} class="custom-code">
-                    {document}
+                    {this.userDefinedProperties.compiled}
                 </div>;
                 return this.modifiers.reduce((p, v) => (
                         v.modify(p)

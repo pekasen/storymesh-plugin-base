@@ -20,7 +20,7 @@ export class _ImageObject extends ObservableStoryObject {
     public role: string;
     public isContentNode: boolean;
     public userDefinedProperties: any;
-    public childNetwork?: StoryGraph;
+
     // public content: IContent;
     public icon: string;
 
@@ -99,11 +99,11 @@ export class _ImageObject extends ObservableStoryObject {
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ content }) => {
 
-            const [, setState] = useState({});
+            // const [, setState] = useState({});
 
-            this._rerender = () => {
-                setState({});
-            }
+            // this._rerender = () => {
+            //     setState({});
+            // }
 
             const imgContainer = <div id={this.id} class="imagewrapper image">
                     <figure>

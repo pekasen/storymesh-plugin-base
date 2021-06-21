@@ -15,7 +15,6 @@ export class VideoObject extends ObservableStoryObject {
     public role: string;
     public isContentNode: boolean;
     public userDefinedProperties: unknown;
-    public childNetwork?: StoryGraph;
     public content: IContent;
     public icon: string;
     // TODO: may be refactor these properties into a seperate object, e.g. userDefinedProperties?
@@ -168,13 +167,16 @@ export class VideoObject extends ObservableStoryObject {
                 controls={this.playbackControls}
                 loop={this.loopable}
                 muted={this.muted}
-                autobuffer="autobuffer"
+                // autoBuffer={"true"}
                 preload="preload"
             ></video>;
 
             useEffect(() => {
+                // @ts-ignore
                 const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                // @ts-ignore
+                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                // @ts-ignore
                 const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
                 const that = this;

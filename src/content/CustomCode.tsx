@@ -1,12 +1,11 @@
 import { FunctionComponent, h } from "preact";
-import { MenuTemplate, TextArea, Text } from "preact-sidebar";
+import { MenuTemplate, Text } from "preact-sidebar";
 import { createModelSchema, object } from 'serializr';
-import { useState } from "preact/hooks";
 import { action, computed, makeObservable, observable } from 'mobx';
-import { StoryGraph } from 'storygraph';
-// import { IContent } from 'storygraph/dist/StoryGraph/IContent';
-import { connectionField, nameField, exportClass, StoryObject, INGWebSProps, ContentSchema } from 'storygraph';
-import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
+import { StoryGraph, StoryPlugIn } from 'storygraph';
+import { connectionField, nameField, exportClass, INGWebSProps, ContentSchema } from 'storygraph';
+import { ObservableStoryObject } from "../helpers/ObservableStoryObject";
+
 
 /**
  * Our first little dummy PlugIn
@@ -14,7 +13,7 @@ import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
 // @observable
-export class _CustomCode extends StoryObject {
+export class _CustomCode extends ObservableStoryObject {
     public name: string;
     public role: string;
     public isContentNode: boolean;
@@ -46,7 +45,8 @@ export class _CustomCode extends StoryObject {
             userDefinedProperties: observable,
             connectors: computed,
             menuTemplate: computed,
-            updateContents: action
+            updateContents: action,
+            updateName: action
         });
     }
 
@@ -60,6 +60,10 @@ export class _CustomCode extends StoryObject {
         return ret;
     }
 
+    public updateName(name: string) {
+        this.name = name;
+    }
+
     public updateContents(newContent: string) {
         const parser = new DOMParser();
         const compiledStuff = parser.parseFromString(newContent, 'text/html');
@@ -70,11 +74,11 @@ export class _CustomCode extends StoryObject {
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({}) => {
 
-            const [, setState] = useState({});
+            // const [, setState] = useState({});
 
-            this._rerender = () => {
-                setState({});
-            }
+            // this._rerender = () => {
+            //     setState({});
+            // }
 
             const codeContainer = <div id={this.id} class="custom-code">
                     {this.userDefinedProperties.compiled}

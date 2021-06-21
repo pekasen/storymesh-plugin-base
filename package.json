@@ -1,5 +1,8 @@
 {
   "name": "storymesh-plugin-base",
+  "type": "module",
+  "source": "dist/index.js",
+  "exports": "./dist/bundles/storymesh-plugin-base.modern.js",
   "devDependencies": {
     "@types/uuid": "^8.3.0",
     "serializr": "^2.0.5",
@@ -8,6 +11,7 @@
   },
   "dependencies": {
     "js-logger": "^1.6.1",
+    "microbundle": "^0.13.3",
     "mobx": "^6.3.2",
     "node-quill-converter": "^0.3.3",
     "preact": "^10.5.13",

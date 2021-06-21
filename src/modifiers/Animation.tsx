@@ -5,6 +5,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
 import { HTMLModifier, exportClass, ConnectorSchema, IConnectorPort, ReactionConnectorInPort, dropDownField, nameField } from "storygraph";
 import { HSlider, MenuTemplate, CheckBox, Divider } from "preact-sidebar";
+// @ts-expect-error
 import { createUseStyles } from 'preact-jss-hook';
 import { ModifierPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 

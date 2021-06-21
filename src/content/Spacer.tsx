@@ -14,7 +14,6 @@ export class _Spacer extends StoryObject {
     public userDefinedProperties: {
         vspace: number
     };
-    public childNetwork?: StoryGraph;
     // public vspace: number;
     public icon: string
     protected _connectors: Map<string, IConnectorPort>;

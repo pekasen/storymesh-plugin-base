@@ -1,12 +1,14 @@
 import { FunctionComponent, h } from "preact";
 import { action, makeObservable, observable } from 'mobx';
-import { INGWebSProps, StoryGraph, connectionField, nameField, StoryObject, exportClass } from 'storygraph';
+import { INGWebSProps, StoryGraph, connectionField, nameField, exportClass } from 'storygraph';
 import { createModelSchema, list, ModelSchema, object, optional, primitive } from 'serializr';
 import Delta from "quill-delta";
 import { MenuTemplate, RichText } from "preact-sidebar";
+// @ts-expect-error
 import { convertDeltaToHtml } from 'node-quill-converter';
 import Op from "quill-delta/dist/Op";
 import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
+import { ObservableStoryObject } from "../helpers/ObservableStoryObject";
 
 interface ITextObjectContent {
     resource: Delta
@@ -19,7 +21,7 @@ interface ITextObjectContent {
  * 
  * @todo It should actually inherit from StoryObject and not StoryGraph...
  */
-export class _TextObject extends StoryObject {
+export class _TextObject extends ObservableStoryObject {
     
     public name: string;
     public role: string;
@@ -28,7 +30,6 @@ export class _TextObject extends StoryObject {
         tag: string
     };
     public content: ITextObjectContent;
-    public childNetwork?: StoryGraph | undefined;
     public icon: string;
     public static defaultIcon = "icon-newspaper";
     
@@ -94,9 +95,9 @@ export class _TextObject extends StoryObject {
         </div>
     }
 
-    public updateName(newValue: string): void {
+    public updateName(name: string): void {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
-        this.name = newValue;
+        this.name = name;
     }
 
     public updateText(text: Delta) {

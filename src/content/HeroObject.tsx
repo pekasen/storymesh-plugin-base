@@ -9,7 +9,6 @@ export class _HeroObject extends StoryObject {
     public role: string;
     public isContentNode: boolean;
     public userDefinedProperties: any;
-    public childNetwork?: StoryGraph;
     public content: IContent;
     public icon: string;
     public valueType: any;

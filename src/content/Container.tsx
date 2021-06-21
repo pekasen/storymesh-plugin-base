@@ -1,5 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { useState, useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { ColorPicker, DropDown, MenuTemplate, Text } from "preact-sidebar";
 import { makeObservable, observable, action, computed } from 'mobx';
 import { createModelSchema, object } from 'serializr';
@@ -9,6 +9,7 @@ import { OutputConnectorView } from "./OutputConnectorView";
 import { StoryPlugIn } from "storygraph/dist/StoryGraph/registry/PlugIn";
 import { ObservableStoryGraph } from "../helpers/ObservableStoryGraph";
 import { ObservableStoryObject } from "../helpers/ObservableStoryObject";
+import Logger from "js-logger";
 
 // TODO: refactor this so it is unnecessary,
 // import { MoveableItem } from "../../renderer/store/MoveableItem";
@@ -27,7 +28,6 @@ export class Container extends ObservableStoryObject {
     public userDefinedProperties: any;
     public childNetwork: StoryGraph;
     public icon: string
-    public content: undefined;
     public startNode?: string;
     public endNode?: string;
     public static defaultIcon = "icon-doc"
@@ -44,7 +44,6 @@ export class Container extends ObservableStoryObject {
             if (this._rerender) this._rerender();
         });
         this.makeDefaultConnectors();
-
 
         this.userDefinedProperties = {
             padding: "0 0 0 0",
@@ -76,17 +75,18 @@ export class Container extends ObservableStoryObject {
         const Comp: FunctionComponent<INGWebSProps> = ({ id, registry, graph, modifiers }) => {
             // const startNode = graph?
             // TODO: class name?
-            // const [, setState] = useState({});
             // useEffect(() => {
+                // const [state, setState] = useState(1);
             //     this._rerender = () => {
             //         // Logger.info(`${this.id} rerendering`);
             //         setState({});
             //     };
 
-            //     return () => {
+            //     return  () => {
             //         this._rerender = undefined;
             //     };
             // });
+
 
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
@@ -95,6 +95,8 @@ export class Container extends ObservableStoryObject {
                 if (!startNode) throw("BIG ERROR");
                 
                 path = graph?.traverse(registry, this.startNode, Array.from(startNode.connectors)[0][1].id)
+                Logger.info("found path:", path?.map(e => e.id));
+
                 if (path !== undefined) {
                     div = <div style={`height:${this.height};
                                        padding:${this.userDefinedProperties.padding};

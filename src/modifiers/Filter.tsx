@@ -5,6 +5,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { createModelSchema, object } from "serializr";
 import { HTMLModifier, exportClass, IConnectorPort, ReactionConnectorInPort, ConnectorSchema, dropDownField, nameField, ModifierPlugIn } from "storygraph";
 import { HSlider, MenuTemplate, CheckBox, Divider } from "preact-sidebar";
+// @ts-expect-error
 import { createUseStyles } from 'preact-jss-hook';
 
 export class FilterModifier extends HTMLModifier {

@@ -12,9 +12,6 @@ export class InputConnectorView extends StoryObject {
     public role: string;
     public icon: string;
     public connections: IEdge[];
-    public content: undefined;
-    public childNetwork: undefined;
-    public userDefinedProperties: undefined;
     public isContentNode = false;
     public deletable = false;
     

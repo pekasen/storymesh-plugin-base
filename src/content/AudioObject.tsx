@@ -14,7 +14,6 @@ export class AudioObject extends ObservableStoryObject {
     public role: string;
     public isContentNode: boolean;
     public userDefinedProperties: unknown;
-    public childNetwork?: StoryGraph;
     public content: IContent;
     public icon: string;
     // TODO: may be refactor these properties into a seperate object, e.g. userDefinedProperties?

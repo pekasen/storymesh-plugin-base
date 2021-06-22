@@ -12,6 +12,7 @@ import { _TextObject, TextPlugIn } from "./content/TextObject";
 import { VideoObject, VideoPlugIn } from "./content/VideoObject";
 import { _ImageObject, ImagePlugIn } from "./content/ImageObject";
 import { _CustomCode, CustomCodePlugIn } from "./content/CustomCode";
+import { _SvgObject, SvgPlugIn } from "./content/SvgObject";
 // import { AnimationModifier, AnimationPlugIn } from "./modifiers/Animation";
 // import { FilterModifier, FilterPlugIn } from "./modifiers/Filter";
 import { CSSGridContainerModifier, CSSGridContainerModifierPlugIn } from "./modifiers/GridContainer";
@@ -43,6 +44,7 @@ const PlugInExports: PlugInPack = {
         VideoPlugIn,
         ImagePlugIn,
         CustomCodePlugIn,
+        SvgPlugIn,
         // AnimationPlugIn,
         // FilterPlugIn,
         CSSGridContainerModifierPlugIn,
@@ -68,6 +70,7 @@ export {
     VideoPlugIn,
     ImagePlugIn,
     CustomCodePlugIn,
+    SvgPlugIn,
     // AnimationPlugIn,
     // FilterPlugIn,
     CSSGridContainerModifierPlugIn,
@@ -88,6 +91,7 @@ export {
     VideoObject,
     _ImageObject,
     _CustomCode,
+    _SvgObject,
     // AnimationModifier,
     // FilterModifier,
     CSSGridContainerModifier,

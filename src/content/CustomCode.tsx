@@ -1,5 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { MenuTemplate, TextArea } from "preact-sidebar";
+import { MenuTemplate, TextArea, Button } from "preact-sidebar";
 import { createModelSchema, object } from 'serializr';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { StoryGraph, StoryPlugIn } from 'storygraph';
@@ -21,6 +21,7 @@ export class _CustomCode extends ObservableStoryObject {
     public childNetwork?: StoryGraph;
     // public content: IContent;
     public icon: string;
+    public compiled: any;
 
     public static defaultIcon = "icon-picture"
 
@@ -35,14 +36,16 @@ export class _CustomCode extends ObservableStoryObject {
 
         this.userDefinedProperties = {
             contents: "",
-            compiled: ""
         }
+
+        this.compiled = undefined;
         // this.menuTemplate = connectionField(this);
         this.icon = _CustomCode.defaultIcon;
 
         makeObservable(this, {
             name: observable,
             userDefinedProperties: observable,
+            compiled: observable,
             connectors: computed,
             menuTemplate: computed,
             updateContents: action,
@@ -54,6 +57,7 @@ export class _CustomCode extends ObservableStoryObject {
         const ret: MenuTemplate[] = [
             ...nameField(this),
             new TextArea("Code", () => this.userDefinedProperties.contents, (arg: string) => this.updateContents(arg)),
+            new Button("Test", () => this.testStuff()),
             ...connectionField(this),
         ];
         if (super.menuTemplate && super.menuTemplate.length >= 1) ret.push(...super.menuTemplate);
@@ -66,9 +70,13 @@ export class _CustomCode extends ObservableStoryObject {
 
     public updateContents(newContent: string) {
         const parser = new DOMParser();
-        const compiledStuff = parser.parseFromString(newContent, 'text/html');
+        const compiledStuff = parser.parseFromString(newContent, 'text/html').body.firstElementChild;
         console.log(compiledStuff);
-        this.userDefinedProperties.compiled = compiledStuff;
+        this.compiled = compiledStuff;
+    }
+
+    public testStuff() {
+        console.log("Wohoo it'S in there!" + this.compiled);
     }
 
     public getComponent(): FunctionComponent<INGWebSProps> {
@@ -81,7 +89,7 @@ export class _CustomCode extends ObservableStoryObject {
             // }
 
             const codeContainer = <div id={this.id} class="custom-code">
-                    {this.userDefinedProperties.compiled}
+                        {this.compiled}   
                 </div>;
                 return this.modifiers.reduce((p, v) => (
                         v.modify(p)

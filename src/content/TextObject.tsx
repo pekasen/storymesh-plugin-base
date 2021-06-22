@@ -2,16 +2,13 @@ import { FunctionComponent, h } from "preact";
 import { action, makeObservable, observable } from 'mobx';
 import { INGWebSProps, StoryGraph, connectionField, nameField, exportClass } from 'storygraph';
 import { createModelSchema, list, ModelSchema, object, optional, primitive } from 'serializr';
-import Delta from "quill-delta";
 import { MenuTemplate, RichText } from "preact-sidebar";
-// @ts-expect-error
-import { convertDeltaToHtml } from 'node-quill-converter';
-import Op from "quill-delta/dist/Op";
 import { StoryPlugIn } from "../../../storygraph/dist/StoryGraph/registry/PlugIn";
 import { ObservableStoryObject } from "../helpers/ObservableStoryObject";
+import he from 'he';
 
 interface ITextObjectContent {
-    resource: Delta
+    resource: string
     altText: string
     contentType: "text"
 }
@@ -45,7 +42,7 @@ export class _TextObject extends ObservableStoryObject {
         };
         this.makeDefaultConnectors();
         this.content = {
-            resource: new Delta(),
+            resource: "text",
             altText: "empty",
             contentType: "text"
         };
@@ -67,7 +64,7 @@ export class _TextObject extends ObservableStoryObject {
     public get menuTemplate(): MenuTemplate[] {
         const ret: MenuTemplate[] = [
             ...nameField(this),
-            new RichText("Content", () => this.content.resource, (arg: Delta) => this.updateText(arg)),
+            new RichText("Content", () => this.content.resource, (arg: string) => this.updateText(arg)),
             // {
             //     label: "Content",
             //     type: "textarea",
@@ -100,15 +97,17 @@ export class _TextObject extends ObservableStoryObject {
         this.name = name;
     }
 
-    public updateText(text: Delta) {
-        if (this.content) this.content.resource = text;
+    public updateText(htmlText: string) {    
+        if (this.content) {
+            this.content.resource = he.decode(htmlText.replace(/<[^>]+>/g, ''), );
+        }
     }
 
     public getComponent() {    
         const Comp: FunctionComponent<INGWebSProps> = (args => {
             let p: h.JSX.Element;
             // TODO: is that supposed to be like that?
-            p = <span dangerouslySetInnerHTML={{ __html: convertDeltaToHtml(new Delta(args.content?.resource as unknown as Op[])) as string}} />
+            p = <span dangerouslySetInnerHTML={{ __html: args.content?.resource}} />
             return this.modifiers.reduce((p,v) => {
                 return (v.modify(p));
             }, p);
@@ -125,28 +124,14 @@ const AttributeSchema: ModelSchema<any> = {
     }
 }
 
-const OpSchema: ModelSchema<Op> = {
-    factory: () => ({}),
-    props: {
-        insert: optional(primitive()),
-        delete: optional(primitive()),
-        retain: optional(primitive()),
-        attributes: optional(object(AttributeSchema))
-    }
-};
-
-createModelSchema(Delta, {
-    ops: list(object(OpSchema))
-});
-
 const TextContentSchema: ModelSchema<ITextObjectContent> = {
     factory: () => ({
-        resource: new Delta(),
+        resource: "html",
         altText: "",
         contentType: "text"
     }),
     props: {
-        resource: object(Delta),
+        resource: primitive(),
         altText: primitive(),
         contentType: primitive()
     }

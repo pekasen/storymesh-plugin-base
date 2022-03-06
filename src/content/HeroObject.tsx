@@ -220,7 +220,7 @@ export const plugInExport = exportClass(
 
 export const HeroPlugIn: StoryPlugIn = {
     name: "Hero",
-    id: "internal.content.branch",
+    id: "internal.content.hero",
     public: true,
     icon:     _HeroObject.defaultIcon,
 

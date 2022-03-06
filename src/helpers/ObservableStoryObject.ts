@@ -20,7 +20,7 @@ import {
 } from "storygraph";
 
 
-export class ObservableStoryObject extends AbstractStoryObject {
+export class ObservableStoryObject extends StoryObject {
     
     public id: string = v4();
     public metaData: IMetaData = {

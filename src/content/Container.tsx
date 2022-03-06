@@ -73,21 +73,6 @@ export class Container extends ObservableStoryObject {
 
     public getComponent(): FunctionComponent<INGWebSProps> {
         const Comp: FunctionComponent<INGWebSProps> = ({ id, registry, graph, modifiers }) => {
-            // const startNode = graph?
-            // TODO: class name?
-            // useEffect(() => {
-                // const [state, setState] = useState(1);
-            //     this._rerender = () => {
-            //         // Logger.info(`${this.id} rerendering`);
-            //         setState({});
-            //     };
-
-            //     return  () => {
-            //         this._rerender = undefined;
-            //     };
-            // });
-
-
             let path: IStoryObject[] | undefined;
             let div: h.JSX.Element;
             if (this.startNode) {

@@ -124,6 +124,14 @@ const AttributeSchema: ModelSchema<any> = {
     }
 }
 
+const OpsSchema: ModelSchema<any> = {
+    factory: () => ({}),
+    props: {
+        attributes: object(AttributeSchema),
+        '*': true
+    }
+}
+
 const TextContentSchema: ModelSchema<ITextObjectContent> = {
     factory: () => ({
         resource: "html",
@@ -131,7 +139,7 @@ const TextContentSchema: ModelSchema<ITextObjectContent> = {
         contentType: "text"
     }),
     props: {
-        resource: primitive(),
+        resource: object(OpsSchema),
         altText: primitive(),
         contentType: primitive()
     }
